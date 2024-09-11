@@ -4,3 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.88"
+pollster = "0.3.0"
+wgpu = "22.1.0"
+winit = "0.30.5"
