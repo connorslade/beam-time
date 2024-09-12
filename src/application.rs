@@ -14,8 +14,11 @@ use winit::{
     window::{WindowAttributes, WindowId},
 };
 
-use crate::consts::{DEFAULT_SIZE, TEXTURE_FORMAT};
 use crate::state::{GraphicsContext, State};
+use crate::{
+    consts::{DEFAULT_SIZE, TEXTURE_FORMAT},
+    screens::Screens,
+};
 
 #[derive(Default)]
 pub struct Application<'a> {
@@ -60,6 +63,7 @@ impl<'a> ApplicationHandler for Application<'a> {
                 device,
                 queue,
             },
+            screens: Screens::default(),
         });
     }
 
@@ -84,7 +88,7 @@ impl<'a> ApplicationHandler for Application<'a> {
                     .device
                     .create_command_encoder(&CommandEncoderDescriptor::default());
 
-                // draw game
+                state.screens.render(&mut encoder);
 
                 gcx.queue.submit(iter::once(encoder.finish()));
 

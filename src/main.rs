@@ -3,7 +3,9 @@ use application::Application;
 use winit::event_loop::{ControlFlow, EventLoopBuilder};
 
 mod application;
+mod assets;
 mod consts;
+mod screens;
 mod state;
 
 fn main() -> Result<()> {
