@@ -1,6 +1,7 @@
 use std::{iter, sync::Arc};
 
 use anyhow::Context;
+use nalgebra::Vector2;
 use wgpu::{
     CommandEncoderDescriptor, CompositeAlphaMode, DeviceDescriptor, Features, Instance,
     InstanceDescriptor, Limits, MemoryHints, PresentMode, RequestAdapterOptions,
@@ -14,10 +15,13 @@ use winit::{
     window::{WindowAttributes, WindowId},
 };
 
-use crate::state::{GraphicsContext, State};
 use crate::{
     consts::{DEFAULT_SIZE, TEXTURE_FORMAT},
     screens::Screens,
+};
+use crate::{
+    graphics_context::GraphicsContext,
+    state::{RenderContext, State},
 };
 
 #[derive(Default)]
@@ -57,7 +61,7 @@ impl<'a> ApplicationHandler for Application<'a> {
         .unwrap();
 
         self.state = Some(State {
-            graphics: GraphicsContext {
+            graphics: RenderContext {
                 surface,
                 window,
                 device,
@@ -88,7 +92,9 @@ impl<'a> ApplicationHandler for Application<'a> {
                     .device
                     .create_command_encoder(&CommandEncoderDescriptor::default());
 
-                state.screens.render(&mut encoder);
+                let size = gcx.window.inner_size();
+                let mut ctx = GraphicsContext::new(Vector2::new(size.width, size.height));
+                state.screens.render(&mut ctx);
 
                 gcx.queue.submit(iter::once(encoder.finish()));
 

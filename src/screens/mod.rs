@@ -1,9 +1,9 @@
-use wgpu::CommandEncoder;
+use crate::graphics_context::GraphicsContext;
 
 mod title;
 
 pub trait Screen {
-    fn render(&mut self, encoder: &mut CommandEncoder);
+    fn render(&mut self, ctx: &mut GraphicsContext);
 }
 
 pub struct Screens {
@@ -11,9 +11,9 @@ pub struct Screens {
 }
 
 impl Screens {
-    pub fn render(&mut self, encoder: &mut CommandEncoder) {
+    pub fn render(&mut self, ctx: &mut GraphicsContext) {
         let top = self.inner.last_mut().unwrap();
-        top.render(encoder);
+        top.render(ctx);
     }
 }
 

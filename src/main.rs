@@ -5,7 +5,9 @@ use winit::event_loop::{ControlFlow, EventLoopBuilder};
 mod application;
 mod assets;
 mod consts;
+mod graphics_context;
 mod screens;
+mod sprites;
 mod state;
 
 fn main() -> Result<()> {
