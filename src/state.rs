@@ -3,11 +3,13 @@ use std::sync::Arc;
 use wgpu::{Device, Queue, Surface};
 use winit::window::Window;
 
-use crate::screens::Screens;
+use crate::{render::sprite::SpriteRenderPipeline, screens::Screens};
 
 pub struct State<'a> {
     pub graphics: RenderContext<'a>,
     pub screens: Screens,
+
+    pub sprite_renderer: SpriteRenderPipeline,
 }
 
 pub struct RenderContext<'a> {

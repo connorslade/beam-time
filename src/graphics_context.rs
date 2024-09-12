@@ -2,9 +2,10 @@ use nalgebra::Vector2;
 
 use crate::{assets::AssetRef, sprites::Sprite};
 
+#[derive(Debug)]
 pub struct GraphicsContext {
     /// list of sprites to render this frame
-    sprites: Vec<Sprite>,
+    pub(crate) sprites: Vec<Sprite>,
     /// Window size
     size: Vector2<u32>,
 }

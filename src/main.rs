@@ -6,6 +6,7 @@ mod application;
 mod assets;
 mod consts;
 mod graphics_context;
+mod render;
 mod screens;
 mod sprites;
 mod state;

@@ -7,7 +7,7 @@ mod manager;
 mod refs;
 pub use refs::*;
 
-#[derive(PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct AssetRef(u32);
 
 pub enum Asset {
