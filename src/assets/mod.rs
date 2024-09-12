@@ -3,19 +3,17 @@ use std::hash::{Hash, Hasher};
 use nalgebra::Vector2;
 use wgpu::Texture;
 
-mod manager;
+pub mod manager;
 mod refs;
 pub use refs::*;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct AssetRef(u32);
 
-pub enum Asset {
-    Image {
-        texture: Texture,
-        uv: Vector2<u32>,
-        size: Vector2<u32>,
-    },
+pub struct Asset {
+    pub texture: Texture,
+    pub uv: Vector2<u32>,
+    pub size: Vector2<u32>,
 }
 
 pub const fn asset(name: &str) -> AssetRef {

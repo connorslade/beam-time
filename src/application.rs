@@ -1,12 +1,15 @@
 use std::{iter, sync::Arc};
 
 use anyhow::Context;
+use image::ImageFormat;
 use nalgebra::Vector2;
 use wgpu::{
-    CommandEncoderDescriptor, CompositeAlphaMode, DeviceDescriptor, Features, Instance,
+    util::{DeviceExt, TextureDataOrder},
+    CommandEncoderDescriptor, CompositeAlphaMode, DeviceDescriptor, Extent3d, Features, Instance,
     InstanceDescriptor, Limits, LoadOp, MemoryHints, Operations, PresentMode,
     RenderPassColorAttachment, RenderPassDescriptor, RequestAdapterOptions, StoreOp,
-    SurfaceConfiguration, TextureUsages, TextureViewDescriptor,
+    SurfaceConfiguration, TextureDescriptor, TextureDimension, TextureUsages,
+    TextureViewDescriptor,
 };
 use winit::{
     application::ApplicationHandler,
@@ -17,6 +20,7 @@ use winit::{
 };
 
 use crate::{
+    assets::{manager::AssetManager, TITLE},
     consts::{DEFAULT_SIZE, TEXTURE_FORMAT},
     render::sprite::SpriteRenderPipeline,
     screens::Screens,
@@ -62,6 +66,35 @@ impl<'a> ApplicationHandler for Application<'a> {
         ))
         .unwrap();
 
+        let title = image::load_from_memory_with_format(
+            include_bytes!("../assets/title.png"),
+            ImageFormat::Png,
+        )
+        .unwrap();
+
+        let texture = device.create_texture_with_data(
+            &queue,
+            &TextureDescriptor {
+                label: None,
+                size: Extent3d {
+                    width: title.width(),
+                    height: title.height(),
+                    depth_or_array_layers: 1,
+                },
+                mip_level_count: 1,
+                sample_count: 1,
+                dimension: TextureDimension::D2,
+                format: TEXTURE_FORMAT,
+                usage: TextureUsages::TEXTURE_BINDING,
+                view_formats: &[],
+            },
+            TextureDataOrder::LayerMajor,
+            title.as_bytes(),
+        );
+
+        let mut assets = AssetManager::new();
+        assets.register_sprite(TITLE, texture, Vector2::new(0, 0), Vector2::new(81, 20));
+
         self.state = Some(State {
             sprite_renderer: SpriteRenderPipeline::new(&device),
 
@@ -72,6 +105,7 @@ impl<'a> ApplicationHandler for Application<'a> {
                 queue,
             },
             screens: Screens::default(),
+            assets,
         });
     }
 
@@ -97,7 +131,7 @@ impl<'a> ApplicationHandler for Application<'a> {
                 let mut ctx = GraphicsContext::new(Vector2::new(size.width, size.height));
                 state.screens.render(&mut ctx);
 
-                state.sprite_renderer.prepare(&gcx.device, &gcx.queue, &ctx);
+                state.sprite_renderer.prepare(&gcx.device, &gcx.queue, &state.assets, &ctx);
 
                 let mut encoder = gcx
                     .device

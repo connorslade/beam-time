@@ -1,15 +1,17 @@
-use nalgebra::{Vector2, Vector3};
+use nalgebra::Vector2;
 use wgpu::{
     util::{BufferInitDescriptor, DeviceExt},
-    BindGroup, BindGroupDescriptor, BindGroupLayout, BindGroupLayoutDescriptor, Buffer,
-    BufferUsages, ColorTargetState, ColorWrites, Device, FragmentState, IndexFormat,
+    AddressMode, BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
+    BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingResource, BindingType, Buffer,
+    BufferUsages, ColorTargetState, ColorWrites, Device, FilterMode, FragmentState, IndexFormat,
     MultisampleState, PipelineCompilationOptions, PipelineLayoutDescriptor, PrimitiveState, Queue,
-    RenderPass, RenderPipeline, RenderPipelineDescriptor, VertexState,
+    RenderPass, RenderPipeline, RenderPipelineDescriptor, SamplerBindingType, SamplerDescriptor,
+    ShaderStages, TextureSampleType, TextureViewDescriptor, TextureViewDimension, VertexState,
 };
 
 use crate::{
-    consts::TEXTURE_FORMAT, graphics_context::GraphicsContext, include_shader,
-    render::consts::VERTEX_BUFFER_LAYOUT,
+    assets::manager::AssetManager, consts::TEXTURE_FORMAT, graphics_context::GraphicsContext,
+    include_shader, render::consts::VERTEX_BUFFER_LAYOUT,
 };
 
 use super::Vertex;
@@ -30,12 +32,29 @@ impl SpriteRenderPipeline {
 
         let bind_group_layout = device.create_bind_group_layout(&BindGroupLayoutDescriptor {
             label: None,
-            entries: &[],
+            entries: &[
+                BindGroupLayoutEntry {
+                    binding: 0,
+                    visibility: ShaderStages::FRAGMENT,
+                    ty: BindingType::Texture {
+                        sample_type: TextureSampleType::Float { filterable: false },
+                        view_dimension: TextureViewDimension::D2,
+                        multisampled: false,
+                    },
+                    count: None,
+                },
+                BindGroupLayoutEntry {
+                    binding: 1,
+                    visibility: ShaderStages::FRAGMENT,
+                    ty: BindingType::Sampler(SamplerBindingType::NonFiltering),
+                    count: None,
+                },
+            ],
         });
 
         let pipeline_layout = device.create_pipeline_layout(&PipelineLayoutDescriptor {
             label: None,
-            bind_group_layouts: &[],
+            bind_group_layouts: &[&bind_group_layout],
             push_constant_ranges: &[],
         });
 
@@ -76,16 +95,30 @@ impl SpriteRenderPipeline {
         }
     }
 
-    pub fn prepare(&mut self, device: &Device, _queue: &Queue, ctx: &GraphicsContext) {
+    pub fn prepare(
+        &mut self,
+        device: &Device,
+        _queue: &Queue,
+        assets: &AssetManager,
+        ctx: &GraphicsContext,
+    ) {
         let mut vert = Vec::new();
         let mut index = Vec::new();
 
-        for _sprite in ctx.sprites.iter() {
+        for sprite in ctx.sprites.iter() {
+            let asset = assets.get(sprite.texture);
+            let pos = Vector2::new(
+                sprite.pos.x as f32 / ctx.size().x as f32,
+                sprite.pos.y as f32 / ctx.size().y as f32,
+            );
+            let size = Vector2::new(asset.size.x as f32, asset.size.y as f32);
+
             vert.extend_from_slice(&[
-                Vertex::new([0.0, 0.0, 1.0], [0.0, 0.0]),
-                Vertex::new([1.0, 0.0, 1.0], [1.0, 0.0]),
-                Vertex::new([1.0, 1.0, 1.0], [1.0, 1.0]),
-                Vertex::new([0.0, 1.0, 1.0], [0.0, 1.0]),
+                // pos from 0 to 1
+                Vertex::new([pos.x, pos.y, 1.0], [0.0, 0.0]),
+                Vertex::new([pos.x + size.x, pos.y, 1.0], [1.0, 0.0]),
+                Vertex::new([pos.x + size.x, pos.y + size.y, 1.0], [1.0, 1.0]),
+                Vertex::new([pos.x, pos.y + size.y, 1.0], [0.0, 1.0]),
             ]);
 
             let base = index.len() as u32;
@@ -105,10 +138,37 @@ impl SpriteRenderPipeline {
             contents: bytemuck::cast_slice(&index),
         });
 
+        let view = assets
+            .get(ctx.sprites[0].texture)
+            .texture
+            .create_view(&TextureViewDescriptor::default());
+        let sampler = device.create_sampler(&SamplerDescriptor {
+            label: None,
+            address_mode_u: AddressMode::ClampToEdge,
+            address_mode_v: AddressMode::ClampToEdge,
+            address_mode_w: AddressMode::ClampToEdge,
+            mag_filter: FilterMode::Nearest,
+            min_filter: FilterMode::Nearest,
+            mipmap_filter: FilterMode::Nearest,
+            lod_min_clamp: 0.0,
+            lod_max_clamp: 0.0,
+            compare: None,
+            anisotropy_clamp: 1,
+            border_color: None,
+        });
         let bind_group = device.create_bind_group(&BindGroupDescriptor {
             label: None,
             layout: &self.bind_group_layout,
-            entries: &[],
+            entries: &[
+                BindGroupEntry {
+                    binding: 0,
+                    resource: BindingResource::TextureView(&view),
+                },
+                BindGroupEntry {
+                    binding: 1,
+                    resource: BindingResource::Sampler(&sampler),
+                },
+            ],
         });
 
         self.bind_group = Some(bind_group);

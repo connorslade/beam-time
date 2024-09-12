@@ -24,14 +24,13 @@ impl AssetManager {
         self.assets.get(&asset_ref)
     }
 
-    pub fn load_image(
+    pub fn register_sprite(
         &mut self,
         asset_ref: AssetRef,
         texture: Texture,
         uv: Vector2<u32>,
         size: Vector2<u32>,
     ) {
-        self.assets
-            .insert(asset_ref, Asset::Image { texture, uv, size });
+        self.assets.insert(asset_ref, Asset { texture, uv, size });
     }
 }
