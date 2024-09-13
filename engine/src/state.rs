@@ -3,7 +3,9 @@ use std::sync::Arc;
 use wgpu::{Device, Queue, Surface};
 use winit::window::Window;
 
-use crate::{assets::manager::AssetManager, render::sprite::SpriteRenderPipeline, screens::Screens};
+use crate::{
+    assets::manager::AssetManager, render::sprite::SpriteRenderPipeline, screens::Screens,
+};
 
 pub struct State<'a> {
     pub graphics: RenderContext<'a>,

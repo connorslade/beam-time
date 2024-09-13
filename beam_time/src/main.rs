@@ -1,15 +1,7 @@
 use anyhow::Result;
-use application::Application;
 use winit::event_loop::{ControlFlow, EventLoopBuilder};
 
-mod application;
-mod assets;
-mod consts;
-mod graphics_context;
-mod render;
-mod screens;
-mod sprites;
-mod state;
+use engine::application::Application;
 
 fn main() -> Result<()> {
     let event_loop_builder = EventLoopBuilder::default().build()?;

@@ -5,8 +5,8 @@ use image::ImageFormat;
 use nalgebra::Vector2;
 use wgpu::{
     util::{DeviceExt, TextureDataOrder},
-    Color, CommandEncoderDescriptor, CompositeAlphaMode, DeviceDescriptor, Extent3d, Features,
-    Instance, InstanceDescriptor, Limits, LoadOp, MemoryHints, Operations, PresentMode,
+    CommandEncoderDescriptor, CompositeAlphaMode, DeviceDescriptor, Extent3d, Features, Instance,
+    InstanceDescriptor, Limits, LoadOp, MemoryHints, Operations, PresentMode,
     RenderPassColorAttachment, RenderPassDescriptor, RequestAdapterOptions, StoreOp,
     SurfaceConfiguration, TextureDescriptor, TextureDimension, TextureUsages,
     TextureViewDescriptor,
@@ -66,8 +66,9 @@ impl<'a> ApplicationHandler for Application<'a> {
         ))
         .unwrap();
 
+        // TODO: this
         let title = image::load_from_memory_with_format(
-            include_bytes!("../assets/title.png"),
+            include_bytes!("../../beam_time/assets/title.png"),
             ImageFormat::Png,
         )
         .unwrap();

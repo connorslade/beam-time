@@ -1,0 +1,14 @@
+[package]
+name = "engine"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.88"
+bytemuck = { version = "1.18.0", features = ["derive"] }
+const-fnv1a-hash = "1.1.0"
+image = "0.25.2"
+nalgebra = "0.33.0"
+pollster = "0.3.0"
+wgpu = "22.1.0"
+winit = "0.30.5"
