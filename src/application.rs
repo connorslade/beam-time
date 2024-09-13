@@ -5,8 +5,8 @@ use image::ImageFormat;
 use nalgebra::Vector2;
 use wgpu::{
     util::{DeviceExt, TextureDataOrder},
-    CommandEncoderDescriptor, CompositeAlphaMode, DeviceDescriptor, Extent3d, Features, Instance,
-    InstanceDescriptor, Limits, LoadOp, MemoryHints, Operations, PresentMode,
+    Color, CommandEncoderDescriptor, CompositeAlphaMode, DeviceDescriptor, Extent3d, Features,
+    Instance, InstanceDescriptor, Limits, LoadOp, MemoryHints, Operations, PresentMode,
     RenderPassColorAttachment, RenderPassDescriptor, RequestAdapterOptions, StoreOp,
     SurfaceConfiguration, TextureDescriptor, TextureDimension, TextureUsages,
     TextureViewDescriptor,
@@ -72,6 +72,14 @@ impl<'a> ApplicationHandler for Application<'a> {
         )
         .unwrap();
 
+        fn rgb_to_bgr(mut buf: Vec<u8>) -> Vec<u8> {
+            for chunk in buf.chunks_exact_mut(4) {
+                chunk.swap(0, 2);
+            }
+
+            buf
+        }
+
         let texture = device.create_texture_with_data(
             &queue,
             &TextureDescriptor {
@@ -89,7 +97,7 @@ impl<'a> ApplicationHandler for Application<'a> {
                 view_formats: &[],
             },
             TextureDataOrder::LayerMajor,
-            title.as_bytes(),
+            &rgb_to_bgr(title.into_bytes()),
         );
 
         let mut assets = AssetManager::new();
@@ -131,7 +139,9 @@ impl<'a> ApplicationHandler for Application<'a> {
                 let mut ctx = GraphicsContext::new(Vector2::new(size.width, size.height));
                 state.screens.render(&mut ctx);
 
-                state.sprite_renderer.prepare(&gcx.device, &gcx.queue, &state.assets, &ctx);
+                state
+                    .sprite_renderer
+                    .prepare(&gcx.device, &gcx.queue, &state.assets, &ctx);
 
                 let mut encoder = gcx
                     .device
@@ -148,7 +158,7 @@ impl<'a> ApplicationHandler for Application<'a> {
                         view: &view,
                         resolve_target: None,
                         ops: Operations {
-                            load: LoadOp::Load,
+                            load: LoadOp::Clear(ctx.background_color()),
                             store: StoreOp::Store,
                         },
                     })],

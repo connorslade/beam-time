@@ -1,9 +1,70 @@
 use nalgebra::Vector2;
 
-use crate::assets::AssetRef;
+use crate::{
+    assets::AssetRef,
+    graphics_context::{Anchor, Drawable, GraphicsContext},
+};
 
 #[derive(Debug)]
 pub struct Sprite {
     pub texture: AssetRef,
     pub pos: Vector2<u32>,
+    pub anchor: Anchor,
+    pub scale: Vector2<f32>,
+}
+
+pub struct SpriteBuilder {
+    texture: AssetRef,
+    pos: Vector2<u32>,
+    anchor: Anchor,
+    scale: Vector2<f32>,
+}
+
+impl Sprite {
+    pub fn builder(texture: AssetRef) -> SpriteBuilder {
+        SpriteBuilder {
+            texture,
+            pos: Vector2::new(0, 0),
+            anchor: Anchor::BottomLeft,
+            scale: Vector2::new(1.0, 1.0),
+        }
+    }
+
+    pub(crate) fn real_pos(&self, size: Vector2<u32>) -> Vector2<u32> {
+        self.anchor.offset(self.pos, size)
+    }
+}
+
+impl SpriteBuilder {
+    pub fn build(self) -> Sprite {
+        Sprite {
+            texture: self.texture,
+            pos: self.pos,
+            anchor: self.anchor,
+            scale: self.scale,
+        }
+    }
+
+    pub fn pos(mut self, pos: Vector2<u32>, anchor: Anchor) -> Self {
+        self.pos = pos;
+        self.anchor = anchor;
+        self
+    }
+
+    pub fn scale(mut self, scale: Vector2<f32>) -> Self {
+        self.scale = scale;
+        self
+    }
+}
+
+impl Drawable for Sprite {
+    fn draw(self, ctx: &mut GraphicsContext) {
+        ctx.sprites.push(self);
+    }
+}
+
+impl Drawable for SpriteBuilder {
+    fn draw(self, ctx: &mut GraphicsContext) {
+        self.build().draw(ctx);
+    }
 }

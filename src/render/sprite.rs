@@ -1,12 +1,12 @@
-use nalgebra::Vector2;
 use wgpu::{
     util::{BufferInitDescriptor, DeviceExt},
     AddressMode, BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
-    BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingResource, BindingType, Buffer,
-    BufferUsages, ColorTargetState, ColorWrites, Device, FilterMode, FragmentState, IndexFormat,
-    MultisampleState, PipelineCompilationOptions, PipelineLayoutDescriptor, PrimitiveState, Queue,
-    RenderPass, RenderPipeline, RenderPipelineDescriptor, SamplerBindingType, SamplerDescriptor,
-    ShaderStages, TextureSampleType, TextureViewDescriptor, TextureViewDimension, VertexState,
+    BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingResource, BindingType, BlendComponent,
+    BlendState, Buffer, BufferUsages, ColorTargetState, ColorWrites, Device, FilterMode,
+    FragmentState, IndexFormat, MultisampleState, PipelineCompilationOptions,
+    PipelineLayoutDescriptor, PrimitiveState, Queue, RenderPass, RenderPipeline,
+    RenderPipelineDescriptor, SamplerBindingType, SamplerDescriptor, ShaderStages,
+    TextureSampleType, TextureViewDescriptor, TextureViewDimension, VertexState,
 };
 
 use crate::{
@@ -72,7 +72,10 @@ impl SpriteRenderPipeline {
                 entry_point: "frag",
                 targets: &[Some(ColorTargetState {
                     format: TEXTURE_FORMAT,
-                    blend: None,
+                    blend: Some(BlendState {
+                        color: BlendComponent::OVER,
+                        alpha: BlendComponent::OVER,
+                    }),
                     write_mask: ColorWrites::all(),
                 })],
                 compilation_options: PipelineCompilationOptions::default(),
@@ -105,20 +108,27 @@ impl SpriteRenderPipeline {
         let mut vert = Vec::new();
         let mut index = Vec::new();
 
+        let size = ctx.size().map(|x| x as f32);
         for sprite in ctx.sprites.iter() {
             let asset = assets.get(sprite.texture);
-            let pos = Vector2::new(
-                sprite.pos.x as f32 / ctx.size().x as f32,
-                sprite.pos.y as f32 / ctx.size().y as f32,
-            );
-            let size = Vector2::new(asset.size.x as f32, asset.size.y as f32);
 
+            let asset_size = asset.size.map(|x| x as f32).component_mul(&sprite.scale);
+            let pos = sprite
+                .real_pos(asset_size.map(|x| x as u32))
+                .xy()
+                .map(|x| x as f32)
+                .component_div(&size);
+
+            let asset_size = asset_size.component_div(&size);
             vert.extend_from_slice(&[
                 // pos from 0 to 1
-                Vertex::new([pos.x, pos.y, 1.0], [0.0, 0.0]),
-                Vertex::new([pos.x + size.x, pos.y, 1.0], [1.0, 0.0]),
-                Vertex::new([pos.x + size.x, pos.y + size.y, 1.0], [1.0, 1.0]),
-                Vertex::new([pos.x, pos.y + size.y, 1.0], [0.0, 1.0]),
+                Vertex::new([pos.x, pos.y, 1.0], [0.0, 1.0]),
+                Vertex::new([pos.x + asset_size.x, pos.y, 1.0], [1.0, 1.0]),
+                Vertex::new(
+                    [pos.x + asset_size.x, pos.y + asset_size.y, 1.0],
+                    [1.0, 0.0],
+                ),
+                Vertex::new([pos.x, pos.y + asset_size.y, 1.0], [0.0, 0.0]),
             ]);
 
             let base = index.len() as u32;

@@ -1,18 +1,39 @@
-use nalgebra::Vector2;
+use nalgebra::{Vector2, Vector3};
+use wgpu::Color;
 
-use crate::{assets::AssetRef, sprites::Sprite};
+use crate::sprites::Sprite;
 
 #[derive(Debug)]
 pub struct GraphicsContext {
+    /// background color
+    pub(crate) background: Vector3<f64>,
     /// list of sprites to render this frame
     pub(crate) sprites: Vec<Sprite>,
     /// Window size
     size: Vector2<u32>,
 }
 
+pub trait Drawable {
+    fn draw(self, ctx: &mut GraphicsContext);
+}
+
+#[derive(Debug, Copy, Clone)]
+pub enum Anchor {
+    TopLeft,
+    TopCenter,
+    TopRight,
+    CenterLeft,
+    Center,
+    CenterRight,
+    BottomLeft,
+    BottomCenter,
+    BottomRight,
+}
+
 impl GraphicsContext {
     pub fn new(size: Vector2<u32>) -> Self {
         GraphicsContext {
+            background: Vector3::zeros(),
             sprites: Vec::new(),
             size,
         }
@@ -26,7 +47,33 @@ impl GraphicsContext {
         self.size / 2
     }
 
-    pub fn draw_sprite(&mut self, texture: AssetRef, pos: Vector2<u32>) {
-        self.sprites.push(Sprite { texture, pos })
+    pub fn background(&mut self, color: Vector3<f64>) {
+        self.background = color;
+    }
+
+    pub fn draw(&mut self, drawable: impl Drawable) {
+        drawable.draw(self);
+    }
+}
+
+impl GraphicsContext {
+    pub(crate) fn background_color(&self) -> Color {
+        Color {
+            r: self.background.x,
+            g: self.background.y,
+            b: self.background.z,
+            a: 1.0,
+        }
+    }
+}
+
+impl Anchor {
+    pub fn offset(&self, pos: Vector2<u32>, size: Vector2<u32>) -> Vector2<u32> {
+        match self {
+            Anchor::BottomLeft => pos,
+            Anchor::Center => pos - size / 2,
+            Anchor::TopCenter => pos - Vector2::new(size.x / 2, size.y),
+            _ => todo!(),
+        }
     }
 }

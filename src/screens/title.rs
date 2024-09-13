@@ -1,4 +1,11 @@
-use crate::{assets::TITLE, graphics_context::GraphicsContext};
+use nalgebra::Vector2;
+
+use crate::{
+    assets::TITLE,
+    consts::BACKGROUND_COLOR,
+    graphics_context::{Anchor, GraphicsContext},
+    sprites::Sprite,
+};
 
 use super::Screen;
 
@@ -6,6 +13,13 @@ pub struct TitleScreen {}
 
 impl Screen for TitleScreen {
     fn render(&mut self, ctx: &mut GraphicsContext) {
-        ctx.draw_sprite(TITLE, ctx.center());
+        ctx.background(BACKGROUND_COLOR);
+
+        let pos = Vector2::new(ctx.size().x / 2, ctx.size().y * 9 / 10);
+        ctx.draw(
+            Sprite::builder(TITLE)
+                .pos(pos, Anchor::TopCenter)
+                .scale(Vector2::repeat(5.0)),
+        );
     }
 }
