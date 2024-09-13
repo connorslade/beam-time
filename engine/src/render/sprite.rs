@@ -10,8 +10,8 @@ use wgpu::{
 };
 
 use crate::{
-    assets::manager::AssetManager, consts::TEXTURE_FORMAT, graphics_context::GraphicsContext,
-    include_shader, render::consts::VERTEX_BUFFER_LAYOUT,
+    assets::manager::AssetManager, graphics_context::GraphicsContext, include_shader,
+    render::consts::VERTEX_BUFFER_LAYOUT, TEXTURE_FORMAT,
 };
 
 use super::Vertex;

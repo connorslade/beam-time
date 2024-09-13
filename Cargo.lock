@@ -193,7 +193,6 @@ dependencies = [
  "engine",
  "image",
  "nalgebra",
- "winit",
 ]
 
 [[package]]

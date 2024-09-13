@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Instant};
 
 use wgpu::{Device, Queue, Surface};
 use winit::window::Window;
@@ -11,6 +11,7 @@ pub struct State<'a> {
     pub graphics: RenderContext<'a>,
     pub assets: AssetManager,
     pub screens: Screens,
+    pub last_frame: Instant,
 
     pub sprite_renderer: SpriteRenderPipeline,
 }

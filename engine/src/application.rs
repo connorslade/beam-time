@@ -1,50 +1,60 @@
-use std::{iter, sync::Arc};
+use std::{iter, sync::Arc, time::Instant};
 
-use anyhow::Context;
-use image::ImageFormat;
+use anyhow::{Context, Result};
 use nalgebra::Vector2;
 use wgpu::{
-    util::{DeviceExt, TextureDataOrder},
-    CommandEncoderDescriptor, CompositeAlphaMode, DeviceDescriptor, Extent3d, Features, Instance,
+    CommandEncoderDescriptor, CompositeAlphaMode, DeviceDescriptor, Features, Instance,
     InstanceDescriptor, Limits, LoadOp, MemoryHints, Operations, PresentMode,
     RenderPassColorAttachment, RenderPassDescriptor, RequestAdapterOptions, StoreOp,
-    SurfaceConfiguration, TextureDescriptor, TextureDimension, TextureUsages,
-    TextureViewDescriptor,
+    SurfaceConfiguration, TextureUsages, TextureViewDescriptor,
 };
 use winit::{
     application::ApplicationHandler,
-    dpi::PhysicalSize,
     event::WindowEvent,
-    event_loop::ActiveEventLoop,
+    event_loop::{ActiveEventLoop, ControlFlow, EventLoopBuilder},
     window::{WindowAttributes, WindowId},
 };
 
 use crate::{
-    assets::{manager::AssetManager, TITLE},
-    consts::{DEFAULT_SIZE, TEXTURE_FORMAT},
+    assets::constructor::AssetConstructor,
     render::sprite::SpriteRenderPipeline,
-    screens::Screens,
+    screens::{Screen, Screens},
+    TEXTURE_FORMAT,
 };
 use crate::{
     graphics_context::GraphicsContext,
     state::{RenderContext, State},
 };
 
-#[derive(Default)]
 pub struct Application<'a> {
+    window_attributes: WindowAttributes,
+    screen_constructor: Box<dyn Fn() -> Box<dyn Screen>>,
+    asset_constructor: Box<dyn Fn(&mut AssetConstructor)>,
     state: Option<State<'a>>,
+}
+
+pub struct ApplicationArgs {
+    pub window_attributes: WindowAttributes,
+    pub screen_constructor: Box<dyn Fn() -> Box<dyn Screen>>,
+    pub asset_constructor: Box<dyn Fn(&mut AssetConstructor)>,
+}
+
+impl<'a> Application<'a> {
+    pub fn new(args: ApplicationArgs) -> Self {
+        Self {
+            window_attributes: args.window_attributes,
+            screen_constructor: args.screen_constructor,
+            asset_constructor: args.asset_constructor,
+            state: None,
+        }
+    }
 }
 
 impl<'a> ApplicationHandler for Application<'a> {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
         let window = Arc::new(
             event_loop
-                .create_window(
-                    WindowAttributes::default()
-                        .with_title("Beam Time")
-                        .with_inner_size(PhysicalSize::new(DEFAULT_SIZE.0, DEFAULT_SIZE.1))
-                        .with_resizable(false),
-                )
+                .create_window(self.window_attributes.clone())
                 .unwrap(),
         );
 
@@ -66,46 +76,12 @@ impl<'a> ApplicationHandler for Application<'a> {
         ))
         .unwrap();
 
-        // TODO: this
-        let title = image::load_from_memory_with_format(
-            include_bytes!("../../beam_time/assets/title.png"),
-            ImageFormat::Png,
-        )
-        .unwrap();
-
-        fn rgb_to_bgr(mut buf: Vec<u8>) -> Vec<u8> {
-            for chunk in buf.chunks_exact_mut(4) {
-                chunk.swap(0, 2);
-            }
-
-            buf
-        }
-
-        let texture = device.create_texture_with_data(
-            &queue,
-            &TextureDescriptor {
-                label: None,
-                size: Extent3d {
-                    width: title.width(),
-                    height: title.height(),
-                    depth_or_array_layers: 1,
-                },
-                mip_level_count: 1,
-                sample_count: 1,
-                dimension: TextureDimension::D2,
-                format: TEXTURE_FORMAT,
-                usage: TextureUsages::TEXTURE_BINDING,
-                view_formats: &[],
-            },
-            TextureDataOrder::LayerMajor,
-            &rgb_to_bgr(title.into_bytes()),
-        );
-
-        let mut assets = AssetManager::new();
-        assets.register_sprite(TITLE, texture, Vector2::new(0, 0), Vector2::new(81, 20));
+        let mut asset_constructor = AssetConstructor::new();
+        (self.asset_constructor)(&mut asset_constructor);
 
         self.state = Some(State {
             sprite_renderer: SpriteRenderPipeline::new(&device),
+            assets: asset_constructor.into_manager(&device, &queue),
 
             graphics: RenderContext {
                 surface,
@@ -113,8 +89,8 @@ impl<'a> ApplicationHandler for Application<'a> {
                 device,
                 queue,
             },
-            screens: Screens::default(),
-            assets,
+            screens: Screens::new((self.screen_constructor)()),
+            last_frame: Instant::now(),
         });
     }
 
@@ -136,8 +112,12 @@ impl<'a> ApplicationHandler for Application<'a> {
             WindowEvent::RedrawRequested => {
                 let gcx = &state.graphics;
 
+                let delta_time = state.last_frame.elapsed().as_secs_f32().recip();
+                state.last_frame = Instant::now();
+
                 let size = gcx.window.inner_size();
-                let mut ctx = GraphicsContext::new(Vector2::new(size.width, size.height));
+                let mut ctx =
+                    GraphicsContext::new(Vector2::new(size.width, size.height), delta_time);
                 state.screens.render(&mut ctx);
 
                 state
@@ -183,6 +163,13 @@ impl<'a> ApplicationHandler for Application<'a> {
 }
 
 impl<'a> Application<'a> {
+    pub fn run(mut self) -> Result<()> {
+        let event_loop_builder = EventLoopBuilder::default().build()?;
+        event_loop_builder.set_control_flow(ControlFlow::Wait);
+        event_loop_builder.run_app(&mut self)?;
+        Ok(())
+    }
+
     fn resize_surface(&mut self) {
         let state = self.state.as_mut().unwrap();
         let size = state.graphics.window.inner_size();

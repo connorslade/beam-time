@@ -1,17 +1,19 @@
-use std::hash::{Hash, Hasher};
+use std::{
+    hash::{Hash, Hasher},
+    sync::Arc,
+};
 
 use nalgebra::Vector2;
 use wgpu::Texture;
 
+pub mod constructor;
 pub mod manager;
-mod refs;
-pub use refs::*;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct AssetRef(u32);
 
 pub struct Asset {
-    pub texture: Texture,
+    pub texture: Arc<Texture>,
     pub uv: Vector2<u32>,
     pub size: Vector2<u32>,
 }

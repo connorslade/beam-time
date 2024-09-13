@@ -1,3 +1,3 @@
-use super::{asset, AssetRef};
+use engine::assets::{asset, AssetRef};
 
 pub const TITLE: AssetRef = asset("title");

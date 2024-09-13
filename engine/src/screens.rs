@@ -1,7 +1,5 @@
 use crate::graphics_context::GraphicsContext;
 
-mod title;
-
 pub trait Screen {
     fn render(&mut self, ctx: &mut GraphicsContext);
 }
@@ -11,16 +9,14 @@ pub struct Screens {
 }
 
 impl Screens {
+    pub fn new(screen: Box<dyn Screen>) -> Self {
+        Self {
+            inner: vec![screen],
+        }
+    }
+
     pub fn render(&mut self, ctx: &mut GraphicsContext) {
         let top = self.inner.last_mut().unwrap();
         top.render(ctx);
-    }
-}
-
-impl Default for Screens {
-    fn default() -> Self {
-        Self {
-            inner: vec![Box::new(title::TitleScreen {})],
-        }
     }
 }

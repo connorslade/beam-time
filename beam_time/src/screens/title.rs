@@ -1,13 +1,11 @@
-use nalgebra::Vector2;
-
-use crate::{
-    assets::TITLE,
-    consts::BACKGROUND_COLOR,
+use engine::{
     graphics_context::{Anchor, GraphicsContext},
+    screens::Screen,
     sprites::Sprite,
 };
+use nalgebra::Vector2;
 
-use super::Screen;
+use crate::{assets::TITLE, consts::BACKGROUND_COLOR};
 
 pub struct TitleScreen {}
 

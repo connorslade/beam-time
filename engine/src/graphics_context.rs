@@ -5,6 +5,8 @@ use crate::sprites::Sprite;
 
 #[derive(Debug)]
 pub struct GraphicsContext {
+    /// One over the time since the last frame
+    pub delta_time: f32,
     /// background color
     pub(crate) background: Vector3<f64>,
     /// list of sprites to render this frame
@@ -31,11 +33,12 @@ pub enum Anchor {
 }
 
 impl GraphicsContext {
-    pub fn new(size: Vector2<u32>) -> Self {
+    pub fn new(size: Vector2<u32>, delta_time: f32) -> Self {
         GraphicsContext {
             background: Vector3::zeros(),
             sprites: Vec::new(),
             size,
+            delta_time,
         }
     }
 

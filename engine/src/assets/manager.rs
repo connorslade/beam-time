@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use nalgebra::Vector2;
 use wgpu::Texture;
@@ -27,7 +27,7 @@ impl AssetManager {
     pub fn register_sprite(
         &mut self,
         asset_ref: AssetRef,
-        texture: Texture,
+        texture: Arc<Texture>,
         uv: Vector2<u32>,
         size: Vector2<u32>,
     ) {
