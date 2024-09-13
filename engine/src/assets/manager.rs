@@ -34,3 +34,9 @@ impl AssetManager {
         self.assets.insert(asset_ref, Asset { texture, uv, size });
     }
 }
+
+impl Default for AssetManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}

@@ -65,7 +65,7 @@ impl AssetConstructor {
         let mut textures = Vec::new();
         for atlas in self.atlas {
             let texture = device.create_texture_with_data(
-                &queue,
+                queue,
                 &TextureDescriptor {
                     label: None,
                     size: Extent3d {
@@ -100,4 +100,10 @@ impl AssetConstructor {
 fn rgb_to_bgr(mut buf: Vec<u8>) -> Vec<u8> {
     buf.chunks_exact_mut(4).for_each(|chunk| chunk.swap(0, 2));
     buf
+}
+
+impl Default for AssetConstructor {
+    fn default() -> Self {
+        Self::new()
+    }
 }
