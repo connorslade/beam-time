@@ -1,9 +1,8 @@
 use std::{collections::HashMap, sync::Arc};
 
 use nalgebra::Vector2;
-use wgpu::Texture;
 
-use super::{Asset, AssetRef};
+use super::{Asset, AssetRef, Texture};
 
 pub struct AssetManager {
     assets: HashMap<AssetRef, Asset>,

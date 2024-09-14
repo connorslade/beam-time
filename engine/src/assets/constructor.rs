@@ -9,7 +9,7 @@ use wgpu::{
 
 use crate::TEXTURE_FORMAT;
 
-use super::{manager::AssetManager, AssetRef};
+use super::{manager::AssetManager, AssetRef, Texture};
 
 pub struct AssetConstructor {
     next_id: u32,
@@ -17,6 +17,7 @@ pub struct AssetConstructor {
     sprites: Vec<(AtlasRef, AssetRef, LocalSprite)>,
 }
 
+#[derive(Copy, Clone)]
 pub struct AtlasRef(u32);
 
 /// Representation of a sprite before the texture is sent to the GPU
@@ -64,6 +65,7 @@ impl AssetConstructor {
         // Upload atlases to the GPU
         let mut textures = Vec::new();
         for atlas in self.atlas {
+            let size = Vector2::new(atlas.width(), atlas.height());
             let texture = device.create_texture_with_data(
                 queue,
                 &TextureDescriptor {
@@ -84,7 +86,7 @@ impl AssetConstructor {
                 &rgb_to_bgr(atlas.into_vec()),
             );
 
-            textures.push(Arc::new(texture));
+            textures.push(Arc::new(Texture { texture, size }));
         }
 
         let mut manager = AssetManager::new();

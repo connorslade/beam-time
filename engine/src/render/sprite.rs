@@ -111,6 +111,7 @@ impl SpriteRenderPipeline {
         let size = ctx.size.map(|x| x as f32);
         for sprite in ctx.sprites.iter() {
             let asset = assets.get(sprite.asset);
+            let (uv_start, uv_end) = asset.uv();
 
             let asset_size = asset.size.map(|x| x as f32).component_mul(&sprite.scale);
             let pos = sprite
@@ -121,13 +122,13 @@ impl SpriteRenderPipeline {
 
             let asset_size = asset_size.component_div(&size);
             vert.extend_from_slice(&[
-                Vertex::new([pos.x, pos.y, 1.0], [0.0, 1.0]),
-                Vertex::new([pos.x + asset_size.x, pos.y, 1.0], [1.0, 1.0]),
+                Vertex::new([pos.x, pos.y, 1.0], [uv_start.x, uv_end.y]),
+                Vertex::new([pos.x + asset_size.x, pos.y, 1.0], [uv_end.x, uv_end.y]),
                 Vertex::new(
                     [pos.x + asset_size.x, pos.y + asset_size.y, 1.0],
-                    [1.0, 0.0],
+                    [uv_end.x, uv_start.y],
                 ),
-                Vertex::new([pos.x, pos.y + asset_size.y, 1.0], [0.0, 0.0]),
+                Vertex::new([pos.x, pos.y + asset_size.y, 1.0], [uv_start.x, uv_start.y]),
             ]);
 
             let base = vert.len() as u32 - 4;
@@ -149,6 +150,7 @@ impl SpriteRenderPipeline {
 
         let view = assets
             .get(ctx.sprites[0].asset)
+            .texture
             .texture
             .create_view(&TextureViewDescriptor::default());
         let sampler = device.create_sampler(&SamplerDescriptor {

@@ -1,5 +1,5 @@
 use anyhow::Result;
-use assets::TITLE;
+use assets::{COPYRIGHT, TITLE};
 use screens::title::TitleScreen;
 
 use engine::{
@@ -28,6 +28,7 @@ fn main() -> Result<()> {
         asset_constructor: Box::new(|assets| {
             let title = assets.register_atlas(include_atlas!("title.png"));
             assets.register_sprite(title, TITLE, (0, 0), (81, 20));
+            assets.register_sprite(title, COPYRIGHT, (0, 20), (28, 8))
         }),
     })
     .run()

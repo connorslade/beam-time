@@ -5,7 +5,10 @@ use engine::{
 };
 use nalgebra::Vector2;
 
-use crate::{assets::TITLE, consts::BACKGROUND_COLOR};
+use crate::{
+    assets::{COPYRIGHT, TITLE},
+    consts::BACKGROUND_COLOR,
+};
 
 pub struct TitleScreen {}
 
@@ -18,6 +21,12 @@ impl Screen for TitleScreen {
             Sprite::builder(TITLE)
                 .pos(pos, Anchor::TopCenter)
                 .scale(Vector2::repeat(5.0)),
+        );
+
+        ctx.draw(
+            Sprite::builder(COPYRIGHT)
+                .pos(Vector2::new(ctx.size.x - 10, 10), Anchor::BottomRight)
+                .scale(Vector2::repeat(2.0)),
         );
     }
 }
