@@ -108,9 +108,9 @@ impl SpriteRenderPipeline {
         let mut vert = Vec::new();
         let mut index = Vec::new();
 
-        let size = ctx.size().map(|x| x as f32);
+        let size = ctx.size.map(|x| x as f32);
         for sprite in ctx.sprites.iter() {
-            let asset = assets.get(sprite.texture);
+            let asset = assets.get(sprite.asset);
 
             let asset_size = asset.size.map(|x| x as f32).component_mul(&sprite.scale);
             let pos = sprite
@@ -121,7 +121,6 @@ impl SpriteRenderPipeline {
 
             let asset_size = asset_size.component_div(&size);
             vert.extend_from_slice(&[
-                // pos from 0 to 1
                 Vertex::new([pos.x, pos.y, 1.0], [0.0, 1.0]),
                 Vertex::new([pos.x + asset_size.x, pos.y, 1.0], [1.0, 1.0]),
                 Vertex::new(
@@ -131,11 +130,11 @@ impl SpriteRenderPipeline {
                 Vertex::new([pos.x, pos.y + asset_size.y, 1.0], [0.0, 0.0]),
             ]);
 
-            let base = index.len() as u32;
+            let base = vert.len() as u32 - 4;
             index.extend_from_slice(&[base, base + 1, base + 2, base + 2, base + 3, base]);
         }
 
-        // todo: only create once
+        // todo: only re-create if changes?
         let vertex_buffer = device.create_buffer_init(&BufferInitDescriptor {
             label: None,
             usage: BufferUsages::VERTEX,
@@ -149,7 +148,7 @@ impl SpriteRenderPipeline {
         });
 
         let view = assets
-            .get(ctx.sprites[0].texture)
+            .get(ctx.sprites[0].asset)
             .texture
             .create_view(&TextureViewDescriptor::default());
         let sampler = device.create_sampler(&SamplerDescriptor {

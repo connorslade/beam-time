@@ -12,7 +12,9 @@ pub struct GraphicsContext {
     /// list of sprites to render this frame
     pub(crate) sprites: Vec<Sprite>,
     /// Window size
-    size: Vector2<u32>,
+    pub size: Vector2<u32>,
+    /// Mouse pos
+    pub mouse: Vector2<f32>,
 }
 
 pub trait Drawable {
@@ -33,17 +35,14 @@ pub enum Anchor {
 }
 
 impl GraphicsContext {
-    pub fn new(size: Vector2<u32>, delta_time: f32) -> Self {
+    pub fn new(size: Vector2<u32>, mouse: Vector2<f32>, delta_time: f32) -> Self {
         GraphicsContext {
             background: Vector3::zeros(),
             sprites: Vec::new(),
             size,
             delta_time,
+            mouse,
         }
-    }
-
-    pub fn size(&self) -> Vector2<u32> {
-        self.size
     }
 
     pub fn center(&self) -> Vector2<u32> {
@@ -71,7 +70,7 @@ impl GraphicsContext {
 }
 
 impl Anchor {
-    pub fn offset(&self, pos: Vector2<u32>, size: Vector2<u32>) -> Vector2<u32> {
+    pub fn offset(&self, pos: Vector2<i32>, size: Vector2<i32>) -> Vector2<i32> {
         match self {
             Anchor::BottomLeft => pos,
             Anchor::Center => pos - size / 2,

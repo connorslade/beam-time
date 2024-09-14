@@ -17,6 +17,7 @@ use winit::{
 
 use crate::{
     assets::constructor::AssetConstructor,
+    input::InputManager,
     render::sprite::SpriteRenderPipeline,
     screens::{Screen, Screens},
     TEXTURE_FORMAT,
@@ -82,7 +83,7 @@ impl<'a> ApplicationHandler for Application<'a> {
         self.state = Some(State {
             sprite_renderer: SpriteRenderPipeline::new(&device),
             assets: asset_constructor.into_manager(&device, &queue),
-
+            input: InputManager::new(window.inner_size()),
             graphics: RenderContext {
                 surface,
                 window,
@@ -106,18 +107,22 @@ impl<'a> ApplicationHandler for Application<'a> {
         }
 
         match event {
-            WindowEvent::CloseRequested => {
-                event_loop.exit();
+            WindowEvent::CloseRequested => event_loop.exit(),
+            WindowEvent::CursorMoved { position, .. } => {
+                state.input.mouse_move(position.x as f32, position.y as f32)
             }
             WindowEvent::RedrawRequested => {
                 let gcx = &state.graphics;
 
-                let delta_time = state.last_frame.elapsed().as_secs_f32().recip();
+                let delta_time = state.last_frame.elapsed().as_secs_f32();
                 state.last_frame = Instant::now();
 
                 let size = gcx.window.inner_size();
-                let mut ctx =
-                    GraphicsContext::new(Vector2::new(size.width, size.height), delta_time);
+                let mut ctx = GraphicsContext::new(
+                    Vector2::new(size.width, size.height),
+                    state.input.mouse,
+                    delta_time,
+                );
                 state.screens.render(&mut ctx);
 
                 state
@@ -156,7 +161,10 @@ impl<'a> ApplicationHandler for Application<'a> {
 
                 gcx.window.request_redraw();
             }
-            WindowEvent::Resized(..) => self.resize_surface(),
+            WindowEvent::Resized(size) => {
+                state.input.update_window_size(size);
+                self.resize_surface()
+            }
             _ => (),
         }
     }

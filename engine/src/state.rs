@@ -4,14 +4,17 @@ use wgpu::{Device, Queue, Surface};
 use winit::window::Window;
 
 use crate::{
-    assets::manager::AssetManager, render::sprite::SpriteRenderPipeline, screens::Screens,
+    assets::manager::AssetManager, input::InputManager, render::sprite::SpriteRenderPipeline,
+    screens::Screens,
 };
 
 pub struct State<'a> {
     pub graphics: RenderContext<'a>,
     pub assets: AssetManager,
     pub screens: Screens,
+
     pub last_frame: Instant,
+    pub input: InputManager,
 
     pub sprite_renderer: SpriteRenderPipeline,
 }

@@ -7,7 +7,7 @@ use crate::{
 
 #[derive(Debug)]
 pub struct Sprite {
-    pub texture: AssetRef,
+    pub asset: AssetRef,
     pub pos: Vector2<u32>,
     pub anchor: Anchor,
     pub scale: Vector2<f32>,
@@ -30,15 +30,16 @@ impl Sprite {
         }
     }
 
-    pub(crate) fn real_pos(&self, size: Vector2<u32>) -> Vector2<u32> {
-        self.anchor.offset(self.pos, size)
+    pub(crate) fn real_pos(&self, size: Vector2<u32>) -> Vector2<i32> {
+        self.anchor
+            .offset(self.pos.map(|x| x as i32), size.map(|x| x as i32))
     }
 }
 
 impl SpriteBuilder {
     pub fn build(self) -> Sprite {
         Sprite {
-            texture: self.texture,
+            asset: self.texture,
             pos: self.pos,
             anchor: self.anchor,
             scale: self.scale,

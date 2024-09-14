@@ -4,6 +4,7 @@ pub use winit;
 pub mod application;
 pub mod assets;
 pub mod graphics_context;
+pub mod input;
 pub mod render;
 pub mod screens;
 pub mod sprites;

@@ -13,7 +13,7 @@ impl Screen for TitleScreen {
     fn render(&mut self, ctx: &mut GraphicsContext) {
         ctx.background(BACKGROUND_COLOR);
 
-        let pos = Vector2::new(ctx.size().x / 2, ctx.size().y * 9 / 10);
+        let pos = Vector2::new(ctx.size.x / 2, ctx.size.y * 9 / 10);
         ctx.draw(
             Sprite::builder(TITLE)
                 .pos(pos, Anchor::TopCenter)
