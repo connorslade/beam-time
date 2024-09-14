@@ -5,7 +5,7 @@ use wgpu::{
     BlendState, Buffer, BufferUsages, ColorTargetState, ColorWrites, Device, FilterMode,
     FragmentState, IndexFormat, MultisampleState, PipelineCompilationOptions,
     PipelineLayoutDescriptor, PrimitiveState, Queue, RenderPass, RenderPipeline,
-    RenderPipelineDescriptor, SamplerBindingType, SamplerDescriptor, ShaderStages,
+    RenderPipelineDescriptor, Sampler, SamplerBindingType, SamplerDescriptor, ShaderStages,
     TextureSampleType, TextureViewDescriptor, TextureViewDimension, VertexState,
 };
 
@@ -20,6 +20,7 @@ pub struct SpriteRenderPipeline {
     render_pipeline: RenderPipeline,
     bind_group_layout: BindGroupLayout,
     bind_group: Option<BindGroup>,
+    sampler: Sampler,
 
     vertex_buffer: Option<Buffer>,
     index_buffer: Option<Buffer>,
@@ -87,10 +88,26 @@ impl SpriteRenderPipeline {
             cache: None,
         });
 
+        let sampler = device.create_sampler(&SamplerDescriptor {
+            label: None,
+            address_mode_u: AddressMode::ClampToEdge,
+            address_mode_v: AddressMode::ClampToEdge,
+            address_mode_w: AddressMode::ClampToEdge,
+            mag_filter: FilterMode::Nearest,
+            min_filter: FilterMode::Nearest,
+            mipmap_filter: FilterMode::Nearest,
+            lod_min_clamp: 0.0,
+            lod_max_clamp: 0.0,
+            compare: None,
+            anisotropy_clamp: 1,
+            border_color: None,
+        });
+
         Self {
             render_pipeline,
             bind_group_layout,
             bind_group: None,
+            sampler,
 
             vertex_buffer: None,
             index_buffer: None,
@@ -112,6 +129,7 @@ impl SpriteRenderPipeline {
         for sprite in ctx.sprites.iter() {
             let asset = assets.get(sprite.asset);
             let (uv_start, uv_end) = asset.uv();
+            let color = [sprite.color.x, sprite.color.y, sprite.color.z];
 
             let asset_size = asset.size.map(|x| x as f32).component_mul(&sprite.scale);
             let pos = sprite
@@ -122,13 +140,22 @@ impl SpriteRenderPipeline {
 
             let asset_size = asset_size.component_div(&size);
             vert.extend_from_slice(&[
-                Vertex::new([pos.x, pos.y, 1.0], [uv_start.x, uv_end.y]),
-                Vertex::new([pos.x + asset_size.x, pos.y, 1.0], [uv_end.x, uv_end.y]),
+                Vertex::new([pos.x, pos.y, 1.0], [uv_start.x, uv_end.y], color),
+                Vertex::new(
+                    [pos.x + asset_size.x, pos.y, 1.0],
+                    [uv_end.x, uv_end.y],
+                    color,
+                ),
                 Vertex::new(
                     [pos.x + asset_size.x, pos.y + asset_size.y, 1.0],
                     [uv_end.x, uv_start.y],
+                    color,
                 ),
-                Vertex::new([pos.x, pos.y + asset_size.y, 1.0], [uv_start.x, uv_start.y]),
+                Vertex::new(
+                    [pos.x, pos.y + asset_size.y, 1.0],
+                    [uv_start.x, uv_start.y],
+                    color,
+                ),
             ]);
 
             let base = vert.len() as u32 - 4;
@@ -153,20 +180,7 @@ impl SpriteRenderPipeline {
             .texture
             .texture
             .create_view(&TextureViewDescriptor::default());
-        let sampler = device.create_sampler(&SamplerDescriptor {
-            label: None,
-            address_mode_u: AddressMode::ClampToEdge,
-            address_mode_v: AddressMode::ClampToEdge,
-            address_mode_w: AddressMode::ClampToEdge,
-            mag_filter: FilterMode::Nearest,
-            min_filter: FilterMode::Nearest,
-            mipmap_filter: FilterMode::Nearest,
-            lod_min_clamp: 0.0,
-            lod_max_clamp: 0.0,
-            compare: None,
-            anisotropy_clamp: 1,
-            border_color: None,
-        });
+
         let bind_group = device.create_bind_group(&BindGroupDescriptor {
             label: None,
             layout: &self.bind_group_layout,
@@ -177,7 +191,7 @@ impl SpriteRenderPipeline {
                 },
                 BindGroupEntry {
                     binding: 1,
-                    resource: BindingResource::Sampler(&sampler),
+                    resource: BindingResource::Sampler(&self.sampler),
                 },
             ],
         });

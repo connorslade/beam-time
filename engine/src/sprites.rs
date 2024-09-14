@@ -1,4 +1,4 @@
-use nalgebra::Vector2;
+use nalgebra::{Vector2, Vector3};
 
 use crate::{
     assets::AssetRef,
@@ -11,6 +11,7 @@ pub struct Sprite {
     pub pos: Vector2<u32>,
     pub anchor: Anchor,
     pub scale: Vector2<f32>,
+    pub color: Vector3<f32>,
 }
 
 pub struct SpriteBuilder {
@@ -18,6 +19,7 @@ pub struct SpriteBuilder {
     pos: Vector2<u32>,
     anchor: Anchor,
     scale: Vector2<f32>,
+    color: Vector3<f32>,
 }
 
 impl Sprite {
@@ -27,6 +29,7 @@ impl Sprite {
             pos: Vector2::new(0, 0),
             anchor: Anchor::BottomLeft,
             scale: Vector2::new(1.0, 1.0),
+            color: Vector3::new(1.0, 1.0, 1.0),
         }
     }
 
@@ -43,6 +46,7 @@ impl SpriteBuilder {
             pos: self.pos,
             anchor: self.anchor,
             scale: self.scale,
+            color: self.color,
         }
     }
 
@@ -54,6 +58,11 @@ impl SpriteBuilder {
 
     pub fn scale(mut self, scale: Vector2<f32>) -> Self {
         self.scale = scale;
+        self
+    }
+
+    pub fn color(mut self, color: Vector3<f32>) -> Self {
+        self.color = color;
         self
     }
 }
