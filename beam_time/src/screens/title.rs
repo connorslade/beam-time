@@ -1,8 +1,5 @@
 use engine::{
-    drawable::{
-        sprites::Sprite,
-        text::{Text, TextBuilder},
-    },
+    drawable::{sprites::Sprite, text::Text},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
@@ -19,18 +16,18 @@ impl Screen for TitleScreen {
     fn render(&mut self, ctx: &mut GraphicsContext) {
         ctx.background(BACKGROUND_COLOR);
 
-        // let pos = Vector2::new(ctx.size.x / 2, ctx.size.y * 9 / 10);
-        // ctx.draw(
-        //     Sprite::builder(TITLE)
-        //         .pos(pos, Anchor::TopCenter)
-        //         .scale(Vector2::repeat(5.0)),
-        // );
+        let pos = Vector2::new(ctx.size.x / 2, ctx.size.y * 9 / 10);
+        ctx.draw(
+            Sprite::builder(TITLE)
+                .pos(pos, Anchor::TopCenter)
+                .scale(Vector2::repeat(5.0)),
+        );
 
-        // ctx.draw(
-        //     Sprite::builder(COPYRIGHT)
-        //         .pos(Vector2::new(ctx.size.x - 10, 10), Anchor::BottomRight)
-        //         .scale(Vector2::repeat(2.0)),
-        // );
+        ctx.draw(
+            Sprite::builder(COPYRIGHT)
+                .pos(Vector2::new(ctx.size.x - 10, 10), Anchor::BottomRight)
+                .scale(Vector2::repeat(2.0)),
+        );
 
         ctx.draw(
             Text::builder(DEFAULT_FONT, "I got text rendering working!")

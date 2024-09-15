@@ -81,7 +81,7 @@ impl<'a> Drawable for Text<'a> {
 
         let mut x = 0.0;
         let mut n = 0;
-        for character in font.desc.process_string(&self.text) {
+        for character in font.desc.process_string(self.text) {
             let character = match character {
                 FontChar::Char(character) => character,
                 FontChar::Space => {
