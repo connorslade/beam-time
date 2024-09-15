@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use nalgebra::{Vector2, Vector3};
 use wgpu::{
     util::{BufferInitDescriptor, DeviceExt},
@@ -20,14 +22,19 @@ use super::Vertex;
 pub struct SpriteRenderPipeline {
     render_pipeline: RenderPipeline,
     bind_group_layout: BindGroupLayout,
-    bind_group: Option<BindGroup>,
     sampler: Sampler,
 
-    vertex_buffer: Option<Buffer>,
-    index_buffer: Option<Buffer>,
+    operations: Vec<RenderOperation>,
+}
+
+struct RenderOperation {
+    bind_group: BindGroup,
+    vertex_buffer: Buffer,
+    index_buffer: Buffer,
     index_count: u32,
 }
 
+#[derive(Debug)]
 pub struct GpuSprite {
     pub texture: TextureRef,
     pub uv: (Vector2<f32>, Vector2<f32>),
@@ -114,86 +121,91 @@ impl SpriteRenderPipeline {
         Self {
             render_pipeline,
             bind_group_layout,
-            bind_group: None,
             sampler,
 
-            vertex_buffer: None,
-            index_buffer: None,
-            index_count: 0,
+            operations: Vec::new(),
         }
     }
 
     pub fn prepare(&mut self, device: &Device, _queue: &Queue, ctx: &GraphicsContext) {
-        let mut vert = Vec::new();
-        let mut index = Vec::new();
+        let mut atlases = HashMap::<TextureRef, Vec<&GpuSprite>>::new();
 
-        let window_size = ctx.size.map(|x| x as f32);
         for sprite in ctx.sprites.iter() {
-            let color = [sprite.color.x, sprite.color.y, sprite.color.z];
-            let (uv_a, uv_b) = sprite.uv;
-
-            let pos_a = sprite.pos.0.component_div(&window_size);
-            let pos_b = sprite.pos.1.component_div(&window_size);
-
-            vert.extend_from_slice(&[
-                Vertex::new([pos_a.x, pos_a.y, 1.0], [uv_a.x, uv_b.y], color),
-                Vertex::new([pos_a.x, pos_b.y, 1.0], [uv_a.x, uv_a.y], color),
-                Vertex::new([pos_b.x, pos_b.y, 1.0], [uv_b.x, uv_a.y], color),
-                Vertex::new([pos_b.x, pos_a.y, 1.0], [uv_b.x, uv_b.y], color),
-            ]);
-
-            let base = vert.len() as u32 - 4;
-            index.extend_from_slice(&[base, base + 1, base + 2, base + 2, base + 3, base]);
+            atlases.entry(sprite.texture).or_default().push(sprite);
         }
 
-        // todo: only re-create if changes?
-        let vertex_buffer = device.create_buffer_init(&BufferInitDescriptor {
-            label: None,
-            usage: BufferUsages::VERTEX,
-            contents: bytemuck::cast_slice(&vert),
-        });
+        let window_size = ctx.size.map(|x| x as f32);
 
-        let index_buffer = device.create_buffer_init(&BufferInitDescriptor {
-            label: None,
-            usage: BufferUsages::INDEX,
-            contents: bytemuck::cast_slice(&index),
-        });
+        self.operations.clear();
+        for (atlas, sprites) in atlases.iter() {
+            let (mut vert, mut index) = (Vec::new(), Vec::new());
 
-        let texture = ctx.asset_manager.get_texture(ctx.sprites[0].texture);
-        let view = texture
-            .texture
-            .create_view(&TextureViewDescriptor::default());
+            for sprite in sprites {
+                let color = [sprite.color.x, sprite.color.y, sprite.color.z];
+                let (uv_a, uv_b) = sprite.uv;
 
-        let bind_group = device.create_bind_group(&BindGroupDescriptor {
-            label: None,
-            layout: &self.bind_group_layout,
-            entries: &[
-                BindGroupEntry {
-                    binding: 0,
-                    resource: BindingResource::TextureView(&view),
-                },
-                BindGroupEntry {
-                    binding: 1,
-                    resource: BindingResource::Sampler(&self.sampler),
-                },
-            ],
-        });
+                let pos_a = sprite.pos.0.component_div(&window_size);
+                let pos_b = sprite.pos.1.component_div(&window_size);
 
-        self.bind_group = Some(bind_group);
-        self.vertex_buffer = Some(vertex_buffer);
-        self.index_buffer = Some(index_buffer);
-        self.index_count = index.len() as u32;
+                let base = vert.len() as u32;
+                vert.extend_from_slice(&[
+                    Vertex::new([pos_a.x, pos_a.y, 1.0], [uv_a.x, uv_b.y], color),
+                    Vertex::new([pos_a.x, pos_b.y, 1.0], [uv_a.x, uv_a.y], color),
+                    Vertex::new([pos_b.x, pos_b.y, 1.0], [uv_b.x, uv_a.y], color),
+                    Vertex::new([pos_b.x, pos_a.y, 1.0], [uv_b.x, uv_b.y], color),
+                ]);
+                index.extend_from_slice(&[base, base + 1, base + 2, base + 2, base + 3, base]);
+            }
+
+            let vertex_buffer = device.create_buffer_init(&BufferInitDescriptor {
+                label: None,
+                usage: BufferUsages::VERTEX,
+                contents: bytemuck::cast_slice(&vert),
+            });
+
+            let index_buffer = device.create_buffer_init(&BufferInitDescriptor {
+                label: None,
+                usage: BufferUsages::INDEX,
+                contents: bytemuck::cast_slice(&index),
+            });
+
+            let texture = ctx.asset_manager.get_texture(*atlas);
+            let view = texture
+                .texture
+                .create_view(&TextureViewDescriptor::default());
+
+            let bind_group = device.create_bind_group(&BindGroupDescriptor {
+                label: None,
+                layout: &self.bind_group_layout,
+                entries: &[
+                    BindGroupEntry {
+                        binding: 0,
+                        resource: BindingResource::TextureView(&view),
+                    },
+                    BindGroupEntry {
+                        binding: 1,
+                        resource: BindingResource::Sampler(&self.sampler),
+                    },
+                ],
+            });
+
+            self.operations.push(RenderOperation {
+                bind_group,
+                vertex_buffer,
+                index_buffer,
+                index_count: index.len() as u32,
+            });
+        }
     }
 
     pub fn paint<'a>(&'a self, render_pass: &mut RenderPass<'a>) {
         render_pass.set_pipeline(&self.render_pipeline);
-        render_pass.set_bind_group(0, self.bind_group.as_ref().unwrap(), &[]);
 
-        render_pass.set_vertex_buffer(0, self.vertex_buffer.as_ref().unwrap().slice(..));
-        render_pass.set_index_buffer(
-            self.index_buffer.as_ref().unwrap().slice(..),
-            IndexFormat::Uint32,
-        );
-        render_pass.draw_indexed(0..self.index_count, 0, 0..1);
+        for operation in self.operations.iter() {
+            render_pass.set_bind_group(0, &operation.bind_group, &[]);
+            render_pass.set_vertex_buffer(0, operation.vertex_buffer.slice(..));
+            render_pass.set_index_buffer(operation.index_buffer.slice(..), IndexFormat::Uint32);
+            render_pass.draw_indexed(0..operation.index_count, 0, 0..1);
+        }
     }
 }

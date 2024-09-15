@@ -10,7 +10,7 @@ pub mod manager;
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct AssetRef(u32);
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, Eq)]
 pub struct TextureRef {
     reference: u32,
     pub size: Vector2<u32>,
@@ -73,5 +73,11 @@ impl Hash for AssetRef {
 impl Hash for TextureRef {
     fn hash<H: Hasher>(&self, state: &mut H) {
         state.write_u32(self.reference);
+    }
+}
+
+impl PartialEq for TextureRef {
+    fn eq(&self, other: &Self) -> bool {
+        self.reference == other.reference
     }
 }
