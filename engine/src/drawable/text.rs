@@ -1,23 +1,23 @@
 use nalgebra::{Vector2, Vector3};
 
 use crate::{
-    assets::AssetRef,
+    assets::{font::FontChar, AssetRef},
     graphics_context::{Anchor, Drawable, GraphicsContext},
     render::sprite::GpuSprite,
 };
 
-pub struct Text {
+pub struct Text<'a> {
     pub font: AssetRef,
-    pub text: String,
+    pub text: &'a str,
     pub pos: Vector2<u32>,
     pub anchor: Anchor,
     pub scale: Vector2<f32>,
     pub color: Vector3<f32>,
 }
 
-pub struct TextBuilder {
+pub struct TextBuilder<'a> {
     font: AssetRef,
-    text: String,
+    text: &'a str,
 
     pos: Vector2<u32>,
     anchor: Anchor,
@@ -25,8 +25,8 @@ pub struct TextBuilder {
     color: Vector3<f32>,
 }
 
-impl Text {
-    pub fn builder(font: AssetRef, text: String) -> TextBuilder {
+impl<'a> Text<'a> {
+    pub fn builder(font: AssetRef, text: &'a str) -> TextBuilder {
         TextBuilder {
             font,
             text,
@@ -39,7 +39,7 @@ impl Text {
     }
 }
 
-impl TextBuilder {
+impl<'a> TextBuilder<'a> {
     pub fn pos(mut self, pos: Vector2<u32>, anchor: Anchor) -> Self {
         self.pos = pos;
         self.anchor = anchor;
@@ -56,7 +56,7 @@ impl TextBuilder {
         self
     }
 
-    pub fn build(self) -> Text {
+    pub fn build(self) -> Text<'a> {
         Text {
             font: self.font,
             text: self.text,
@@ -68,7 +68,7 @@ impl TextBuilder {
     }
 }
 
-impl Drawable for Text {
+impl<'a> Drawable for Text<'a> {
     fn draw(self, ctx: &mut GraphicsContext) {
         let font = ctx
             .asset_manager
@@ -82,6 +82,14 @@ impl Drawable for Text {
         let mut x = 0.0;
         let mut n = 0;
         for character in font.desc.process_string(&self.text) {
+            let character = match character {
+                FontChar::Char(character) => character,
+                FontChar::Space => {
+                    x += font.desc.space_width * self.scale.x;
+                    continue;
+                }
+            };
+
             let uv_a = process_uv(character.uv);
             let uv_b = process_uv(character.uv + character.size);
 
@@ -90,18 +98,22 @@ impl Drawable for Text {
             ctx.sprites.push(GpuSprite {
                 texture: font.texture.clone(),
                 uv: (uv_a, uv_b),
-                pos: (size, Vector2::new(x, 0.0)), // kinda a hack
+                // kinda a hack
+                pos: (
+                    size,
+                    Vector2::new(x, character.baseline_shift as f32 * self.scale.y),
+                ),
                 color: self.color,
             });
 
-            x += character.size.x as f32 * self.scale.x;
+            x += (character.size.x as f32 + font.desc.tracking) * self.scale.x;
             n += 1;
         }
 
-        let line_size = Vector2::new(x, 0.0).map(|x| x as i32);
+        let line_size = Vector2::new(x as i32, 0);
         for i in ctx.sprites.len() - n..ctx.sprites.len() {
             let (size, offset) = ctx.sprites[i].pos;
-            let pos = self.pos.map(|x| x as i32) + Vector2::new(offset.x as i32, 0);
+            let pos = self.pos.map(|x| x as i32) + offset.map(|x| x as i32);
             let pos = self.anchor.offset(pos, line_size).map(|x| x as f32);
 
             ctx.sprites[i].pos = (pos, pos + size);
@@ -109,7 +121,7 @@ impl Drawable for Text {
     }
 }
 
-impl Drawable for TextBuilder {
+impl<'a> Drawable for TextBuilder<'a> {
     fn draw(self, ctx: &mut GraphicsContext) {
         self.build().draw(ctx)
     }

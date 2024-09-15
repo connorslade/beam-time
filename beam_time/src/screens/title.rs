@@ -33,9 +33,15 @@ impl Screen for TitleScreen {
         // );
 
         ctx.draw(
-            Text::builder(DEFAULT_FONT, "ABCCBA".to_owned())
+            Text::builder(DEFAULT_FONT, "I got text rendering working!")
                 .pos(ctx.size / 2, Anchor::Center)
                 .scale(Vector2::repeat(5.0)),
+        );
+
+        ctx.draw(
+            Text::builder(DEFAULT_FONT, "(don't ask how long making the font took)")
+                .pos(ctx.size / 2 - Vector2::new(0, 60), Anchor::Center)
+                .scale(Vector2::repeat(3.0)),
         );
     }
 }
