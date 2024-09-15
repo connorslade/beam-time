@@ -1,10 +1,8 @@
 use anyhow::Result;
-use assets::{COPYRIGHT, DEFAULT_FONT, TITLE};
 use screens::title::TitleScreen;
 
 use engine::{
     application::{Application, ApplicationArgs},
-    assets::font::FontDescriptor,
     exports::winit::{
         dpi::PhysicalSize,
         window::{Icon, WindowAttributes},
@@ -26,16 +24,7 @@ fn main() -> Result<()> {
             .with_inner_size(PhysicalSize::new(DEFAULT_SIZE.0, DEFAULT_SIZE.1))
             .with_resizable(false),
         screen_constructor: Box::new(|| Box::new(TitleScreen {})),
-        asset_constructor: Box::new(|assets| {
-            let title = assets.register_atlas(include_atlas!("title.png"));
-            assets.register_sprite(title, TITLE, (0, 0), (81, 20));
-            assets.register_sprite(title, COPYRIGHT, (0, 20), (28, 8));
-
-            let font = assets.register_atlas(include_atlas!("font.png"));
-            let descriptor =
-                ron::de::from_str::<FontDescriptor>(include_str!("../assets/font.ron")).unwrap();
-            assets.register_font(font, DEFAULT_FONT, descriptor);
-        }),
+        asset_constructor: Box::new(assets::init),
     })
     .run()
 }

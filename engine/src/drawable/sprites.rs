@@ -81,7 +81,7 @@ impl Drawable for Sprite {
         let pos_b = pos_a + size;
 
         ctx.sprites.push(GpuSprite {
-            texture: asset.texture.clone(),
+            texture: asset.texture,
             uv: asset.uv(),
             pos: (pos_a, pos_b),
             color: self.color,

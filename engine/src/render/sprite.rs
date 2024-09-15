@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use nalgebra::{Vector2, Vector3};
 use wgpu::{
     util::{BufferInitDescriptor, DeviceExt},
@@ -13,7 +11,7 @@ use wgpu::{
 };
 
 use crate::{
-    assets::Texture, graphics_context::GraphicsContext, include_shader,
+    assets::TextureRef, graphics_context::GraphicsContext, include_shader,
     render::consts::VERTEX_BUFFER_LAYOUT, TEXTURE_FORMAT,
 };
 
@@ -31,7 +29,7 @@ pub struct SpriteRenderPipeline {
 }
 
 pub struct GpuSprite {
-    pub texture: Arc<Texture>,
+    pub texture: TextureRef,
     pub uv: (Vector2<f32>, Vector2<f32>),
     pub pos: (Vector2<f32>, Vector2<f32>),
     pub color: Vector3<f32>,
@@ -161,8 +159,8 @@ impl SpriteRenderPipeline {
             contents: bytemuck::cast_slice(&index),
         });
 
-        let view = ctx.sprites[0]
-            .texture
+        let texture = ctx.asset_manager.get_texture(ctx.sprites[0].texture);
+        let view = texture
             .texture
             .create_view(&TextureViewDescriptor::default());
 

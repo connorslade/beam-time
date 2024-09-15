@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use image::RgbaImage;
 use nalgebra::Vector2;
 use wgpu::{
@@ -9,7 +7,11 @@ use wgpu::{
 
 use crate::TEXTURE_FORMAT;
 
-use super::{font::FontDescriptor, manager::AssetManager, AssetRef, Texture};
+use super::{
+    font::FontDescriptor,
+    manager::{AssetManager, Texture},
+    AssetRef,
+};
 
 pub struct AssetConstructor {
     next_id: u32,
@@ -75,6 +77,8 @@ impl AssetConstructor {
     }
 
     pub(crate) fn into_manager(self, device: &Device, queue: &Queue) -> AssetManager {
+        let mut manager = AssetManager::new();
+
         // Upload atlases to the GPU
         let mut textures = Vec::new();
         for atlas in self.atlas {
@@ -99,18 +103,17 @@ impl AssetConstructor {
                 &rgb_to_bgr(atlas.into_vec()),
             );
 
-            textures.push(Arc::new(Texture { texture, size }));
+            let texture_ref = manager.register_texture(Texture { texture, size });
+            textures.push(texture_ref);
         }
 
-        let mut manager = AssetManager::new();
-
         for (atlas, asset, sprite) in self.sprites {
-            let texture = textures[atlas.0 as usize].clone();
+            let texture = textures[atlas.0 as usize];
             manager.register_sprite(asset, texture, sprite.uv, sprite.size);
         }
 
         for (atlas, asset, descriptor) in self.fonts {
-            let texture = textures[atlas.0 as usize].clone();
+            let texture = textures[atlas.0 as usize];
             manager.register_font(asset, texture, descriptor);
         }
 

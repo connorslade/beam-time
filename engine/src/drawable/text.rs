@@ -96,7 +96,7 @@ impl<'a> Drawable for Text<'a> {
             let size = character.size.map(|x| x as f32).component_mul(&self.scale);
 
             ctx.sprites.push(GpuSprite {
-                texture: font.texture.clone(),
+                texture: font.texture,
                 uv: (uv_a, uv_b),
                 // kinda a hack
                 pos: (

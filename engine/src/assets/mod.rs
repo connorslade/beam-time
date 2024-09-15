@@ -1,7 +1,4 @@
-use std::{
-    hash::{Hash, Hasher},
-    sync::Arc,
-};
+use std::hash::{Hash, Hasher};
 
 use font::FontDescriptor;
 use nalgebra::Vector2;
@@ -13,8 +10,9 @@ pub mod manager;
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct AssetRef(u32);
 
-pub struct Texture {
-    pub texture: wgpu::Texture,
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub struct TextureRef {
+    reference: u32,
     pub size: Vector2<u32>,
 }
 
@@ -24,13 +22,13 @@ pub enum Asset {
 }
 
 pub struct SpriteAsset {
-    pub texture: Arc<Texture>,
+    pub texture: TextureRef,
     pub uv: Vector2<u32>,
     pub size: Vector2<u32>,
 }
 
 pub struct FontAsset {
-    pub texture: Arc<Texture>,
+    pub texture: TextureRef,
     pub desc: FontDescriptor,
 }
 
@@ -69,5 +67,11 @@ impl SpriteAsset {
 impl Hash for AssetRef {
     fn hash<H: Hasher>(&self, state: &mut H) {
         state.write_u32(self.0);
+    }
+}
+
+impl Hash for TextureRef {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        state.write_u32(self.reference);
     }
 }
