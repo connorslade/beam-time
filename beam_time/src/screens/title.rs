@@ -1,12 +1,15 @@
 use engine::{
+    drawable::{
+        sprites::Sprite,
+        text::{Text, TextBuilder},
+    },
+    exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
-    sprites::Sprite,
 };
-use nalgebra::Vector2;
 
 use crate::{
-    assets::{COPYRIGHT, TITLE},
+    assets::{COPYRIGHT, DEFAULT_FONT, TITLE},
     consts::BACKGROUND_COLOR,
 };
 
@@ -16,17 +19,23 @@ impl Screen for TitleScreen {
     fn render(&mut self, ctx: &mut GraphicsContext) {
         ctx.background(BACKGROUND_COLOR);
 
-        let pos = Vector2::new(ctx.size.x / 2, ctx.size.y * 9 / 10);
-        ctx.draw(
-            Sprite::builder(TITLE)
-                .pos(pos, Anchor::TopCenter)
-                .scale(Vector2::repeat(5.0)),
-        );
+        // let pos = Vector2::new(ctx.size.x / 2, ctx.size.y * 9 / 10);
+        // ctx.draw(
+        //     Sprite::builder(TITLE)
+        //         .pos(pos, Anchor::TopCenter)
+        //         .scale(Vector2::repeat(5.0)),
+        // );
+
+        // ctx.draw(
+        //     Sprite::builder(COPYRIGHT)
+        //         .pos(Vector2::new(ctx.size.x - 10, 10), Anchor::BottomRight)
+        //         .scale(Vector2::repeat(2.0)),
+        // );
 
         ctx.draw(
-            Sprite::builder(COPYRIGHT)
-                .pos(Vector2::new(ctx.size.x - 10, 10), Anchor::BottomRight)
-                .scale(Vector2::repeat(2.0)),
+            Text::builder(DEFAULT_FONT, "ABCCBA".to_owned())
+                .pos(ctx.size / 2, Anchor::Center)
+                .scale(Vector2::repeat(5.0)),
         );
     }
 }

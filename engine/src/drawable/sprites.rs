@@ -3,6 +3,7 @@ use nalgebra::{Vector2, Vector3};
 use crate::{
     assets::AssetRef,
     graphics_context::{Anchor, Drawable, GraphicsContext},
+    render::sprite::GpuSprite,
 };
 
 #[derive(Debug)]
@@ -33,7 +34,7 @@ impl Sprite {
         }
     }
 
-    pub(crate) fn real_pos(&self, size: Vector2<u32>) -> Vector2<i32> {
+    fn real_pos(&self, size: Vector2<f32>) -> Vector2<i32> {
         self.anchor
             .offset(self.pos.map(|x| x as i32), size.map(|x| x as i32))
     }
@@ -69,7 +70,22 @@ impl SpriteBuilder {
 
 impl Drawable for Sprite {
     fn draw(self, ctx: &mut GraphicsContext) {
-        ctx.sprites.push(self);
+        let asset = ctx
+            .asset_manager
+            .get(self.asset)
+            .as_sprite()
+            .expect("Tried to draw a font as a sprite");
+
+        let size = asset.size.map(|x| x as f32).component_mul(&self.scale);
+        let pos_a = self.real_pos(size).map(|x| x as f32);
+        let pos_b = pos_a + size;
+
+        ctx.sprites.push(GpuSprite {
+            texture: asset.texture.clone(),
+            uv: asset.uv(),
+            pos: (pos_a, pos_b),
+            color: self.color,
+        });
     }
 }
 

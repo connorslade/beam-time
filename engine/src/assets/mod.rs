@@ -3,9 +3,11 @@ use std::{
     sync::Arc,
 };
 
+use font::FontDescriptor;
 use nalgebra::Vector2;
 
 pub mod constructor;
+pub mod font;
 pub mod manager;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -16,10 +18,20 @@ pub struct Texture {
     pub size: Vector2<u32>,
 }
 
-pub struct Asset {
+pub enum Asset {
+    Sprite(SpriteAsset),
+    Font(FontAsset),
+}
+
+pub struct SpriteAsset {
     pub texture: Arc<Texture>,
     pub uv: Vector2<u32>,
     pub size: Vector2<u32>,
+}
+
+pub struct FontAsset {
+    pub texture: Arc<Texture>,
+    pub desc: FontDescriptor,
 }
 
 pub const fn asset(name: &str) -> AssetRef {
@@ -28,6 +40,22 @@ pub const fn asset(name: &str) -> AssetRef {
 }
 
 impl Asset {
+    pub fn as_sprite(&self) -> Option<&SpriteAsset> {
+        match self {
+            Asset::Sprite(sprite) => Some(sprite),
+            _ => None,
+        }
+    }
+
+    pub fn as_font(&self) -> Option<&FontAsset> {
+        match self {
+            Asset::Font(font) => Some(font),
+            _ => None,
+        }
+    }
+}
+
+impl SpriteAsset {
     pub(crate) fn uv(&self) -> (Vector2<f32>, Vector2<f32>) {
         let size = self.texture.size.map(|x| x as f32);
 

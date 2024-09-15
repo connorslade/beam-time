@@ -2,7 +2,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use nalgebra::Vector2;
 
-use super::{Asset, AssetRef, Texture};
+use super::{font::FontDescriptor, Asset, AssetRef, FontAsset, SpriteAsset, Texture};
 
 pub struct AssetManager {
     assets: HashMap<AssetRef, Asset>,
@@ -30,7 +30,18 @@ impl AssetManager {
         uv: Vector2<u32>,
         size: Vector2<u32>,
     ) {
-        self.assets.insert(asset_ref, Asset { texture, uv, size });
+        self.assets
+            .insert(asset_ref, Asset::Sprite(SpriteAsset { texture, uv, size }));
+    }
+
+    pub fn register_font(
+        &mut self,
+        asset_ref: AssetRef,
+        texture: Arc<Texture>,
+        desc: FontDescriptor,
+    ) {
+        self.assets
+            .insert(asset_ref, Asset::Font(FontAsset { texture, desc }));
     }
 }
 

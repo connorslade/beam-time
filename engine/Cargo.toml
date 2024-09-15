@@ -8,7 +8,8 @@ anyhow = "1.0.88"
 bytemuck = { version = "1.18.0", features = ["derive"] }
 const-fnv1a-hash = "1.1.0"
 image = "0.25.2"
-nalgebra = "0.33.0"
+nalgebra = { version = "0.33.0", features = ["serde-serialize"] }
 pollster = "0.3.0"
+serde = { version = "1.0.210", features = ["derive"] }
 wgpu = "22.1.0"
 winit = "0.30.5"

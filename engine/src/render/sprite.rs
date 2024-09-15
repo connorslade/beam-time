@@ -1,3 +1,6 @@
+use std::sync::Arc;
+
+use nalgebra::{Vector2, Vector3};
 use wgpu::{
     util::{BufferInitDescriptor, DeviceExt},
     AddressMode, BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
@@ -10,7 +13,7 @@ use wgpu::{
 };
 
 use crate::{
-    assets::manager::AssetManager, graphics_context::GraphicsContext, include_shader,
+    assets::Texture, graphics_context::GraphicsContext, include_shader,
     render::consts::VERTEX_BUFFER_LAYOUT, TEXTURE_FORMAT,
 };
 
@@ -25,6 +28,13 @@ pub struct SpriteRenderPipeline {
     vertex_buffer: Option<Buffer>,
     index_buffer: Option<Buffer>,
     index_count: u32,
+}
+
+pub struct GpuSprite {
+    pub texture: Arc<Texture>,
+    pub uv: (Vector2<f32>, Vector2<f32>),
+    pub pos: (Vector2<f32>, Vector2<f32>),
+    pub color: Vector3<f32>,
 }
 
 impl SpriteRenderPipeline {
@@ -115,47 +125,23 @@ impl SpriteRenderPipeline {
         }
     }
 
-    pub fn prepare(
-        &mut self,
-        device: &Device,
-        _queue: &Queue,
-        assets: &AssetManager,
-        ctx: &GraphicsContext,
-    ) {
+    pub fn prepare(&mut self, device: &Device, _queue: &Queue, ctx: &GraphicsContext) {
         let mut vert = Vec::new();
         let mut index = Vec::new();
 
-        let size = ctx.size.map(|x| x as f32);
+        let window_size = ctx.size.map(|x| x as f32);
         for sprite in ctx.sprites.iter() {
-            let asset = assets.get(sprite.asset);
-            let (uv_start, uv_end) = asset.uv();
             let color = [sprite.color.x, sprite.color.y, sprite.color.z];
+            let (uv_a, uv_b) = sprite.uv;
 
-            let asset_size = asset.size.map(|x| x as f32).component_mul(&sprite.scale);
-            let pos = sprite
-                .real_pos(asset_size.map(|x| x as u32))
-                .xy()
-                .map(|x| x as f32)
-                .component_div(&size);
+            let pos_a = sprite.pos.0.component_div(&window_size);
+            let pos_b = sprite.pos.1.component_div(&window_size);
 
-            let asset_size = asset_size.component_div(&size);
             vert.extend_from_slice(&[
-                Vertex::new([pos.x, pos.y, 1.0], [uv_start.x, uv_end.y], color),
-                Vertex::new(
-                    [pos.x + asset_size.x, pos.y, 1.0],
-                    [uv_end.x, uv_end.y],
-                    color,
-                ),
-                Vertex::new(
-                    [pos.x + asset_size.x, pos.y + asset_size.y, 1.0],
-                    [uv_end.x, uv_start.y],
-                    color,
-                ),
-                Vertex::new(
-                    [pos.x, pos.y + asset_size.y, 1.0],
-                    [uv_start.x, uv_start.y],
-                    color,
-                ),
+                Vertex::new([pos_a.x, pos_a.y, 1.0], [uv_a.x, uv_b.y], color),
+                Vertex::new([pos_a.x, pos_b.y, 1.0], [uv_a.x, uv_a.y], color),
+                Vertex::new([pos_b.x, pos_b.y, 1.0], [uv_b.x, uv_a.y], color),
+                Vertex::new([pos_b.x, pos_a.y, 1.0], [uv_b.x, uv_b.y], color),
             ]);
 
             let base = vert.len() as u32 - 4;
@@ -175,8 +161,7 @@ impl SpriteRenderPipeline {
             contents: bytemuck::cast_slice(&index),
         });
 
-        let view = assets
-            .get(ctx.sprites[0].asset)
+        let view = ctx.sprites[0]
             .texture
             .texture
             .create_view(&TextureViewDescriptor::default());

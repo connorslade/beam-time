@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Instant};
+use std::{rc::Rc, sync::Arc, time::Instant};
 
 use wgpu::{Device, Queue, Surface};
 use winit::window::Window;
@@ -10,7 +10,7 @@ use crate::{
 
 pub struct State<'a> {
     pub graphics: RenderContext<'a>,
-    pub assets: AssetManager,
+    pub assets: Rc<AssetManager>,
     pub screens: Screens,
 
     pub last_frame: Instant,

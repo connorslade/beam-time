@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 use image::RgbaImage;
 use nalgebra::Vector2;
@@ -9,12 +9,14 @@ use wgpu::{
 
 use crate::TEXTURE_FORMAT;
 
-use super::{manager::AssetManager, AssetRef, Texture};
+use super::{font::FontDescriptor, manager::AssetManager, AssetRef, Texture};
 
 pub struct AssetConstructor {
     next_id: u32,
     atlas: Vec<RgbaImage>,
+
     sprites: Vec<(AtlasRef, AssetRef, LocalSprite)>,
+    fonts: Vec<(AtlasRef, AssetRef, FontDescriptor)>,
 }
 
 #[derive(Copy, Clone)]
@@ -31,7 +33,9 @@ impl AssetConstructor {
         Self {
             next_id: 0,
             atlas: Vec::new(),
+
             sprites: Vec::new(),
+            fonts: Vec::new(),
         }
     }
 
@@ -59,6 +63,15 @@ impl AssetConstructor {
                 size: Vector2::new(size.0, size.1),
             },
         ));
+    }
+
+    pub fn register_font(
+        &mut self,
+        atlas: AtlasRef,
+        asset: AssetRef,
+        font_descriptor: FontDescriptor,
+    ) {
+        self.fonts.push((atlas, asset, font_descriptor));
     }
 
     pub(crate) fn into_manager(self, device: &Device, queue: &Queue) -> AssetManager {
@@ -90,9 +103,15 @@ impl AssetConstructor {
         }
 
         let mut manager = AssetManager::new();
+
         for (atlas, asset, sprite) in self.sprites {
             let texture = textures[atlas.0 as usize].clone();
             manager.register_sprite(asset, texture, sprite.uv, sprite.size);
+        }
+
+        for (atlas, asset, descriptor) in self.fonts {
+            let texture = textures[atlas.0 as usize].clone();
+            manager.register_font(asset, texture, descriptor);
         }
 
         manager

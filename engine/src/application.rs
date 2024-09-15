@@ -1,4 +1,4 @@
-use std::{iter, sync::Arc, time::Instant};
+use std::{iter, rc::Rc, sync::Arc, time::Instant};
 
 use anyhow::{Context, Result};
 use nalgebra::Vector2;
@@ -82,7 +82,7 @@ impl<'a> ApplicationHandler for Application<'a> {
 
         self.state = Some(State {
             sprite_renderer: SpriteRenderPipeline::new(&device),
-            assets: asset_constructor.into_manager(&device, &queue),
+            assets: Rc::new(asset_constructor.into_manager(&device, &queue)),
             input: InputManager::new(window.inner_size()),
             graphics: RenderContext {
                 surface,
@@ -119,15 +119,14 @@ impl<'a> ApplicationHandler for Application<'a> {
 
                 let size = gcx.window.inner_size();
                 let mut ctx = GraphicsContext::new(
+                    state.assets.clone(),
                     Vector2::new(size.width, size.height),
                     state.input.mouse,
                     delta_time,
                 );
                 state.screens.render(&mut ctx);
 
-                state
-                    .sprite_renderer
-                    .prepare(&gcx.device, &gcx.queue, &state.assets, &ctx);
+                state.sprite_renderer.prepare(&gcx.device, &gcx.queue, &ctx);
 
                 let mut encoder = gcx
                     .device

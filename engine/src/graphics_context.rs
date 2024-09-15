@@ -1,20 +1,25 @@
+use std::rc::Rc;
+
 use nalgebra::{Vector2, Vector3};
 use wgpu::Color;
 
-use crate::sprites::Sprite;
+use crate::{assets::manager::AssetManager, render::sprite::GpuSprite};
 
-#[derive(Debug)]
 pub struct GraphicsContext {
-    /// One over the time since the last frame
-    pub delta_time: f32,
+    /// Reference to asset manager
+    pub(crate) asset_manager: Rc<AssetManager>,
+
     /// background color
     pub(crate) background: Vector3<f64>,
     /// list of sprites to render this frame
-    pub(crate) sprites: Vec<Sprite>,
+    pub(crate) sprites: Vec<GpuSprite>,
+
     /// Window size
     pub size: Vector2<u32>,
     /// Mouse pos
     pub mouse: Vector2<f32>,
+    /// One over the time since the last frame
+    pub delta_time: f32,
 }
 
 pub trait Drawable {
@@ -35,8 +40,14 @@ pub enum Anchor {
 }
 
 impl GraphicsContext {
-    pub fn new(size: Vector2<u32>, mouse: Vector2<f32>, delta_time: f32) -> Self {
+    pub fn new(
+        asset_manager: Rc<AssetManager>,
+        size: Vector2<u32>,
+        mouse: Vector2<f32>,
+        delta_time: f32,
+    ) -> Self {
         GraphicsContext {
+            asset_manager,
             background: Vector3::zeros(),
             sprites: Vec::new(),
             size,

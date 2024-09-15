@@ -1,0 +1,8 @@
+FontDescriptor(
+    characters: {
+        'A': (uv: (0, 11),  size: (9, 9)),
+        'B': (uv: (9, 11),  size: (7, 9)),
+        'C': (uv: (16, 11), size: (7, 9)),
+    },
+    unknown: (uv: (0, 0), size: (8,8))
+)
