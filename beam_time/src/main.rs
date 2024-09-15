@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use anyhow::Result;
 use screens::title::TitleScreen;
 
@@ -23,7 +25,13 @@ fn main() -> Result<()> {
             .with_window_icon(Some(icon))
             .with_inner_size(PhysicalSize::new(DEFAULT_SIZE.0, DEFAULT_SIZE.1))
             .with_resizable(false),
-        screen_constructor: Box::new(|| Box::new(TitleScreen {})),
+        screen_constructor: Box::new(|| {
+            Box::new(TitleScreen {
+                last_update: Instant::now(),
+                frames: 0,
+                last_frames: 0,
+            })
+        }),
         asset_constructor: Box::new(assets::init),
     })
     .run()
