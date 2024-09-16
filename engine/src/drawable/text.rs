@@ -59,53 +59,53 @@ impl<'a> Text<'a> {
 
 impl<'a> Drawable for Text<'a> {
     fn draw(self, ctx: &mut GraphicsContext) {
-        let font = ctx
-            .asset_manager
-            .get(self.font)
-            .as_font()
-            .expect("Tried to use an non-font asset as a font.");
+        // let font = ctx
+        //     .asset_manager
+        //     .get(self.font)
+        //     .as_font()
+        //     .expect("Tried to use an non-font asset as a font.");
 
-        let scale = self.scale * ctx.scale_factor;
+        // let scale = self.scale * ctx.scale_factor;
 
-        let atlas_size = font.texture.size.map(|x| x as f32);
-        let process_uv = |uv: Vector2<u32>| uv.map(|x| x as f32).component_div(&atlas_size);
+        // let atlas_size = font.texture.size.map(|x| x as f32);
+        // let process_uv = |uv: Vector2<u32>| uv.map(|x| x as f32).component_div(&atlas_size);
 
-        let mut x = 0.0;
-        let mut n = 0;
-        for character in font.desc.process_string(self.text) {
-            let character = match character {
-                FontChar::Char(character) => character,
-                FontChar::Space => {
-                    x += font.desc.space_width * self.scale.x;
-                    continue;
-                }
-            };
+        // let mut x = 0.0;
+        // let mut n = 0;
+        // for character in font.desc.process_string(self.text) {
+        //     let character = match character {
+        //         FontChar::Char(character) => character,
+        //         FontChar::Space => {
+        //             x += font.desc.space_width * self.scale.x;
+        //             continue;
+        //         }
+        //     };
 
-            let uv_a = process_uv(character.uv);
-            let uv_b = process_uv(character.uv + character.size);
+        //     let uv_a = process_uv(character.uv);
+        //     let uv_b = process_uv(character.uv + character.size);
 
-            let size = character.size.map(|x| x as f32).component_mul(&scale);
+        //     let size = character.size.map(|x| x as f32).component_mul(&scale);
 
-            ctx.sprites.push(GpuSprite {
-                texture: font.texture,
-                uv: (uv_a, uv_b),
-                // kinda a hack
-                pos: (
-                    size,
-                    Vector2::new(x, character.baseline_shift as f32 * scale.y),
-                ),
-                color: self.color,
-            });
+        //     ctx.sprites.push(GpuSprite {
+        //         texture: font.texture,
+        //         uv: (uv_a, uv_b),
+        //         // kinda a hack
+        //         pos: (
+        //             size,
+        //             Vector2::new(x, character.baseline_shift as f32 * scale.y),
+        //         ),
+        //         color: self.color,
+        //     });
 
-            x += (character.size.x as f32 + font.desc.tracking) * scale.x;
-            n += 1;
-        }
+        //     x += (character.size.x as f32 + font.desc.tracking) * scale.x;
+        //     n += 1;
+        // }
 
-        let line_size = Vector2::new(x, 0.0);
-        for i in ctx.sprites.len() - n..ctx.sprites.len() {
-            let (size, offset) = ctx.sprites[i].pos;
-            let pos = self.anchor.offset(self.pos + offset, line_size);
-            ctx.sprites[i].pos = (pos, pos + size);
-        }
+        // let line_size = Vector2::new(x, 0.0);
+        // for i in ctx.sprites.len() - n..ctx.sprites.len() {
+        //     let (size, offset) = ctx.sprites[i].pos;
+        //     let pos = self.anchor.offset(self.pos + offset, line_size);
+        //     ctx.sprites[i].pos = (pos, pos + size);
+        // }
     }
 }

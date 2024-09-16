@@ -24,7 +24,7 @@ impl Screen for TitleScreen {
         ctx.background(BACKGROUND_COLOR);
 
         let pos = Vector2::new(ctx.size.x / 2.0, ctx.size.y * 0.9);
-        let t = self.start_time.elapsed().as_secs_f32().sin();
+        let t = self.start_time.elapsed().as_secs_f32().sin() / 4.0;
         ctx.draw(
             Sprite::new(TITLE)
                 .pos(pos, Anchor::TopCenter)

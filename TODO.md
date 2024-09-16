@@ -7,4 +7,6 @@
 - [x] Convert all positions to floats
 - [ ] Should scale be automatically multiplied by scale_factor if position cant?
 - [ ] Supply all four points in GpuSprite
-- [ ] Allow rotating sprites
+- [x] Allow rotating sprites
+- [ ] Look into anti aliasing
+- [ ] Matrix stacks?

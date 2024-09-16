@@ -38,7 +38,7 @@ struct RenderOperation {
 pub struct GpuSprite {
     pub texture: TextureRef,
     pub uv: (Vector2<f32>, Vector2<f32>),
-    pub pos: (Vector2<f32>, Vector2<f32>),
+    pub points: [Vector2<f32>; 4],
     pub color: Vector3<f32>,
 }
 
@@ -142,15 +142,17 @@ impl SpriteRenderPipeline {
                 let color = [sprite.color.x, sprite.color.y, sprite.color.z];
                 let (uv_a, uv_b) = sprite.uv;
 
-                let pos_a = sprite.pos.0.component_div(&ctx.size);
-                let pos_b = sprite.pos.1.component_div(&ctx.size);
+                let pos_a = sprite.points[0].component_div(&ctx.size);
+                let pos_b = sprite.points[1].component_div(&ctx.size);
+                let pos_c = sprite.points[2].component_div(&ctx.size);
+                let pos_d = sprite.points[3].component_div(&ctx.size);
 
                 let base = vert.len() as u32;
                 vert.extend_from_slice(&[
                     Vertex::new([pos_a.x, pos_a.y, 1.0], [uv_a.x, uv_b.y], color),
-                    Vertex::new([pos_a.x, pos_b.y, 1.0], [uv_a.x, uv_a.y], color),
-                    Vertex::new([pos_b.x, pos_b.y, 1.0], [uv_b.x, uv_a.y], color),
-                    Vertex::new([pos_b.x, pos_a.y, 1.0], [uv_b.x, uv_b.y], color),
+                    Vertex::new([pos_b.x, pos_b.y, 1.0], [uv_a.x, uv_a.y], color),
+                    Vertex::new([pos_c.x, pos_c.y, 1.0], [uv_b.x, uv_a.y], color),
+                    Vertex::new([pos_d.x, pos_d.y, 1.0], [uv_b.x, uv_b.y], color),
                 ]);
                 index.extend_from_slice(&[base, base + 1, base + 2, base + 2, base + 3, base]);
             }
