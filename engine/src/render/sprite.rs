@@ -134,8 +134,6 @@ impl SpriteRenderPipeline {
             atlases.entry(sprite.texture).or_default().push(sprite);
         }
 
-        let window_size = ctx.size.map(|x| x as f32);
-
         self.operations.clear();
         for (atlas, sprites) in atlases.iter() {
             let (mut vert, mut index) = (Vec::new(), Vec::new());
@@ -144,8 +142,8 @@ impl SpriteRenderPipeline {
                 let color = [sprite.color.x, sprite.color.y, sprite.color.z];
                 let (uv_a, uv_b) = sprite.uv;
 
-                let pos_a = sprite.pos.0.component_div(&window_size);
-                let pos_b = sprite.pos.1.component_div(&window_size);
+                let pos_a = sprite.pos.0.component_div(&ctx.size);
+                let pos_b = sprite.pos.1.component_div(&ctx.size);
 
                 let base = vert.len() as u32;
                 vert.extend_from_slice(&[

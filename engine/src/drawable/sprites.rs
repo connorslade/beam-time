@@ -9,7 +9,7 @@ use crate::{
 #[derive(Debug)]
 pub struct Sprite {
     pub asset: AssetRef,
-    pub pos: Vector2<u32>,
+    pub pos: Vector2<f32>,
     pub anchor: Anchor,
     pub scale: Vector2<f32>,
     pub color: Vector3<f32>,
@@ -17,7 +17,7 @@ pub struct Sprite {
 
 pub struct SpriteBuilder {
     texture: AssetRef,
-    pos: Vector2<u32>,
+    pos: Vector2<f32>,
     anchor: Anchor,
     scale: Vector2<f32>,
     color: Vector3<f32>,
@@ -27,16 +27,11 @@ impl Sprite {
     pub fn builder(texture: AssetRef) -> SpriteBuilder {
         SpriteBuilder {
             texture,
-            pos: Vector2::new(0, 0),
+            pos: Vector2::repeat(0.0),
             anchor: Anchor::BottomLeft,
-            scale: Vector2::new(1.0, 1.0),
-            color: Vector3::new(1.0, 1.0, 1.0),
+            scale: Vector2::repeat(1.0),
+            color: Vector3::repeat(1.0),
         }
-    }
-
-    fn real_pos(&self, size: Vector2<f32>) -> Vector2<i32> {
-        self.anchor
-            .offset(self.pos.map(|x| x as i32), size.map(|x| x as i32))
     }
 }
 
@@ -51,7 +46,7 @@ impl SpriteBuilder {
         }
     }
 
-    pub fn pos(mut self, pos: Vector2<u32>, anchor: Anchor) -> Self {
+    pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
         self.pos = pos;
         self.anchor = anchor;
         self
@@ -78,7 +73,7 @@ impl Drawable for Sprite {
 
         let scale = self.scale * ctx.scale_factor;
         let size = asset.size.map(|x| x as f32).component_mul(&scale);
-        let pos_a = self.real_pos(size).map(|x| x as f32);
+        let pos_a = self.anchor.offset(self.pos, size);
         let pos_b = pos_a + size;
 
         ctx.sprites.push(GpuSprite {

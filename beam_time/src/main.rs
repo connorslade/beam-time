@@ -27,6 +27,7 @@ fn main() -> Result<()> {
             .with_resizable(false),
         screen_constructor: Box::new(|| {
             Box::new(TitleScreen {
+                start_time: Instant::now(),
                 last_update: Instant::now(),
                 frames: 0,
                 last_frames: 0,

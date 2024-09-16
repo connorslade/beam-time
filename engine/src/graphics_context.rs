@@ -15,7 +15,7 @@ pub struct GraphicsContext {
     pub(crate) sprites: Vec<GpuSprite>,
 
     /// Window size
-    pub size: Vector2<u32>,
+    pub size: Vector2<f32>,
     /// Current window scale_factor
     pub scale_factor: f32,
     /// Mouse pos
@@ -53,15 +53,15 @@ impl GraphicsContext {
             asset_manager,
             background: Vector3::zeros(),
             sprites: Vec::new(),
-            size,
+            size: size.map(|x| x as f32),
             scale_factor,
             delta_time,
             mouse,
         }
     }
 
-    pub fn center(&self) -> Vector2<u32> {
-        self.size / 2
+    pub fn center(&self) -> Vector2<f32> {
+        self.size / 2.0
     }
 
     pub fn background(&mut self, color: Vector3<f64>) {
@@ -85,12 +85,12 @@ impl GraphicsContext {
 }
 
 impl Anchor {
-    pub fn offset(&self, pos: Vector2<i32>, size: Vector2<i32>) -> Vector2<i32> {
+    pub fn offset(&self, pos: Vector2<f32>, size: Vector2<f32>) -> Vector2<f32> {
         match self {
             Anchor::BottomLeft => pos,
-            Anchor::Center => pos - size / 2,
-            Anchor::TopCenter => pos - Vector2::new(size.x / 2, size.y),
-            Anchor::BottomRight => pos - Vector2::new(size.x, 0),
+            Anchor::Center => pos - size / 2.0,
+            Anchor::TopCenter => pos - Vector2::new(size.x / 2.0, size.y),
+            Anchor::BottomRight => pos - Vector2::new(size.x, 0.0),
             _ => todo!(),
         }
     }

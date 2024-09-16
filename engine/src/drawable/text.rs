@@ -9,7 +9,7 @@ use crate::{
 pub struct Text<'a> {
     pub font: AssetRef,
     pub text: &'a str,
-    pub pos: Vector2<u32>,
+    pub pos: Vector2<f32>,
     pub anchor: Anchor,
     pub scale: Vector2<f32>,
     pub color: Vector3<f32>,
@@ -19,7 +19,7 @@ pub struct TextBuilder<'a> {
     font: AssetRef,
     text: &'a str,
 
-    pos: Vector2<u32>,
+    pos: Vector2<f32>,
     anchor: Anchor,
     scale: Vector2<f32>,
     color: Vector3<f32>,
@@ -31,16 +31,16 @@ impl<'a> Text<'a> {
             font,
             text,
 
-            pos: Vector2::new(0, 0),
+            pos: Vector2::repeat(0.0),
             anchor: Anchor::BottomLeft,
             scale: Vector2::repeat(1.0),
-            color: Vector3::new(1.0, 1.0, 1.0),
+            color: Vector3::repeat(1.0),
         }
     }
 }
 
 impl<'a> TextBuilder<'a> {
-    pub fn pos(mut self, pos: Vector2<u32>, anchor: Anchor) -> Self {
+    pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
         self.pos = pos;
         self.anchor = anchor;
         self
@@ -112,12 +112,10 @@ impl<'a> Drawable for Text<'a> {
             n += 1;
         }
 
-        let line_size = Vector2::new(x as i32, 0);
+        let line_size = Vector2::new(x, 0.0);
         for i in ctx.sprites.len() - n..ctx.sprites.len() {
             let (size, offset) = ctx.sprites[i].pos;
-            let pos = self.pos.map(|x| x as i32) + offset.map(|x| x as i32);
-            let pos = self.anchor.offset(pos, line_size).map(|x| x as f32);
-
+            let pos = self.anchor.offset(self.pos + offset, line_size);
             ctx.sprites[i].pos = (pos, pos + size);
         }
     }

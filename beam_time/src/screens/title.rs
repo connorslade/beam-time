@@ -13,6 +13,7 @@ use crate::{
 };
 
 pub struct TitleScreen {
+    pub start_time: Instant,
     pub last_update: Instant,
     pub frames: usize,
     pub last_frames: usize,
@@ -22,29 +23,30 @@ impl Screen for TitleScreen {
     fn render(&mut self, ctx: &mut GraphicsContext) {
         ctx.background(BACKGROUND_COLOR);
 
-        let pos = Vector2::new(ctx.size.x / 2, ctx.size.y * 9 / 10);
+        let pos = Vector2::new(ctx.size.x / 2.0, ctx.size.y * 0.9);
+        let t = (self.start_time.elapsed().as_secs_f32().sin() + 1.0) / 2.0;
         ctx.draw(
             Sprite::builder(TITLE)
                 .pos(pos, Anchor::TopCenter)
-                .scale(Vector2::repeat(5.0)),
+                .scale(Vector2::repeat(5.0 + t)),
         );
 
         ctx.draw(
             Sprite::builder(COPYRIGHT)
-                .pos(Vector2::new(ctx.size.x - 10, 10), Anchor::BottomRight)
+                .pos(Vector2::new(ctx.size.x - 10.0, 10.0), Anchor::BottomRight)
                 .scale(Vector2::repeat(2.0)),
         );
 
         ctx.draw(
             Text::builder(DEFAULT_FONT, "I got text rendering working!")
-                .pos(ctx.size / 2, Anchor::Center)
+                .pos(ctx.center(), Anchor::Center)
                 .scale(Vector2::repeat(5.0)),
         );
 
         ctx.draw(
             Text::builder(DEFAULT_FONT, "(don't ask how long making the font took)")
                 .pos(
-                    ctx.size / 2 - Vector2::new(0, (60.0 * ctx.scale_factor) as u32),
+                    ctx.size / 2.0 - Vector2::new(0.0, 60.0 * ctx.scale_factor),
                     Anchor::Center,
                 )
                 .scale(Vector2::repeat(3.0)),
@@ -59,7 +61,7 @@ impl Screen for TitleScreen {
 
         ctx.draw(
             Text::builder(DEFAULT_FONT, &format!("FPS: {:.1}", self.last_frames))
-                .pos(Vector2::new(10, 10), Anchor::BottomLeft)
+                .pos(Vector2::new(10.0, 10.0), Anchor::BottomLeft)
                 .scale(Vector2::repeat(2.0)),
         );
     }
