@@ -9,7 +9,7 @@ use engine::{
 
 use crate::{
     assets::{COPYRIGHT, DEFAULT_FONT, TITLE},
-    consts::BACKGROUND_COLOR,
+    consts::{BACKGROUND_COLOR, FOREGROUND_COLOR},
 };
 
 pub struct TitleScreen {
@@ -24,7 +24,7 @@ impl Screen for TitleScreen {
         ctx.background(BACKGROUND_COLOR);
 
         let pos = Vector2::new(ctx.size.x / 2.0, ctx.size.y * 0.9);
-        let t = self.start_time.elapsed().as_secs_f32().sin() / 4.0;
+        let t = self.start_time.elapsed().as_secs_f32().sin() / 8.0;
         ctx.draw(
             Sprite::new(TITLE)
                 .pos(pos, Anchor::TopCenter)
@@ -40,12 +40,14 @@ impl Screen for TitleScreen {
 
         ctx.draw(
             Text::new(DEFAULT_FONT, "I got text rendering working!")
+                .color(FOREGROUND_COLOR)
                 .pos(ctx.center(), Anchor::Center)
                 .scale(Vector2::repeat(5.0)),
         );
 
         ctx.draw(
             Text::new(DEFAULT_FONT, "(don't ask how long making the font took)")
+                .color(FOREGROUND_COLOR)
                 .pos(
                     ctx.size / 2.0 - Vector2::new(0.0, 60.0 * ctx.scale_factor),
                     Anchor::Center,
@@ -62,6 +64,7 @@ impl Screen for TitleScreen {
 
         ctx.draw(
             Text::new(DEFAULT_FONT, &format!("FPS: {:.1}", self.last_frames))
+                .color(FOREGROUND_COLOR)
                 .pos(Vector2::new(10.0, 10.0), Anchor::BottomLeft)
                 .scale(Vector2::repeat(2.0)),
         );

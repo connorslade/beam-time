@@ -10,7 +10,7 @@ pub struct GraphicsContext {
     pub(crate) asset_manager: Rc<AssetManager>,
 
     /// background color
-    pub(crate) background: Vector3<f64>,
+    pub(crate) background: Vector3<f32>,
     /// list of sprites to render this frame
     pub(crate) sprites: Vec<GpuSprite>,
 
@@ -64,7 +64,7 @@ impl GraphicsContext {
         self.size / 2.0
     }
 
-    pub fn background(&mut self, color: Vector3<f64>) {
+    pub fn background(&mut self, color: Vector3<f32>) {
         self.background = color;
     }
 
@@ -76,9 +76,9 @@ impl GraphicsContext {
 impl GraphicsContext {
     pub(crate) fn background_color(&self) -> Color {
         Color {
-            r: self.background.x,
-            g: self.background.y,
-            b: self.background.z,
+            r: self.background.x as f64,
+            g: self.background.y as f64,
+            b: self.background.z as f64,
             a: 1.0,
         }
     }
