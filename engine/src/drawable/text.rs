@@ -106,7 +106,10 @@ impl<'a> Drawable for Text<'a> {
         let line_size = Vector2::new(x, 0.0);
         for i in ctx.sprites.len() - n..ctx.sprites.len() {
             let [size, offset, ..] = ctx.sprites[i].points;
-            let pos = self.anchor.offset(self.pos + offset, line_size);
+            let pos = self
+                .anchor
+                .offset(self.pos + offset, line_size)
+                .map(|x| x.round());
 
             ctx.sprites[i].points = [
                 pos,
