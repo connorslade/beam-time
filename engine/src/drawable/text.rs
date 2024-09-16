@@ -7,15 +7,6 @@ use crate::{
 };
 
 pub struct Text<'a> {
-    pub font: AssetRef,
-    pub text: &'a str,
-    pub pos: Vector2<f32>,
-    pub anchor: Anchor,
-    pub scale: Vector2<f32>,
-    pub color: Vector3<f32>,
-}
-
-pub struct TextBuilder<'a> {
     font: AssetRef,
     text: &'a str,
 
@@ -26,8 +17,8 @@ pub struct TextBuilder<'a> {
 }
 
 impl<'a> Text<'a> {
-    pub fn builder(font: AssetRef, text: &'a str) -> TextBuilder {
-        TextBuilder {
+    pub fn new(font: AssetRef, text: &'a str) -> Self {
+        Self {
             font,
             text,
 
@@ -37,9 +28,7 @@ impl<'a> Text<'a> {
             color: Vector3::repeat(1.0),
         }
     }
-}
 
-impl<'a> TextBuilder<'a> {
     pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
         self.pos = pos;
         self.anchor = anchor;
@@ -118,11 +107,5 @@ impl<'a> Drawable for Text<'a> {
             let pos = self.anchor.offset(self.pos + offset, line_size);
             ctx.sprites[i].pos = (pos, pos + size);
         }
-    }
-}
-
-impl<'a> Drawable for TextBuilder<'a> {
-    fn draw(self, ctx: &mut GraphicsContext) {
-        self.build().draw(ctx)
     }
 }

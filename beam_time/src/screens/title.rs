@@ -24,27 +24,28 @@ impl Screen for TitleScreen {
         ctx.background(BACKGROUND_COLOR);
 
         let pos = Vector2::new(ctx.size.x / 2.0, ctx.size.y * 0.9);
-        let t = (self.start_time.elapsed().as_secs_f32().sin() + 1.0) / 2.0;
+        let t = self.start_time.elapsed().as_secs_f32().sin();
         ctx.draw(
-            Sprite::builder(TITLE)
+            Sprite::new(TITLE)
                 .pos(pos, Anchor::TopCenter)
-                .scale(Vector2::repeat(5.0 + t)),
+                .scale(Vector2::repeat(5.0))
+                .rotate(t),
         );
 
         ctx.draw(
-            Sprite::builder(COPYRIGHT)
+            Sprite::new(COPYRIGHT)
                 .pos(Vector2::new(ctx.size.x - 10.0, 10.0), Anchor::BottomRight)
                 .scale(Vector2::repeat(2.0)),
         );
 
         ctx.draw(
-            Text::builder(DEFAULT_FONT, "I got text rendering working!")
+            Text::new(DEFAULT_FONT, "I got text rendering working!")
                 .pos(ctx.center(), Anchor::Center)
                 .scale(Vector2::repeat(5.0)),
         );
 
         ctx.draw(
-            Text::builder(DEFAULT_FONT, "(don't ask how long making the font took)")
+            Text::new(DEFAULT_FONT, "(don't ask how long making the font took)")
                 .pos(
                     ctx.size / 2.0 - Vector2::new(0.0, 60.0 * ctx.scale_factor),
                     Anchor::Center,
@@ -60,7 +61,7 @@ impl Screen for TitleScreen {
         }
 
         ctx.draw(
-            Text::builder(DEFAULT_FONT, &format!("FPS: {:.1}", self.last_frames))
+            Text::new(DEFAULT_FONT, &format!("FPS: {:.1}", self.last_frames))
                 .pos(Vector2::new(10.0, 10.0), Anchor::BottomLeft)
                 .scale(Vector2::repeat(2.0)),
         );

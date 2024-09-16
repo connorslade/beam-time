@@ -8,47 +8,39 @@ use crate::{
 
 #[derive(Debug)]
 pub struct Sprite {
-    pub asset: AssetRef,
-    pub pos: Vector2<f32>,
-    pub anchor: Anchor,
-    pub scale: Vector2<f32>,
-    pub color: Vector3<f32>,
-}
-
-pub struct SpriteBuilder {
     texture: AssetRef,
-    pos: Vector2<f32>,
+
+    position: Vector2<f32>,
+    rotation: f32,
+
     anchor: Anchor,
     scale: Vector2<f32>,
+
     color: Vector3<f32>,
 }
 
 impl Sprite {
-    pub fn builder(texture: AssetRef) -> SpriteBuilder {
-        SpriteBuilder {
+    pub fn new(texture: AssetRef) -> Self {
+        Self {
             texture,
-            pos: Vector2::repeat(0.0),
+
+            position: Vector2::repeat(0.0),
+            rotation: 0.0,
+
             anchor: Anchor::BottomLeft,
             scale: Vector2::repeat(1.0),
             color: Vector3::repeat(1.0),
         }
     }
-}
-
-impl SpriteBuilder {
-    pub fn build(self) -> Sprite {
-        Sprite {
-            asset: self.texture,
-            pos: self.pos,
-            anchor: self.anchor,
-            scale: self.scale,
-            color: self.color,
-        }
-    }
 
     pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
-        self.pos = pos;
+        self.position = pos;
         self.anchor = anchor;
+        self
+    }
+
+    pub fn rotate(mut self, rotation: f32) -> Self {
+        self.rotation = rotation;
         self
     }
 
@@ -67,13 +59,14 @@ impl Drawable for Sprite {
     fn draw(self, ctx: &mut GraphicsContext) {
         let asset = ctx
             .asset_manager
-            .get(self.asset)
+            .get(self.texture)
             .as_sprite()
             .expect("Tried to draw a font as a sprite");
 
         let scale = self.scale * ctx.scale_factor;
+
         let size = asset.size.map(|x| x as f32).component_mul(&scale);
-        let pos_a = self.anchor.offset(self.pos, size);
+        let pos_a = self.anchor.offset(self.position, size);
         let pos_b = pos_a + size;
 
         ctx.sprites.push(GpuSprite {
@@ -82,11 +75,5 @@ impl Drawable for Sprite {
             pos: (pos_a, pos_b),
             color: self.color,
         });
-    }
-}
-
-impl Drawable for SpriteBuilder {
-    fn draw(self, ctx: &mut GraphicsContext) {
-        self.build().draw(ctx);
     }
 }
