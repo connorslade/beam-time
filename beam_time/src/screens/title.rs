@@ -43,7 +43,10 @@ impl Screen for TitleScreen {
 
         ctx.draw(
             Text::builder(DEFAULT_FONT, "(don't ask how long making the font took)")
-                .pos(ctx.size / 2 - Vector2::new(0, 60), Anchor::Center)
+                .pos(
+                    ctx.size / 2 - Vector2::new(0, (60.0 * ctx.scale_factor) as u32),
+                    Anchor::Center,
+                )
                 .scale(Vector2::repeat(3.0)),
         );
 

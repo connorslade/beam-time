@@ -76,7 +76,8 @@ impl Drawable for Sprite {
             .as_sprite()
             .expect("Tried to draw a font as a sprite");
 
-        let size = asset.size.map(|x| x as f32).component_mul(&self.scale);
+        let scale = self.scale * ctx.scale_factor;
+        let size = asset.size.map(|x| x as f32).component_mul(&scale);
         let pos_a = self.real_pos(size).map(|x| x as f32);
         let pos_b = pos_a + size;
 

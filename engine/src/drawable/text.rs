@@ -76,6 +76,8 @@ impl<'a> Drawable for Text<'a> {
             .as_font()
             .expect("Tried to use an non-font asset as a font.");
 
+        let scale = self.scale * ctx.scale_factor;
+
         let atlas_size = font.texture.size.map(|x| x as f32);
         let process_uv = |uv: Vector2<u32>| uv.map(|x| x as f32).component_div(&atlas_size);
 
@@ -93,7 +95,7 @@ impl<'a> Drawable for Text<'a> {
             let uv_a = process_uv(character.uv);
             let uv_b = process_uv(character.uv + character.size);
 
-            let size = character.size.map(|x| x as f32).component_mul(&self.scale);
+            let size = character.size.map(|x| x as f32).component_mul(&scale);
 
             ctx.sprites.push(GpuSprite {
                 texture: font.texture,
@@ -101,12 +103,12 @@ impl<'a> Drawable for Text<'a> {
                 // kinda a hack
                 pos: (
                     size,
-                    Vector2::new(x, character.baseline_shift as f32 * self.scale.y),
+                    Vector2::new(x, character.baseline_shift as f32 * scale.y),
                 ),
                 color: self.color,
             });
 
-            x += (character.size.x as f32 + font.desc.tracking) * self.scale.x;
+            x += (character.size.x as f32 + font.desc.tracking) * scale.x;
             n += 1;
         }
 

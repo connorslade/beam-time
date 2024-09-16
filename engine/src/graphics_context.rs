@@ -16,6 +16,8 @@ pub struct GraphicsContext {
 
     /// Window size
     pub size: Vector2<u32>,
+    /// Current window scale_factor
+    pub scale_factor: f32,
     /// Mouse pos
     pub mouse: Vector2<f32>,
     /// One over the time since the last frame
@@ -43,6 +45,7 @@ impl GraphicsContext {
     pub fn new(
         asset_manager: Rc<AssetManager>,
         size: Vector2<u32>,
+        scale_factor: f32,
         mouse: Vector2<f32>,
         delta_time: f32,
     ) -> Self {
@@ -51,6 +54,7 @@ impl GraphicsContext {
             background: Vector3::zeros(),
             sprites: Vec::new(),
             size,
+            scale_factor,
             delta_time,
             mouse,
         }

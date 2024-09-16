@@ -17,14 +17,12 @@ use winit::{
 
 use crate::{
     assets::constructor::AssetConstructor,
+    graphics_context::GraphicsContext,
     input::InputManager,
     render::sprite::SpriteRenderPipeline,
     screens::{Screen, Screens},
-    TEXTURE_FORMAT,
-};
-use crate::{
-    graphics_context::GraphicsContext,
     state::{RenderContext, State},
+    TEXTURE_FORMAT,
 };
 
 pub struct Application<'a> {
@@ -121,6 +119,7 @@ impl<'a> ApplicationHandler for Application<'a> {
                 let mut ctx = GraphicsContext::new(
                     state.assets.clone(),
                     Vector2::new(size.width, size.height),
+                    gcx.window.scale_factor() as f32,
                     state.input.mouse,
                     delta_time,
                 );
@@ -187,7 +186,7 @@ impl<'a> Application<'a> {
                 format: TEXTURE_FORMAT,
                 width: size.width,
                 height: size.height,
-                present_mode: PresentMode::Immediate,
+                present_mode: PresentMode::Mailbox,
                 desired_maximum_frame_latency: 2,
                 alpha_mode: CompositeAlphaMode::Opaque,
                 view_formats: vec![],
