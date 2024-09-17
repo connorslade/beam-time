@@ -9,10 +9,16 @@ pub const DEFAULT_FONT: AssetRef = asset("default_font");
 pub const TITLE: AssetRef = asset("title");
 pub const COPYRIGHT: AssetRef = asset("copyright");
 
+// tiles
+pub const EYE_TILE: AssetRef = asset("eye_tile");
+
 pub fn init(assets: &mut AssetConstructor) {
     let title = assets.register_atlas(include_atlas!("title.png"));
     assets.register_sprite(title, TITLE, (0, 0), (81, 20));
     assets.register_sprite(title, COPYRIGHT, (0, 20), (28, 8));
+
+    let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
+    assets.register_sprite(tiles, EYE_TILE, (64, 16), (16, 16));
 
     let font = assets.register_atlas(include_atlas!("font.png"));
     let descriptor =

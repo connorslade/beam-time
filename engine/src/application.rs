@@ -18,7 +18,6 @@ use winit::{
 use crate::{
     assets::constructor::AssetConstructor,
     graphics_context::GraphicsContext,
-    input::InputManager,
     render::sprite::SpriteRenderPipeline,
     screens::{Screen, Screens},
     state::{RenderContext, State},
@@ -81,7 +80,7 @@ impl<'a> ApplicationHandler for Application<'a> {
         self.state = Some(State {
             sprite_renderer: SpriteRenderPipeline::new(&device),
             assets: Rc::new(asset_constructor.into_manager(&device, &queue)),
-            input: InputManager::new(window.inner_size()),
+            mouse_pos: Vector2::zeros(),
             graphics: RenderContext {
                 surface,
                 window,
@@ -107,7 +106,11 @@ impl<'a> ApplicationHandler for Application<'a> {
         match event {
             WindowEvent::CloseRequested => event_loop.exit(),
             WindowEvent::CursorMoved { position, .. } => {
-                state.input.mouse_move(position.x as f32, position.y as f32)
+                let screen_size = state.graphics.window.inner_size();
+                state.mouse_pos = Vector2::new(
+                    position.x as f32,
+                    screen_size.height as f32 - position.y as f32,
+                )
             }
             WindowEvent::RedrawRequested => {
                 let gcx = &state.graphics;
@@ -120,7 +123,7 @@ impl<'a> ApplicationHandler for Application<'a> {
                     state.assets.clone(),
                     Vector2::new(size.width, size.height),
                     gcx.window.scale_factor() as f32,
-                    state.input.mouse,
+                    state.mouse_pos,
                     delta_time,
                 );
                 state.screens.render(&mut ctx);
@@ -159,10 +162,13 @@ impl<'a> ApplicationHandler for Application<'a> {
 
                 gcx.window.request_redraw();
             }
-            WindowEvent::Resized(size) => {
-                state.input.update_window_size(size);
-                self.resize_surface()
-            }
+            WindowEvent::Resized(..) => self.resize_surface(),
+            WindowEvent::KeyboardInput { event, .. } => state.screens.on_key(event),
+            WindowEvent::MouseInput {
+                state: element_state,
+                button,
+                ..
+            } => state.screens.on_click(element_state, button),
             _ => (),
         }
     }
@@ -186,7 +192,7 @@ impl<'a> Application<'a> {
                 format: TEXTURE_FORMAT,
                 width: size.width,
                 height: size.height,
-                present_mode: PresentMode::Mailbox,
+                present_mode: PresentMode::AutoVsync,
                 desired_maximum_frame_latency: 2,
                 alpha_mode: CompositeAlphaMode::Opaque,
                 view_formats: vec![],

@@ -1,10 +1,11 @@
 use std::{rc::Rc, sync::Arc, time::Instant};
 
+use nalgebra::Vector2;
 use wgpu::{Device, Queue, Surface};
 use winit::window::Window;
 
 use crate::{
-    assets::manager::AssetManager, input::InputManager, render::sprite::SpriteRenderPipeline,
+    assets::manager::AssetManager,  render::sprite::SpriteRenderPipeline,
     screens::Screens,
 };
 
@@ -14,7 +15,7 @@ pub struct State<'a> {
     pub screens: Screens,
 
     pub last_frame: Instant,
-    pub input: InputManager,
+    pub mouse_pos: Vector2<f32>,
 
     pub sprite_renderer: SpriteRenderPipeline,
 }

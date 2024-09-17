@@ -8,7 +8,7 @@ use engine::{
 };
 
 use crate::{
-    assets::{COPYRIGHT, DEFAULT_FONT, TITLE},
+    assets::{COPYRIGHT, DEFAULT_FONT, EYE_TILE, TITLE},
     consts::{BACKGROUND_COLOR, FOREGROUND_COLOR},
 };
 
@@ -67,6 +67,12 @@ impl Screen for TitleScreen {
                 .color(FOREGROUND_COLOR)
                 .pos(Vector2::new(10.0, 10.0), Anchor::BottomLeft)
                 .scale(Vector2::repeat(2.0)),
+        );
+
+        ctx.draw(
+            Sprite::new(EYE_TILE)
+                .pos(ctx.mouse, Anchor::Center)
+                .scale(Vector2::repeat(5.0)),
         );
     }
 }
