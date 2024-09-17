@@ -33,6 +33,22 @@ impl Sprite {
         }
     }
 
+    pub fn is_hovered(&self, ctx: &GraphicsContext) -> bool {
+        let sprite = ctx.asset_manager.get(self.texture).as_sprite().unwrap();
+
+        let scale = self.scale * ctx.scale_factor;
+
+        let size = sprite.size.map(|x| x as f32).component_mul(&scale);
+        let pos_a = self.scale_anchor.offset(self.position, size);
+        let pos_b = pos_a + size;
+
+        // check if ctx.mouse is in the rectangle
+        ctx.mouse.x >= pos_a.x
+            && ctx.mouse.x <= pos_b.x
+            && ctx.mouse.y <= pos_b.y
+            && ctx.mouse.y >= pos_a.y
+    }
+
     pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
         self.position = pos;
         self.scale_anchor = anchor;

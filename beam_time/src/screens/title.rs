@@ -1,7 +1,4 @@
-use std::{
-    f32::consts::TAU,
-    time::{Duration, Instant},
-};
+use std::time::{Duration, Instant};
 
 use engine::{
     drawable::{sprites::Sprite, text::Text},
@@ -11,8 +8,8 @@ use engine::{
 };
 
 use crate::{
-    assets::{BALL, COPYRIGHT, DEFAULT_FONT, PADDLE, TITLE},
-    consts::{BACKGROUND_COLOR, FOREGROUND_COLOR, START_COLOR},
+    assets::{ABOUT_BUTTON, COPYRIGHT, DEFAULT_FONT, OPTIONS_BUTTON, START_BUTTON, TITLE},
+    consts::{BACKGROUND_COLOR, FOREGROUND_COLOR},
 };
 
 pub struct TitleScreen {
@@ -20,9 +17,6 @@ pub struct TitleScreen {
     pub last_update: Instant,
     pub frames: usize,
     pub last_frames: usize,
-
-    pub pos: Vector2<f32>,
-    pub vel: Vector2<f32>,
 }
 
 impl Screen for TitleScreen {
@@ -30,11 +24,11 @@ impl Screen for TitleScreen {
         ctx.background(BACKGROUND_COLOR);
 
         let pos = Vector2::new(ctx.size.x / 2.0, ctx.size.y * 0.9);
-        let t = self.start_time.elapsed().as_secs_f32().sin() / 8.0;
+        let t = self.start_time.elapsed().as_secs_f32().sin() / 20.0;
         ctx.draw(
             Sprite::new(TITLE)
                 .pos(pos, Anchor::TopCenter)
-                .scale(Vector2::repeat(5.0))
+                .scale(Vector2::repeat(6.0))
                 .rotate(t),
         );
 
@@ -44,22 +38,32 @@ impl Screen for TitleScreen {
                 .scale(Vector2::repeat(2.0)),
         );
 
-        ctx.draw(
-            Text::new(DEFAULT_FONT, "I got text rendering working!")
-                .color(FOREGROUND_COLOR)
-                .pos(ctx.center(), Anchor::Center)
-                .scale(Vector2::repeat(5.0)),
-        );
+        // ctx.draw(
+        //     Button::new(&BUTTON_STYLE, "Start")
+        //         .pos(ctx.center())
+        //         .scale(Vector2::repeat(4.0)),
+        // );
 
-        ctx.draw(
-            Text::new(DEFAULT_FONT, "(don't ask how long making the font took)")
-                .color(FOREGROUND_COLOR)
-                .pos(
-                    ctx.size / 2.0 - Vector2::new(0.0, 60.0 * ctx.scale_factor),
-                    Anchor::Center,
-                )
-                .scale(Vector2::repeat(3.0)),
-        );
+        let start = Sprite::new(START_BUTTON)
+            .pos(ctx.center(), Anchor::Center)
+            .scale(Vector2::repeat(4.0));
+        let start_hover = start.is_hovered(ctx);
+        ctx.draw(start.scale(Vector2::repeat(4.0 + if start_hover { 0.2 } else { 0.0 })));
+
+        let options = Sprite::new(OPTIONS_BUTTON)
+            .pos(ctx.center() - Vector2::new(0.0, 14.0 * 5.0), Anchor::Center)
+            .scale(Vector2::repeat(4.0));
+        let options_hover = options.is_hovered(ctx);
+        ctx.draw(options.scale(Vector2::repeat(4.0 + if options_hover { 0.2 } else { 0.0 })));
+
+        let about = Sprite::new(ABOUT_BUTTON)
+            .pos(
+                ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0),
+                Anchor::Center,
+            )
+            .scale(Vector2::repeat(4.0));
+        let about_hover = about.is_hovered(ctx);
+        ctx.draw(about.scale(Vector2::repeat(4.0 + if about_hover { 0.2 } else { 0.0 })));
 
         self.frames += 1;
         if self.last_update.elapsed() >= Duration::from_secs(1) {
@@ -73,32 +77,6 @@ impl Screen for TitleScreen {
                 .color(FOREGROUND_COLOR)
                 .pos(Vector2::new(10.0, 10.0), Anchor::BottomLeft)
                 .scale(Vector2::repeat(2.0)),
-        );
-
-        self.pos += self.vel * ctx.delta_time;
-
-        let width = 8.0 * 5.0;
-        if self.pos.x < width || self.pos.x > ctx.size.x - width {
-            self.vel.x *= -1.0;
-        }
-
-        if self.pos.y < width || self.pos.y > ctx.size.y - width {
-            self.vel.y *= -1.0;
-        }
-
-        let t = (self.start_time.elapsed().as_secs_f32() / 8.0).sin() * TAU;
-        ctx.draw(
-            Sprite::new(BALL)
-                .pos(self.pos, Anchor::Center)
-                .scale(Vector2::repeat(5.0))
-                .color(START_COLOR.hue_shift(t)),
-        );
-
-        let paddle_pos = Vector2::new(ctx.size.x - 30.0 * ctx.scale_factor, ctx.mouse.y);
-        ctx.draw(
-            Sprite::new(PADDLE)
-                .pos(paddle_pos, Anchor::CenterRight)
-                .scale(Vector2::repeat(5.0)),
         );
     }
 }

@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 pub struct FontDescriptor {
     pub characters: HashMap<char, Character>,
     pub unknown: Character,
+    pub height: f32,
     pub space_width: f32,
     pub tracking: f32,
 }

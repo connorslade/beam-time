@@ -81,6 +81,7 @@ FontDescriptor(
         ':': (uv: (51, 27),  size: (1, 6)),
     },
     unknown: (uv: (41, 22), size: (8, 13), baseline_shift: -2),
+    height: 9,
     space_width: 4,
     tracking: 1.0
 )

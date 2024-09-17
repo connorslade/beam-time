@@ -3,7 +3,11 @@ use std::rc::Rc;
 use nalgebra::Vector2;
 use wgpu::Color;
 
-use crate::{assets::manager::AssetManager, color::Rgb, render::sprite::GpuSprite};
+use crate::{
+    assets::{manager::AssetManager, Asset, AssetRef},
+    color::Rgb,
+    render::sprite::GpuSprite,
+};
 
 pub struct GraphicsContext {
     /// Reference to asset manager
@@ -71,6 +75,10 @@ impl GraphicsContext {
     pub fn draw(&mut self, drawable: impl Drawable) {
         drawable.draw(self);
     }
+
+    pub fn get_asset(&self, asset: AssetRef) -> &Asset {
+        self.asset_manager.get(asset)
+    }
 }
 
 impl GraphicsContext {
@@ -92,6 +100,7 @@ impl Anchor {
             Anchor::TopCenter => pos - Vector2::new(size.x / 2.0, size.y),
             Anchor::BottomRight => pos - Vector2::new(size.x, 0.0),
             Anchor::CenterRight => pos - Vector2::new(size.x, size.y / 2.0),
+            Anchor::CenterLeft => pos - Vector2::new(0.0, size.y / 2.0),
             _ => unimplemented!(),
         }
     }

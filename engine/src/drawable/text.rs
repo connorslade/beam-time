@@ -30,6 +30,24 @@ impl<'a> Text<'a> {
         }
     }
 
+    pub fn width(&self, ctx: &GraphicsContext) -> f32 {
+        let scale = self.scale * ctx.scale_factor;
+        let font = ctx
+            .asset_manager
+            .get(self.font)
+            .as_font()
+            .expect("Tried to use an non-font asset as a font.");
+
+        font.desc
+            .process_string(self.text)
+            .map(|c| match c {
+                FontChar::Char(c) => c.size.x as f32 + font.desc.tracking,
+                FontChar::Space => font.desc.space_width,
+            })
+            .sum::<f32>()
+            * scale.x
+    }
+
     pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
         self.pos = pos;
         self.anchor = anchor;
