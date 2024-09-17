@@ -5,9 +5,12 @@ use screens::title::TitleScreen;
 
 use engine::{
     application::{Application, ApplicationArgs},
-    exports::winit::{
-        dpi::PhysicalSize,
-        window::{Icon, WindowAttributes},
+    exports::{
+        nalgebra::Vector2,
+        winit::{
+            dpi::PhysicalSize,
+            window::{Icon, WindowAttributes},
+        },
     },
 };
 
@@ -31,6 +34,9 @@ fn main() -> Result<()> {
                 last_update: Instant::now(),
                 frames: 0,
                 last_frames: 0,
+
+                pos: Vector2::new(100.0, 100.0),
+                vel: Vector2::new(400.0, 400.0),
             })
         }),
         asset_constructor: Box::new(assets::init),

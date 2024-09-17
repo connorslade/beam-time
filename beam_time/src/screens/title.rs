@@ -8,7 +8,7 @@ use engine::{
 };
 
 use crate::{
-    assets::{COPYRIGHT, DEFAULT_FONT, EYE_TILE, TITLE},
+    assets::{BALL, COPYRIGHT, DEFAULT_FONT, PADDLE, TITLE},
     consts::{BACKGROUND_COLOR, FOREGROUND_COLOR},
 };
 
@@ -17,6 +17,9 @@ pub struct TitleScreen {
     pub last_update: Instant,
     pub frames: usize,
     pub last_frames: usize,
+
+    pub pos: Vector2<f32>,
+    pub vel: Vector2<f32>,
 }
 
 impl Screen for TitleScreen {
@@ -69,9 +72,27 @@ impl Screen for TitleScreen {
                 .scale(Vector2::repeat(2.0)),
         );
 
+        self.pos += self.vel * ctx.delta_time;
+
+        let width = 8.0 * 5.0;
+        if self.pos.x < width || self.pos.x > ctx.size.x - width {
+            self.vel.x *= -1.0;
+        }
+
+        if self.pos.y < width || self.pos.y > ctx.size.y - width {
+            self.vel.y *= -1.0;
+        }
+
         ctx.draw(
-            Sprite::new(EYE_TILE)
-                .pos(ctx.mouse, Anchor::Center)
+            Sprite::new(BALL)
+                .pos(self.pos, Anchor::Center)
+                .scale(Vector2::repeat(5.0)),
+        );
+
+        let paddle_pos = Vector2::new(ctx.size.x - 30.0 * ctx.scale_factor, ctx.mouse.y);
+        ctx.draw(
+            Sprite::new(PADDLE)
+                .pos(paddle_pos, Anchor::CenterRight)
                 .scale(Vector2::repeat(5.0)),
         );
     }

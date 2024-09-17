@@ -11,6 +11,8 @@ pub const COPYRIGHT: AssetRef = asset("copyright");
 
 // tiles
 pub const EYE_TILE: AssetRef = asset("eye_tile");
+pub const BALL: AssetRef = asset("ball");
+pub const PADDLE: AssetRef = asset("paddle");
 
 pub fn init(assets: &mut AssetConstructor) {
     let title = assets.register_atlas(include_atlas!("title.png"));
@@ -19,6 +21,8 @@ pub fn init(assets: &mut AssetConstructor) {
 
     let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
     assets.register_sprite(tiles, EYE_TILE, (64, 16), (16, 16));
+    assets.register_sprite(tiles, BALL, (80, 16), (8, 8));
+    assets.register_sprite(tiles, PADDLE, (96, 16), (3, 16));
 
     let font = assets.register_atlas(include_atlas!("font.png"));
     let descriptor =
