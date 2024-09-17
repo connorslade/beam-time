@@ -1,16 +1,16 @@
 use std::rc::Rc;
 
-use nalgebra::{Vector2, Vector3};
+use nalgebra::Vector2;
 use wgpu::Color;
 
-use crate::{assets::manager::AssetManager, render::sprite::GpuSprite};
+use crate::{assets::manager::AssetManager, color::Rgb, render::sprite::GpuSprite};
 
 pub struct GraphicsContext {
     /// Reference to asset manager
     pub(crate) asset_manager: Rc<AssetManager>,
 
     /// background color
-    pub(crate) background: Vector3<f32>,
+    pub(crate) background: Rgb<f32>,
     /// list of sprites to render this frame
     pub(crate) sprites: Vec<GpuSprite>,
 
@@ -51,7 +51,7 @@ impl GraphicsContext {
     ) -> Self {
         GraphicsContext {
             asset_manager,
-            background: Vector3::zeros(),
+            background: Rgb::new(0.0, 0.0, 0.0),
             sprites: Vec::new(),
             size: size.map(|x| x as f32),
             scale_factor,
@@ -64,7 +64,7 @@ impl GraphicsContext {
         self.size / 2.0
     }
 
-    pub fn background(&mut self, color: Vector3<f32>) {
+    pub fn background(&mut self, color: Rgb<f32>) {
         self.background = color;
     }
 
@@ -76,9 +76,9 @@ impl GraphicsContext {
 impl GraphicsContext {
     pub(crate) fn background_color(&self) -> Color {
         Color {
-            r: self.background.x as f64,
-            g: self.background.y as f64,
-            b: self.background.z as f64,
+            r: self.background.r as f64,
+            g: self.background.g as f64,
+            b: self.background.b as f64,
             a: 1.0,
         }
     }

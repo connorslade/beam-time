@@ -2,6 +2,7 @@ use nalgebra::{Vector2, Vector3};
 
 use crate::{
     assets::{font::FontChar, AssetRef},
+    color::Rgb,
     graphics_context::{Anchor, Drawable, GraphicsContext},
     render::sprite::GpuSprite,
 };
@@ -13,7 +14,7 @@ pub struct Text<'a> {
     pos: Vector2<f32>,
     anchor: Anchor,
     scale: Vector2<f32>,
-    color: Vector3<f32>,
+    color: Rgb<f32>,
 }
 
 impl<'a> Text<'a> {
@@ -25,7 +26,7 @@ impl<'a> Text<'a> {
             pos: Vector2::repeat(0.0),
             anchor: Anchor::BottomLeft,
             scale: Vector2::repeat(1.0),
-            color: Vector3::repeat(1.0),
+            color: Rgb::new(1.0, 1.0, 1.0),
         }
     }
 
@@ -40,8 +41,8 @@ impl<'a> Text<'a> {
         self
     }
 
-    pub fn color(mut self, color: Vector3<f32>) -> Self {
-        self.color = color;
+    pub fn color(mut self, color: impl Into<Rgb<f32>>) -> Self {
+        self.color = color.into();
         self
     }
 
@@ -96,7 +97,7 @@ impl<'a> Drawable for Text<'a> {
                     Vector2::zeros(),
                     Vector2::zeros(),
                 ],
-                color: self.color,
+                color: Vector3::new(self.color.r, self.color.g, self.color.b),
             });
 
             x += (character.size.x as f32 + font.desc.tracking) * scale.x;

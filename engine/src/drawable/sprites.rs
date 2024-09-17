@@ -2,6 +2,7 @@ use nalgebra::{Rotation2, Vector2, Vector3};
 
 use crate::{
     assets::AssetRef,
+    color::Rgb,
     graphics_context::{Anchor, Drawable, GraphicsContext},
     render::sprite::GpuSprite,
 };
@@ -9,7 +10,7 @@ use crate::{
 #[derive(Debug)]
 pub struct Sprite {
     texture: AssetRef,
-    color: Vector3<f32>,
+    color: Rgb<f32>,
 
     position: Vector2<f32>,
     rotation: f32,
@@ -22,7 +23,7 @@ impl Sprite {
     pub fn new(texture: AssetRef) -> Self {
         Self {
             texture,
-            color: Vector3::repeat(1.0),
+            color: Rgb::new(1.0, 1.0, 1.0),
 
             position: Vector2::repeat(0.0),
             rotation: 0.0,
@@ -48,8 +49,8 @@ impl Sprite {
         self
     }
 
-    pub fn color(mut self, color: Vector3<f32>) -> Self {
-        self.color = color;
+    pub fn color(mut self, color: impl Into<Rgb<f32>>) -> Self {
+        self.color = color.into();
         self
     }
 }
@@ -80,7 +81,7 @@ impl Drawable for Sprite {
             texture: asset.texture,
             uv: asset.uv(),
             points,
-            color: self.color,
+            color: Vector3::new(self.color.r, self.color.g, self.color.b),
         });
     }
 }

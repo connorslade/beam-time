@@ -2,6 +2,7 @@ use wgpu::TextureFormat;
 
 pub mod application;
 pub mod assets;
+pub mod color;
 pub mod drawable;
 pub mod graphics_context;
 pub mod render;

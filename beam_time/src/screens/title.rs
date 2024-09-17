@@ -1,4 +1,4 @@
-use std::time::{Duration, Instant};
+use std::{f32::consts::TAU, time::{Duration, Instant}};
 
 use engine::{
     drawable::{sprites::Sprite, text::Text},
@@ -9,7 +9,7 @@ use engine::{
 
 use crate::{
     assets::{BALL, COPYRIGHT, DEFAULT_FONT, PADDLE, TITLE},
-    consts::{BACKGROUND_COLOR, FOREGROUND_COLOR},
+    consts::{BACKGROUND_COLOR, FOREGROUND_COLOR, START_COLOR},
 };
 
 pub struct TitleScreen {
@@ -83,10 +83,12 @@ impl Screen for TitleScreen {
             self.vel.y *= -1.0;
         }
 
+        let t = (self.start_time.elapsed().as_secs_f32() / 8.0).sin() * TAU;
         ctx.draw(
             Sprite::new(BALL)
                 .pos(self.pos, Anchor::Center)
-                .scale(Vector2::repeat(5.0)),
+                .scale(Vector2::repeat(5.0))
+                .color(START_COLOR.hue_shift(t)),
         );
 
         let paddle_pos = Vector2::new(ctx.size.x - 30.0 * ctx.scale_factor, ctx.mouse.y);
