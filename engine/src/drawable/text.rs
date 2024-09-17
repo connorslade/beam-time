@@ -14,7 +14,6 @@ pub struct Text<'a> {
 
     pos: Vector2<f32>,
     anchor: Anchor,
-    z_index: f32,
     scale: Vector2<f32>,
 }
 
@@ -27,7 +26,6 @@ impl<'a> Text<'a> {
             pos: Vector2::repeat(0.0),
             anchor: Anchor::BottomLeft,
             color: Rgb::new(1.0, 1.0, 1.0),
-            z_index: 0.0,
             scale: Vector2::repeat(1.0),
         }
     }
@@ -35,11 +33,6 @@ impl<'a> Text<'a> {
     pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
         self.pos = pos;
         self.anchor = anchor;
-        self
-    }
-
-    pub fn z_index(mut self, z_index: f32) -> Self {
-        self.z_index = z_index;
         self
     }
 
@@ -93,7 +86,6 @@ impl<'a> Drawable for Text<'a> {
                     Vector2::zeros(),
                     Vector2::zeros(),
                 ],
-                z_index: self.z_index,
                 color: Vector3::new(self.color.r, self.color.g, self.color.b),
             });
 

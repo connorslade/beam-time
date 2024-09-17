@@ -91,8 +91,7 @@ impl Screen for TitleScreen {
             Sprite::new(BALL)
                 .pos(self.pos, Anchor::Center)
                 .scale(Vector2::repeat(5.0))
-                .color(START_COLOR.hue_shift(t))
-                .z_index(1.0),
+                .color(START_COLOR.hue_shift(t)),
         );
 
         let paddle_pos = Vector2::new(ctx.size.x - 30.0 * ctx.scale_factor, ctx.mouse.y);

@@ -5,12 +5,11 @@ use wgpu::{
     util::{BufferInitDescriptor, DeviceExt},
     AddressMode, BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
     BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingResource, BindingType, BlendComponent,
-    BlendState, Buffer, BufferUsages, ColorTargetState, ColorWrites, CompareFunction,
-    DepthStencilState, Device, FilterMode, FragmentState, IndexFormat, MultisampleState,
-    PipelineCompilationOptions, PipelineLayoutDescriptor, PrimitiveState, Queue, RenderPass,
-    RenderPipeline, RenderPipelineDescriptor, Sampler, SamplerBindingType, SamplerDescriptor,
-    ShaderStages, TextureFormat, TextureSampleType, TextureViewDescriptor, TextureViewDimension,
-    VertexState,
+    BlendState, Buffer, BufferUsages, ColorTargetState, ColorWrites, Device, FilterMode,
+    FragmentState, IndexFormat, MultisampleState, PipelineCompilationOptions,
+    PipelineLayoutDescriptor, PrimitiveState, Queue, RenderPass, RenderPipeline,
+    RenderPipelineDescriptor, Sampler, SamplerBindingType, SamplerDescriptor, ShaderStages,
+    TextureSampleType, TextureViewDescriptor, TextureViewDimension, VertexState,
 };
 
 use crate::{
@@ -41,7 +40,6 @@ pub struct GpuSprite {
     pub uv: (Vector2<f32>, Vector2<f32>),
     pub points: [Vector2<f32>; 4],
     pub color: Vector3<f32>,
-    pub z_index: f32,
 }
 
 impl SpriteRenderPipeline {
@@ -99,13 +97,7 @@ impl SpriteRenderPipeline {
                 compilation_options: PipelineCompilationOptions::default(),
             }),
             primitive: PrimitiveState::default(),
-            depth_stencil: Some(DepthStencilState {
-                format: TextureFormat::Depth24PlusStencil8,
-                depth_write_enabled: true,
-                depth_compare: CompareFunction::Less,
-                stencil: Default::default(),
-                bias: Default::default(),
-            }),
+            depth_stencil: None,
             multisample: MultisampleState::default(),
             multiview: None,
             cache: None,
@@ -157,10 +149,10 @@ impl SpriteRenderPipeline {
 
                 let base = vert.len() as u32;
                 vert.extend_from_slice(&[
-                    Vertex::new([pos_a.x, pos_a.y, sprite.z_index], [uv_a.x, uv_b.y], color),
-                    Vertex::new([pos_b.x, pos_b.y, sprite.z_index], [uv_a.x, uv_a.y], color),
-                    Vertex::new([pos_c.x, pos_c.y, sprite.z_index], [uv_b.x, uv_a.y], color),
-                    Vertex::new([pos_d.x, pos_d.y, sprite.z_index], [uv_b.x, uv_b.y], color),
+                    Vertex::new([pos_a.x, pos_a.y, 0.0], [uv_a.x, uv_b.y], color),
+                    Vertex::new([pos_b.x, pos_b.y, 0.0], [uv_a.x, uv_a.y], color),
+                    Vertex::new([pos_c.x, pos_c.y, 0.0], [uv_b.x, uv_a.y], color),
+                    Vertex::new([pos_d.x, pos_d.y, 0.0], [uv_b.x, uv_b.y], color),
                 ]);
                 index.extend_from_slice(&[base, base + 1, base + 2, base + 2, base + 3, base]);
             }
