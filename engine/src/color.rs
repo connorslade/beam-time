@@ -63,6 +63,16 @@ impl<T> Rgb<T> {
     }
 }
 
+impl Rgb<f32> {
+    pub fn lerp(&self, other: Self, t: f32) -> Self {
+        Self::new(
+            lerp(self.r, other.r, t),
+            lerp(self.g, other.g, t),
+            lerp(self.b, other.b, t),
+        )
+    }
+}
+
 pub fn linear_srgb_to_oklab(c: Rgb<f32>) -> OkLab<f32> {
     let l = 0.412_221_46 * c.r + 0.536_332_55 * c.g + 0.051_445_995 * c.b;
     let m = 0.211_903_5 * c.r + 0.680_699_5 * c.g + 0.107_396_96 * c.b;
@@ -101,6 +111,10 @@ fn to_gamma(u: f32) -> f32 {
     } else {
         12.92 * u
     }
+}
+
+fn lerp(a: f32, b: f32, t: f32) -> f32 {
+    (1.0 - t) * a + t * b
 }
 
 impl From<OkLab<f32>> for Rgb<f32> {

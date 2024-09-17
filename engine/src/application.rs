@@ -3,10 +3,7 @@ use std::{iter, rc::Rc, sync::Arc, time::Instant};
 use anyhow::{Context, Result};
 use nalgebra::Vector2;
 use wgpu::{
-    CommandEncoderDescriptor, CompositeAlphaMode, DeviceDescriptor, Features, Instance,
-    InstanceDescriptor, Limits, LoadOp, MemoryHints, Operations, PresentMode,
-    RenderPassColorAttachment, RenderPassDescriptor, RequestAdapterOptions, StoreOp,
-    SurfaceConfiguration, TextureUsages, TextureViewDescriptor,
+    CommandEncoderDescriptor, CompositeAlphaMode, DeviceDescriptor, Features, Instance, InstanceDescriptor, Limits, LoadOp, MemoryHints, Operations, PresentMode, RenderPassColorAttachment, RenderPassDepthStencilAttachment, RenderPassDescriptor, RequestAdapterOptions, StoreOp, SurfaceConfiguration, TextureDescriptor, TextureUsages, TextureViewDescriptor
 };
 use winit::{
     application::ApplicationHandler,
@@ -73,6 +70,17 @@ impl<'a> ApplicationHandler for Application<'a> {
             None,
         ))
         .unwrap();
+
+        let depth_texture = device.create_texture(&TextureDescriptor {
+            label: None,
+            size: (),
+            mip_level_count: (),
+            sample_count: (),
+            dimension: (),
+            format: (),
+            usage: (),
+            view_formats: (),
+        });
 
         let mut asset_constructor = AssetConstructor::new();
         (self.asset_constructor)(&mut asset_constructor);
@@ -149,7 +157,14 @@ impl<'a> ApplicationHandler for Application<'a> {
                             store: StoreOp::Store,
                         },
                     })],
-                    depth_stencil_attachment: None,
+                    depth_stencil_attachment: Some(RenderPassDepthStencilAttachment {
+                        view: depth_texture_view,
+                        depth_ops: Some(Operations {
+                            load: LoadOp::Clear(1.0),
+                            store: StoreOp::Store,
+                        }),
+                        stencil_ops: None,
+                    }),
                     timestamp_writes: None,
                     occlusion_query_set: None,
                 });

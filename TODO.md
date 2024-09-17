@@ -10,4 +10,5 @@
 - [x] Allow rotating sprites
 - [ ] Look into anti aliasing
 - [ ] Matrix stacks?
-- [ ] Color struct with mixing and lab
+- [x] Color struct with mixing and lab
+- [ ] Sprite Z-ordering

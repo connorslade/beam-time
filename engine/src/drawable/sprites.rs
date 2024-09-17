@@ -13,6 +13,7 @@ pub struct Sprite {
     color: Rgb<f32>,
 
     position: Vector2<f32>,
+    z_index: f32,
     rotation: f32,
 
     scale: Vector2<f32>,
@@ -26,6 +27,7 @@ impl Sprite {
             color: Rgb::new(1.0, 1.0, 1.0),
 
             position: Vector2::repeat(0.0),
+            z_index: 0.0,
             rotation: 0.0,
 
             scale: Vector2::repeat(1.0),
@@ -36,6 +38,11 @@ impl Sprite {
     pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
         self.position = pos;
         self.scale_anchor = anchor;
+        self
+    }
+
+    pub fn z_index(mut self, z_index: f32) -> Self {
+        self.z_index = z_index;
         self
     }
 
@@ -81,6 +88,7 @@ impl Drawable for Sprite {
             texture: asset.texture,
             uv: asset.uv(),
             points,
+            z_index: self.z_index,
             color: Vector3::new(self.color.r, self.color.g, self.color.b),
         });
     }
