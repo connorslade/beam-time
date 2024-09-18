@@ -3,13 +3,15 @@ use std::{iter, mem, rc::Rc, sync::Arc, time::Instant};
 use anyhow::{Context, Result};
 use nalgebra::Vector2;
 use wgpu::{
-    CommandEncoderDescriptor, CompositeAlphaMode, Device, DeviceDescriptor, Features, Instance,
-    InstanceDescriptor, Limits, LoadOp, MemoryHints, Operations, PresentMode, Queue,
-    RenderPassColorAttachment, RenderPassDescriptor, RequestAdapterOptions, StoreOp, Surface,
-    SurfaceConfiguration, TextureUsages, TextureViewDescriptor,
+    CommandEncoderDescriptor, CompositeAlphaMode, Device, DeviceDescriptor, Extent3d, Features,
+    Instance, InstanceDescriptor, Limits, LoadOp, MemoryHints, Operations, PresentMode, Queue,
+    RenderPassColorAttachment, RenderPassDepthStencilAttachment, RenderPassDescriptor,
+    RequestAdapterOptions, StoreOp, Surface, SurfaceConfiguration, Texture, TextureDescriptor,
+    TextureDimension, TextureUsages, TextureViewDescriptor,
 };
 use winit::{
     application::ApplicationHandler,
+    dpi::PhysicalSize,
     event::WindowEvent,
     event_loop::{ActiveEventLoop, ControlFlow, EventLoopBuilder},
     window::{Window, WindowAttributes, WindowId},
@@ -21,7 +23,7 @@ use crate::{
     input::InputManager,
     render::sprite::SpriteRenderPipeline,
     screens::{Screen, Screens},
-    TEXTURE_FORMAT,
+    DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
 };
 
 pub struct Application<'a> {
@@ -46,6 +48,7 @@ pub struct State<'a> {
     pub screens: Screens,
 
     pub sprite_renderer: SpriteRenderPipeline,
+    pub depth_buffer: Texture,
 }
 
 pub struct RenderContext<'a> {
@@ -73,6 +76,7 @@ impl<'a> ApplicationHandler for Application<'a> {
                 .create_window(self.window_attributes.clone())
                 .unwrap(),
         );
+        let window_size = window.inner_size();
 
         let instance = Instance::new(InstanceDescriptor::default());
         let adapter =
@@ -97,6 +101,7 @@ impl<'a> ApplicationHandler for Application<'a> {
 
         self.state = Some(State {
             sprite_renderer: SpriteRenderPipeline::new(&device),
+            depth_buffer: create_depth_buffer(&device, window_size),
             assets: Rc::new(asset_constructor.into_manager(&device, &queue)),
             input: InputManager::new(window.inner_size()),
             graphics: RenderContext {
@@ -151,6 +156,10 @@ impl<'a> ApplicationHandler for Application<'a> {
                     .texture
                     .create_view(&TextureViewDescriptor::default());
 
+                let depth_view = state
+                    .depth_buffer
+                    .create_view(&TextureViewDescriptor::default());
+
                 let mut render_pass = encoder.begin_render_pass(&RenderPassDescriptor {
                     label: None,
                     color_attachments: &[Some(RenderPassColorAttachment {
@@ -161,7 +170,14 @@ impl<'a> ApplicationHandler for Application<'a> {
                             store: StoreOp::Store,
                         },
                     })],
-                    depth_stencil_attachment: None,
+                    depth_stencil_attachment: Some(RenderPassDepthStencilAttachment {
+                        view: &depth_view,
+                        depth_ops: Some(Operations {
+                            load: LoadOp::Clear(1.0),
+                            store: StoreOp::Store,
+                        }),
+                        stencil_ops: None,
+                    }),
                     timestamp_writes: None,
                     occlusion_query_set: None,
                 });
@@ -178,6 +194,7 @@ impl<'a> ApplicationHandler for Application<'a> {
                 state
                     .screens
                     .on_resize(Vector2::new(size.width as f32, size.height as f32));
+                state.depth_buffer = create_depth_buffer(&state.graphics.device, size);
                 self.resize_surface();
             }
             _ => (),
@@ -214,4 +231,23 @@ impl<'a> Application<'a> {
             },
         );
     }
+}
+
+fn create_depth_buffer(device: &Device, window_size: PhysicalSize<u32>) -> Texture {
+    let size = Extent3d {
+        width: window_size.width,
+        height: window_size.height,
+        depth_or_array_layers: 1,
+    };
+
+    device.create_texture(&TextureDescriptor {
+        label: None,
+        size,
+        mip_level_count: 1,
+        sample_count: 1,
+        dimension: TextureDimension::D2,
+        format: DEPTH_TEXTURE_FORMAT,
+        usage: TextureUsages::RENDER_ATTACHMENT,
+        view_formats: &[],
+    })
 }

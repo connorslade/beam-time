@@ -27,5 +27,8 @@ var texture_sampler: sampler;
 
 @fragment
 fn frag(in: VertexOutput) -> @location(0) vec4<f32> {
-    return textureSample(texture, texture_sampler, in.uv) * vec4(in.color, 1.0);
+    let sample = textureSample(texture, texture_sampler, in.uv);
+    if sample.w == 0.0 { discard; }
+
+    return sample * vec4(in.color, 1.0);
 }

@@ -119,7 +119,7 @@ impl Screen for TitleScreen {
                     .pos(tile.pos, Anchor::Center)
                     .scale(Vector2::repeat(4.0))
                     .color(LIGHT_BACKGROUND)
-                    .z_index(-10),
+                    .z_index(10),
             );
 
             tile.pos.y -= tile.vel * ctx.delta_time;

@@ -5,16 +5,17 @@ use wgpu::{
     util::{BufferInitDescriptor, DeviceExt},
     AddressMode, BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
     BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingResource, BindingType, BlendComponent,
-    BlendState, Buffer, BufferUsages, ColorTargetState, ColorWrites, Device, FilterMode,
-    FragmentState, IndexFormat, MultisampleState, PipelineCompilationOptions,
-    PipelineLayoutDescriptor, PrimitiveState, Queue, RenderPass, RenderPipeline,
-    RenderPipelineDescriptor, Sampler, SamplerBindingType, SamplerDescriptor, ShaderStages,
-    TextureSampleType, TextureViewDescriptor, TextureViewDimension, VertexState,
+    BlendState, Buffer, BufferUsages, ColorTargetState, ColorWrites, CompareFunction,
+    DepthBiasState, DepthStencilState, Device, FilterMode, FragmentState, IndexFormat,
+    MultisampleState, PipelineCompilationOptions, PipelineLayoutDescriptor, PrimitiveState, Queue,
+    RenderPass, RenderPipeline, RenderPipelineDescriptor, Sampler, SamplerBindingType,
+    SamplerDescriptor, ShaderStages, StencilState, TextureSampleType, TextureViewDescriptor,
+    TextureViewDimension, VertexState,
 };
 
 use crate::{
     assets::TextureRef, graphics_context::GraphicsContext, include_shader,
-    render::consts::VERTEX_BUFFER_LAYOUT, TEXTURE_FORMAT,
+    render::consts::VERTEX_BUFFER_LAYOUT, DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
 };
 
 use super::Vertex;
@@ -98,7 +99,13 @@ impl SpriteRenderPipeline {
                 compilation_options: PipelineCompilationOptions::default(),
             }),
             primitive: PrimitiveState::default(),
-            depth_stencil: None,
+            depth_stencil: Some(DepthStencilState {
+                format: DEPTH_TEXTURE_FORMAT,
+                depth_write_enabled: true,
+                depth_compare: CompareFunction::LessEqual,
+                stencil: StencilState::default(),
+                bias: DepthBiasState::default(),
+            }),
             multisample: MultisampleState::default(),
             multiview: None,
             cache: None,
