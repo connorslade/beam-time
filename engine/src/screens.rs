@@ -20,6 +20,10 @@ impl Screens {
         }
     }
 
+    pub fn extend(&mut self, screens: Vec<Box<dyn Screen>>) {
+        self.inner.extend(screens);
+    }
+
     fn top(&mut self) -> &mut Box<dyn Screen> {
         self.inner.last_mut().unwrap()
     }

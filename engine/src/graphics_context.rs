@@ -6,10 +6,12 @@ use wgpu::Color;
 use crate::{
     assets::{manager::AssetManager, Asset, AssetRef},
     color::Rgb,
+    input::InputManager,
     render::sprite::GpuSprite,
+    screens::Screen,
 };
 
-pub struct GraphicsContext {
+pub struct GraphicsContext<'a> {
     /// Reference to asset manager
     pub(crate) asset_manager: Rc<AssetManager>,
 
@@ -17,13 +19,12 @@ pub struct GraphicsContext {
     pub(crate) background: Rgb<f32>,
     /// list of sprites to render this frame
     pub(crate) sprites: Vec<GpuSprite>,
+    /// Screen to open for next frame
+    pub(crate) next_screen: Vec<Box<dyn Screen>>,
 
-    /// Window size
-    pub size: Vector2<f32>,
+    pub input: &'a InputManager,
     /// Current window scale_factor
     pub scale_factor: f32,
-    /// Mouse pos
-    pub mouse: Vector2<f32>,
     /// One over the time since the last frame
     pub delta_time: f32,
 }
@@ -45,31 +46,38 @@ pub enum Anchor {
     BottomRight,
 }
 
-impl GraphicsContext {
+impl<'a> GraphicsContext<'a> {
     pub fn new(
         asset_manager: Rc<AssetManager>,
-        size: Vector2<u32>,
         scale_factor: f32,
-        mouse: Vector2<f32>,
+        input: &'a InputManager,
         delta_time: f32,
     ) -> Self {
         GraphicsContext {
             asset_manager,
             background: Rgb::new(0.0, 0.0, 0.0),
             sprites: Vec::new(),
-            size: size.map(|x| x as f32),
+            next_screen: Vec::new(),
+            input,
             scale_factor,
             delta_time,
-            mouse,
         }
     }
 
+    pub fn size(&self) -> Vector2<f32> {
+        self.input.window_size.map(|x| x as f32)
+    }
+
     pub fn center(&self) -> Vector2<f32> {
-        self.size / 2.0
+        self.size() / 2.0
     }
 
     pub fn background(&mut self, color: Rgb<f32>) {
         self.background = color;
+    }
+
+    pub fn open_screen(&mut self, screen: impl Screen + 'static) {
+        self.next_screen.push(Box::new(screen));
     }
 
     pub fn draw(&mut self, drawable: impl Drawable) {
@@ -81,7 +89,7 @@ impl GraphicsContext {
     }
 }
 
-impl GraphicsContext {
+impl<'a> GraphicsContext<'a> {
     pub(crate) fn background_color(&self) -> Color {
         Color {
             r: self.background.r as f64,

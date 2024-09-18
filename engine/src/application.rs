@@ -1,26 +1,25 @@
-use std::{iter, rc::Rc, sync::Arc, time::Instant};
+use std::{iter, mem, rc::Rc, sync::Arc, time::Instant};
 
 use anyhow::{Context, Result};
-use nalgebra::Vector2;
 use wgpu::{
-    CommandEncoderDescriptor, CompositeAlphaMode, DeviceDescriptor, Features, Instance,
-    InstanceDescriptor, Limits, LoadOp, MemoryHints, Operations, PresentMode,
-    RenderPassColorAttachment, RenderPassDescriptor, RequestAdapterOptions, StoreOp,
+    CommandEncoderDescriptor, CompositeAlphaMode, Device, DeviceDescriptor, Features, Instance,
+    InstanceDescriptor, Limits, LoadOp, MemoryHints, Operations, PresentMode, Queue,
+    RenderPassColorAttachment, RenderPassDescriptor, RequestAdapterOptions, StoreOp, Surface,
     SurfaceConfiguration, TextureUsages, TextureViewDescriptor,
 };
 use winit::{
     application::ApplicationHandler,
     event::WindowEvent,
     event_loop::{ActiveEventLoop, ControlFlow, EventLoopBuilder},
-    window::{Cursor, CursorIcon, WindowAttributes, WindowId},
+    window::{Window, WindowAttributes, WindowId},
 };
 
 use crate::{
-    assets::constructor::AssetConstructor,
+    assets::{constructor::AssetConstructor, manager::AssetManager},
     graphics_context::GraphicsContext,
+    input::InputManager,
     render::sprite::SpriteRenderPipeline,
     screens::{Screen, Screens},
-    state::{RenderContext, State},
     TEXTURE_FORMAT,
 };
 
@@ -35,6 +34,24 @@ pub struct ApplicationArgs {
     pub window_attributes: WindowAttributes,
     pub screen_constructor: Box<dyn Fn() -> Box<dyn Screen>>,
     pub asset_constructor: Box<dyn Fn(&mut AssetConstructor)>,
+}
+
+pub struct State<'a> {
+    pub graphics: RenderContext<'a>,
+    pub input: InputManager,
+    pub last_frame: Instant,
+
+    pub assets: Rc<AssetManager>,
+    pub screens: Screens,
+
+    pub sprite_renderer: SpriteRenderPipeline,
+}
+
+pub struct RenderContext<'a> {
+    pub window: Arc<Window>,
+    pub surface: Surface<'a>,
+    pub device: Device,
+    pub queue: Queue,
 }
 
 impl<'a> Application<'a> {
@@ -80,7 +97,7 @@ impl<'a> ApplicationHandler for Application<'a> {
         self.state = Some(State {
             sprite_renderer: SpriteRenderPipeline::new(&device),
             assets: Rc::new(asset_constructor.into_manager(&device, &queue)),
-            mouse_pos: Vector2::zeros(),
+            input: InputManager::new(window.inner_size()),
             graphics: RenderContext {
                 surface,
                 window,
@@ -98,35 +115,28 @@ impl<'a> ApplicationHandler for Application<'a> {
         window_id: WindowId,
         event: WindowEvent,
     ) {
-        let state = self.state.as_mut().unwrap();
+        let state = self.state();
         if window_id != state.graphics.window.id() {
             return;
         }
 
+        state.input.on_window_event(&event);
         match event {
             WindowEvent::CloseRequested => event_loop.exit(),
-            WindowEvent::CursorMoved { position, .. } => {
-                let screen_size = state.graphics.window.inner_size();
-                state.mouse_pos = Vector2::new(
-                    position.x as f32,
-                    screen_size.height as f32 - position.y as f32,
-                )
-            }
             WindowEvent::RedrawRequested => {
                 let gcx = &state.graphics;
 
                 let delta_time = state.last_frame.elapsed().as_secs_f32();
                 state.last_frame = Instant::now();
 
-                let size = gcx.window.inner_size();
                 let mut ctx = GraphicsContext::new(
                     state.assets.clone(),
-                    Vector2::new(size.width, size.height),
                     gcx.window.scale_factor() as f32,
-                    state.mouse_pos,
+                    &state.input,
                     delta_time,
                 );
                 state.screens.render(&mut ctx);
+                state.screens.extend(mem::take(&mut ctx.next_screen));
 
                 state.sprite_renderer.prepare(&gcx.device, &gcx.queue, &ctx);
 
@@ -180,6 +190,10 @@ impl<'a> Application<'a> {
         event_loop_builder.set_control_flow(ControlFlow::Wait);
         event_loop_builder.run_app(&mut self)?;
         Ok(())
+    }
+
+    fn state(&mut self) -> &mut State<'a> {
+        self.state.as_mut().unwrap()
     }
 
     fn resize_surface(&mut self) {

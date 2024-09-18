@@ -13,6 +13,8 @@ use crate::{
     ui::button::{Button, ButtonState},
 };
 
+use super::pong::PongScreen;
+
 pub struct TitleScreen {
     pub start_time: Instant,
     pub last_update: Instant,
@@ -28,7 +30,7 @@ impl Screen for TitleScreen {
     fn render(&mut self, ctx: &mut GraphicsContext) {
         ctx.background(BACKGROUND_COLOR);
 
-        let pos = Vector2::new(ctx.size.x / 2.0, ctx.size.y * 0.9);
+        let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
         let t = self.start_time.elapsed().as_secs_f32().sin() / 20.0;
         ctx.draw(
             Sprite::new(TITLE)
@@ -39,14 +41,15 @@ impl Screen for TitleScreen {
 
         ctx.draw(
             Sprite::new(COPYRIGHT)
-                .pos(Vector2::new(ctx.size.x - 10.0, 10.0), Anchor::BottomRight)
+                .pos(Vector2::new(ctx.size().x - 10.0, 10.0), Anchor::BottomRight)
                 .scale(Vector2::repeat(2.0)),
         );
 
         ctx.draw(
             Button::new(START_BUTTON, &mut self.start_button)
                 .pos(ctx.center(), Anchor::Center)
-                .scale(Vector2::repeat(4.0)),
+                .scale(Vector2::repeat(4.0))
+                .on_click(|ctx| ctx.open_screen(PongScreen::default())),
         );
 
         ctx.draw(

@@ -142,10 +142,10 @@ impl SpriteRenderPipeline {
                 let color = [sprite.color.x, sprite.color.y, sprite.color.z];
                 let (uv_a, uv_b) = sprite.uv;
 
-                let pos_a = sprite.points[0].component_div(&ctx.size);
-                let pos_b = sprite.points[1].component_div(&ctx.size);
-                let pos_c = sprite.points[2].component_div(&ctx.size);
-                let pos_d = sprite.points[3].component_div(&ctx.size);
+                let pos_a = sprite.points[0].component_div(&ctx.size());
+                let pos_b = sprite.points[1].component_div(&ctx.size());
+                let pos_c = sprite.points[2].component_div(&ctx.size());
+                let pos_d = sprite.points[3].component_div(&ctx.size());
 
                 let base = vert.len() as u32;
                 vert.extend_from_slice(&[

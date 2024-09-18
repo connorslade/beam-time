@@ -1,0 +1,45 @@
+use nalgebra::Vector2;
+use winit::{
+    dpi::PhysicalSize,
+    event::{ElementState, MouseButton, WindowEvent},
+};
+
+#[derive(Debug)]
+pub struct InputManager {
+    pub(crate) window_size: Vector2<u32>,
+    pub mouse: Vector2<f32>,
+    mouse_down: Vec<MouseButton>,
+}
+
+impl InputManager {
+    pub fn new(window_size: PhysicalSize<u32>) -> Self {
+        Self {
+            window_size: Vector2::new(window_size.width, window_size.height),
+            mouse: Vector2::new(0.0, 0.0),
+            mouse_down: Vec::new(),
+        }
+    }
+
+    pub fn is_mouse_down(&self, button: MouseButton) -> bool {
+        self.mouse_down.contains(&button)
+    }
+
+    pub(crate) fn on_window_event(&mut self, window_event: &WindowEvent) {
+        match window_event {
+            WindowEvent::Resized(size) => self.window_size = Vector2::new(size.width, size.height),
+            WindowEvent::CursorMoved { position: pos, .. } => {
+                self.mouse = Vector2::new(pos.x as f32, self.window_size.y as f32 - pos.y as f32)
+            }
+            WindowEvent::MouseInput { state, button, .. } => match state {
+                ElementState::Pressed => self.mouse_down.push(button.to_owned()),
+                ElementState::Released => {
+                    let idx = self.mouse_down.iter().position(|x| x == button);
+                    if let Some(idx) = idx {
+                        self.mouse_down.remove(idx);
+                    }
+                }
+            },
+            _ => {}
+        }
+    }
+}

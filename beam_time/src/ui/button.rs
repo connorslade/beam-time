@@ -2,7 +2,7 @@ use engine::{
     assets::AssetRef,
     color::Rgb,
     drawable::sprites::Sprite,
-    exports::nalgebra::Vector2,
+    exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, Drawable, GraphicsContext},
 };
 
@@ -11,6 +11,7 @@ use crate::consts::ACCENT_COLOR;
 pub struct Button<'a> {
     asset: AssetRef,
     state: &'a mut ButtonState,
+    on_click: Box<dyn FnMut(&mut GraphicsContext)>,
 
     pos: Vector2<f32>,
     anchor: Anchor,
@@ -27,6 +28,8 @@ impl<'a> Button<'a> {
         Self {
             asset,
             state,
+            on_click: Box::new(|_| {}),
+
             pos: Vector2::zeros(),
             anchor: Anchor::BottomLeft,
             scale: Vector2::repeat(1.0),
@@ -43,24 +46,31 @@ impl<'a> Button<'a> {
         self.scale = scale;
         self
     }
+
+    pub fn on_click(mut self, on_click: impl FnMut(&mut GraphicsContext) + 'static) -> Self {
+        self.on_click = Box::new(on_click);
+        self
+    }
 }
 
 impl<'a> Drawable for Button<'a> {
-    fn draw(self, ctx: &mut GraphicsContext) {
-        let sprite = Sprite::new(self.asset)
-            .color(Rgb::new(1.0, 1.0, 1.0).lerp(ACCENT_COLOR, self.state.hover_time / 0.1))
-            .pos(self.pos, self.anchor)
-            .scale(
-                self.scale
-                    + Vector2::repeat(self.state.hover_time / 2.0).component_mul(&self.scale),
-            );
+    fn draw(mut self, ctx: &mut GraphicsContext) {
+        let color = Rgb::new(1.0, 1.0, 1.0).lerp(ACCENT_COLOR, self.state.hover_time / 0.1);
+        let scale =
+            self.scale + Vector2::repeat(self.state.hover_time / 2.0).component_mul(&self.scale);
 
-        if sprite.is_hovered(ctx) {
-            self.state.hover_time += ctx.delta_time;
-        } else {
-            self.state.hover_time -= ctx.delta_time;
+        let sprite = Sprite::new(self.asset)
+            .color(color)
+            .pos(self.pos, self.anchor)
+            .scale(scale);
+
+        let hover = sprite.is_hovered(ctx);
+        self.state.hover_time += ctx.delta_time * if hover { 1.0 } else { -1.0 };
+        self.state.hover_time = self.state.hover_time.clamp(0.0, 0.1);
+
+        if hover && ctx.input.is_mouse_down(MouseButton::Left) {
+            (self.on_click)(ctx);
         }
-        self.state.hover_time = self.state.hover_time.min(0.1).max(0.0);
 
         ctx.draw(sprite);
     }
