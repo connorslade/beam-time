@@ -27,17 +27,7 @@ fn main() -> Result<()> {
             .with_window_icon(Some(icon))
             .with_inner_size(PhysicalSize::new(DEFAULT_SIZE.0, DEFAULT_SIZE.1))
             .with_resizable(false),
-        screen_constructor: Box::new(|| {
-            Box::new(TitleScreen {
-                start_time: Instant::now(),
-                last_update: Instant::now(),
-                frames: 0,
-                last_frames: 0,
-                start_button: ButtonState::default(),
-                about_button: ButtonState::default(),
-                options_button: ButtonState::default(),
-            })
-        }),
+        screen_constructor: Box::new(|| Box::new(TitleScreen::default())),
         asset_constructor: Box::new(assets::init),
     })
     .run()

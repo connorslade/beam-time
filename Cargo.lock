@@ -198,6 +198,7 @@ dependencies = [
  "anyhow",
  "engine",
  "image",
+ "rand",
  "ron",
 ]
 

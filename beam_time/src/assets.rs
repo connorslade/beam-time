@@ -10,29 +10,30 @@ pub const TITLE: AssetRef = asset("title");
 pub const COPYRIGHT: AssetRef = asset("copyright");
 
 // tiles
+pub const MIRROR_A_TILE: AssetRef = asset("mirror_a_tile");
+pub const MIRROR_B_TILE: AssetRef = asset("mirror_b_tile");
+pub const WALL_TILE: AssetRef = asset("wall_tile");
+pub const GALVO_TILE: AssetRef = asset("galvo_tile");
 pub const EYE_TILE: AssetRef = asset("eye_tile");
+
 pub const BALL: AssetRef = asset("ball");
 pub const PADDLE: AssetRef = asset("paddle");
 
+// buttons
 pub const START_BUTTON: AssetRef = asset("start_button");
 pub const OPTIONS_BUTTON: AssetRef = asset("options_button");
 pub const ABOUT_BUTTON: AssetRef = asset("about_button");
-
-// button elements
-pub const BUTTON_LEFT_CAP: AssetRef = asset("button_left_cap");
-pub const BUTTON_RIGHT_CAP: AssetRef = asset("button_right_cap");
-pub const BUTTON_MIDDLE: AssetRef = asset("button_middle");
 
 pub fn init(assets: &mut AssetConstructor) {
     let interface = assets.register_atlas(include_atlas!("interface.png"));
     assets.register_sprite(interface, TITLE, (0, 0), (81, 20));
     assets.register_sprite(interface, COPYRIGHT, (0, 20), (28, 8));
 
-    assets.register_sprite(interface, BUTTON_LEFT_CAP, (30, 21), (4, 14));
-    assets.register_sprite(interface, BUTTON_RIGHT_CAP, (52, 21), (4, 14));
-    assets.register_sprite(interface, BUTTON_MIDDLE, (35, 21), (16, 14));
-
     let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
+    assets.register_sprite(tiles, MIRROR_A_TILE, (0, 0), (16, 16));
+    assets.register_sprite(tiles, MIRROR_B_TILE, (16, 0), (16, 16));
+    assets.register_sprite(tiles, WALL_TILE, (80, 0), (16, 16));
+    assets.register_sprite(tiles, GALVO_TILE, (112, 0), (16, 16));
     assets.register_sprite(tiles, EYE_TILE, (64, 16), (16, 16));
     assets.register_sprite(tiles, BALL, (80, 16), (8, 8));
     assets.register_sprite(tiles, PADDLE, (96, 16), (3, 16));
