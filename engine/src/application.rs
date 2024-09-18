@@ -12,7 +12,7 @@ use winit::{
     application::ApplicationHandler,
     event::WindowEvent,
     event_loop::{ActiveEventLoop, ControlFlow, EventLoopBuilder},
-    window::{WindowAttributes, WindowId},
+    window::{Cursor, CursorIcon, WindowAttributes, WindowId},
 };
 
 use crate::{

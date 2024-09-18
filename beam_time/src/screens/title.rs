@@ -10,6 +10,7 @@ use engine::{
 use crate::{
     assets::{ABOUT_BUTTON, COPYRIGHT, DEFAULT_FONT, OPTIONS_BUTTON, START_BUTTON, TITLE},
     consts::{BACKGROUND_COLOR, FOREGROUND_COLOR},
+    ui::button::{Button, ButtonState},
 };
 
 pub struct TitleScreen {
@@ -17,6 +18,10 @@ pub struct TitleScreen {
     pub last_update: Instant,
     pub frames: usize,
     pub last_frames: usize,
+
+    pub start_button: ButtonState,
+    pub options_button: ButtonState,
+    pub about_button: ButtonState,
 }
 
 impl Screen for TitleScreen {
@@ -38,32 +43,26 @@ impl Screen for TitleScreen {
                 .scale(Vector2::repeat(2.0)),
         );
 
-        // ctx.draw(
-        //     Button::new(&BUTTON_STYLE, "Start")
-        //         .pos(ctx.center())
-        //         .scale(Vector2::repeat(4.0)),
-        // );
+        ctx.draw(
+            Button::new(START_BUTTON, &mut self.start_button)
+                .pos(ctx.center(), Anchor::Center)
+                .scale(Vector2::repeat(4.0)),
+        );
 
-        let start = Sprite::new(START_BUTTON)
-            .pos(ctx.center(), Anchor::Center)
-            .scale(Vector2::repeat(4.0));
-        let start_hover = start.is_hovered(ctx);
-        ctx.draw(start.scale(Vector2::repeat(4.0 + if start_hover { 0.2 } else { 0.0 })));
+        ctx.draw(
+            Button::new(OPTIONS_BUTTON, &mut self.options_button)
+                .pos(ctx.center() - Vector2::new(0.0, 14.0 * 5.0), Anchor::Center)
+                .scale(Vector2::repeat(4.0)),
+        );
 
-        let options = Sprite::new(OPTIONS_BUTTON)
-            .pos(ctx.center() - Vector2::new(0.0, 14.0 * 5.0), Anchor::Center)
-            .scale(Vector2::repeat(4.0));
-        let options_hover = options.is_hovered(ctx);
-        ctx.draw(options.scale(Vector2::repeat(4.0 + if options_hover { 0.2 } else { 0.0 })));
-
-        let about = Sprite::new(ABOUT_BUTTON)
-            .pos(
-                ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0),
-                Anchor::Center,
-            )
-            .scale(Vector2::repeat(4.0));
-        let about_hover = about.is_hovered(ctx);
-        ctx.draw(about.scale(Vector2::repeat(4.0 + if about_hover { 0.2 } else { 0.0 })));
+        ctx.draw(
+            Button::new(ABOUT_BUTTON, &mut self.about_button)
+                .pos(
+                    ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0),
+                    Anchor::Center,
+                )
+                .scale(Vector2::repeat(4.0)),
+        );
 
         self.frames += 1;
         if self.last_update.elapsed() >= Duration::from_secs(1) {

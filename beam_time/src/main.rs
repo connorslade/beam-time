@@ -17,6 +17,7 @@ mod screens;
 mod ui;
 mod util;
 use consts::DEFAULT_SIZE;
+use ui::button::ButtonState;
 
 fn main() -> Result<()> {
     let icon = Icon::from_rgba(include_atlas!("icon.png").into_vec(), 16, 16)?;
@@ -32,6 +33,9 @@ fn main() -> Result<()> {
                 last_update: Instant::now(),
                 frames: 0,
                 last_frames: 0,
+                start_button: ButtonState::default(),
+                about_button: ButtonState::default(),
+                options_button: ButtonState::default(),
             })
         }),
         asset_constructor: Box::new(assets::init),

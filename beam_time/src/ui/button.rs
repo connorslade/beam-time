@@ -1,46 +1,41 @@
 use engine::{
     assets::AssetRef,
     color::Rgb,
-    drawable::{sprites::Sprite, text::Text},
+    drawable::sprites::Sprite,
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
 };
 
-pub struct Button<'a, 'b> {
-    text: &'a str,
-    style: &'b ButtonStyle,
+use crate::consts::ACCENT_COLOR;
+
+pub struct Button<'a> {
+    asset: AssetRef,
+    state: &'a mut ButtonState,
 
     pos: Vector2<f32>,
+    anchor: Anchor,
     scale: Vector2<f32>,
-
-    text_color: Rgb<f32>,
-    border_color: Rgb<f32>,
 }
 
-pub struct ButtonStyle {
-    pub left_cap: AssetRef,
-    pub right_cap: AssetRef,
-    pub segment: AssetRef,
-    pub font: AssetRef,
-
-    pub default_text_color: Rgb<f32>,
-    pub default_border_color: Rgb<f32>,
+#[derive(Default)]
+pub struct ButtonState {
+    hover_time: f32,
 }
 
-impl<'a, 'b> Button<'a, 'b> {
-    pub fn new(style: &'b ButtonStyle, text: &'a str) -> Self {
+impl<'a> Button<'a> {
+    pub fn new(asset: AssetRef, state: &'a mut ButtonState) -> Self {
         Self {
-            text,
-            style,
+            asset,
+            state,
             pos: Vector2::zeros(),
+            anchor: Anchor::BottomLeft,
             scale: Vector2::repeat(1.0),
-            border_color: style.default_border_color,
-            text_color: style.default_text_color,
         }
     }
 
-    pub fn pos(mut self, pos: Vector2<f32>) -> Self {
+    pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
         self.pos = pos;
+        self.anchor = anchor;
         self
     }
 
@@ -50,48 +45,23 @@ impl<'a, 'b> Button<'a, 'b> {
     }
 }
 
-impl<'a, 'b> Drawable for Button<'a, 'b> {
+impl<'a> Drawable for Button<'a> {
     fn draw(self, ctx: &mut GraphicsContext) {
-        let font = ctx.get_asset(self.style.font).as_font().unwrap();
-
-        let text_pos = self.pos - Vector2::new(0.0, font.desc.height / 2.0 * self.scale.y);
-        let text = Text::new(self.style.font, self.text)
-            .pos(text_pos, Anchor::Center)
-            .scale(self.scale)
-            .color(self.text_color);
-
-        let middle_sprite = ctx.get_asset(self.style.segment).as_sprite().unwrap();
-        let middle_width = middle_sprite.size.x as f32 * self.scale.x;
-        let middle_count = (text.width(ctx) / middle_width).ceil();
-        let text_width = middle_count * middle_width;
-
-        ctx.draw(text);
-
-        let left_pos = self.pos - Vector2::new(text_width / 2.0, 0.0);
-        ctx.draw(
-            Sprite::new(self.style.left_cap)
-                .scale(self.scale)
-                .pos(left_pos, Anchor::CenterRight)
-                .color(self.border_color),
-        );
-
-        let right_pos = self.pos + Vector2::new(text_width / 2.0, 0.0);
-        ctx.draw(
-            Sprite::new(self.style.right_cap)
-                .scale(self.scale)
-                .pos(right_pos, Anchor::CenterLeft)
-                .color(self.border_color),
-        );
-
-        for i in 0..(middle_count as i32) {
-            let x = i as f32 * 16.0 * self.scale.x - text_width / 2.0;
-            let pos = self.pos + Vector2::new(x, 0.0);
-            ctx.draw(
-                Sprite::new(self.style.segment)
-                    .scale(self.scale)
-                    .pos(pos, Anchor::CenterLeft)
-                    .color(self.border_color),
+        let sprite = Sprite::new(self.asset)
+            .color(Rgb::new(1.0, 1.0, 1.0).lerp(ACCENT_COLOR, self.state.hover_time / 0.1))
+            .pos(self.pos, self.anchor)
+            .scale(
+                self.scale
+                    + Vector2::repeat(self.state.hover_time / 2.0).component_mul(&self.scale),
             );
+
+        if sprite.is_hovered(ctx) {
+            self.state.hover_time += ctx.delta_time;
+        } else {
+            self.state.hover_time -= ctx.delta_time;
         }
+        self.state.hover_time = self.state.hover_time.min(0.1).max(0.0);
+
+        ctx.draw(sprite);
     }
 }

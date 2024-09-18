@@ -12,3 +12,8 @@
 - [ ] Matrix stacks?
 - [x] Color struct with mixing and lab
 - [ ] Sprite Z-ordering
+- [ ] Make a button UI element
+- [ ] Bring back the input handler for immediate mode style ui layouts
+- [ ] In the background of the title screen have faded versions of all the tiles be flying down
+- [ ] Some kinda screen that always runs its handlers
+- [ ] Fade to accent color on hover
