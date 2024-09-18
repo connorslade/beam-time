@@ -1,8 +1,12 @@
+use nalgebra::Vector2;
+
 use crate::graphics_context::GraphicsContext;
 
 pub trait Screen {
     fn render(&mut self, ctx: &mut GraphicsContext);
     fn update(&mut self, _ctx: &mut GraphicsContext) {}
+
+    fn on_resize(&mut self, _size: Vector2<f32>) {}
 }
 
 pub struct Screens {
@@ -33,5 +37,10 @@ impl Screens {
     pub fn render(&mut self, ctx: &mut GraphicsContext) {
         self.top().render(ctx);
         self.inner.iter_mut().for_each(|x| x.update(ctx));
+    }
+
+    pub fn on_resize(&mut self, size: Vector2<f32>) {
+        self.top().on_resize(size);
+        self.inner.iter_mut().for_each(|x| x.on_resize(size));
     }
 }

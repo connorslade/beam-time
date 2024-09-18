@@ -1,4 +1,4 @@
-use std::{collections::HashMap, i16};
+use std::collections::HashMap;
 
 use nalgebra::{Vector2, Vector3};
 use wgpu::{

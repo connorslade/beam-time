@@ -35,11 +35,11 @@ impl Screen for PongScreen {
 
         self.pos += self.vel * ctx.delta_time;
 
-        let width = 8.0 * 5.0 / 2.0;
+        let width = 8.0 * 5.0 * ctx.scale_factor / 2.0;
         let paddle_height = 16.0 * 5.0 / 2.0;
         if self.pos.x < width
             || self.pos.x > size.x - width
-            || (self.pos.x > size.x - width - 30.0 * ctx.scale_factor
+            || (self.pos.x > size.x - width - 37.5 * ctx.scale_factor
                 && self.pos.y >= ctx.input.mouse.y - paddle_height
                 && self.pos.y <= ctx.input.mouse.y + paddle_height)
         {
@@ -49,7 +49,7 @@ impl Screen for PongScreen {
         if self.pos.y < width || self.pos.y > size.y - width {
             self.vel.y *= -1.0;
         }
-
+        
         ctx.draw(
             Sprite::new(BALL)
                 .pos(self.pos, Anchor::Center)

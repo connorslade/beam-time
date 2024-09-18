@@ -1,6 +1,7 @@
 use std::{iter, mem, rc::Rc, sync::Arc, time::Instant};
 
 use anyhow::{Context, Result};
+use nalgebra::Vector2;
 use wgpu::{
     CommandEncoderDescriptor, CompositeAlphaMode, Device, DeviceDescriptor, Features, Instance,
     InstanceDescriptor, Limits, LoadOp, MemoryHints, Operations, PresentMode, Queue,
@@ -173,7 +174,12 @@ impl<'a> ApplicationHandler for Application<'a> {
 
                 gcx.window.request_redraw();
             }
-            WindowEvent::Resized(..) => self.resize_surface(),
+            WindowEvent::Resized(size) => {
+                state
+                    .screens
+                    .on_resize(Vector2::new(size.width as f32, size.height as f32));
+                self.resize_surface();
+            }
             _ => (),
         }
     }

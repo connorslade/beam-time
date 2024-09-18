@@ -72,7 +72,10 @@ impl Screen for TitleScreen {
 
         ctx.draw(
             Button::new(OPTIONS_BUTTON, &mut self.options_button)
-                .pos(ctx.center() - Vector2::new(0.0, 14.0 * 5.0), Anchor::Center)
+                .pos(
+                    ctx.center() - Vector2::new(0.0, 14.0 * 5.0 * ctx.scale_factor),
+                    Anchor::Center,
+                )
                 .scale(Vector2::repeat(4.0))
                 .color(FOREGROUND_COLOR),
         );
@@ -80,7 +83,7 @@ impl Screen for TitleScreen {
         ctx.draw(
             Button::new(ABOUT_BUTTON, &mut self.about_button)
                 .pos(
-                    ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0),
+                    ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0 * ctx.scale_factor),
                     Anchor::Center,
                 )
                 .scale(Vector2::repeat(4.0))
@@ -143,6 +146,11 @@ impl Screen for TitleScreen {
         );
 
         self.need_init = false;
+    }
+
+    fn on_resize(&mut self, _size: Vector2<f32>) {
+        self.falling_tiles.clear();
+        self.need_init = true;
     }
 }
 
