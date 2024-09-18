@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, i16};
 
 use nalgebra::{Vector2, Vector3};
 use wgpu::{
@@ -40,6 +40,7 @@ pub struct GpuSprite {
     pub uv: (Vector2<f32>, Vector2<f32>),
     pub points: [Vector2<f32>; 4],
     pub color: Vector3<f32>,
+    pub z_index: i16,
 }
 
 impl SpriteRenderPipeline {
@@ -147,12 +148,14 @@ impl SpriteRenderPipeline {
                 let pos_c = sprite.points[2].component_div(&ctx.size());
                 let pos_d = sprite.points[3].component_div(&ctx.size());
 
+                let z = (sprite.z_index as f32 + i16::MAX as f32) / (i16::MAX as f32 * 2.0);
+
                 let base = vert.len() as u32;
                 vert.extend_from_slice(&[
-                    Vertex::new([pos_a.x, pos_a.y, 0.0], [uv_a.x, uv_b.y], color),
-                    Vertex::new([pos_b.x, pos_b.y, 0.0], [uv_a.x, uv_a.y], color),
-                    Vertex::new([pos_c.x, pos_c.y, 0.0], [uv_b.x, uv_a.y], color),
-                    Vertex::new([pos_d.x, pos_d.y, 0.0], [uv_b.x, uv_b.y], color),
+                    Vertex::new([pos_a.x, pos_a.y, z], [uv_a.x, uv_b.y], color),
+                    Vertex::new([pos_b.x, pos_b.y, z], [uv_a.x, uv_a.y], color),
+                    Vertex::new([pos_c.x, pos_c.y, z], [uv_b.x, uv_a.y], color),
+                    Vertex::new([pos_d.x, pos_d.y, z], [uv_b.x, uv_b.y], color),
                 ]);
                 index.extend_from_slice(&[base, base + 1, base + 2, base + 2, base + 3, base]);
             }

@@ -13,6 +13,7 @@ pub struct Button<'a> {
     state: &'a mut ButtonState,
     on_click: Box<dyn FnMut(&mut GraphicsContext)>,
 
+    color: Rgb<f32>,
     pos: Vector2<f32>,
     anchor: Anchor,
     scale: Vector2<f32>,
@@ -30,6 +31,7 @@ impl<'a> Button<'a> {
             state,
             on_click: Box::new(|_| {}),
 
+            color: Rgb::new(1.0, 1.0, 1.0),
             pos: Vector2::zeros(),
             anchor: Anchor::BottomLeft,
             scale: Vector2::repeat(1.0),
@@ -39,6 +41,11 @@ impl<'a> Button<'a> {
     pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
         self.pos = pos;
         self.anchor = anchor;
+        self
+    }
+
+    pub fn color(mut self, color: impl Into<Rgb<f32>>) -> Self {
+        self.color = color.into();
         self
     }
 
@@ -55,7 +62,7 @@ impl<'a> Button<'a> {
 
 impl<'a> Drawable for Button<'a> {
     fn draw(mut self, ctx: &mut GraphicsContext) {
-        let color = Rgb::new(1.0, 1.0, 1.0).lerp(ACCENT_COLOR, self.state.hover_time / 0.1);
+        let color = self.color.lerp(ACCENT_COLOR, self.state.hover_time / 0.1);
         let scale =
             self.scale + Vector2::repeat(self.state.hover_time / 2.0).component_mul(&self.scale);
 

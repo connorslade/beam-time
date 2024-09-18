@@ -1,5 +1,3 @@
-use std::time::Instant;
-
 use anyhow::Result;
 use screens::title::TitleScreen;
 
@@ -17,7 +15,6 @@ mod screens;
 mod ui;
 mod util;
 use consts::DEFAULT_SIZE;
-use ui::button::ButtonState;
 
 fn main() -> Result<()> {
     let icon = Icon::from_rgba(include_atlas!("icon.png").into_vec(), 16, 16)?;

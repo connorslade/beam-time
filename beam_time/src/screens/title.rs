@@ -66,13 +66,15 @@ impl Screen for TitleScreen {
             Button::new(START_BUTTON, &mut self.start_button)
                 .pos(ctx.center(), Anchor::Center)
                 .scale(Vector2::repeat(4.0))
+                .color(FOREGROUND_COLOR)
                 .on_click(|ctx| ctx.push_screen(PongScreen::default())),
         );
 
         ctx.draw(
             Button::new(OPTIONS_BUTTON, &mut self.options_button)
                 .pos(ctx.center() - Vector2::new(0.0, 14.0 * 5.0), Anchor::Center)
-                .scale(Vector2::repeat(4.0)),
+                .scale(Vector2::repeat(4.0))
+                .color(FOREGROUND_COLOR),
         );
 
         ctx.draw(
@@ -81,7 +83,8 @@ impl Screen for TitleScreen {
                     ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0),
                     Anchor::Center,
                 )
-                .scale(Vector2::repeat(4.0)),
+                .scale(Vector2::repeat(4.0))
+                .color(FOREGROUND_COLOR),
         );
 
         // Background tiles
@@ -112,7 +115,8 @@ impl Screen for TitleScreen {
                 Sprite::new(tile.asset)
                     .pos(tile.pos, Anchor::Center)
                     .scale(Vector2::repeat(4.0))
-                    .color(LIGHT_BACKGROUND),
+                    .color(LIGHT_BACKGROUND)
+                    .z_index(-10),
             );
 
             tile.pos.y -= tile.vel * ctx.delta_time;
