@@ -3,4 +3,4 @@
 ---
 
 Beam time is a logic puzzle about redirecting and splitting laser beams to create circuits.
-This project is not complete!
+I'm making a custom GPU accelerated game engine for this, because why not, so this will probably take a while to finish.

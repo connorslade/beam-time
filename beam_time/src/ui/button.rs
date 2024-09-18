@@ -68,7 +68,7 @@ impl<'a> Drawable for Button<'a> {
         self.state.hover_time += ctx.delta_time * if hover { 1.0 } else { -1.0 };
         self.state.hover_time = self.state.hover_time.clamp(0.0, 0.1);
 
-        if hover && ctx.input.is_mouse_down(MouseButton::Left) {
+        if hover && ctx.input.mouse_down(MouseButton::Left) {
             (self.on_click)(ctx);
         }
 

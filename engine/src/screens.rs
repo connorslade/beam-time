@@ -1,12 +1,8 @@
-use winit::event::{ElementState, KeyEvent, MouseButton};
-
 use crate::graphics_context::GraphicsContext;
 
 pub trait Screen {
     fn render(&mut self, ctx: &mut GraphicsContext);
-
-    fn on_key(&mut self, _key_event: KeyEvent) {}
-    fn on_click(&mut self, _state: ElementState, _button: MouseButton) {}
+    fn update(&mut self, _ctx: &mut GraphicsContext) {}
 }
 
 pub struct Screens {
@@ -20,6 +16,12 @@ impl Screens {
         }
     }
 
+    pub fn pop_n(&mut self, n: usize) {
+        for _ in 0..n {
+            self.inner.pop();
+        }
+    }
+
     pub fn extend(&mut self, screens: Vec<Box<dyn Screen>>) {
         self.inner.extend(screens);
     }
@@ -30,13 +32,6 @@ impl Screens {
 
     pub fn render(&mut self, ctx: &mut GraphicsContext) {
         self.top().render(ctx);
-    }
-
-    pub fn on_key(&mut self, key_event: KeyEvent) {
-        self.top().on_key(key_event);
-    }
-
-    pub fn on_click(&mut self, state: ElementState, button: MouseButton) {
-        self.top().on_click(state, button);
+        self.inner.iter_mut().for_each(|x| x.update(ctx));
     }
 }

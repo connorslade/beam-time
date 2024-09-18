@@ -49,7 +49,7 @@ impl Screen for TitleScreen {
             Button::new(START_BUTTON, &mut self.start_button)
                 .pos(ctx.center(), Anchor::Center)
                 .scale(Vector2::repeat(4.0))
-                .on_click(|ctx| ctx.open_screen(PongScreen::default())),
+                .on_click(|ctx| ctx.push_screen(PongScreen::default())),
         );
 
         ctx.draw(

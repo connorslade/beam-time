@@ -136,6 +136,7 @@ impl<'a> ApplicationHandler for Application<'a> {
                     delta_time,
                 );
                 state.screens.render(&mut ctx);
+                state.screens.pop_n(ctx.close_screen);
                 state.screens.extend(mem::take(&mut ctx.next_screen));
 
                 state.sprite_renderer.prepare(&gcx.device, &gcx.queue, &ctx);
@@ -173,12 +174,6 @@ impl<'a> ApplicationHandler for Application<'a> {
                 gcx.window.request_redraw();
             }
             WindowEvent::Resized(..) => self.resize_surface(),
-            WindowEvent::KeyboardInput { event, .. } => state.screens.on_key(event),
-            WindowEvent::MouseInput {
-                state: element_state,
-                button,
-                ..
-            } => state.screens.on_click(element_state, button),
             _ => (),
         }
     }

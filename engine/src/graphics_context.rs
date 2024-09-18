@@ -19,8 +19,10 @@ pub struct GraphicsContext<'a> {
     pub(crate) background: Rgb<f32>,
     /// list of sprites to render this frame
     pub(crate) sprites: Vec<GpuSprite>,
-    /// Screen to open for next frame
+    /// Screens to open for next frame
     pub(crate) next_screen: Vec<Box<dyn Screen>>,
+    /// Screens to close for next_frame
+    pub(crate) close_screen: usize,
 
     pub input: &'a InputManager,
     /// Current window scale_factor
@@ -58,6 +60,7 @@ impl<'a> GraphicsContext<'a> {
             background: Rgb::new(0.0, 0.0, 0.0),
             sprites: Vec::new(),
             next_screen: Vec::new(),
+            close_screen: 0,
             input,
             scale_factor,
             delta_time,
@@ -76,8 +79,12 @@ impl<'a> GraphicsContext<'a> {
         self.background = color;
     }
 
-    pub fn open_screen(&mut self, screen: impl Screen + 'static) {
+    pub fn push_screen(&mut self, screen: impl Screen + 'static) {
         self.next_screen.push(Box::new(screen));
+    }
+
+    pub fn pop_screen(&mut self) {
+        self.close_screen += 1;
     }
 
     pub fn draw(&mut self, drawable: impl Drawable) {
