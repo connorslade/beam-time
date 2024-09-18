@@ -11,7 +11,7 @@
 - [ ] Look into anti aliasing
 - [ ] Matrix stacks?
 - [x] Color struct with mixing and lab
-- [ ] Sprite Z-ordering
+- [x] Sprite Z-ordering
 - [x] Make a button UI element
 - [x] Bring back the input handler for immediate mode style ui layouts
 - [x] In the background of the title screen have faded versions of all the tiles be flying down

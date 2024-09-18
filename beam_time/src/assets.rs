@@ -5,9 +5,12 @@ use crate::include_atlas;
 // fonts
 pub const DEFAULT_FONT: AssetRef = asset("default_font");
 
-// sprites
+// interface
 pub const TITLE: AssetRef = asset("title");
 pub const COPYRIGHT: AssetRef = asset("copyright");
+pub const START_BUTTON: AssetRef = asset("start_button");
+pub const OPTIONS_BUTTON: AssetRef = asset("options_button");
+pub const ABOUT_BUTTON: AssetRef = asset("about_button");
 
 // tiles
 pub const MIRROR_A_TILE: AssetRef = asset("mirror_a_tile");
@@ -19,15 +22,13 @@ pub const EYE_TILE: AssetRef = asset("eye_tile");
 pub const BALL: AssetRef = asset("ball");
 pub const PADDLE: AssetRef = asset("paddle");
 
-// buttons
-pub const START_BUTTON: AssetRef = asset("start_button");
-pub const OPTIONS_BUTTON: AssetRef = asset("options_button");
-pub const ABOUT_BUTTON: AssetRef = asset("about_button");
-
 pub fn init(assets: &mut AssetConstructor) {
     let interface = assets.register_atlas(include_atlas!("interface.png"));
     assets.register_sprite(interface, TITLE, (0, 0), (81, 20));
     assets.register_sprite(interface, COPYRIGHT, (0, 20), (28, 8));
+    assets.register_sprite(interface, START_BUTTON, (0, 32), (59, 14));
+    assets.register_sprite(interface, OPTIONS_BUTTON, (0, 48), (41, 14));
+    assets.register_sprite(interface, ABOUT_BUTTON, (42, 48), (32, 14));
 
     let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
     assets.register_sprite(tiles, MIRROR_A_TILE, (0, 0), (16, 16));
@@ -37,10 +38,6 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(tiles, EYE_TILE, (64, 16), (16, 16));
     assets.register_sprite(tiles, BALL, (80, 16), (8, 8));
     assets.register_sprite(tiles, PADDLE, (96, 16), (3, 16));
-
-    assets.register_sprite(tiles, START_BUTTON, (0, 32), (59, 14));
-    assets.register_sprite(tiles, OPTIONS_BUTTON, (0, 48), (41, 14));
-    assets.register_sprite(tiles, ABOUT_BUTTON, (0, 64), (32, 14));
 
     let font = assets.register_atlas(include_atlas!("font.png"));
     let descriptor =
