@@ -68,7 +68,8 @@ impl<'a> Drawable for Button<'a> {
 
         let sprite = Sprite::new(self.asset)
             .color(color)
-            .pos(self.pos, self.anchor)
+            .pos(self.pos)
+            .anchor(self.anchor)
             .scale(scale);
 
         let hover = sprite.is_hovered(ctx);

@@ -10,7 +10,9 @@ use engine::{
 use rand::{seq::SliceRandom, thread_rng, Rng};
 
 use crate::{
-    assets::{ABOUT_BUTTON, COPYRIGHT, DEFAULT_FONT, OPTIONS_BUTTON, START_BUTTON, TITLE},
+    assets::{
+        ABOUT_BUTTON, BACK_BUTTON, COPYRIGHT, DEFAULT_FONT, OPTIONS_BUTTON, START_BUTTON, TITLE,
+    },
     consts::{BACKGROUND_COLOR, FOREGROUND_COLOR, LIGHT_BACKGROUND, TILES},
     ui::button::{Button, ButtonState},
 };
@@ -27,6 +29,7 @@ pub struct TitleScreen {
     last_frames: usize,
 
     // buttons
+    back_button: ButtonState,
     start_button: ButtonState,
     options_button: ButtonState,
     about_button: ButtonState,
@@ -46,22 +49,33 @@ impl Screen for TitleScreen {
         ctx.background(BACKGROUND_COLOR);
 
         // Title & copyright
-        let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
+        ctx.matrix.dup();
+        ctx.matrix
+            .transform(Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9));
+
         let t = self.start_time.elapsed().as_secs_f32().sin() / 20.0;
         ctx.draw(
             Sprite::new(TITLE)
-                .pos(pos, Anchor::TopCenter)
+                .anchor(Anchor::TopCenter)
                 .scale(Vector2::repeat(6.0))
                 .rotate(t),
         );
 
+        ctx.matrix.transform(Vector2::new(0.0, 50.0));
         ctx.draw(
             Sprite::new(COPYRIGHT)
-                .pos(Vector2::new(ctx.size().x - 10.0, 10.0), Anchor::BottomRight)
+                .anchor(Anchor::BottomRight)
+                .scale(Vector2::repeat(2.0)),
+        );
+        ctx.matrix.pop();
+
+        // Buttons
+        ctx.draw(
+            Button::new(BACK_BUTTON, &mut self.back_button)
+                .pos(Vector2::new(10.0, ctx.size().y - 10.0), Anchor::Center)
                 .scale(Vector2::repeat(2.0)),
         );
 
-        // Buttons
         ctx.draw(
             Button::new(START_BUTTON, &mut self.start_button)
                 .pos(ctx.center(), Anchor::Center)
@@ -116,7 +130,8 @@ impl Screen for TitleScreen {
 
             ctx.draw(
                 Sprite::new(tile.asset)
-                    .pos(tile.pos, Anchor::Center)
+                    .pos(tile.pos)
+                    .anchor(Anchor::Center)
                     .scale(Vector2::repeat(4.0))
                     .color(LIGHT_BACKGROUND)
                     .z_index(10),
@@ -164,6 +179,7 @@ impl Default for TitleScreen {
             frames: 0,
             last_frames: 0,
 
+            back_button: ButtonState::default(),
             start_button: ButtonState::default(),
             about_button: ButtonState::default(),
             options_button: ButtonState::default(),

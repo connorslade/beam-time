@@ -53,8 +53,12 @@ impl Sprite {
         mouse.x >= pos_a.x && mouse.x <= pos_b.x && mouse.y <= pos_b.y && mouse.y >= pos_a.y
     }
 
-    pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
+    pub fn pos(mut self, pos: Vector2<f32>) -> Self {
         self.position = pos;
+        self
+    }
+
+    pub fn anchor(mut self, anchor: Anchor) -> Self {
         self.scale_anchor = anchor;
         self
     }
@@ -95,11 +99,14 @@ impl Drawable for Sprite {
         let rotation = Rotation2::new(self.rotation);
         let offset = self.scale_anchor.offset(self.position, size) + half_size;
 
+        let transform = ctx.matrix.peek();
+        let transform = |point: Vector2<f32>| (transform * point.push(1.0)).xy();
+
         let points = [
-            rotation * half_size.component_mul(&Vector2::new(-1.0, -1.0)) + offset,
-            rotation * half_size.component_mul(&Vector2::new(-1.0, 1.0)) + offset,
-            rotation * half_size.component_mul(&Vector2::new(1.0, 1.0)) + offset,
-            rotation * half_size.component_mul(&Vector2::new(1.0, -1.0)) + offset,
+            transform(rotation * half_size.component_mul(&Vector2::new(-1.0, -1.0)) + offset),
+            transform(rotation * half_size.component_mul(&Vector2::new(-1.0, 1.0)) + offset),
+            transform(rotation * half_size.component_mul(&Vector2::new(1.0, 1.0)) + offset),
+            transform(rotation * half_size.component_mul(&Vector2::new(1.0, -1.0)) + offset),
         ];
 
         ctx.sprites.push(GpuSprite {

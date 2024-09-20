@@ -49,17 +49,19 @@ impl Screen for PongScreen {
         if self.pos.y < width || self.pos.y > size.y - width {
             self.vel.y *= -1.0;
         }
-        
+
         ctx.draw(
             Sprite::new(BALL)
-                .pos(self.pos, Anchor::Center)
+                .pos(self.pos)
+                .anchor(Anchor::Center)
                 .scale(Vector2::repeat(5.0)),
         );
 
         let paddle_pos = Vector2::new(size.x - 30.0 * ctx.scale_factor, ctx.input.mouse.y);
         ctx.draw(
             Sprite::new(PADDLE)
-                .pos(paddle_pos, Anchor::CenterRight)
+                .pos(paddle_pos)
+                .anchor(Anchor::CenterRight)
                 .scale(Vector2::repeat(5.0)),
         );
     }

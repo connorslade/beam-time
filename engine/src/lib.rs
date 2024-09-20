@@ -6,6 +6,7 @@ pub mod color;
 pub mod drawable;
 pub mod graphics_context;
 pub mod input;
+pub mod matrix_stack;
 pub mod render;
 pub mod screens;
 

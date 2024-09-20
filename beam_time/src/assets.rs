@@ -8,6 +8,7 @@ pub const DEFAULT_FONT: AssetRef = asset("default_font");
 // interface
 pub const TITLE: AssetRef = asset("title");
 pub const COPYRIGHT: AssetRef = asset("copyright");
+pub const BACK_BUTTON: AssetRef = asset("back_button");
 pub const START_BUTTON: AssetRef = asset("start_button");
 pub const OPTIONS_BUTTON: AssetRef = asset("options_button");
 pub const ABOUT_BUTTON: AssetRef = asset("about_button");
@@ -26,6 +27,7 @@ pub fn init(assets: &mut AssetConstructor) {
     let interface = assets.register_atlas(include_atlas!("interface.png"));
     assets.register_sprite(interface, TITLE, (0, 0), (81, 20));
     assets.register_sprite(interface, COPYRIGHT, (0, 20), (28, 8));
+    assets.register_sprite(interface, BACK_BUTTON, (64, 32), (32, 14));
     assets.register_sprite(interface, START_BUTTON, (0, 32), (59, 14));
     assets.register_sprite(interface, OPTIONS_BUTTON, (0, 48), (41, 14));
     assets.register_sprite(interface, ABOUT_BUTTON, (42, 48), (32, 14));
