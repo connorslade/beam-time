@@ -39,7 +39,7 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(tiles, WALL_TILE, (80, 0), (16, 16));
     assets.register_sprite(tiles, GALVO_TILE, (112, 0), (16, 16));
     assets.register_sprite(tiles, EYE_TILE, (64, 16), (16, 16));
-    assets.register_sprite(tiles, BALL, (80, 16), (8, 8));
+    assets.register_sprite(tiles, BALL, (81, 17), (8, 8));
     assets.register_sprite(tiles, PADDLE, (96, 16), (3, 16));
 
     let font = assets.register_atlas(include_atlas!("fonts/undead-pixel-11.png"));

@@ -1,3 +1,5 @@
+use core::f32;
+
 use nalgebra::{Vector2, Vector3};
 
 use crate::{
@@ -11,6 +13,7 @@ pub struct Text<'a> {
     font: AssetRef,
     text: &'a str,
     color: Rgb<f32>,
+    max_width: f32,
 
     pos: Vector2<f32>,
     z_index: i16,
@@ -23,6 +26,7 @@ impl<'a> Text<'a> {
         Self {
             font,
             text,
+            max_width: f32::MAX,
 
             pos: Vector2::repeat(0.0),
             z_index: 0,
@@ -40,14 +44,18 @@ impl<'a> Text<'a> {
             .as_font()
             .expect("Tried to use an non-font asset as a font.");
 
-        font.desc
+        let width = font
+            .desc
             .process_string(self.text)
             .map(|c| match c {
                 FontChar::Char(c) => c.size.x as f32 + font.desc.tracking,
                 FontChar::Space => font.desc.space_width,
+                FontChar::Newline => 0.0,
             })
             .sum::<f32>()
-            * scale.x
+            * scale.x;
+
+        width.min(self.max_width)
     }
 
     pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
@@ -58,6 +66,11 @@ impl<'a> Text<'a> {
 
     pub fn z_index(mut self, z_index: i16) -> Self {
         self.z_index = z_index;
+        self
+    }
+
+    pub fn max_width(mut self, max_width: f32) -> Self {
+        self.max_width = max_width;
         self
     }
 
@@ -85,13 +98,18 @@ impl<'a> Drawable for Text<'a> {
         let atlas_size = font.texture.size.map(|x| x as f32);
         let process_uv = |uv: Vector2<u32>| uv.map(|x| x as f32).component_div(&atlas_size);
 
-        let mut x = 0.0;
+        let mut pos = Vector2::zeros();
         let mut n = 0;
         for character in font.desc.process_string(self.text) {
             let character = match character {
                 FontChar::Char(character) => character,
+                FontChar::Newline => {
+                    pos.y -= font.desc.height * scale.y;
+                    pos.x = 0.0;
+                    continue;
+                }
                 FontChar::Space => {
-                    x += font.desc.space_width * self.scale.x;
+                    pos.x += font.desc.space_width * self.scale.x;
                     continue;
                 }
             };
@@ -100,6 +118,7 @@ impl<'a> Drawable for Text<'a> {
             let uv_b = process_uv(character.uv + character.size);
 
             let size = character.size.map(|x| x as f32).component_mul(&scale);
+            let baseline_shift = character.baseline_shift as f32 * scale.y;
 
             ctx.sprites.push(GpuSprite {
                 texture: font.texture,
@@ -107,7 +126,7 @@ impl<'a> Drawable for Text<'a> {
                 // kinda a hack
                 points: [
                     size,
-                    Vector2::new(x, character.baseline_shift as f32 * scale.y),
+                    pos + Vector2::y() * baseline_shift,
                     Vector2::zeros(),
                     Vector2::zeros(),
                 ],
@@ -115,14 +134,19 @@ impl<'a> Drawable for Text<'a> {
                 z_index: self.z_index,
             });
 
-            x += (character.size.x as f32 + font.desc.tracking) * scale.x;
+            pos.x += (character.size.x as f32 + font.desc.tracking) * scale.x;
             n += 1;
+
+            if pos.x > self.max_width {
+                pos.x = 0.0;
+                pos.y -= font.desc.height * scale.y;
+            }
         }
 
-        let line_size = Vector2::new(x, 0.0);
         for i in ctx.sprites.len() - n..ctx.sprites.len() {
             let [size, offset, ..] = ctx.sprites[i].points;
-            let pos = (self.pos + offset + self.anchor.offset(line_size)).map(|x| x.round());
+            let pos =
+                (self.pos + offset + self.anchor.offset(Vector2::x() * pos.x)).map(|x| x.round());
 
             ctx.sprites[i].points = [
                 pos,

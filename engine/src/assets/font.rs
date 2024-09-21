@@ -37,6 +37,7 @@ pub(crate) struct FontCharacterIterator<'a> {
 pub(crate) enum FontChar {
     Char(Character),
     Space,
+    Newline,
 }
 
 impl<'a> Iterator for FontCharacterIterator<'a> {
@@ -44,6 +45,10 @@ impl<'a> Iterator for FontCharacterIterator<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let next_char = self.string.next()?;
+
+        if next_char == '\n' {
+            return Some(FontChar::Newline);
+        }
 
         if next_char.is_whitespace() {
             return Some(FontChar::Space);

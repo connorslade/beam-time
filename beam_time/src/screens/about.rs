@@ -7,12 +7,24 @@ use engine::{
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
 };
+use indoc::indoc;
 
 use crate::{
     assets::{BACK_BUTTON, DEFAULT_FONT},
     consts::{BACKGROUND_COLOR, FOREGROUND_COLOR},
     ui::button::{Button, ButtonState},
 };
+
+const DESCRIPTION: &str = indoc! {"
+    Beam time is a logic puzzle about redirecting and splitting laser beams to create circuits. \
+    It's made with a custom GPU accelerated game engine.
+    
+    Source code is available online at https://github.com/connorslade/beam-time.
+
+    Assets Used:
+
+    • Undead Pixel Light, Font by Not Jam
+"};
 
 #[derive(Default)]
 pub struct AboutScreen {
@@ -36,10 +48,10 @@ impl Screen for AboutScreen {
                 .scale(Vector2::repeat(6.0)),
         );
 
-        const DESCRIPTION: &str = "Beam time is a logic puzzle about redirecting and splitting laser beams to create circuits.";
         ctx.draw(
             Text::new(DEFAULT_FONT, DESCRIPTION)
-                .pos(Vector2::new(0.0, ctx.size().y * 0.8), Anchor::TopLeft)
+                .max_width(ctx.size().x - 20.0)
+                .pos(Vector2::new(10.0, ctx.size().y * 0.8), Anchor::TopLeft)
                 .color(FOREGROUND_COLOR)
                 .scale(Vector2::repeat(3.0)),
         );
