@@ -145,8 +145,8 @@ impl<'a> Drawable for Text<'a> {
 
         for i in ctx.sprites.len() - n..ctx.sprites.len() {
             let [size, offset, ..] = ctx.sprites[i].points;
-            let pos =
-                (self.pos + offset + self.anchor.offset(Vector2::x() * pos.x)).map(|x| x.round());
+            let offset_size = Vector2::new(pos.x, font.desc.height * scale.y);
+            let pos = (self.pos + offset + self.anchor.offset(offset_size)).map(|x| x.round());
 
             ctx.sprites[i].points = [
                 pos,

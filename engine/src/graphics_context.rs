@@ -90,7 +90,9 @@ impl<'a> GraphicsContext<'a> {
     }
 
     pub fn push_screen(&mut self, screen: impl Screen + 'static) {
-        self.next_screen.push(Box::new(screen));
+        let mut screen = Box::new(screen);
+        screen.on_init();
+        self.next_screen.push(screen);
     }
 
     pub fn pop_screen(&mut self) {

@@ -6,6 +6,7 @@ pub trait Screen {
     fn render(&mut self, ctx: &mut GraphicsContext);
     fn update(&mut self, _ctx: &mut GraphicsContext) {}
 
+    fn on_init(&mut self) {}
     fn on_resize(&mut self, _size: Vector2<f32>) {}
 }
 
@@ -14,15 +15,17 @@ pub struct Screens {
 }
 
 impl Screens {
-    pub fn new(screen: Box<dyn Screen>) -> Self {
-        Self {
-            inner: vec![screen],
-        }
+    pub fn new(inner: Vec<Box<dyn Screen>>) -> Self {
+        Self { inner }
     }
 
     pub fn pop_n(&mut self, n: usize) {
         for _ in 0..n {
             self.inner.pop();
+        }
+
+        if n > 0 {
+            self.top().on_init();
         }
     }
 

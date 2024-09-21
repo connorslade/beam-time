@@ -1,5 +1,5 @@
 use engine::{
-    drawable::sprites::Sprite,
+    drawable::sprite::Sprite,
     exports::{
         nalgebra::Vector2,
         winit::keyboard::{KeyCode, PhysicalKey},

@@ -59,7 +59,7 @@ impl Screen for AboutScreen {
         // Back button
         ctx.draw(
             Button::new(BACK_BUTTON, &mut self.back_button)
-                .pos(Vector2::new(10.0, ctx.size().y - 10.0), Anchor::TopLeft)
+                .pos(Vector2::new(10.0, 10.0), Anchor::BottomLeft)
                 .scale(Vector2::repeat(2.0))
                 .on_click(|ctx| ctx.pop_screen()),
         );

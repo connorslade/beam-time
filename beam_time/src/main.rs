@@ -1,8 +1,6 @@
 #![feature(decl_macro)]
 
 use anyhow::Result;
-use screens::title::TitleScreen;
-
 use engine::{
     application::{Application, ApplicationArgs},
     exports::winit::{
@@ -13,10 +11,14 @@ use engine::{
 
 mod assets;
 mod consts;
+mod overlay;
 mod screens;
 mod ui;
 mod util;
+
 use consts::DEFAULT_SIZE;
+use overlay::debug::DebugOverlay;
+use screens::title::TitleScreen;
 use util::include_atlas;
 
 fn main() -> Result<()> {
@@ -27,7 +29,12 @@ fn main() -> Result<()> {
             .with_window_icon(Some(icon))
             .with_inner_size(PhysicalSize::new(DEFAULT_SIZE.0, DEFAULT_SIZE.1))
             .with_resizable(false),
-        screen_constructor: Box::new(|| Box::new(TitleScreen::default())),
+        screen_constructor: Box::new(|| {
+            vec![
+                Box::new(DebugOverlay::default()),
+                Box::new(TitleScreen::default()),
+            ]
+        }),
         asset_constructor: Box::new(assets::init),
     })
     .run()

@@ -1,7 +1,7 @@
 use engine::{
     assets::AssetRef,
     color::Rgb,
-    drawable::sprites::Sprite,
+    drawable::sprite::Sprite,
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, Drawable, GraphicsContext},
 };
@@ -57,6 +57,12 @@ impl<'a> Button<'a> {
     pub fn on_click(mut self, on_click: impl FnMut(&mut GraphicsContext) + 'static) -> Self {
         self.on_click = Box::new(on_click);
         self
+    }
+}
+
+impl ButtonState {
+    pub fn reset(&mut self) {
+        self.hover_time = 0.0;
     }
 }
 

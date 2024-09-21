@@ -1,8 +1,8 @@
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 use engine::{
     assets::AssetRef,
-    drawable::{sprites::Sprite, text::Text},
+    drawable::sprite::Sprite,
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
@@ -10,8 +10,8 @@ use engine::{
 use rand::{seq::SliceRandom, thread_rng, Rng};
 
 use crate::{
-    assets::{ABOUT_BUTTON, COPYRIGHT, DEFAULT_FONT, OPTIONS_BUTTON, START_BUTTON, TITLE},
-    consts::{BACKGROUND_COLOR, FOREGROUND_COLOR, LIGHT_BACKGROUND, TILES},
+    assets::{ABOUT_BUTTON, COPYRIGHT, OPTIONS_BUTTON, START_BUTTON, TITLE},
+    consts::{BACKGROUND_COLOR, LIGHT_BACKGROUND, TILES},
     ui::button::{Button, ButtonState},
 };
 
@@ -19,12 +19,7 @@ use super::{about::AboutScreen, pong::PongScreen};
 
 pub struct TitleScreen {
     need_init: bool,
-
-    // fps counter
     start_time: Instant,
-    last_update: Instant,
-    frames: usize,
-    last_frames: usize,
 
     // buttons
     start_button: ButtonState,
@@ -128,22 +123,13 @@ impl Screen for TitleScreen {
             }
         }
 
-        // FPS
-        self.frames += 1;
-        if self.last_update.elapsed() >= Duration::from_secs(1) {
-            self.last_frames = self.frames;
-            self.frames = 0;
-            self.last_update = Instant::now();
-        }
-
-        ctx.draw(
-            Text::new(DEFAULT_FONT, &format!("FPS: {:.1}", self.last_frames))
-                .color(FOREGROUND_COLOR)
-                .pos(Vector2::new(10.0, 10.0), Anchor::BottomLeft)
-                .scale(Vector2::repeat(2.0)),
-        );
-
         self.need_init = false;
+    }
+
+    fn on_init(&mut self) {
+        self.start_button.reset();
+        self.about_button.reset();
+        self.options_button.reset();
     }
 
     fn on_resize(&mut self, _size: Vector2<f32>) {
@@ -155,12 +141,8 @@ impl Screen for TitleScreen {
 impl Default for TitleScreen {
     fn default() -> Self {
         Self {
-            need_init: true,
-
             start_time: Instant::now(),
-            last_update: Instant::now(),
-            frames: 0,
-            last_frames: 0,
+            need_init: true,
 
             start_button: ButtonState::default(),
             about_button: ButtonState::default(),

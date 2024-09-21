@@ -28,14 +28,14 @@ use crate::{
 
 pub struct Application<'a> {
     window_attributes: WindowAttributes,
-    screen_constructor: Box<dyn Fn() -> Box<dyn Screen>>,
+    screen_constructor: Box<dyn Fn() -> Vec<Box<dyn Screen>>>,
     asset_constructor: Box<dyn Fn(&mut AssetConstructor)>,
     state: Option<State<'a>>,
 }
 
 pub struct ApplicationArgs {
     pub window_attributes: WindowAttributes,
-    pub screen_constructor: Box<dyn Fn() -> Box<dyn Screen>>,
+    pub screen_constructor: Box<dyn Fn() -> Vec<Box<dyn Screen>>>,
     pub asset_constructor: Box<dyn Fn(&mut AssetConstructor)>,
 }
 
