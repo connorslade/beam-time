@@ -1,0 +1,55 @@
+use engine::{
+    drawable::text::Text,
+    exports::{
+        nalgebra::Vector2,
+        winit::keyboard::{KeyCode, PhysicalKey},
+    },
+    graphics_context::{Anchor, GraphicsContext},
+    screens::Screen,
+};
+
+use crate::{
+    assets::{BACK_BUTTON, DEFAULT_FONT},
+    consts::{BACKGROUND_COLOR, FOREGROUND_COLOR},
+    ui::button::{Button, ButtonState},
+};
+
+#[derive(Default)]
+pub struct AboutScreen {
+    back_button: ButtonState,
+}
+
+impl Screen for AboutScreen {
+    fn render(&mut self, ctx: &mut GraphicsContext) {
+        ctx.input
+            .key_down(PhysicalKey::Code(KeyCode::Escape))
+            .then(|| ctx.pop_screen());
+
+        ctx.background(BACKGROUND_COLOR);
+
+        // Screen title
+        let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
+        ctx.draw(
+            Text::new(DEFAULT_FONT, "About")
+                .color(FOREGROUND_COLOR)
+                .pos(pos, Anchor::TopCenter)
+                .scale(Vector2::repeat(6.0)),
+        );
+
+        const DESCRIPTION: &str = "Beam time is a logic puzzle about redirecting and splitting laser beams to create circuits.";
+        ctx.draw(
+            Text::new(DEFAULT_FONT, DESCRIPTION)
+                .pos(Vector2::new(0.0, ctx.size().y * 0.8), Anchor::TopLeft)
+                .color(FOREGROUND_COLOR)
+                .scale(Vector2::repeat(3.0)),
+        );
+
+        // Back button
+        ctx.draw(
+            Button::new(BACK_BUTTON, &mut self.back_button)
+                .pos(Vector2::new(10.0, ctx.size().y - 10.0), Anchor::TopLeft)
+                .scale(Vector2::repeat(2.0))
+                .on_click(|ctx| ctx.pop_screen()),
+        );
+    }
+}

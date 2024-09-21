@@ -10,14 +10,12 @@ use engine::{
 use rand::{seq::SliceRandom, thread_rng, Rng};
 
 use crate::{
-    assets::{
-        ABOUT_BUTTON, BACK_BUTTON, COPYRIGHT, DEFAULT_FONT, OPTIONS_BUTTON, START_BUTTON, TITLE,
-    },
+    assets::{ABOUT_BUTTON, COPYRIGHT, DEFAULT_FONT, OPTIONS_BUTTON, START_BUTTON, TITLE},
     consts::{BACKGROUND_COLOR, FOREGROUND_COLOR, LIGHT_BACKGROUND, TILES},
     ui::button::{Button, ButtonState},
 };
 
-use super::pong::PongScreen;
+use super::{about::AboutScreen, pong::PongScreen};
 
 pub struct TitleScreen {
     need_init: bool,
@@ -29,7 +27,6 @@ pub struct TitleScreen {
     last_frames: usize,
 
     // buttons
-    back_button: ButtonState,
     start_button: ButtonState,
     options_button: ButtonState,
     about_button: ButtonState,
@@ -66,12 +63,6 @@ impl Screen for TitleScreen {
 
         // Buttons
         ctx.draw(
-            Button::new(BACK_BUTTON, &mut self.back_button)
-                .pos(Vector2::new(10.0, ctx.size().y - 10.0), Anchor::TopLeft)
-                .scale(Vector2::repeat(2.0)),
-        );
-
-        ctx.draw(
             Button::new(START_BUTTON, &mut self.start_button)
                 .pos(ctx.center(), Anchor::Center)
                 .scale(Vector2::repeat(4.0))
@@ -93,7 +84,8 @@ impl Screen for TitleScreen {
                     ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0 * ctx.scale_factor),
                     Anchor::Center,
                 )
-                .scale(Vector2::repeat(4.0)),
+                .scale(Vector2::repeat(4.0))
+                .on_click(|ctx| ctx.push_screen(AboutScreen::default())),
         );
 
         // Background tiles
@@ -170,7 +162,6 @@ impl Default for TitleScreen {
             frames: 0,
             last_frames: 0,
 
-            back_button: ButtonState::default(),
             start_button: ButtonState::default(),
             about_button: ButtonState::default(),
             options_button: ButtonState::default(),
