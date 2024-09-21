@@ -1,7 +1,7 @@
-use nalgebra::{Rotation2, Vector2, Vector3};
+use nalgebra::{Matrix3, Vector2, Vector3};
 
 use crate::{
-    assets::AssetRef,
+    assets::{AssetRef, SpriteAsset},
     color::Rgb,
     graphics_context::{Anchor, Drawable, GraphicsContext},
     render::sprite::GpuSprite,
@@ -11,13 +11,16 @@ use crate::{
 pub struct Sprite {
     texture: AssetRef,
     color: Rgb<f32>,
+    z_index: i16,
 
     position: Vector2<f32>,
-    z_index: i16,
-    rotation: f32,
+    position_anchor: Anchor,
 
     scale: Vector2<f32>,
     scale_anchor: Anchor,
+
+    rotation: f32,
+    rotation_anchor: Anchor,
 }
 
 impl Sprite {
@@ -25,42 +28,35 @@ impl Sprite {
         Self {
             texture,
             color: Rgb::new(1.0, 1.0, 1.0),
-
-            position: Vector2::repeat(0.0),
             z_index: 0,
-            rotation: 0.0,
+
+            position: Vector2::zeros(),
+            position_anchor: Anchor::BottomLeft,
 
             scale: Vector2::repeat(1.0),
-            scale_anchor: Anchor::BottomLeft,
+            scale_anchor: Anchor::Center,
+
+            rotation: 0.0,
+            rotation_anchor: Anchor::Center,
         }
     }
 
+    // Reference: https://stackoverflow.com/a/37865332/12471934
     pub fn is_hovered(&self, ctx: &GraphicsContext) -> bool {
-        assert_eq!(
-            self.rotation, 0.0,
-            "Rotation is not supported for is_hovered"
-        );
+        let asset = ctx.asset_manager.get(self.texture).as_sprite().unwrap();
+        let points = self.points(ctx, asset);
 
-        let sprite = ctx.asset_manager.get(self.texture).as_sprite().unwrap();
-        let scale = self.scale * ctx.scale_factor;
+        let ab = points[1] - points[0];
+        let am = ctx.input.mouse - points[0];
+        let bc = points[2] - points[1];
+        let bm = ctx.input.mouse - points[1];
 
-        let size = sprite.size.map(|x| x as f32).component_mul(&scale);
-        let pos_a = self.scale_anchor.offset(self.position, size);
-        let pos_b = pos_a + size;
+        let dot_ab_am = ab.dot(&am);
+        let dot_ab_ab = ab.dot(&ab);
+        let dot_bc_bm = bc.dot(&bm);
+        let dot_bc_bc = bc.dot(&bc);
 
-        // check if ctx.mouse is in the rectangle
-        let mouse = ctx.input.mouse;
-        mouse.x >= pos_a.x && mouse.x <= pos_b.x && mouse.y <= pos_b.y && mouse.y >= pos_a.y
-    }
-
-    pub fn pos(mut self, pos: Vector2<f32>) -> Self {
-        self.position = pos;
-        self
-    }
-
-    pub fn anchor(mut self, anchor: Anchor) -> Self {
-        self.scale_anchor = anchor;
-        self
+        0.0 <= dot_ab_am && dot_ab_am <= dot_ab_ab && 0.0 <= dot_bc_bm && dot_bc_bm <= dot_bc_bc
     }
 
     pub fn z_index(mut self, z_index: i16) -> Self {
@@ -68,19 +64,56 @@ impl Sprite {
         self
     }
 
-    pub fn rotate(mut self, rotation: f32) -> Self {
-        self.rotation = rotation;
-        self
-    }
-
-    pub fn scale(mut self, scale: Vector2<f32>) -> Self {
-        self.scale = scale;
-        self
-    }
-
     pub fn color(mut self, color: impl Into<Rgb<f32>>) -> Self {
         self.color = color.into();
         self
+    }
+
+    pub fn position(mut self, position: Vector2<f32>, anchor: Anchor) -> Self {
+        self.position = position;
+        self.position_anchor = anchor;
+        self
+    }
+
+    pub fn scale(mut self, scale: Vector2<f32>, anchor: Anchor) -> Self {
+        self.scale = scale;
+        self.scale_anchor = anchor;
+        self
+    }
+
+    pub fn rotate(mut self, rotation: f32, anchor: Anchor) -> Self {
+        self.rotation = rotation;
+        self.rotation_anchor = anchor;
+        self
+    }
+
+    fn points(&self, ctx: &GraphicsContext, sprite: &SpriteAsset) -> [Vector2<f32>; 4] {
+        let size = sprite.size.map(|x| x as f32);
+        let scale_factor = self.scale * ctx.scale_factor;
+        let scaled_size = size.component_mul(&scale_factor);
+
+        // Calculate anchor offsets for each transformation
+        let rotation_offset = self.rotation_anchor.offset(size);
+        let scale_offset = self.scale_anchor.offset(size);
+        let back_scale_offset = -self.scale_anchor.offset(scaled_size);
+        let position_offset = self.position_anchor.offset(scaled_size);
+
+        // Combine transformations and offsets
+        let transform =
+            Matrix3::new_translation(&(self.position + back_scale_offset + position_offset))
+                * Matrix3::new_nonuniform_scaling(&scale_factor)
+                * Matrix3::new_translation(&(scale_offset - rotation_offset))
+                * Matrix3::new_rotation(self.rotation)
+                * Matrix3::new_translation(&rotation_offset);
+        let transform = |point: Vector2<f32>| (transform * point.push(1.0)).xy();
+
+        // Apply to the bounds of the sprite
+        [
+            transform(Vector2::new(0.0, 0.0)),
+            transform(Vector2::new(0.0, size.y)),
+            transform(size),
+            transform(Vector2::new(size.x, 0.0)),
+        ]
     }
 }
 
@@ -92,23 +125,7 @@ impl Drawable for Sprite {
             .as_sprite()
             .expect("Tried to draw a font as a sprite");
 
-        let scale = self.scale * ctx.scale_factor;
-        let size = asset.size.map(|x| x as f32).component_mul(&scale);
-        let half_size = size / 2.0;
-
-        let rotation = Rotation2::new(self.rotation);
-        let offset = self.scale_anchor.offset(self.position, size) + half_size;
-
-        let transform = ctx.matrix.peek();
-        let transform = |point: Vector2<f32>| (transform * point.push(1.0)).xy();
-
-        let points = [
-            transform(rotation * half_size.component_mul(&Vector2::new(-1.0, -1.0)) + offset),
-            transform(rotation * half_size.component_mul(&Vector2::new(-1.0, 1.0)) + offset),
-            transform(rotation * half_size.component_mul(&Vector2::new(1.0, 1.0)) + offset),
-            transform(rotation * half_size.component_mul(&Vector2::new(1.0, -1.0)) + offset),
-        ];
-
+        let points = self.points(ctx, asset);
         ctx.sprites.push(GpuSprite {
             texture: asset.texture,
             uv: asset.uv(),

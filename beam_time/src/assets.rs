@@ -20,6 +20,7 @@ pub const WALL_TILE: AssetRef = asset("wall_tile");
 pub const GALVO_TILE: AssetRef = asset("galvo_tile");
 pub const EYE_TILE: AssetRef = asset("eye_tile");
 
+// temporary
 pub const BALL: AssetRef = asset("ball");
 pub const PADDLE: AssetRef = asset("paddle");
 
@@ -27,10 +28,10 @@ pub fn init(assets: &mut AssetConstructor) {
     let interface = assets.register_atlas(include_atlas!("interface.png"));
     assets.register_sprite(interface, TITLE, (0, 0), (81, 20));
     assets.register_sprite(interface, COPYRIGHT, (0, 20), (28, 8));
-    assets.register_sprite(interface, BACK_BUTTON, (64, 32), (32, 14));
-    assets.register_sprite(interface, START_BUTTON, (0, 32), (59, 14));
-    assets.register_sprite(interface, OPTIONS_BUTTON, (0, 48), (41, 14));
-    assets.register_sprite(interface, ABOUT_BUTTON, (42, 48), (32, 14));
+    assets.register_sprite(interface, BACK_BUTTON, (58, 32), (32, 14));
+    assets.register_sprite(interface, START_BUTTON, (0, 32), (57, 14));
+    assets.register_sprite(interface, OPTIONS_BUTTON, (0, 48), (39, 14));
+    assets.register_sprite(interface, ABOUT_BUTTON, (40, 48), (31, 14));
 
     let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
     assets.register_sprite(tiles, MIRROR_A_TILE, (0, 0), (16, 16));

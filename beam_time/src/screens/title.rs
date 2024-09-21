@@ -49,30 +49,25 @@ impl Screen for TitleScreen {
         ctx.background(BACKGROUND_COLOR);
 
         // Title & copyright
-        ctx.matrix.dup();
-        ctx.matrix
-            .transform(Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9));
-
+        let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
         let t = self.start_time.elapsed().as_secs_f32().sin() / 20.0;
         ctx.draw(
             Sprite::new(TITLE)
-                .anchor(Anchor::TopCenter)
-                .scale(Vector2::repeat(6.0))
-                .rotate(t),
+                .position(pos, Anchor::TopCenter)
+                .scale(Vector2::repeat(6.0), Anchor::Center)
+                .rotate(t, Anchor::Center),
         );
 
-        ctx.matrix.transform(Vector2::new(0.0, 50.0));
         ctx.draw(
             Sprite::new(COPYRIGHT)
-                .anchor(Anchor::BottomRight)
-                .scale(Vector2::repeat(2.0)),
+                .position(Vector2::new(ctx.size().x - 10.0, 10.0), Anchor::BottomRight)
+                .scale(Vector2::repeat(2.0), Anchor::Center),
         );
-        ctx.matrix.pop();
 
         // Buttons
         ctx.draw(
             Button::new(BACK_BUTTON, &mut self.back_button)
-                .pos(Vector2::new(10.0, ctx.size().y - 10.0), Anchor::Center)
+                .pos(Vector2::new(10.0, ctx.size().y - 10.0), Anchor::TopLeft)
                 .scale(Vector2::repeat(2.0)),
         );
 
@@ -80,7 +75,6 @@ impl Screen for TitleScreen {
             Button::new(START_BUTTON, &mut self.start_button)
                 .pos(ctx.center(), Anchor::Center)
                 .scale(Vector2::repeat(4.0))
-                .color(FOREGROUND_COLOR)
                 .on_click(|ctx| ctx.push_screen(PongScreen::default())),
         );
 
@@ -90,8 +84,7 @@ impl Screen for TitleScreen {
                     ctx.center() - Vector2::new(0.0, 14.0 * 5.0 * ctx.scale_factor),
                     Anchor::Center,
                 )
-                .scale(Vector2::repeat(4.0))
-                .color(FOREGROUND_COLOR),
+                .scale(Vector2::repeat(4.0)),
         );
 
         ctx.draw(
@@ -100,8 +93,7 @@ impl Screen for TitleScreen {
                     ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0 * ctx.scale_factor),
                     Anchor::Center,
                 )
-                .scale(Vector2::repeat(4.0))
-                .color(FOREGROUND_COLOR),
+                .scale(Vector2::repeat(4.0)),
         );
 
         // Background tiles
@@ -130,11 +122,10 @@ impl Screen for TitleScreen {
 
             ctx.draw(
                 Sprite::new(tile.asset)
-                    .pos(tile.pos)
-                    .anchor(Anchor::Center)
-                    .scale(Vector2::repeat(4.0))
+                    .position(tile.pos, Anchor::Center)
+                    .scale(Vector2::repeat(4.0), Anchor::Center)
                     .color(LIGHT_BACKGROUND)
-                    .z_index(10),
+                    .z_index(-10),
             );
 
             tile.pos.y -= tile.vel * ctx.delta_time;

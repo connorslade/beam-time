@@ -52,17 +52,15 @@ impl Screen for PongScreen {
 
         ctx.draw(
             Sprite::new(BALL)
-                .pos(self.pos)
-                .anchor(Anchor::Center)
-                .scale(Vector2::repeat(5.0)),
+                .position(self.pos, Anchor::Center)
+                .scale(Vector2::repeat(5.0), Anchor::Center),
         );
 
         let paddle_pos = Vector2::new(size.x - 30.0 * ctx.scale_factor, ctx.input.mouse.y);
         ctx.draw(
             Sprite::new(PADDLE)
-                .pos(paddle_pos)
-                .anchor(Anchor::CenterRight)
-                .scale(Vector2::repeat(5.0)),
+                .position(paddle_pos, Anchor::CenterRight)
+                .scale(Vector2::repeat(5.0), Anchor::Center),
         );
     }
 }

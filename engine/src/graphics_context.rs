@@ -7,7 +7,6 @@ use crate::{
     assets::{manager::AssetManager, Asset, AssetRef},
     color::Rgb,
     input::InputManager,
-    matrix_stack::MatrixStack,
     render::sprite::GpuSprite,
     screens::Screen,
 };
@@ -15,8 +14,6 @@ use crate::{
 pub struct GraphicsContext<'a> {
     /// Reference to asset manager
     pub(crate) asset_manager: Rc<AssetManager>,
-    /// Matrix stack for current frame
-    pub matrix: MatrixStack,
 
     /// background color
     pub(crate) background: Rgb<f32>,
@@ -49,6 +46,7 @@ pub enum Anchor {
     BottomLeft,
     BottomCenter,
     BottomRight,
+    Custom(Vector2<f32>),
 }
 
 impl<'a> GraphicsContext<'a> {
@@ -60,7 +58,6 @@ impl<'a> GraphicsContext<'a> {
     ) -> Self {
         GraphicsContext {
             asset_manager,
-            matrix: MatrixStack::new(),
             background: Rgb::new(0.0, 0.0, 0.0),
             sprites: Vec::new(),
             next_screen: Vec::new(),
@@ -77,6 +74,15 @@ impl<'a> GraphicsContext<'a> {
 
     pub fn center(&self) -> Vector2<f32> {
         self.size() / 2.0
+    }
+
+    pub fn size_of(&self, asset: AssetRef) -> Vector2<f32> {
+        self.asset_manager
+            .get(asset)
+            .as_sprite()
+            .unwrap()
+            .size
+            .map(|x| x as f32)
     }
 
     pub fn background(&mut self, color: Rgb<f32>) {
@@ -112,15 +118,16 @@ impl<'a> GraphicsContext<'a> {
 }
 
 impl Anchor {
-    pub fn offset(&self, pos: Vector2<f32>, size: Vector2<f32>) -> Vector2<f32> {
+    pub fn offset(&self, size: Vector2<f32>) -> Vector2<f32> {
         match self {
-            Anchor::BottomLeft => pos,
-            Anchor::Center => pos - size / 2.0,
-            Anchor::TopCenter => pos - Vector2::new(size.x / 2.0, size.y),
-            Anchor::BottomRight => pos - Vector2::new(size.x, 0.0),
-            Anchor::CenterRight => pos - Vector2::new(size.x, size.y / 2.0),
-            Anchor::CenterLeft => pos - Vector2::new(0.0, size.y / 2.0),
-            Anchor::TopLeft => pos - Vector2::new(0.0, size.y),
+            Anchor::Custom(offset) => *offset,
+            Anchor::BottomLeft => Vector2::zeros(),
+            Anchor::Center => -size / 2.0,
+            Anchor::TopCenter => -Vector2::new(size.x / 2.0, size.y),
+            Anchor::BottomRight => -Vector2::new(size.x, 0.0),
+            Anchor::CenterRight => -Vector2::new(size.x, size.y / 2.0),
+            Anchor::CenterLeft => -Vector2::new(0.0, size.y / 2.0),
+            Anchor::TopLeft => -Vector2::new(0.0, size.y),
             _ => unimplemented!(),
         }
     }

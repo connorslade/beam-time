@@ -155,7 +155,7 @@ impl SpriteRenderPipeline {
                 let pos_c = sprite.points[2].component_div(&ctx.size());
                 let pos_d = sprite.points[3].component_div(&ctx.size());
 
-                let z = (sprite.z_index as f32 + i16::MAX as f32) / (i16::MAX as f32 * 2.0);
+                let z = (i16::MAX as f32 - sprite.z_index as f32) / (i16::MAX as f32 * 2.0);
 
                 let base = vert.len() as u32;
                 vert.extend_from_slice(&[

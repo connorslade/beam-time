@@ -68,9 +68,8 @@ impl<'a> Drawable for Button<'a> {
 
         let sprite = Sprite::new(self.asset)
             .color(color)
-            .pos(self.pos)
-            .anchor(self.anchor)
-            .scale(scale);
+            .position(self.pos, self.anchor)
+            .scale(scale, Anchor::Center);
 
         let hover = sprite.is_hovered(ctx);
         self.state.hover_time += ctx.delta_time * if hover { 1.0 } else { -1.0 };
