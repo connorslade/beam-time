@@ -88,7 +88,7 @@ impl Sprite {
     }
 
     fn points(&self, ctx: &GraphicsContext, sprite: &SpriteAsset) -> [Vector2<f32>; 4] {
-        let size = sprite.size.map(|x| x as f32);
+        let size = sprite.size.map(|x| x as f32) * ctx.scale_factor;
         let scale_factor = self.scale * ctx.scale_factor;
         let scaled_size = size.component_mul(&scale_factor);
 
