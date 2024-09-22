@@ -8,10 +8,12 @@ use engine::{
 
 use crate::consts::ACCENT_COLOR;
 
-pub struct Button<'a> {
+type ClickHandler<App> = Box<dyn FnMut(&mut GraphicsContext<App>)>;
+
+pub struct Button<'a, App> {
     asset: AssetRef,
     state: &'a mut ButtonState,
-    on_click: Box<dyn FnMut(&mut GraphicsContext)>,
+    on_click: ClickHandler<App>,
 
     color: Rgb<f32>,
     pos: Vector2<f32>,
@@ -24,7 +26,7 @@ pub struct ButtonState {
     hover_time: f32,
 }
 
-impl<'a> Button<'a> {
+impl<'a, App> Button<'a, App> {
     pub fn new(asset: AssetRef, state: &'a mut ButtonState) -> Self {
         Self {
             asset,
@@ -54,7 +56,7 @@ impl<'a> Button<'a> {
         self
     }
 
-    pub fn on_click(mut self, on_click: impl FnMut(&mut GraphicsContext) + 'static) -> Self {
+    pub fn on_click(mut self, on_click: impl FnMut(&mut GraphicsContext<App>) + 'static) -> Self {
         self.on_click = Box::new(on_click);
         self
     }
@@ -66,8 +68,8 @@ impl ButtonState {
     }
 }
 
-impl<'a> Drawable for Button<'a> {
-    fn draw(mut self, ctx: &mut GraphicsContext) {
+impl<'a, App> Drawable<App> for Button<'a, App> {
+    fn draw(mut self, ctx: &mut GraphicsContext<App>) {
         let color = self.color.lerp(ACCENT_COLOR, self.state.hover_time / 0.1);
         let scale =
             self.scale + Vector2::repeat(self.state.hover_time / 2.0).component_mul(&self.scale);

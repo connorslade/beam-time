@@ -7,7 +7,7 @@ use engine::{
     screens::Screen,
 };
 
-use crate::{assets::DEFAULT_FONT, consts::FOREGROUND_COLOR};
+use crate::{assets::DEFAULT_FONT, consts::FOREGROUND_COLOR, App};
 
 pub struct DebugOverlay {
     last_update: Instant,
@@ -15,10 +15,8 @@ pub struct DebugOverlay {
     last_frames: usize,
 }
 
-impl Screen for DebugOverlay {
-    fn render(&mut self, _ctx: &mut GraphicsContext) {}
-
-    fn update(&mut self, ctx: &mut GraphicsContext) {
+impl Screen<App> for DebugOverlay {
+    fn update(&mut self, _state: &mut App, ctx: &mut GraphicsContext<App>) {
         self.frames += 1;
         if self.last_update.elapsed() >= Duration::from_secs(1) {
             self.last_frames = self.frames;

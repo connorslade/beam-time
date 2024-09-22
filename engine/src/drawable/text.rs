@@ -36,7 +36,7 @@ impl<'a> Text<'a> {
         }
     }
 
-    pub fn width(&self, ctx: &GraphicsContext) -> f32 {
+    pub fn width<App>(&self, ctx: &GraphicsContext<App>) -> f32 {
         let scale = self.scale * ctx.scale_factor;
         let font = ctx
             .asset_manager
@@ -85,8 +85,8 @@ impl<'a> Text<'a> {
     }
 }
 
-impl<'a> Drawable for Text<'a> {
-    fn draw(self, ctx: &mut GraphicsContext) {
+impl<'a, App> Drawable<App> for Text<'a> {
+    fn draw(self, ctx: &mut GraphicsContext<App>) {
         let font = ctx
             .asset_manager
             .get(self.font)

@@ -12,7 +12,11 @@ use indoc::indoc;
 use crate::{
     assets::{BACK_BUTTON, DEFAULT_FONT},
     consts::{BACKGROUND_COLOR, FOREGROUND_COLOR},
-    ui::button::{Button, ButtonState},
+    ui::{
+        button::{Button, ButtonState},
+        waterfall::Waterfall,
+    },
+    App,
 };
 
 const DESCRIPTION: &str = indoc! {"
@@ -31,13 +35,14 @@ pub struct AboutScreen {
     back_button: ButtonState,
 }
 
-impl Screen for AboutScreen {
-    fn render(&mut self, ctx: &mut GraphicsContext) {
+impl Screen<App> for AboutScreen {
+    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
         ctx.input
             .key_down(PhysicalKey::Code(KeyCode::Escape))
             .then(|| ctx.pop_screen());
 
         ctx.background(BACKGROUND_COLOR);
+        ctx.draw(Waterfall::new(&mut state.waterfall));
 
         // Screen title
         let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
@@ -63,5 +68,9 @@ impl Screen for AboutScreen {
                 .scale(Vector2::repeat(2.0))
                 .on_click(|ctx| ctx.pop_screen()),
         );
+    }
+
+    fn on_resize(&mut self, state: &mut App, _size: Vector2<f32>) {
+        state.waterfall.reset();
     }
 }

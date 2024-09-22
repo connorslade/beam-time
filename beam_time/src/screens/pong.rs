@@ -11,6 +11,7 @@ use engine::{
 use crate::{
     assets::{BALL, PADDLE},
     consts::BACKGROUND_COLOR,
+    App,
 };
 
 pub struct PongScreen {
@@ -19,8 +20,8 @@ pub struct PongScreen {
     vel: Vector2<f32>,
 }
 
-impl Screen for PongScreen {
-    fn render(&mut self, ctx: &mut GraphicsContext) {
+impl Screen<App> for PongScreen {
+    fn render(&mut self, _state: &mut App, ctx: &mut GraphicsContext<App>) {
         ctx.input
             .key_down(PhysicalKey::Code(KeyCode::Escape))
             .then(|| ctx.pop_screen());

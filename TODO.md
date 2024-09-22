@@ -9,7 +9,7 @@
 - [x] Supply all four points in GpuSprite
 - [x] Allow rotating sprites
 - [ ] Look into anti aliasing
-- [ ] Matrix stacks?
+- [ ] ~~Matrix stacks?~~
 - [x] Color struct with mixing and lab
 - [x] Sprite Z-ordering
 - [x] Make a button UI element
@@ -17,3 +17,6 @@
 - [x] In the background of the title screen have faded versions of all the tiles be flying down
 - [x] Some kinda screen that always runs its handlers
 - [x] Fade to accent color on hover
+- [ ] Build out text renderer
+- [ ] Fix scale anchor bug
+- [x] Figure out how to pass an app struct around

@@ -9,6 +9,7 @@ use engine::{
     },
 };
 
+mod app;
 mod assets;
 mod consts;
 mod overlay;
@@ -16,6 +17,7 @@ mod screens;
 mod ui;
 mod util;
 
+use app::App;
 use consts::DEFAULT_SIZE;
 use overlay::debug::DebugOverlay;
 use screens::title::TitleScreen;
@@ -29,6 +31,7 @@ fn main() -> Result<()> {
             .with_window_icon(Some(icon))
             .with_inner_size(PhysicalSize::new(DEFAULT_SIZE.0, DEFAULT_SIZE.1))
             .with_resizable(false),
+        app_constructor: Box::new(App::default),
         screen_constructor: Box::new(|| {
             vec![
                 Box::new(DebugOverlay::default()),
