@@ -1,21 +1,15 @@
 use engine::{
     drawable::text::Text,
-    exports::{
-        nalgebra::Vector2,
-        winit::keyboard::{KeyCode, PhysicalKey},
-    },
+    exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
 };
 use indoc::indoc;
 
 use crate::{
-    assets::{ALAGARD_FONT, BACK_BUTTON, UNDEAD_FONT},
-    consts::{BACKGROUND_COLOR, FOREGROUND_COLOR},
-    ui::{
-        button::{Button, ButtonState},
-        waterfall::Waterfall,
-    },
+    assets::{ALAGARD_FONT, UNDEAD_FONT},
+    consts::FOREGROUND_COLOR,
+    ui::{button::ButtonState, misc::titled_screen},
     App,
 };
 
@@ -38,23 +32,10 @@ pub struct AboutScreen {
 
 impl Screen<App> for AboutScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
-        ctx.input
-            .key_down(PhysicalKey::Code(KeyCode::Escape))
-            .then(|| ctx.pop_screen());
+        let pos = titled_screen(state, ctx, &mut self.back_button, "About");
 
-        ctx.background(BACKGROUND_COLOR);
-        ctx.draw(Waterfall::new(&mut state.waterfall));
-
-        // Screen title
-        let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
         let desc = &ctx.get_asset(ALAGARD_FONT).as_font().desc;
         let height = (desc.height + desc.leading) * 6.0 * ctx.scale_factor;
-        ctx.draw(
-            Text::new(ALAGARD_FONT, "About")
-                .color(FOREGROUND_COLOR)
-                .pos(pos, Anchor::TopCenter)
-                .scale(Vector2::repeat(6.0)),
-        );
 
         ctx.draw(
             Text::new(UNDEAD_FONT, DESCRIPTION)
@@ -63,17 +44,5 @@ impl Screen<App> for AboutScreen {
                 .color(FOREGROUND_COLOR)
                 .scale(Vector2::repeat(3.0)),
         );
-
-        // Back button
-        ctx.draw(
-            Button::new(BACK_BUTTON, &mut self.back_button)
-                .pos(Vector2::new(ctx.center().x, 10.0), Anchor::BottomCenter)
-                .scale(Vector2::repeat(4.0))
-                .on_click(|ctx| ctx.pop_screen()),
-        );
-    }
-
-    fn on_resize(&mut self, state: &mut App, _size: Vector2<f32>) {
-        state.waterfall.reset();
     }
 }

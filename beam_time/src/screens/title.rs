@@ -17,7 +17,7 @@ use crate::{
     App,
 };
 
-use super::{about::AboutScreen, options::OptionsScreen, pong::PongScreen};
+use super::{about::AboutScreen, levels::LevelsScreen, options::OptionsScreen};
 
 pub struct TitleScreen {
     start_time: Instant,
@@ -53,7 +53,7 @@ impl Screen<App> for TitleScreen {
             Button::new(START_BUTTON, &mut self.start_button)
                 .pos(ctx.center(), Anchor::Center)
                 .scale(Vector2::repeat(4.0))
-                .on_click(|ctx| ctx.push_screen(PongScreen::default())),
+                .on_click(|ctx| ctx.push_screen(LevelsScreen::default())),
         );
 
         ctx.draw(

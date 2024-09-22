@@ -9,6 +9,7 @@ use winit::{
 pub struct InputManager {
     pub(crate) window_size: Vector2<u32>,
     pub mouse: Vector2<f32>,
+    pub resized: bool,
 
     mouse_down: Vec<MouseButton>,
     key_down: Vec<PhysicalKey>,
@@ -19,6 +20,7 @@ impl InputManager {
         Self {
             window_size: Vector2::new(window_size.width, window_size.height),
             mouse: Vector2::new(0.0, 0.0),
+            resized: false,
             mouse_down: Vec::new(),
             key_down: Vec::new(),
         }
@@ -33,8 +35,12 @@ impl InputManager {
     }
 
     pub(crate) fn on_window_event(&mut self, window_event: &WindowEvent) {
+        self.resized = false;
         match window_event {
-            WindowEvent::Resized(size) => self.window_size = Vector2::new(size.width, size.height),
+            WindowEvent::Resized(size) => {
+                self.window_size = Vector2::new(size.width, size.height);
+                self.resized = true;
+            }
             WindowEvent::CursorMoved { position: pos, .. } => {
                 self.mouse = Vector2::new(pos.x as f32, self.window_size.y as f32 - pos.y as f32)
             }
