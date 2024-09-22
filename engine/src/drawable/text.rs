@@ -44,18 +44,19 @@ impl<'a> Text<'a> {
             .as_font()
             .expect("Tried to use an non-font asset as a font.");
 
-        let width = font
-            .desc
-            .process_string(self.text)
-            .map(|c| match c {
-                FontChar::Char(c) => c.size.x as f32 + font.desc.tracking,
-                FontChar::Space => font.desc.space_width,
-                FontChar::Newline => 0.0,
-            })
-            .sum::<f32>()
-            * scale.x;
+        let mut width = 0.0_f32;
+        let mut x = 0.0_f32;
 
-        width.min(self.max_width)
+        font.desc.process_string(self.text).for_each(|c| match c {
+            FontChar::Char(c) => x += c.size.x as f32 + font.desc.tracking,
+            FontChar::Space => x += font.desc.space_width,
+            FontChar::Newline => {
+                width = width.max(x);
+                x = 0.0;
+            }
+        });
+
+        width.max(x).min(self.max_width * scale.x)
     }
 
     pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
@@ -104,7 +105,7 @@ impl<'a, App> Drawable<App> for Text<'a> {
             let character = match character {
                 FontChar::Char(character) => character,
                 FontChar::Newline => {
-                    pos.y -= font.desc.height * scale.y;
+                    pos.y -= (font.desc.height + font.desc.leading) * scale.y;
                     pos.x = 0.0;
                     continue;
                 }
@@ -139,7 +140,7 @@ impl<'a, App> Drawable<App> for Text<'a> {
 
             if pos.x > self.max_width {
                 pos.x = 0.0;
-                pos.y -= font.desc.height * scale.y;
+                pos.y -= (font.desc.height + font.desc.leading) * scale.y;
             }
         }
 

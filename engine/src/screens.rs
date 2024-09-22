@@ -4,7 +4,8 @@ use crate::graphics_context::GraphicsContext;
 
 pub trait Screen<App> {
     fn render(&mut self, _state: &mut App, _ctx: &mut GraphicsContext<App>) {}
-    fn update(&mut self, _state: &mut App, _ctx: &mut GraphicsContext<App>) {}
+    fn pre_render(&mut self, _state: &mut App, _ctx: &mut GraphicsContext<App>) {}
+    fn post_render(&mut self, _state: &mut App, _ctx: &mut GraphicsContext<App>) {}
 
     fn on_init(&mut self, _state: &mut App) {}
     fn on_resize(&mut self, _state: &mut App, _size: Vector2<f32>) {}
@@ -39,8 +40,11 @@ impl<App> Screens<App> {
     }
 
     pub fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &mut App) {
+        self.inner.iter_mut().for_each(|x| x.pre_render(state, ctx));
         self.top().render(state, ctx);
-        self.inner.iter_mut().for_each(|x| x.update(state, ctx));
+        self.inner
+            .iter_mut()
+            .for_each(|x| x.post_render(state, ctx));
     }
 
     pub fn on_resize(&mut self, size: Vector2<f32>, state: &mut App) {

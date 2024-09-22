@@ -68,6 +68,10 @@ impl<'a, App> GraphicsContext<'a, App> {
         }
     }
 
+    pub fn sprite_count(&self) -> usize {
+        self.sprites.len()
+    }
+
     pub fn size(&self) -> Vector2<f32> {
         self.input.window_size.map(|x| x as f32)
     }

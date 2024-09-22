@@ -16,7 +16,7 @@ pub struct DebugOverlay {
 }
 
 impl Screen<App> for DebugOverlay {
-    fn update(&mut self, _state: &mut App, ctx: &mut GraphicsContext<App>) {
+    fn post_render(&mut self, _state: &mut App, ctx: &mut GraphicsContext<App>) {
         self.frames += 1;
         if self.last_update.elapsed() >= Duration::from_secs(1) {
             self.last_frames = self.frames;
@@ -24,8 +24,11 @@ impl Screen<App> for DebugOverlay {
             self.last_update = Instant::now();
         }
 
+        let (fps, sprites, scale) = (self.last_frames, ctx.sprite_count(), ctx.scale_factor);
+        let text = format!("FPS: {fps}\nSprites: {sprites}\nScale: {scale:.1}");
+
         ctx.draw(
-            Text::new(DEFAULT_FONT, &format!("FPS: {:.1}", self.last_frames))
+            Text::new(DEFAULT_FONT, &text)
                 .color(FOREGROUND_COLOR)
                 .pos(Vector2::new(10.0, ctx.size().y - 10.0), Anchor::TopLeft)
                 .scale(Vector2::repeat(2.0)),

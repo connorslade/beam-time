@@ -46,11 +46,6 @@ impl<'a, App> Button<'a, App> {
         self
     }
 
-    pub fn color(mut self, color: impl Into<Rgb<f32>>) -> Self {
-        self.color = color.into();
-        self
-    }
-
     pub fn scale(mut self, scale: Vector2<f32>) -> Self {
         self.scale = scale;
         self
