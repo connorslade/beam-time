@@ -1,4 +1,4 @@
-<img src="https://github.com/user-attachments/assets/09fc2eec-8357-485d-b490-ead37e88843f" alt="Beam Time" align="center" />
+<img src="https://github.com/user-attachments/assets/2c3ef6b8-2561-4b2c-b0a3-5ea014868ae9" alt="Beam Time" align="center" />
 
 ---
 
