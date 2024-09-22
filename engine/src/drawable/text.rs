@@ -38,11 +38,7 @@ impl<'a> Text<'a> {
 
     pub fn width<App>(&self, ctx: &GraphicsContext<App>) -> f32 {
         let scale = self.scale * ctx.scale_factor;
-        let font = ctx
-            .asset_manager
-            .get(self.font)
-            .as_font()
-            .expect("Tried to use an non-font asset as a font.");
+        let font = ctx.asset_manager.get(self.font).as_font();
 
         let mut width = 0.0_f32;
         let mut x = 0.0_f32;
@@ -88,12 +84,7 @@ impl<'a> Text<'a> {
 
 impl<'a, App> Drawable<App> for Text<'a> {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
-        let font = ctx
-            .asset_manager
-            .get(self.font)
-            .as_font()
-            .expect("Tried to use an non-font asset as a font.");
-
+        let font = ctx.asset_manager.get(self.font).as_font();
         let scale = self.scale * ctx.scale_factor;
 
         let atlas_size = font.texture.size.map(|x| x as f32);
@@ -139,8 +130,8 @@ impl<'a, App> Drawable<App> for Text<'a> {
             n += 1;
 
             if pos.x > self.max_width {
-                pos.x = 0.0;
                 pos.y -= (font.desc.height + font.desc.leading) * scale.y;
+                pos.x = 0.0;
             }
         }
 

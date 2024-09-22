@@ -43,7 +43,7 @@ impl Sprite {
 
     // Reference: https://stackoverflow.com/a/37865332/12471934
     pub fn is_hovered<App>(&self, ctx: &GraphicsContext<App>) -> bool {
-        let asset = ctx.asset_manager.get(self.texture).as_sprite().unwrap();
+        let asset = ctx.asset_manager.get(self.texture).as_sprite();
         let points = self.points(ctx, asset);
 
         let ab = points[1] - points[0];
@@ -119,11 +119,7 @@ impl Sprite {
 
 impl<App> Drawable<App> for Sprite {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
-        let asset = ctx
-            .asset_manager
-            .get(self.texture)
-            .as_sprite()
-            .expect("Tried to draw a font as a sprite");
+        let asset = ctx.asset_manager.get(self.texture).as_sprite();
 
         let points = self.points(ctx, asset);
         ctx.sprites.push(GpuSprite {

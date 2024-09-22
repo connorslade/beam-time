@@ -84,7 +84,6 @@ impl<'a, App> GraphicsContext<'a, App> {
         self.asset_manager
             .get(asset)
             .as_sprite()
-            .unwrap()
             .size
             .map(|x| x as f32)
     }
@@ -125,13 +124,17 @@ impl Anchor {
     pub fn offset(&self, size: Vector2<f32>) -> Vector2<f32> {
         match self {
             Anchor::Custom(offset) => *offset,
-            Anchor::BottomLeft => Vector2::zeros(),
-            Anchor::Center => -size / 2.0,
-            Anchor::TopCenter => -Vector2::new(size.x / 2.0, size.y),
-            Anchor::BottomRight => -Vector2::new(size.x, 0.0),
-            Anchor::CenterRight => -Vector2::new(size.x, size.y / 2.0),
+
             Anchor::CenterLeft => -Vector2::new(0.0, size.y / 2.0),
+            Anchor::CenterRight => -Vector2::new(size.x, size.y / 2.0),
+            Anchor::Center => -size / 2.0,
+
+            Anchor::BottomLeft => Vector2::zeros(),
+            Anchor::BottomRight => -Vector2::new(size.x, 0.0),
+            Anchor::BottomCenter => -Vector2::new(size.x / 2.0, 0.0),
+
             Anchor::TopLeft => -Vector2::new(0.0, size.y),
+            Anchor::TopCenter => -Vector2::new(size.x / 2.0, size.y),
             _ => unimplemented!(),
         }
     }

@@ -38,17 +38,17 @@ pub const fn asset(name: &str) -> AssetRef {
 }
 
 impl Asset {
-    pub fn as_sprite(&self) -> Option<&SpriteAsset> {
+    pub fn as_sprite(&self) -> &SpriteAsset {
         match self {
-            Asset::Sprite(sprite) => Some(sprite),
-            _ => None,
+            Asset::Sprite(sprite) => sprite,
+            _ => panic!("Asset is not a sprite"),
         }
     }
 
-    pub fn as_font(&self) -> Option<&FontAsset> {
+    pub fn as_font(&self) -> &FontAsset {
         match self {
-            Asset::Font(font) => Some(font),
-            _ => None,
+            Asset::Font(font) => font,
+            _ => panic!("Asset is not a font"),
         }
     }
 }

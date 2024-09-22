@@ -7,7 +7,7 @@ use engine::{
     screens::Screen,
 };
 
-use crate::{assets::DEFAULT_FONT, consts::FOREGROUND_COLOR, App};
+use crate::{assets::UNDEAD_FONT, consts::FOREGROUND_COLOR, App};
 
 pub struct DebugOverlay {
     last_update: Instant,
@@ -28,7 +28,7 @@ impl Screen<App> for DebugOverlay {
         let text = format!("FPS: {fps}\nSprites: {sprites}\nScale: {scale:.1}");
 
         ctx.draw(
-            Text::new(DEFAULT_FONT, &text)
+            Text::new(UNDEAD_FONT, &text)
                 .color(FOREGROUND_COLOR)
                 .pos(Vector2::new(10.0, ctx.size().y - 10.0), Anchor::TopLeft)
                 .scale(Vector2::repeat(2.0)),
