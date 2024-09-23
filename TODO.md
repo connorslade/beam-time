@@ -3,7 +3,6 @@
 - [x] Cleanup sprite pipeline
 - [x] Support multiple atlases
 - [x] Text rendering
-- [ ] Store fonts and sprites separately, not as generic Assets
 - [x] Convert all positions to floats
 - [ ] Should scale be automatically multiplied by scale_factor if position cant?
 - [x] Supply all four points in GpuSprite
@@ -20,3 +19,4 @@
 - [ ] Build out text renderer
 - [ ] Fix scale anchor bug
 - [x] Figure out how to pass an app struct around
+- [ ] Strongly typed asset references

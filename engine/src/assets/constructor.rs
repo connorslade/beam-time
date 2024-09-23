@@ -1,5 +1,8 @@
+use std::io::Cursor;
+
 use image::RgbaImage;
 use nalgebra::Vector2;
+use rodio::Source;
 use wgpu::{
     util::{DeviceExt, TextureDataOrder},
     Device, Extent3d, Queue, TextureDescriptor, TextureDimension, TextureUsages,
@@ -17,6 +20,7 @@ pub struct AssetConstructor {
     next_id: u32,
     atlas: Vec<RgbaImage>,
 
+    audio: Vec<(AssetRef, Box<dyn Source<Item = i16>>)>,
     sprites: Vec<(AtlasRef, AssetRef, LocalSprite)>,
     fonts: Vec<(AtlasRef, AssetRef, FontDescriptor)>,
 }
@@ -36,6 +40,7 @@ impl AssetConstructor {
             next_id: 0,
             atlas: Vec::new(),
 
+            audio: Vec::new(),
             sprites: Vec::new(),
             fonts: Vec::new(),
         }
@@ -48,6 +53,11 @@ impl AssetConstructor {
         self.atlas.push(image);
 
         AtlasRef(id)
+    }
+
+    pub fn register_audio(&mut self, asset: AssetRef, bytes: &'static [u8]) {
+        let source = rodio::Decoder::new(Cursor::new(bytes)).unwrap();
+        self.audio.push((asset, Box::new(source)));
     }
 
     pub fn register_sprite(

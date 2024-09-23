@@ -22,7 +22,9 @@ const DESCRIPTION: &str = indoc! {"
     Assets Used:
 
     • Alagard, Font by Hewett Tsoi
+    • Sock Puppet Supremacy, Song by FADE
     • Undead Pixel Light, Font by Not Jam
+    • Universal UI/Menu Soundpack, by Cyrex Studios
 "};
 
 #[derive(Default)]

@@ -7,6 +7,10 @@ use crate::{include_atlas, util::include_asset};
 pub const UNDEAD_FONT: AssetRef = asset("undead_font");
 pub const ALAGARD_FONT: AssetRef = asset("alagard_font");
 
+// audio
+pub const INTRO_MUSIC: AssetRef = asset("intro_music");
+pub const BUTTON_HOVER: AssetRef = asset("button_hover");
+
 // interface
 pub const TITLE: AssetRef = asset("title");
 pub const COPYRIGHT: AssetRef = asset("copyright");
@@ -22,11 +26,10 @@ pub const WALL_TILE: AssetRef = asset("wall_tile");
 pub const GALVO_TILE: AssetRef = asset("galvo_tile");
 pub const EYE_TILE: AssetRef = asset("eye_tile");
 
-// temporary
-pub const BALL: AssetRef = asset("ball");
-pub const PADDLE: AssetRef = asset("paddle");
-
 pub fn init(assets: &mut AssetConstructor) {
+    assets.register_audio(INTRO_MUSIC, include_asset!("sounds/intro-music.mp3"));
+    assets.register_audio(BUTTON_HOVER, include_asset!("sounds/button-hover.wav"));
+
     let interface = assets.register_atlas(include_atlas!("interface.png"));
     assets.register_sprite(interface, TITLE, (0, 0), (81, 20));
     assets.register_sprite(interface, COPYRIGHT, (0, 20), (30, 8));
@@ -41,8 +44,6 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(tiles, WALL_TILE, (80, 0), (16, 16));
     assets.register_sprite(tiles, GALVO_TILE, (112, 0), (16, 16));
     assets.register_sprite(tiles, EYE_TILE, (64, 16), (16, 16));
-    assets.register_sprite(tiles, BALL, (81, 17), (8, 8));
-    assets.register_sprite(tiles, PADDLE, (96, 16), (3, 16));
 
     load_font(
         assets,
