@@ -6,7 +6,10 @@ use engine::{
     graphics_context::{Anchor, Drawable, GraphicsContext},
 };
 
-use crate::{assets::BUTTON_HOVER, consts::ACCENT_COLOR};
+use crate::{
+    assets::{BUTTON_BACK, BUTTON_HOVER, BUTTON_SUCCESS},
+    consts::ACCENT_COLOR,
+};
 
 type ClickHandler<App> = Box<dyn FnMut(&mut GraphicsContext<App>)>;
 
@@ -14,6 +17,7 @@ pub struct Button<'a, App> {
     asset: SpriteRef,
     state: &'a mut ButtonState,
     on_click: ClickHandler<App>,
+    is_back: bool,
 
     color: Rgb<f32>,
     pos: Vector2<f32>,
@@ -33,6 +37,7 @@ impl<'a, App> Button<'a, App> {
             asset,
             state,
             on_click: Box::new(|_| {}),
+            is_back: false,
 
             color: Rgb::new(1.0, 1.0, 1.0),
             pos: Vector2::zeros(),
@@ -54,6 +59,11 @@ impl<'a, App> Button<'a, App> {
 
     pub fn on_click(mut self, on_click: impl FnMut(&mut GraphicsContext<App>) + 'static) -> Self {
         self.on_click = Box::new(on_click);
+        self
+    }
+
+    pub fn set_back(mut self) -> Self {
+        self.is_back = true;
         self
     }
 }
@@ -80,10 +90,17 @@ impl<'a, App> Drawable<App> for Button<'a, App> {
         self.state.hover_time = self.state.hover_time.clamp(0.0, 0.1);
 
         if hover && !self.state.last_hovered {
-            ctx.audio.play_now(BUTTON_HOVER);
+            ctx.audio.builder(BUTTON_HOVER).with_gain(0.2).play_now();
         }
 
         if hover && ctx.input.mouse_down(MouseButton::Left) {
+            ctx.audio
+                .builder(if self.is_back {
+                    BUTTON_BACK
+                } else {
+                    BUTTON_SUCCESS
+                })
+                .play_now();
             (self.on_click)(ctx);
         }
 

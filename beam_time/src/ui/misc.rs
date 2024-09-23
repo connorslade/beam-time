@@ -44,6 +44,7 @@ pub fn titled_screen(
         Button::new(BACK_BUTTON, back)
             .pos(Vector2::new(ctx.center().x, 10.0), Anchor::BottomCenter)
             .scale(Vector2::repeat(4.0))
+            .set_back()
             .on_click(|ctx| ctx.pop_screen()),
     );
 

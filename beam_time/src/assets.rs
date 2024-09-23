@@ -13,7 +13,9 @@ define_refs! {
     },
     AudioRef => {
         INTRO_MUSIC,
-        BUTTON_HOVER
+        BUTTON_HOVER,
+        BUTTON_SUCCESS,
+        BUTTON_BACK
     },
     SpriteRef => {
         TITLE,
@@ -35,6 +37,8 @@ define_refs! {
 pub fn init(assets: &mut AssetConstructor) {
     assets.register_audio(INTRO_MUSIC, include_asset!("sounds/intro-music.mp3"));
     assets.register_audio(BUTTON_HOVER, include_asset!("sounds/button-hover.mp3"));
+    assets.register_audio(BUTTON_SUCCESS, include_asset!("sounds/button-success.mp3"));
+    assets.register_audio(BUTTON_BACK, include_asset!("sounds/button-back.mp3"));
 
     let interface = assets.register_atlas(include_atlas!("interface.png"));
     assets.register_sprite(interface, TITLE, (0, 0), (81, 20));
