@@ -1,32 +1,36 @@
-use engine::assets::{
-    constructor::AssetConstructor, font::FontDescriptor, AudioRef, FontRef, SpriteRef,
+use engine::{
+    assets::{constructor::AssetConstructor, font::FontDescriptor, AudioRef, FontRef, SpriteRef},
+    define_refs,
 };
 use image::RgbaImage;
 
 use crate::{include_atlas, util::include_asset};
 
-// fonts
-pub const UNDEAD_FONT: FontRef = FontRef::new("undead_font");
-pub const ALAGARD_FONT: FontRef = FontRef::new("alagard_font");
+define_refs! {
+    FontRef => {
+        UNDEAD_FONT,
+        ALAGARD_FONT
+    },
+    AudioRef => {
+        INTRO_MUSIC,
+        BUTTON_HOVER
+    },
+    SpriteRef => {
+        TITLE,
+        COPYRIGHT,
 
-// audio
-pub const INTRO_MUSIC: AudioRef = AudioRef::new("intro_music");
-pub const BUTTON_HOVER: AudioRef = AudioRef::new("button_hover");
+        BACK_BUTTON,
+        START_BUTTON,
+        OPTIONS_BUTTON,
+        ABOUT_BUTTON,
 
-// interface
-pub const TITLE: SpriteRef = SpriteRef::new("title");
-pub const COPYRIGHT: SpriteRef = SpriteRef::new("copyright");
-pub const BACK_BUTTON: SpriteRef = SpriteRef::new("back_button");
-pub const START_BUTTON: SpriteRef = SpriteRef::new("start_button");
-pub const OPTIONS_BUTTON: SpriteRef = SpriteRef::new("options_button");
-pub const ABOUT_BUTTON: SpriteRef = SpriteRef::new("about_button");
-
-// tiles
-pub const MIRROR_A_TILE: SpriteRef = SpriteRef::new("mirror_a_tile");
-pub const MIRROR_B_TILE: SpriteRef = SpriteRef::new("mirror_b_tile");
-pub const WALL_TILE: SpriteRef = SpriteRef::new("wall_tile");
-pub const GALVO_TILE: SpriteRef = SpriteRef::new("galvo_tile");
-pub const EYE_TILE: SpriteRef = SpriteRef::new("eye_tile");
+        MIRROR_A_TILE,
+        MIRROR_B_TILE,
+        WALL_TILE,
+        GALVO_TILE,
+        EYE_TILE
+    }
+}
 
 pub fn init(assets: &mut AssetConstructor) {
     // assets.register_audio(INTRO_MUSIC, include_asset!("sounds/intro-music.mp3"));

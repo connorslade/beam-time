@@ -131,3 +131,14 @@ impl Default for AssetConstructor {
         Self::new()
     }
 }
+
+#[macro_export]
+macro_rules! define_refs {
+    {$($type:ty => {$($name:ident),*}),*} => {
+        $(
+            $(
+                pub const $name: $type = <$type>::new(stringify!($name));
+            )*
+        )*
+    };
+}
