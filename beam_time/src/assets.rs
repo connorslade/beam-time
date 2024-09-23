@@ -33,8 +33,8 @@ define_refs! {
 }
 
 pub fn init(assets: &mut AssetConstructor) {
-    // assets.register_audio(INTRO_MUSIC, include_asset!("sounds/intro-music.mp3"));
-    // assets.register_audio(BUTTON_HOVER, include_asset!("sounds/button-hover.mp3"));
+    assets.register_audio(INTRO_MUSIC, include_asset!("sounds/intro-music.mp3"));
+    assets.register_audio(BUTTON_HOVER, include_asset!("sounds/button-hover.mp3"));
 
     let interface = assets.register_atlas(include_atlas!("interface.png"));
     assets.register_sprite(interface, TITLE, (0, 0), (81, 20));

@@ -1,22 +1,26 @@
+use std::{collections::HashMap, io::Cursor};
+
 use image::RgbaImage;
 use nalgebra::Vector2;
+use rodio::{Decoder, Source};
 use wgpu::{
     util::{DeviceExt, TextureDataOrder},
     Device, Extent3d, Queue, TextureDescriptor, TextureDimension, TextureUsages,
 };
 
-use crate::TEXTURE_FORMAT;
+use crate::{audio::AudioSource, TEXTURE_FORMAT};
 
 use super::{
     font::FontDescriptor,
     manager::{AssetManager, Texture},
-    FontRef, SpriteRef,
+    AudioRef, FontAsset, FontRef, SpriteAsset, SpriteRef,
 };
 
 pub struct AssetConstructor {
     next_id: u32,
     atlas: Vec<RgbaImage>,
 
+    audio: HashMap<AudioRef, AudioSource>,
     sprites: Vec<(AtlasRef, SpriteRef, LocalSprite)>,
     fonts: Vec<(AtlasRef, FontRef, FontDescriptor)>,
 }
@@ -36,6 +40,7 @@ impl AssetConstructor {
             next_id: 0,
             atlas: Vec::new(),
 
+            audio: HashMap::new(),
             sprites: Vec::new(),
             fonts: Vec::new(),
         }
@@ -76,8 +81,14 @@ impl AssetConstructor {
         self.fonts.push((atlas, asset, font_descriptor));
     }
 
+    pub fn register_audio(&mut self, asset: AudioRef, file: &'static [u8]) {
+        let source = Decoder::new(Cursor::new(file)).unwrap().buffered();
+        self.audio.insert(asset, source);
+    }
+
     pub(crate) fn into_manager(self, device: &Device, queue: &Queue) -> AssetManager {
         let mut manager = AssetManager::new();
+        manager.audio = self.audio;
 
         // Upload atlases to the GPU
         let mut textures = Vec::new();
@@ -109,12 +120,19 @@ impl AssetConstructor {
 
         for (atlas, asset, sprite) in self.sprites {
             let texture = textures[atlas.0 as usize];
-            manager.register_sprite(asset, texture, sprite.uv, sprite.size);
+            manager.sprites.insert(
+                asset,
+                SpriteAsset {
+                    texture,
+                    uv: sprite.uv,
+                    size: sprite.size,
+                },
+            );
         }
 
-        for (atlas, asset, descriptor) in self.fonts {
+        for (atlas, asset, desc) in self.fonts {
             let texture = textures[atlas.0 as usize];
-            manager.register_font(asset, texture, descriptor);
+            manager.fonts.insert(asset, FontAsset { texture, desc });
         }
 
         manager

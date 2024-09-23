@@ -2,12 +2,16 @@ use std::collections::HashMap;
 
 use nalgebra::Vector2;
 
-use super::{font::FontDescriptor, FontAsset, FontRef, SpriteAsset, SpriteRef, TextureRef};
+use crate::audio::AudioSource;
+
+use super::{AudioRef, FontAsset, FontRef, SpriteAsset, SpriteRef, TextureRef};
 
 pub struct AssetManager {
-    sprites: HashMap<SpriteRef, SpriteAsset>,
-    fonts: HashMap<FontRef, FontAsset>,
-    textures: HashMap<TextureRef, Texture>,
+    pub(crate) textures: HashMap<TextureRef, Texture>,
+    pub(crate) audio: HashMap<AudioRef, AudioSource>,
+
+    pub(crate) sprites: HashMap<SpriteRef, SpriteAsset>,
+    pub(crate) fonts: HashMap<FontRef, FontAsset>,
 }
 
 pub struct Texture {
@@ -18,9 +22,10 @@ pub struct Texture {
 impl AssetManager {
     pub fn new() -> Self {
         Self {
+            textures: HashMap::new(),
+            audio: HashMap::new(),
             sprites: HashMap::new(),
             fonts: HashMap::new(),
-            textures: HashMap::new(),
         }
     }
 }
@@ -34,19 +39,8 @@ impl AssetManager {
         self.fonts.get(&asset_ref).as_ref().unwrap()
     }
 
-    pub fn register_sprite(
-        &mut self,
-        asset_ref: SpriteRef,
-        texture: TextureRef,
-        uv: Vector2<u32>,
-        size: Vector2<u32>,
-    ) {
-        self.sprites
-            .insert(asset_ref, SpriteAsset { texture, uv, size });
-    }
-
-    pub fn register_font(&mut self, asset_ref: FontRef, texture: TextureRef, desc: FontDescriptor) {
-        self.fonts.insert(asset_ref, FontAsset { texture, desc });
+    pub fn get_audio(&self, asset_ref: AudioRef) -> &AudioSource {
+        self.audio.get(&asset_ref).as_ref().unwrap()
     }
 }
 

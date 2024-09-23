@@ -6,7 +6,7 @@ use engine::{
     graphics_context::{Anchor, Drawable, GraphicsContext},
 };
 
-use crate::consts::ACCENT_COLOR;
+use crate::{assets::BUTTON_HOVER, consts::ACCENT_COLOR};
 
 type ClickHandler<App> = Box<dyn FnMut(&mut GraphicsContext<App>)>;
 
@@ -24,6 +24,7 @@ pub struct Button<'a, App> {
 #[derive(Default)]
 pub struct ButtonState {
     hover_time: f32,
+    last_hovered: bool,
 }
 
 impl<'a, App> Button<'a, App> {
@@ -78,10 +79,15 @@ impl<'a, App> Drawable<App> for Button<'a, App> {
         self.state.hover_time += ctx.delta_time * if hover { 1.0 } else { -1.0 };
         self.state.hover_time = self.state.hover_time.clamp(0.0, 0.1);
 
+        if hover && !self.state.last_hovered {
+            ctx.audio.play_now(BUTTON_HOVER);
+        }
+
         if hover && ctx.input.mouse_down(MouseButton::Left) {
             (self.on_click)(ctx);
         }
 
+        self.state.last_hovered = hover;
         ctx.draw(sprite);
     }
 }

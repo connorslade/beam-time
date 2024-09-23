@@ -19,6 +19,7 @@ use winit::{
 
 use crate::{
     assets::{constructor::AssetConstructor, manager::AssetManager},
+    audio::AudioManager,
     graphics_context::GraphicsContext,
     input::InputManager,
     render::sprite::SpriteRenderPipeline,
@@ -45,8 +46,8 @@ pub struct State<'a, App> {
     pub last_frame: Instant,
     pub app: App,
 
-    // Higher lever rendering stuff
     pub assets: Rc<AssetManager>,
+    pub audio: AudioManager,
     pub screens: Screens<App>,
 
     // Rendering stuff (pipelines & buffers)
@@ -97,10 +98,12 @@ impl<'a, App> ApplicationHandler for Application<'a, App> {
         let mut asset_constructor = AssetConstructor::new();
         (self.args.asset_constructor)(&mut asset_constructor);
 
+        let assets = Rc::new(asset_constructor.into_manager(&device, &queue));
         self.state = Some(State {
             sprite_renderer: SpriteRenderPipeline::new(&device),
             depth_buffer: create_depth_buffer(&device, window_size),
-            assets: Rc::new(asset_constructor.into_manager(&device, &queue)),
+            audio: AudioManager::new_default_output(assets.clone()).unwrap(),
+            assets,
             input: InputManager::new(window.inner_size()),
             graphics: RenderContext {
                 surface,
@@ -140,6 +143,7 @@ impl<'a, App> ApplicationHandler for Application<'a, App> {
                     state.assets.clone(),
                     gcx.window.scale_factor() as f32,
                     &state.input,
+                    &state.audio,
                     delta_time,
                 );
 

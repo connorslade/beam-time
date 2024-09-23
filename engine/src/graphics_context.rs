@@ -5,6 +5,7 @@ use wgpu::Color;
 
 use crate::{
     assets::{manager::AssetManager, SpriteRef},
+    audio::AudioManager,
     color::Rgb,
     input::InputManager,
     render::sprite::GpuSprite,
@@ -14,6 +15,7 @@ use crate::{
 pub struct GraphicsContext<'a, App> {
     /// Reference to asset manager
     pub assets: Rc<AssetManager>,
+    pub audio: &'a AudioManager,
 
     /// background color
     pub(crate) background: Rgb<f32>,
@@ -54,13 +56,15 @@ pub enum Anchor {
 
 impl<'a, App> GraphicsContext<'a, App> {
     pub fn new(
-        asset_manager: Rc<AssetManager>,
+        assets: Rc<AssetManager>,
         scale_factor: f32,
         input: &'a InputManager,
+        audio: &'a AudioManager,
         delta_time: f32,
     ) -> Self {
         GraphicsContext {
-            assets: asset_manager,
+            assets,
+            audio,
             background: Rgb::new(0.0, 0.0, 0.0),
             sprites: Vec::new(),
             next_screen: Vec::new(),
