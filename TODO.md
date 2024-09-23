@@ -19,4 +19,4 @@
 - [ ] Build out text renderer
 - [ ] Fix scale anchor bug
 - [x] Figure out how to pass an app struct around
-- [ ] Strongly typed asset references
+- [x] Strongly typed asset references

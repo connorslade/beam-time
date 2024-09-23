@@ -1,7 +1,7 @@
 use nalgebra::{Matrix3, Vector2, Vector3};
 
 use crate::{
-    assets::{AssetRef, SpriteAsset},
+    assets::{SpriteAsset, SpriteRef},
     color::Rgb,
     graphics_context::{Anchor, Drawable, GraphicsContext},
     render::sprite::GpuSprite,
@@ -9,7 +9,7 @@ use crate::{
 
 #[derive(Debug)]
 pub struct Sprite {
-    texture: AssetRef,
+    texture: SpriteRef,
     color: Rgb<f32>,
     z_index: i16,
 
@@ -24,7 +24,7 @@ pub struct Sprite {
 }
 
 impl Sprite {
-    pub fn new(texture: AssetRef) -> Self {
+    pub fn new(texture: SpriteRef) -> Self {
         Self {
             texture,
             color: Rgb::new(1.0, 1.0, 1.0),
@@ -43,7 +43,7 @@ impl Sprite {
 
     // Reference: https://stackoverflow.com/a/37865332/12471934
     pub fn is_hovered<App>(&self, ctx: &GraphicsContext<App>) -> bool {
-        let asset = ctx.asset_manager.get(self.texture).as_sprite();
+        let asset = ctx.assets.get_sprite(self.texture);
         let points = self.points(ctx, asset);
 
         let ab = points[1] - points[0];
@@ -119,7 +119,7 @@ impl Sprite {
 
 impl<App> Drawable<App> for Sprite {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
-        let asset = ctx.asset_manager.get(self.texture).as_sprite();
+        let asset = ctx.assets.get_sprite(self.texture);
 
         let points = self.points(ctx, asset);
         ctx.sprites.push(GpuSprite {

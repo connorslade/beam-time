@@ -1,5 +1,5 @@
 use engine::{
-    assets::AssetRef,
+    assets::SpriteRef,
     drawable::sprite::Sprite,
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
@@ -18,7 +18,7 @@ pub struct WaterfallState {
 }
 
 struct FallingTile {
-    asset: AssetRef,
+    asset: SpriteRef,
     pos: Vector2<f32>,
     vel: f32,
 }

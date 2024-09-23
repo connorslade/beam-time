@@ -1,34 +1,36 @@
-use engine::assets::{asset, constructor::AssetConstructor, font::FontDescriptor, AssetRef};
+use engine::assets::{
+    constructor::AssetConstructor, font::FontDescriptor, AudioRef, FontRef, SpriteRef,
+};
 use image::RgbaImage;
 
 use crate::{include_atlas, util::include_asset};
 
 // fonts
-pub const UNDEAD_FONT: AssetRef = asset("undead_font");
-pub const ALAGARD_FONT: AssetRef = asset("alagard_font");
+pub const UNDEAD_FONT: FontRef = FontRef::new("undead_font");
+pub const ALAGARD_FONT: FontRef = FontRef::new("alagard_font");
 
 // audio
-pub const INTRO_MUSIC: AssetRef = asset("intro_music");
-pub const BUTTON_HOVER: AssetRef = asset("button_hover");
+pub const INTRO_MUSIC: AudioRef = AudioRef::new("intro_music");
+pub const BUTTON_HOVER: AudioRef = AudioRef::new("button_hover");
 
 // interface
-pub const TITLE: AssetRef = asset("title");
-pub const COPYRIGHT: AssetRef = asset("copyright");
-pub const BACK_BUTTON: AssetRef = asset("back_button");
-pub const START_BUTTON: AssetRef = asset("start_button");
-pub const OPTIONS_BUTTON: AssetRef = asset("options_button");
-pub const ABOUT_BUTTON: AssetRef = asset("about_button");
+pub const TITLE: SpriteRef = SpriteRef::new("title");
+pub const COPYRIGHT: SpriteRef = SpriteRef::new("copyright");
+pub const BACK_BUTTON: SpriteRef = SpriteRef::new("back_button");
+pub const START_BUTTON: SpriteRef = SpriteRef::new("start_button");
+pub const OPTIONS_BUTTON: SpriteRef = SpriteRef::new("options_button");
+pub const ABOUT_BUTTON: SpriteRef = SpriteRef::new("about_button");
 
 // tiles
-pub const MIRROR_A_TILE: AssetRef = asset("mirror_a_tile");
-pub const MIRROR_B_TILE: AssetRef = asset("mirror_b_tile");
-pub const WALL_TILE: AssetRef = asset("wall_tile");
-pub const GALVO_TILE: AssetRef = asset("galvo_tile");
-pub const EYE_TILE: AssetRef = asset("eye_tile");
+pub const MIRROR_A_TILE: SpriteRef = SpriteRef::new("mirror_a_tile");
+pub const MIRROR_B_TILE: SpriteRef = SpriteRef::new("mirror_b_tile");
+pub const WALL_TILE: SpriteRef = SpriteRef::new("wall_tile");
+pub const GALVO_TILE: SpriteRef = SpriteRef::new("galvo_tile");
+pub const EYE_TILE: SpriteRef = SpriteRef::new("eye_tile");
 
 pub fn init(assets: &mut AssetConstructor) {
-    assets.register_audio(INTRO_MUSIC, include_asset!("sounds/intro-music.mp3"));
-    assets.register_audio(BUTTON_HOVER, include_asset!("sounds/button-hover.wav"));
+    // assets.register_audio(INTRO_MUSIC, include_asset!("sounds/intro-music.mp3"));
+    // assets.register_audio(BUTTON_HOVER, include_asset!("sounds/button-hover.mp3"));
 
     let interface = assets.register_atlas(include_atlas!("interface.png"));
     assets.register_sprite(interface, TITLE, (0, 0), (81, 20));
@@ -60,7 +62,7 @@ pub fn init(assets: &mut AssetConstructor) {
     )
 }
 
-fn load_font(assets: &mut AssetConstructor, asset: AssetRef, atlas: RgbaImage, descriptor: &[u8]) {
+fn load_font(assets: &mut AssetConstructor, asset: FontRef, atlas: RgbaImage, descriptor: &[u8]) {
     let font = assets.register_atlas(atlas);
     let descriptor = ron::de::from_bytes::<FontDescriptor>(descriptor).unwrap();
     assets.register_font(font, asset, descriptor);

@@ -4,7 +4,7 @@ use nalgebra::Vector2;
 use wgpu::Color;
 
 use crate::{
-    assets::{manager::AssetManager, Asset, AssetRef},
+    assets::{manager::AssetManager, SpriteRef},
     color::Rgb,
     input::InputManager,
     render::sprite::GpuSprite,
@@ -13,7 +13,7 @@ use crate::{
 
 pub struct GraphicsContext<'a, App> {
     /// Reference to asset manager
-    pub(crate) asset_manager: Rc<AssetManager>,
+    pub assets: Rc<AssetManager>,
 
     /// background color
     pub(crate) background: Rgb<f32>,
@@ -40,12 +40,15 @@ pub enum Anchor {
     TopLeft,
     TopCenter,
     TopRight,
+
     CenterLeft,
     Center,
     CenterRight,
+
     BottomLeft,
     BottomCenter,
     BottomRight,
+
     Custom(Vector2<f32>),
 }
 
@@ -57,7 +60,7 @@ impl<'a, App> GraphicsContext<'a, App> {
         delta_time: f32,
     ) -> Self {
         GraphicsContext {
-            asset_manager,
+            assets: asset_manager,
             background: Rgb::new(0.0, 0.0, 0.0),
             sprites: Vec::new(),
             next_screen: Vec::new(),
@@ -80,12 +83,8 @@ impl<'a, App> GraphicsContext<'a, App> {
         self.size() / 2.0
     }
 
-    pub fn size_of(&self, asset: AssetRef) -> Vector2<f32> {
-        self.asset_manager
-            .get(asset)
-            .as_sprite()
-            .size
-            .map(|x| x as f32)
+    pub fn size_of(&self, asset: SpriteRef) -> Vector2<f32> {
+        self.assets.get_sprite(asset).size.map(|x| x as f32)
     }
 
     pub fn background(&mut self, color: Rgb<f32>) {
@@ -102,10 +101,6 @@ impl<'a, App> GraphicsContext<'a, App> {
 
     pub fn draw(&mut self, drawable: impl Drawable<App>) {
         drawable.draw(self);
-    }
-
-    pub fn get_asset(&self, asset: AssetRef) -> &Asset {
-        self.asset_manager.get(asset)
     }
 }
 

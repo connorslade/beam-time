@@ -1,5 +1,5 @@
 use engine::{
-    assets::AssetRef,
+    assets::SpriteRef,
     color::Rgb,
     drawable::sprite::Sprite,
     exports::{nalgebra::Vector2, winit::event::MouseButton},
@@ -11,7 +11,7 @@ use crate::consts::ACCENT_COLOR;
 type ClickHandler<App> = Box<dyn FnMut(&mut GraphicsContext<App>)>;
 
 pub struct Button<'a, App> {
-    asset: AssetRef,
+    asset: SpriteRef,
     state: &'a mut ButtonState,
     on_click: ClickHandler<App>,
 
@@ -27,7 +27,7 @@ pub struct ButtonState {
 }
 
 impl<'a, App> Button<'a, App> {
-    pub fn new(asset: AssetRef, state: &'a mut ButtonState) -> Self {
+    pub fn new(asset: SpriteRef, state: &'a mut ButtonState) -> Self {
         Self {
             asset,
             state,

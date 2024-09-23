@@ -3,14 +3,14 @@ use core::f32;
 use nalgebra::{Vector2, Vector3};
 
 use crate::{
-    assets::{font::FontChar, AssetRef},
+    assets::{font::FontChar, FontRef},
     color::Rgb,
     graphics_context::{Anchor, Drawable, GraphicsContext},
     render::sprite::GpuSprite,
 };
 
 pub struct Text<'a> {
-    font: AssetRef,
+    font: FontRef,
     text: &'a str,
     color: Rgb<f32>,
     max_width: f32,
@@ -22,7 +22,7 @@ pub struct Text<'a> {
 }
 
 impl<'a> Text<'a> {
-    pub fn new(font: AssetRef, text: &'a str) -> Self {
+    pub fn new(font: FontRef, text: &'a str) -> Self {
         Self {
             font,
             text,
@@ -38,7 +38,7 @@ impl<'a> Text<'a> {
 
     pub fn width<App>(&self, ctx: &GraphicsContext<App>) -> f32 {
         let scale = self.scale * ctx.scale_factor;
-        let font = ctx.asset_manager.get(self.font).as_font();
+        let font = ctx.assets.get_font(self.font);
 
         let mut width = 0.0_f32;
         let mut x = 0.0_f32;
@@ -84,7 +84,7 @@ impl<'a> Text<'a> {
 
 impl<'a, App> Drawable<App> for Text<'a> {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
-        let font = ctx.asset_manager.get(self.font).as_font();
+        let font = ctx.assets.get_font(self.font);
         let scale = self.scale * ctx.scale_factor;
 
         let atlas_size = font.texture.size.map(|x| x as f32);

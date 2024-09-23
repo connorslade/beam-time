@@ -179,7 +179,7 @@ impl SpriteRenderPipeline {
                 contents: bytemuck::cast_slice(&index),
             });
 
-            let texture = ctx.asset_manager.get_texture(*atlas);
+            let texture = ctx.assets.get_texture(*atlas);
             let view = texture
                 .texture
                 .create_view(&TextureViewDescriptor::default());

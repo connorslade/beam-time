@@ -2,10 +2,11 @@ use std::collections::HashMap;
 
 use nalgebra::Vector2;
 
-use super::{font::FontDescriptor, Asset, AssetRef, FontAsset, SpriteAsset, TextureRef};
+use super::{font::FontDescriptor, FontAsset, FontRef, SpriteAsset, SpriteRef, TextureRef};
 
 pub struct AssetManager {
-    assets: HashMap<AssetRef, Asset>,
+    sprites: HashMap<SpriteRef, SpriteAsset>,
+    fonts: HashMap<FontRef, FontAsset>,
     textures: HashMap<TextureRef, Texture>,
 }
 
@@ -17,50 +18,41 @@ pub struct Texture {
 impl AssetManager {
     pub fn new() -> Self {
         Self {
-            assets: HashMap::new(),
+            sprites: HashMap::new(),
+            fonts: HashMap::new(),
             textures: HashMap::new(),
         }
     }
 }
 
 impl AssetManager {
-    pub fn get(&self, asset_ref: AssetRef) -> &Asset {
-        self.assets.get(&asset_ref).as_ref().unwrap()
+    pub fn get_sprite(&self, asset_ref: SpriteRef) -> &SpriteAsset {
+        self.sprites.get(&asset_ref).as_ref().unwrap()
     }
 
-    pub fn try_get(&self, asset_ref: AssetRef) -> Option<&Asset> {
-        self.assets.get(&asset_ref)
+    pub fn get_font(&self, asset_ref: FontRef) -> &FontAsset {
+        self.fonts.get(&asset_ref).as_ref().unwrap()
     }
 
     pub fn register_sprite(
         &mut self,
-        asset_ref: AssetRef,
+        asset_ref: SpriteRef,
         texture: TextureRef,
         uv: Vector2<u32>,
         size: Vector2<u32>,
     ) {
-        self.assets
-            .insert(asset_ref, Asset::Sprite(SpriteAsset { texture, uv, size }));
+        self.sprites
+            .insert(asset_ref, SpriteAsset { texture, uv, size });
     }
 
-    pub fn register_font(
-        &mut self,
-        asset_ref: AssetRef,
-        texture: TextureRef,
-        desc: FontDescriptor,
-    ) {
-        self.assets
-            .insert(asset_ref, Asset::Font(FontAsset { texture, desc }));
+    pub fn register_font(&mut self, asset_ref: FontRef, texture: TextureRef, desc: FontDescriptor) {
+        self.fonts.insert(asset_ref, FontAsset { texture, desc });
     }
 }
 
 impl AssetManager {
     pub fn get_texture(&self, texture_ref: TextureRef) -> &Texture {
         self.textures.get(&texture_ref).as_ref().unwrap()
-    }
-
-    pub fn try_get_texture(&self, texture_ref: TextureRef) -> Option<&Texture> {
-        self.textures.get(&texture_ref)
     }
 
     pub fn register_texture(&mut self, texture: Texture) -> TextureRef {
