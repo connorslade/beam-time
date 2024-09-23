@@ -89,8 +89,7 @@ impl Sprite {
 
     fn points<App>(&self, ctx: &GraphicsContext<App>, sprite: &SpriteAsset) -> [Vector2<f32>; 4] {
         let size = sprite.size.map(|x| x as f32) * ctx.scale_factor;
-        let scale_factor = self.scale * ctx.scale_factor;
-        let scaled_size = size.component_mul(&scale_factor);
+        let scaled_size = size.component_mul(&self.scale);
 
         // Calculate anchor offsets for each transformation
         let rotation_offset = self.rotation_anchor.offset(size);
@@ -101,7 +100,7 @@ impl Sprite {
         // Combine transformations and offsets
         let transform =
             Matrix3::new_translation(&(self.position + back_scale_offset + position_offset))
-                * Matrix3::new_nonuniform_scaling(&scale_factor)
+                * Matrix3::new_nonuniform_scaling(&self.scale)
                 * Matrix3::new_translation(&(scale_offset - rotation_offset))
                 * Matrix3::new_rotation(self.rotation)
                 * Matrix3::new_translation(&rotation_offset);

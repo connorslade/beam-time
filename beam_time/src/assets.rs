@@ -26,8 +26,11 @@ define_refs! {
         OPTIONS_BUTTON,
         ABOUT_BUTTON,
 
+        EMPTY_TILE,
         MIRROR_A_TILE,
         MIRROR_B_TILE,
+        SPLITTER_A_TILE,
+        SPLITTER_B_TILE,
         WALL_TILE,
         GALVO_TILE,
         EYE_TILE
@@ -49,8 +52,11 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, ABOUT_BUTTON, (40, 48), (31, 14));
 
     let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
+    assets.register_sprite(tiles, EMPTY_TILE, (80, 16), (16, 16));
     assets.register_sprite(tiles, MIRROR_A_TILE, (0, 0), (16, 16));
     assets.register_sprite(tiles, MIRROR_B_TILE, (16, 0), (16, 16));
+    assets.register_sprite(tiles, SPLITTER_A_TILE, (0, 16), (16, 16));
+    assets.register_sprite(tiles, SPLITTER_B_TILE, (16, 16), (16, 16));
     assets.register_sprite(tiles, WALL_TILE, (80, 0), (16, 16));
     assets.register_sprite(tiles, GALVO_TILE, (112, 0), (16, 16));
     assets.register_sprite(tiles, EYE_TILE, (64, 16), (16, 16));
