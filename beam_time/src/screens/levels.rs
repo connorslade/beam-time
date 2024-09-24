@@ -7,23 +7,21 @@ use engine::{
 };
 
 use crate::{
-    assets::EMPTY_TILE,
-    consts::{FOREGROUND_COLOR, PLAYER_TILES},
-    ui::{button::ButtonState, misc::titled_screen},
+    assets::{EMPTY_TILE, EMPTY_TILE_RIGHT, EMPTY_TILE_TOP, EMPTY_TILE_TOP_RIGHT},
+    consts::{BACKGROUND_COLOR, FOREGROUND_COLOR, PLAYER_TILES},
     App,
 };
 
 pub struct LevelsScreen {
     holding: Option<SpriteRef>,
-    tiles: Vec<SpriteRef>,
+    tiles: Vec<Option<SpriteRef>>,
     size: (usize, usize),
-
-    back_button: ButtonState,
 }
 
 impl Screen<App> for LevelsScreen {
-    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
-        titled_screen(state, ctx, &mut self.back_button, "Levels");
+    fn render(&mut self, _state: &mut App, ctx: &mut GraphicsContext<App>) {
+        ctx.background(BACKGROUND_COLOR);
+
         self.tile_picker(ctx);
         self.tile_map(ctx);
     }
@@ -53,7 +51,7 @@ impl LevelsScreen {
                 .scale(Vector2::repeat(4.0), Anchor::Center)
                 .color(FOREGROUND_COLOR);
 
-            if ctx.input.mouse_down(MouseButton::Left) && sprite.is_hovered(ctx) {
+            if ctx.input.mouse_pressed(MouseButton::Left) && sprite.is_hovered(ctx) {
                 self.holding = Some(tile);
             }
 
@@ -72,26 +70,56 @@ impl LevelsScreen {
         for y in 0..self.size.1 {
             for x in 0..self.size.0 {
                 let texture = self.tiles[y * self.size.0 + x];
+                let is_empty = texture.is_none();
+
                 let pos = ctx.center()
                     - Vector2::new(
                         x as f32 * tile_size - size.0 / 2.0,
                         y as f32 * tile_size - size.0 / 2.0,
-                    );
+                    )
+                    - Vector2::repeat(tile_size / 2.0);
 
-                let sprite = Sprite::new(texture)
+                let grid_tile = if x == 0 && y == 0 {
+                    EMPTY_TILE_TOP_RIGHT
+                } else if y == 0 {
+                    EMPTY_TILE_TOP
+                } else if x == 0 {
+                    EMPTY_TILE_RIGHT
+                } else {
+                    EMPTY_TILE
+                };
+                let grid = Sprite::new(grid_tile)
                     .scale(Vector2::repeat(4.0), Anchor::Center)
-                    .position(pos, Anchor::Center);
+                    .position(pos, Anchor::Center)
+                    .z_index(-10);
 
-                if ctx.input.mouse_down(MouseButton::Left) && sprite.is_hovered(ctx) {
+                if let Some(texture) = texture {
+                    let sprite = Sprite::new(texture)
+                        .scale(Vector2::repeat(4.0), Anchor::Center)
+                        .position(pos, Anchor::Center)
+                        .color(FOREGROUND_COLOR);
+                    ctx.draw(sprite);
+                }
+
+                let hovered = grid.is_hovered(ctx);
+
+                if ctx.input.mouse_pressed(MouseButton::Left) && hovered {
                     if let Some(holding) = self.holding.take() {
-                        self.tiles[y * self.size.0 + x] = holding;
-                    } else if self.holding.is_none() {
-                        self.holding = Some(texture);
-                        self.tiles[y * self.size.0 + x] = EMPTY_TILE;
+                        self.tiles[y * self.size.0 + x] = Some(holding);
+                        if !is_empty {
+                            self.holding = texture;
+                        }
+                    } else if !is_empty && self.holding.is_none() {
+                        self.holding = texture;
+                        self.tiles[y * self.size.0 + x] = None;
                     }
                 }
 
-                ctx.draw(sprite);
+                if ctx.input.mouse_down(MouseButton::Right) && hovered {
+                    self.tiles[y * self.size.0 + x] = None;
+                }
+
+                ctx.draw(grid);
             }
         }
     }
@@ -101,10 +129,8 @@ impl Default for LevelsScreen {
     fn default() -> Self {
         Self {
             holding: None,
-            tiles: vec![EMPTY_TILE; 64],
+            tiles: vec![None; 64],
             size: (8, 8),
-
-            back_button: ButtonState::default(),
         }
     }
 }

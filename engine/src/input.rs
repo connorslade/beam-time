@@ -11,7 +11,9 @@ pub struct InputManager {
     pub mouse: Vector2<f32>,
     pub resized: bool,
 
+    last_mouse_down: Vec<MouseButton>,
     mouse_down: Vec<MouseButton>,
+
     key_down: Vec<PhysicalKey>,
 }
 
@@ -21,13 +23,24 @@ impl InputManager {
             window_size: Vector2::new(window_size.width, window_size.height),
             mouse: Vector2::new(0.0, 0.0),
             resized: false,
+
+            last_mouse_down: Vec::new(),
             mouse_down: Vec::new(),
+
             key_down: Vec::new(),
         }
     }
 
     pub fn mouse_down(&self, button: MouseButton) -> bool {
         self.mouse_down.contains(&button)
+    }
+
+    pub fn mouse_pressed(&self, button: MouseButton) -> bool {
+        self.mouse_down.contains(&button) && !self.last_mouse_down.contains(&button)
+    }
+
+    pub fn mouse_released(&self, button: MouseButton) -> bool {
+        !self.mouse_down.contains(&button) && self.last_mouse_down.contains(&button)
     }
 
     pub fn key_down(&self, key: PhysicalKey) -> bool {
@@ -64,5 +77,9 @@ impl InputManager {
             },
             _ => {}
         }
+    }
+
+    pub(crate) fn on_frame_end(&mut self) {
+        self.last_mouse_down = self.mouse_down.clone();
     }
 }

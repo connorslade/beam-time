@@ -194,6 +194,7 @@ impl<'a, App> ApplicationHandler for Application<'a, App> {
 
                 output.present();
 
+                state.input.on_frame_end();
                 gcx.window.request_redraw();
             }
             WindowEvent::Resized(size) => {
