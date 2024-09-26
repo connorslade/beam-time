@@ -64,6 +64,9 @@ FontDescriptor(
         '7': (uv: (55, 61), size: (8, 11)),
         '8': (uv: (64, 61), size: (8, 11)),
         '9': (uv: (73, 61), size: (8, 11)),
+
+        '$': (uv: (97, 45), size: (8, 14), baseline_shift: -2),
+        ',': (uv: (106, 55), size: (3, 5), baseline_shift: -3)
     },
     unknown: (uv: (115, 58), size: (11, 14), baseline_shift: -2),
     height: 11,

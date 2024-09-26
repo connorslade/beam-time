@@ -81,7 +81,8 @@ FontDescriptor(
         ':': (uv: (92, 20), size: (1, 4)),
         '/': (uv: (94, 18), size: (3, 6)),
         '\\': (uv: (98, 18), size: (3, 6)),
-        '•': (uv: (102, 20), size: (3, 4))
+        '•': (uv: (102, 20), size: (3, 4)),
+        '$': (uv: (106, 18), size: (3, 8), baseline_shift: -2),
     },
     unknown: (uv: (127, 16), size: (8, 10), baseline_shift: -2),
     height: 6,

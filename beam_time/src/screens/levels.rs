@@ -1,14 +1,17 @@
 use engine::{
     assets::SpriteRef,
-    drawable::sprite::Sprite,
+    drawable::{sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
 };
 
 use crate::{
-    assets::{EMPTY_TILE, EMPTY_TILE_RIGHT, EMPTY_TILE_TOP, EMPTY_TILE_TOP_RIGHT},
-    consts::{BACKGROUND_COLOR, FOREGROUND_COLOR, PLAYER_TILES},
+    assets::{
+        ALAGARD_FONT, EMPTY_TILE, EMPTY_TILE_RIGHT, EMPTY_TILE_TOP, EMPTY_TILE_TOP_RIGHT,
+        UNDEAD_FONT,
+    },
+    consts::{BACKGROUND_COLOR, FOREGROUND_COLOR, PLAYER_TILES, TILE_NAMES},
     App,
 };
 
@@ -19,8 +22,16 @@ pub struct LevelsScreen {
 }
 
 impl Screen<App> for LevelsScreen {
-    fn render(&mut self, _state: &mut App, ctx: &mut GraphicsContext<App>) {
+    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
         ctx.background(BACKGROUND_COLOR);
+
+        let money = state.start.elapsed().as_secs_f32().sin() * 600.0 + 600.0;
+        ctx.draw(
+            Text::new(ALAGARD_FONT, &format!("${money:.0}"))
+                .scale(Vector2::repeat(4.0))
+                .pos(ctx.center(), Anchor::CenterLeft)
+                .color(FOREGROUND_COLOR),
+        );
 
         self.tile_picker(ctx);
         self.tile_map(ctx);
@@ -44,11 +55,12 @@ impl LevelsScreen {
         }
 
         let tile_size = 16.0 * 4.0 * ctx.scale_factor;
-        for (i, &tile) in PLAYER_TILES.iter().enumerate() {
-            let pos = Vector2::new(10.0, 10.0 + tile_size * i as f32);
+        let text_space = 20.0 * ctx.scale_factor;
+        for (i, (&tile, name)) in PLAYER_TILES.iter().zip(TILE_NAMES.iter()).enumerate() {
+            let pos = Vector2::new(10.0, (tile_size + text_space) * i as f32 + text_space * 2.0);
             let sprite = Sprite::new(tile)
                 .position(pos, Anchor::BottomLeft)
-                .scale(Vector2::repeat(4.0), Anchor::Center)
+                .scale(Vector2::repeat(3.0), Anchor::Center)
                 .color(FOREGROUND_COLOR);
 
             if ctx.input.mouse_pressed(MouseButton::Left) && sprite.is_hovered(ctx) {
@@ -56,6 +68,11 @@ impl LevelsScreen {
             }
 
             ctx.draw(sprite);
+            ctx.draw(
+                Text::new(UNDEAD_FONT, name)
+                    .scale(Vector2::repeat(2.0))
+                    .pos(pos + Vector2::new(10.0, -10.0), Anchor::TopLeft),
+            );
         }
     }
 
