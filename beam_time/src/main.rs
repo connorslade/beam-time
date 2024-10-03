@@ -12,6 +12,7 @@ use engine::{
 mod app;
 mod assets;
 mod consts;
+mod game;
 mod overlay;
 mod screens;
 mod ui;
