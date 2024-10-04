@@ -6,7 +6,7 @@ use engine::{
 
 use crate::{
     assets::{BEAM, UNDEAD_FONT},
-    misc::Direction,
+    misc::direction::Direction,
 };
 
 use super::{board::Board, tile::Tile};
@@ -86,6 +86,11 @@ impl BeamState {
 
                 match tile {
                     BeamTile::Empty => {}
+                    BeamTile::Emitter { direction } => {
+                        if let Some(sink) = direction.offset(self.size, pos) {
+                            power(&mut working_board, to_index(sink), direction);
+                        }
+                    }
                     BeamTile::Beam { direction } => {
                         if let Some(source) = direction.opposite().offset(self.size, pos) {
                             let source_tile = self.board[to_index(source)];
@@ -129,13 +134,6 @@ impl BeamState {
                         .position(pos, Anchor::Center)
                         .rotate(direction.to_angle(), Anchor::Center);
                     ctx.draw(sprite);
-
-                    ctx.draw(
-                        Text::new(UNDEAD_FONT, &format!("{:?}", direction))
-                            .scale(Vector2::repeat(2.0))
-                            .pos(pos, Anchor::Center)
-                            .z_index(5),
-                    );
                 }
             }
         }
@@ -145,7 +143,7 @@ impl BeamState {
 impl BeamTile {
     pub fn is_powered(&self) -> bool {
         match self {
-            Self::Beam { .. } => true,
+            Self::Emitter { .. } | Self::Beam { .. } => true,
             Self::Mirror { powered, .. } | Self::Splitter { powered, .. } => *powered,
             _ => false,
         }
@@ -153,6 +151,7 @@ impl BeamTile {
 
     pub fn power_direction(&self) -> Option<Direction> {
         Some(match self {
+            Self::Emitter { direction } => *direction,
             Self::Mirror { direction, .. } | Self::Splitter { direction, .. } => todo!(),
             Self::Beam { direction } => *direction,
             _ => return None,

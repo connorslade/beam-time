@@ -4,7 +4,7 @@ use engine::assets::SpriteRef;
 
 use crate::{
     assets::{EMITTER_TILE, GALVO_TILE, MIRROR_TILE, SPLITTER_TILE, WALL_TILE},
-    misc::Direction,
+    misc::direction::Direction,
 };
 
 #[derive(Copy, Clone)]

@@ -24,7 +24,17 @@ impl Board {
         }
     }
 
-    pub fn render<App>(&mut self, ctx: &mut GraphicsContext<App>, holding: &mut Option<Tile>) {
+    pub fn with(mut self, pos: Vector2<usize>, tile: Tile) -> Self {
+        self.tiles[pos.y * self.size.x + pos.x] = tile;
+        self
+    }
+
+    pub fn render<App>(
+        &mut self,
+        ctx: &mut GraphicsContext<App>,
+        sim: bool,
+        holding: &mut Option<Tile>,
+    ) {
         let tile_size = 16.0 * 4.0 * ctx.scale_factor;
         let size = self.size.map(|x| x as f32) * tile_size;
 
@@ -66,7 +76,7 @@ impl Board {
                 }
 
                 let hovered = grid.is_hovered(ctx);
-                if ctx.input.mouse_pressed(MouseButton::Left) && hovered {
+                if !sim && ctx.input.mouse_pressed(MouseButton::Left) && hovered {
                     if let Some(was_holding) = holding.take() {
                         self.tiles[y * self.size.x + x] = was_holding;
                         if !is_empty {
@@ -78,7 +88,7 @@ impl Board {
                     }
                 }
 
-                if ctx.input.mouse_down(MouseButton::Right) && hovered {
+                if !sim && ctx.input.mouse_down(MouseButton::Right) && hovered {
                     self.tiles[y * self.size.x + x] = Tile::Empty;
                 }
 
