@@ -1,26 +1,23 @@
-use bitvec::{bitvec, order::Lsb0, vec::BitVec};
 use engine::{
-    drawable::sprite::Sprite,
+    drawable::{sprite::Sprite, text::Text},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
 };
 
-use crate::assets::BEAM_HORIZONTAL;
+use crate::assets::{BEAM_HORIZONTAL, BEAM_VERTICAL, UNDEAD_FONT};
 
 pub struct BeamState {
     board: Vec<Beam>,
     size: Vector2<usize>,
-
-    powered: BitVec,
 }
 
-#[derive(Default, Clone, Copy)]
+#[derive(Debug, Default, Clone, Copy)]
 struct Beam {
     powered: bool,
     direction: Direction,
 }
 
-#[derive(Default, Clone, Copy)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 enum Direction {
     #[default]
     Up,
@@ -31,63 +28,50 @@ enum Direction {
 
 impl BeamState {
     pub fn new(size: Vector2<usize>) -> Self {
-        Self {
-            board: vec![Beam::default(); size.x * size.y],
-            powered: bitvec![0; size.x * size.y],
-            size,
-        }
+        let board = vec![Beam::default(); size.x * size.y];
+        Self { board, size }
     }
 
     pub fn tick(&mut self) {
+        let to_index = |x: usize, y: usize| y * self.size.x + x;
+
         // debug
         self.board[0] = Beam {
             powered: true,
-            direction: Direction::Right,
+            direction: Direction::Down,
         };
 
-        // Update powered bitset
-        for y in 0..self.size.y {
-            for x in 0..self.size.x {
-                let index = y * self.size.x + x;
-                let beam = self.board[index];
-
-                if beam.powered {
-                    let pointing = Vector2::new(x as i32, y as i32) + beam.direction.offset();
-                    if pointing.x < 0
-                        || pointing.y < 0
-                        || pointing.x >= self.size.x as i32
-                        || pointing.y >= self.size.y as i32
-                    {
-                        continue;
-                    }
-
-                    let index = pointing.y as usize * self.size.x + pointing.x as usize;
-                    self.powered.set(index, true);
-                }
-            }
-        }
+        let mut working_board = self.board.clone();
 
         // Update beams
         for y in 0..self.size.y {
             for x in 0..self.size.x {
+                let pos = Vector2::new(x, y);
                 let index = y * self.size.x + x;
                 let beam = self.board[index];
-                let neighbor_powered = self.powered[index];
 
-                if index == 0 {
-                    continue;
+                if !working_board[index].powered {
+                    working_board[index] = beam;
                 }
 
-                if beam.powered && !neighbor_powered {
-                    self.board[index] = Beam::default();
-                } else if !beam.powered && neighbor_powered {
-                    self.board[index] = Beam {
-                        powered: true,
-                        direction: beam.direction,
-                    };
+                if let Some(source) = beam.direction.opposite().offset(self.size, pos) {
+                    if !self.board[to_index(source.x, source.y)].powered {
+                        working_board[index].powered = false;
+                    }
+                }
+
+                if beam.powered {
+                    if let Some(sink) = beam.direction.offset(self.size, pos) {
+                        working_board[to_index(sink.x, sink.y)] = Beam {
+                            powered: true,
+                            direction: beam.direction,
+                        };
+                    }
                 }
             }
         }
+
+        self.board = working_board;
     }
 
     pub fn render<App>(&mut self, ctx: &mut GraphicsContext<App>) {
@@ -104,10 +88,23 @@ impl BeamState {
                     - Vector2::repeat(tile_size / 2.0);
 
                 if beam.powered {
-                    let sprite = Sprite::new(BEAM_HORIZONTAL)
+                    let texture =
+                        if beam.direction == Direction::Up || beam.direction == Direction::Down {
+                            BEAM_VERTICAL
+                        } else {
+                            BEAM_HORIZONTAL
+                        };
+                    let sprite = Sprite::new(texture)
                         .scale(Vector2::repeat(4.0), Anchor::Center)
                         .position(pos, Anchor::Center);
                     ctx.draw(sprite);
+
+                    ctx.draw(
+                        Text::new(UNDEAD_FONT, &format!("{:?}", beam.direction))
+                            .scale(Vector2::repeat(2.0))
+                            .pos(pos, Anchor::Center)
+                            .z_index(5),
+                    );
                 }
             }
         }
@@ -115,12 +112,24 @@ impl BeamState {
 }
 
 impl Direction {
-    pub fn offset(&self) -> Vector2<i32> {
+    pub fn offset(&self, size: Vector2<usize>, pos: Vector2<usize>) -> Option<Vector2<usize>> {
+        let new_pos = match self {
+            Direction::Up => Vector2::new(pos.x as i32, pos.y as i32 - 1),
+            Direction::Right => Vector2::new(pos.x as i32 + 1, pos.y as i32),
+            Direction::Down => Vector2::new(pos.x as i32, pos.y as i32 + 1),
+            Direction::Left => Vector2::new(pos.x as i32 - 1, pos.y as i32),
+        };
+
+        (new_pos.x >= 0 && new_pos.y >= 0 && new_pos.x < size.x as i32 && new_pos.y < size.y as i32)
+            .then(|| new_pos.map(|x| x as usize))
+    }
+
+    pub fn opposite(&self) -> Self {
         match self {
-            Self::Up => Vector2::new(0, -1),
-            Self::Right => Vector2::new(1, 0),
-            Self::Down => Vector2::new(0, 1),
-            Self::Left => Vector2::new(-1, 0),
+            Self::Up => Self::Down,
+            Self::Right => Self::Left,
+            Self::Down => Self::Up,
+            Self::Left => Self::Right,
         }
     }
 }
