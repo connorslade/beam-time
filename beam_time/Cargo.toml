@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.88"
+bitvec = "1.0.1"
 image = "0.25.2"
 indoc = "2.0.5"
 rand = "0.8.5"

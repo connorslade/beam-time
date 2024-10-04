@@ -13,15 +13,13 @@ mod app;
 mod assets;
 mod consts;
 mod game;
-mod overlay;
 mod screens;
 mod ui;
 mod util;
 
 use app::App;
 use consts::DEFAULT_SIZE;
-use overlay::debug::DebugOverlay;
-use screens::title::TitleScreen;
+use screens::{overlay::debug::DebugOverlay, title::TitleScreen};
 use util::include_atlas;
 
 fn main() -> Result<()> {
