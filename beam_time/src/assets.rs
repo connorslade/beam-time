@@ -31,16 +31,13 @@ define_refs! {
         EMPTY_TILE_RIGHT,
         EMPTY_TILE_TOP_RIGHT,
 
-        MIRROR_A_TILE,
-        MIRROR_B_TILE,
-        SPLITTER_A_TILE,
-        SPLITTER_B_TILE,
+        MIRROR_TILE,
+        SPLITTER_TILE,
         WALL_TILE,
         GALVO_TILE,
+        EMITTER_TILE,
         EYE_TILE,
-
-        BEAM_HORIZONTAL,
-        BEAM_VERTICAL
+        BEAM
     }
 }
 
@@ -59,21 +56,18 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, ABOUT_BUTTON, (40, 48), (31, 14));
 
     let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
-    assets.register_sprite(tiles, EMPTY_TILE, (80, 16), (16, 16));
-    assets.register_sprite(tiles, EMPTY_TILE_TOP, (96, 16), (16, 16));
-    assets.register_sprite(tiles, EMPTY_TILE_RIGHT, (112, 16), (16, 16));
-    assets.register_sprite(tiles, EMPTY_TILE_TOP_RIGHT, (64, 16), (16, 16));
+    assets.register_sprite(tiles, EMPTY_TILE, (16, 16), (16, 16));
+    assets.register_sprite(tiles, EMPTY_TILE_TOP, (32, 16), (16, 16));
+    assets.register_sprite(tiles, EMPTY_TILE_RIGHT, (48, 16), (16, 16));
+    assets.register_sprite(tiles, EMPTY_TILE_TOP_RIGHT, (0, 16), (16, 16));
 
-    assets.register_sprite(tiles, MIRROR_A_TILE, (0, 0), (16, 16));
-    assets.register_sprite(tiles, MIRROR_B_TILE, (16, 0), (16, 16));
-    assets.register_sprite(tiles, SPLITTER_A_TILE, (0, 16), (16, 16));
-    assets.register_sprite(tiles, SPLITTER_B_TILE, (16, 16), (16, 16));
-    assets.register_sprite(tiles, WALL_TILE, (80, 0), (16, 16));
-    assets.register_sprite(tiles, GALVO_TILE, (112, 0), (16, 16));
-    assets.register_sprite(tiles, EYE_TILE, (48, 16), (16, 16));
-
-    assets.register_sprite(tiles, BEAM_HORIZONTAL, (0, 32), (16, 16));
-    assets.register_sprite(tiles, BEAM_VERTICAL, (16, 32), (16, 16));
+    assets.register_sprite(tiles, MIRROR_TILE, (0, 0), (16, 16));
+    assets.register_sprite(tiles, SPLITTER_TILE, (16, 0), (16, 16));
+    assets.register_sprite(tiles, WALL_TILE, (64, 0), (16, 16));
+    assets.register_sprite(tiles, GALVO_TILE, (80, 0), (16, 16));
+    assets.register_sprite(tiles, EMITTER_TILE, (32, 16), (16, 16));
+    assets.register_sprite(tiles, EYE_TILE, (48, 0), (16, 16));
+    assets.register_sprite(tiles, BEAM, (96, 0), (16, 16));
 
     load_font(
         assets,

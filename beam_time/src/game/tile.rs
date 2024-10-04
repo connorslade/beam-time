@@ -1,22 +1,26 @@
+use std::f32::consts::PI;
+
 use engine::assets::SpriteRef;
 
-use crate::assets::{
-    GALVO_TILE, MIRROR_A_TILE, MIRROR_B_TILE, SPLITTER_A_TILE, SPLITTER_B_TILE, WALL_TILE,
+use crate::{
+    assets::{EMITTER_TILE, GALVO_TILE, MIRROR_TILE, SPLITTER_TILE, WALL_TILE},
+    misc::Direction,
 };
 
 #[derive(Copy, Clone)]
 pub enum Tile {
     Empty,
-    Mirror { rotation: u8 },
-    Splitter { rotation: u8 },
+    Emitter { rotation: Direction },
+    Mirror { rotation: bool },
+    Splitter { rotation: bool },
     Galvo,
     Wall,
 }
 
 impl Tile {
     pub const DEFAULT: [Tile; 3] = [
-        Tile::Mirror { rotation: 0 },
-        Tile::Splitter { rotation: 0 },
+        Tile::Mirror { rotation: false },
+        Tile::Splitter { rotation: false },
         Tile::Galvo,
     ];
 
@@ -35,6 +39,7 @@ impl Tile {
     pub fn name(&self) -> &str {
         match self {
             Tile::Empty => unreachable!(),
+            Tile::Emitter { .. } => "Emitter",
             Tile::Mirror { .. } => "Mirror",
             Tile::Splitter { .. } => "Prism",
             Tile::Galvo => "Galvo",
@@ -45,29 +50,34 @@ impl Tile {
     pub fn asset(&self) -> SpriteRef {
         match self {
             Tile::Empty => unreachable!(),
-            Tile::Mirror { rotation } => match rotation {
-                0 => MIRROR_A_TILE,
-                1 => MIRROR_B_TILE,
-                _ => unreachable!(),
-            },
-            Tile::Splitter { rotation } => match rotation {
-                0 => SPLITTER_A_TILE,
-                1 => SPLITTER_B_TILE,
-                _ => unreachable!(),
-            },
+            Tile::Emitter { .. } => EMITTER_TILE,
+            Tile::Mirror { .. } => MIRROR_TILE,
+            Tile::Splitter { .. } => SPLITTER_TILE,
             Tile::Galvo => GALVO_TILE,
             Tile::Wall => WALL_TILE,
+        }
+    }
+
+    pub fn sprite_rotation(&self) -> f32 {
+        match self {
+            Tile::Emitter { rotation } => rotation.to_angle(),
+            Tile::Mirror { rotation: true } => PI / 2.0,
+            Tile::Splitter { rotation: true } => PI,
+            _ => 0.0,
         }
     }
 
     pub fn rotate(self) -> Self {
         match self {
             Tile::Empty => Tile::Empty,
+            Tile::Emitter { rotation } => Tile::Emitter {
+                rotation: rotation.rotate(),
+            },
             Tile::Mirror { rotation } => Tile::Mirror {
-                rotation: (rotation + 1) % 2,
+                rotation: !rotation,
             },
             Tile::Splitter { rotation } => Tile::Splitter {
-                rotation: (rotation + 1) % 2,
+                rotation: !rotation,
             },
             Tile::Galvo => Tile::Galvo,
             Tile::Wall => Tile::Wall,

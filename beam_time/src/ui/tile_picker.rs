@@ -23,6 +23,7 @@ pub fn tile_picker<App>(ctx: &mut GraphicsContext<App>, holding: &mut Option<Til
             Sprite::new(holding.asset())
                 .scale(Vector2::repeat(4.0), Anchor::Center)
                 .position(ctx.input.mouse, Anchor::Center)
+                .rotate(holding.sprite_rotation(), Anchor::Center)
                 .color(FOREGROUND_COLOR)
                 .z_index(10),
         );

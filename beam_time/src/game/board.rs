@@ -12,8 +12,8 @@ use crate::{
 use super::tile::Tile;
 
 pub struct Board {
-    tiles: Vec<Tile>,
-    size: Vector2<usize>,
+    pub tiles: Vec<Tile>,
+    pub size: Vector2<usize>,
 }
 
 impl Board {
@@ -55,6 +55,7 @@ impl Board {
                     let sprite = Sprite::new(tile.asset())
                         .scale(Vector2::repeat(4.0), Anchor::Center)
                         .position(pos, Anchor::Center)
+                        .rotate(tile.sprite_rotation(), Anchor::Center)
                         .color(FOREGROUND_COLOR);
                     ctx.draw(sprite);
                 }

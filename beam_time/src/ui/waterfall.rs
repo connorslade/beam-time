@@ -4,9 +4,9 @@ use engine::{
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
 };
-use rand::{seq::SliceRandom, thread_rng, Rng};
+use rand::{thread_rng, Rng};
 
-use crate::consts::{LIGHT_BACKGROUND, TILES};
+use crate::consts::{LIGHT_BACKGROUND, TILES, TILE_ROTATION};
 
 pub struct Waterfall<'a> {
     state: &'a mut WaterfallState,
@@ -19,6 +19,7 @@ pub struct WaterfallState {
 
 struct FallingTile {
     asset: SpriteRef,
+    rotation: f32,
     pos: Vector2<f32>,
     vel: f32,
 }
@@ -45,13 +46,20 @@ impl<'a, App> Drawable<App> for Waterfall<'a> {
 
         let is_empty = tiles.is_empty();
         while tiles.len() < 40 {
-            let asset = TILES.choose(&mut rng).unwrap().to_owned();
+            let index = rng.gen_range(0..TILES.len());
+            let (asset, rotation) = (TILES[index], TILE_ROTATION[index]);
             let pos = Vector2::new(
                 rng.gen::<f32>() * size.x,
                 (size.y + tile_offset) * if is_empty { rng.gen::<f32>() } else { 1.0 },
             );
             let vel = rng.gen::<f32>() * 50.0 + 100.0;
-            tiles.push(FallingTile { asset, pos, vel });
+            let rotation = rng.gen_bool(0.5) as u8 as f32 * rotation;
+            tiles.push(FallingTile {
+                asset,
+                pos,
+                rotation,
+                vel,
+            });
         }
 
         let mut i = 0;
@@ -62,6 +70,7 @@ impl<'a, App> Drawable<App> for Waterfall<'a> {
                 Sprite::new(tile.asset)
                     .position(tile.pos, Anchor::Center)
                     .scale(Vector2::repeat(4.0), Anchor::Center)
+                    .rotate(tile.rotation, Anchor::Center)
                     .color(LIGHT_BACKGROUND)
                     .z_index(-10),
             );

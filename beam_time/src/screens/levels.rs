@@ -13,21 +13,26 @@ use crate::{
 
 pub struct LevelsScreen {
     board: Board,
-    beam: BeamState,
+    beam: Option<BeamState>,
     holding: Option<Tile>,
 }
 
 impl Screen<App> for LevelsScreen {
     fn render(&mut self, _state: &mut App, ctx: &mut GraphicsContext<App>) {
-        ctx.input
-            .key_pressed(KeyCode::Space)
-            .then(|| self.beam.tick());
+        let space_pressed = ctx.input.key_pressed(KeyCode::Space);
+        if let Some(beam) = &mut self.beam {
+            space_pressed.then(|| beam.tick());
+            beam.render(ctx);
+        } else if space_pressed {
+            let mut beam = BeamState::new(&self.board);
+            beam.tick();
+            self.beam = Some(beam);
+        }
 
         ctx.background(BACKGROUND_COLOR);
 
         tile_picker(ctx, &mut self.holding);
         self.board.render(ctx, &mut self.holding);
-        self.beam.render(ctx);
     }
 }
 
@@ -36,7 +41,7 @@ impl Default for LevelsScreen {
         let size = Vector2::repeat(8);
         Self {
             board: Board::new(size),
-            beam: BeamState::new(size),
+            beam: None,
             holding: None,
         }
     }
