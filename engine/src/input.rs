@@ -2,7 +2,7 @@ use nalgebra::Vector2;
 use winit::{
     dpi::PhysicalSize,
     event::{ElementState, KeyEvent, MouseButton, WindowEvent},
-    keyboard::PhysicalKey,
+    keyboard::{KeyCode, PhysicalKey},
 };
 
 #[derive(Debug)]
@@ -49,17 +49,17 @@ impl InputManager {
             .any(|(b, s)| b == &button && s == &ElementState::Released)
     }
 
-    pub fn key_down(&self, key: PhysicalKey) -> bool {
-        self.key_down.contains(&key)
+    pub fn key_down(&self, key: KeyCode) -> bool {
+        self.key_down.contains(&key.into())
     }
 
-    pub fn key_pressed(&self, key: PhysicalKey) -> bool {
+    pub fn key_pressed(&self, key: KeyCode) -> bool {
         self.key_actions
             .iter()
             .any(|e| e.state == ElementState::Pressed && e.physical_key == key)
     }
 
-    pub fn key_released(&self, key: PhysicalKey) -> bool {
+    pub fn key_released(&self, key: KeyCode) -> bool {
         self.key_actions
             .iter()
             .any(|e| e.state == ElementState::Released && e.physical_key == key)

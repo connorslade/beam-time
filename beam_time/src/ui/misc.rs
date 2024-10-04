@@ -1,9 +1,6 @@
 use engine::{
     drawable::text::Text,
-    exports::{
-        nalgebra::Vector2,
-        winit::keyboard::{KeyCode, PhysicalKey},
-    },
+    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::{Anchor, GraphicsContext},
 };
 
@@ -26,7 +23,7 @@ pub fn titled_screen(
 ) -> Vector2<f32> {
     ctx.input.resized.then(|| state.waterfall.reset());
     ctx.input
-        .key_down(PhysicalKey::Code(KeyCode::Escape))
+        .key_down(KeyCode::Escape)
         .then(|| ctx.pop_screen());
 
     ctx.background(BACKGROUND_COLOR);

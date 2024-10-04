@@ -2,20 +2,14 @@ use engine::{
     drawable::{sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
-        winit::{
-            event::MouseButton,
-            keyboard::{KeyCode, PhysicalKey},
-        },
+        winit::{event::MouseButton, keyboard::KeyCode},
     },
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
 };
 
 use crate::{
-    assets::{
-        ALAGARD_FONT, EMPTY_TILE, EMPTY_TILE_RIGHT, EMPTY_TILE_TOP, EMPTY_TILE_TOP_RIGHT,
-        UNDEAD_FONT,
-    },
+    assets::{EMPTY_TILE, EMPTY_TILE_RIGHT, EMPTY_TILE_TOP, EMPTY_TILE_TOP_RIGHT, UNDEAD_FONT},
     consts::{BACKGROUND_COLOR, FOREGROUND_COLOR},
     game::tile::Tile,
     App,
@@ -28,16 +22,8 @@ pub struct LevelsScreen {
 }
 
 impl Screen<App> for LevelsScreen {
-    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
+    fn render(&mut self, _state: &mut App, ctx: &mut GraphicsContext<App>) {
         ctx.background(BACKGROUND_COLOR);
-
-        let money = state.start.elapsed().as_secs_f32().sin() * 600.0 + 600.0;
-        ctx.draw(
-            Text::new(ALAGARD_FONT, &format!("${money:.0}"))
-                .scale(Vector2::repeat(4.0))
-                .pos(ctx.center(), Anchor::CenterLeft)
-                .color(FOREGROUND_COLOR),
-        );
 
         self.tile_picker(ctx);
         self.tile_map(ctx);
@@ -51,7 +37,7 @@ impl LevelsScreen {
         }
 
         if let Some(holding) = self.holding {
-            if ctx.input.key_pressed(PhysicalKey::Code(KeyCode::KeyR)) {
+            if ctx.input.key_pressed(KeyCode::KeyR) {
                 self.holding = Some(holding.rotate());
             }
 
