@@ -24,6 +24,8 @@ pub enum BeamTile {
 }
 
 impl BeamTile {
+    /// Checks if a tile is powered. This should be more efficient than
+    /// power_direction, which only needs to be called if the tile is powered.
     pub fn is_powered(&self) -> bool {
         match self {
             Self::Emitter { .. } | Self::Beam { .. } => true,
@@ -32,6 +34,7 @@ impl BeamTile {
         }
     }
 
+    /// Returns the directions of power output from a tile.
     pub fn power_direction(&self) -> Directions {
         match self {
             Self::Beam { direction } | Self::Emitter { direction } => direction.into(),

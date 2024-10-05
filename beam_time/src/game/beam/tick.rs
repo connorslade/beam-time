@@ -10,7 +10,10 @@ impl BeamState {
     }
 
     pub fn tick(&mut self) {
+        // To avoid issues that would arise from modifying the board in place, a
+        // copy is made to store the new state.
         let mut working_board = self.board.clone();
+
         for y in 0..self.size.y {
             for x in 0..self.size.x {
                 let pos = Vector2::new(x, y);
@@ -19,20 +22,24 @@ impl BeamState {
 
                 match tile {
                     BeamTile::Empty => {}
+                    // Emitters send out a constant beam in the direction they
+                    // are facing.
                     BeamTile::Emitter { direction } => {
                         if let Some(sink) = direction.offset(self.size, pos) {
                             power(&mut working_board, self.to_index(sink), direction);
                         }
                     }
+                    // A beam will send out power in the direction it is facing
+                    // and will destroy itself if it is no longer receiving
+                    // power from the opposite direction.
                     BeamTile::Beam { direction } => {
-                        if let Some(source) = direction.opposite().offset(self.size, pos) {
-                            let source_tile = self.board[self.to_index(source)];
-                            if !source_tile.is_powered()
-                                || !source_tile.power_direction().contains(direction)
-                            {
-                                working_board[index] = BeamTile::Empty;
-                            }
-                        } else {
+                        // Unwrap is used here, because a beam can't be created
+                        // from an edge tile, only from emitters.
+                        let source = direction.opposite().offset(self.size, pos).unwrap();
+                        let source_tile = self.board[self.to_index(source)];
+                        if !source_tile.is_powered()
+                            || !source_tile.power_direction().contains(direction)
+                        {
                             working_board[index] = BeamTile::Empty;
                         }
 
@@ -40,19 +47,16 @@ impl BeamState {
                             power(&mut working_board, self.to_index(sink), direction);
                         }
                     }
+                    // Mirrors will reflect beams based on the
+                    // MIRROR_REFLECTIONS table.
                     BeamTile::Mirror { direction, powered } => {
-                        let mut mirror_reflection = |dir: bool, powered: Option<Direction>| {
-                            if let Some(powered) = powered {
-                                let direction =
-                                    opposite_if(MIRROR_REFLECTIONS[powered as usize], !dir);
-                                if let Some(sink) = direction.offset(self.size, pos) {
-                                    power(&mut working_board, self.to_index(sink), direction);
-                                }
+                        for &powered in powered.iter().flatten() {
+                            let direction =
+                                opposite_if(MIRROR_REFLECTIONS[powered as usize], !direction);
+                            if let Some(sink) = direction.offset(self.size, pos) {
+                                power(&mut working_board, self.to_index(sink), direction);
                             }
-                        };
-
-                        mirror_reflection(direction, powered[0]);
-                        mirror_reflection(direction, powered[1]);
+                        }
                     }
                     _ => {}
                 }
@@ -63,6 +67,7 @@ impl BeamState {
     }
 }
 
+/// Powers a tile in the given direction.
 fn power(working_board: &mut [BeamTile], index: usize, direction: Direction) {
     let tile = &mut working_board[index];
     match tile {

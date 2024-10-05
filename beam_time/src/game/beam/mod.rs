@@ -12,7 +12,7 @@ use crate::{
     misc::direction::Direction,
 };
 
-use super::{board::Board, tile::Tile};
+use super::{board::Board, tile::Tile, tile_pos};
 
 mod tick;
 mod tile;
@@ -30,6 +30,8 @@ pub struct BeamState {
 }
 
 impl BeamState {
+    /// Creates a new BeamState from a Board by converting Tiles into their
+    /// BeamTile counterparts.
     pub fn new(board: &Board) -> Self {
         let size = board.size;
         let board = board
@@ -56,18 +58,13 @@ impl BeamState {
         Self { board, size }
     }
 
+    /// Renders the beam over the board.
     pub fn render<App>(&mut self, ctx: &mut GraphicsContext<App>) {
-        let tile_size = 16.0 * 4.0 * ctx.scale_factor;
-        let size = self.size.map(|x| x as f32) * tile_size;
-
         for x in 0..self.size.x {
             for y in 0..self.size.y {
                 let index = y * self.size.x + x;
                 let beam = self.board[index];
-
-                let pos = ctx.center() - Vector2::new(x as f32 * tile_size, y as f32 * tile_size)
-                    + size / 2.0
-                    - Vector2::repeat(tile_size / 2.0);
+                let pos = tile_pos(ctx, self.size, Vector2::new(x, y));
 
                 match beam {
                     BeamTile::Beam { direction } => {
