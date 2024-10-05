@@ -39,6 +39,7 @@ define_refs! {
         EYE_TILE,
 
         BEAM,
+        CROSS_BEAM,
         MIRROR_BEAM,
         SPLITTER_BEAM
     }
@@ -72,6 +73,7 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(tiles, EYE_TILE, (48, 0), (16, 16));
 
     assets.register_sprite(tiles, BEAM, (96, 0), (16, 16));
+    assets.register_sprite(tiles, CROSS_BEAM, (64, 16), (16, 16));
     assets.register_sprite(tiles, MIRROR_BEAM, (96, 16), (16, 16));
     assets.register_sprite(tiles, SPLITTER_BEAM, (80, 16), (16, 16));
 

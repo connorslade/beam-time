@@ -35,6 +35,25 @@ impl BeamState {
 
                         self.power(&mut working_board, pos, direction);
                     }
+                    // When two perpendicular beams meet, they form a crossbeam,
+                    // which continues to propagate the beams in both
+                    // directions. If either beam is lost, the crossbeam will
+                    // turn into a beam in the remaining direction.
+                    BeamTile::CrossBeam { directions } => {
+                        for (idx, &direction) in directions.iter().enumerate() {
+                            self.power(&mut working_board, pos, direction);
+
+                            if self.source_gone(pos, direction) {
+                                let tile = &mut working_board[index];
+                                if let BeamTile::CrossBeam { .. } = tile {
+                                    let direction = directions[1 - idx];
+                                    *tile = BeamTile::Beam { direction }
+                                } else {
+                                    *tile = BeamTile::Empty;
+                                }
+                            }
+                        }
+                    }
                     // Mirrors will reflect beams based on the
                     // MIRROR_REFLECTIONS table. Powered is an array of two
                     // because rotation state of the mirror has a top and
@@ -99,7 +118,11 @@ impl BeamState {
         let tile = &mut working_board[index];
         match tile {
             BeamTile::Empty => *tile = BeamTile::Beam { direction },
-            BeamTile::Beam { direction: dir } if dir.is_perpendicular(direction) => todo!(),
+            BeamTile::Beam { direction: dir } if dir.is_perpendicular(direction) => {
+                *tile = BeamTile::CrossBeam {
+                    directions: [*dir, direction],
+                }
+            }
             BeamTile::Mirror {
                 direction: dir,
                 powered,

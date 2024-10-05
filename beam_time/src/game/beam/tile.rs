@@ -10,6 +10,10 @@ pub enum BeamTile {
     Beam {
         direction: Direction,
     },
+    CrossBeam {
+        /// Directions of the two incoming beams.
+        directions: [Direction; 2],
+    },
     Emitter {
         direction: Direction,
     },
@@ -28,7 +32,7 @@ impl BeamTile {
     /// power_direction, which only needs to be called if the tile is powered.
     pub fn is_powered(&self) -> bool {
         match self {
-            Self::Emitter { .. } | Self::Beam { .. } => true,
+            Self::Emitter { .. } | Self::Beam { .. } | Self::CrossBeam { .. } => true,
             Self::Mirror { powered, .. } => powered[0].is_some() || powered[1].is_some(),
             Self::Splitter { powered, .. } => powered.is_some(),
             _ => false,
@@ -39,6 +43,7 @@ impl BeamTile {
     pub fn power_direction(&self) -> Directions {
         match self {
             Self::Beam { direction } | Self::Emitter { direction } => direction.into(),
+            Self::CrossBeam { directions } => directions.iter().copied().collect(),
             Self::Mirror { direction, powered } => powered
                 .iter()
                 .flatten()

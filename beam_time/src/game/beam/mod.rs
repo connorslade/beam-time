@@ -1,6 +1,7 @@
 use std::f32::consts::PI;
 
 use engine::{
+    assets::SpriteRef,
     drawable::sprite::Sprite,
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
@@ -8,7 +9,7 @@ use engine::{
 use tile::BeamTile;
 
 use crate::{
-    assets::{BEAM, MIRROR_BEAM, SPLITTER_BEAM},
+    assets::{BEAM, CROSS_BEAM, MIRROR_BEAM, SPLITTER_BEAM},
     misc::direction::Direction,
 };
 
@@ -60,20 +61,30 @@ impl BeamState {
 
     /// Renders the beam over the board.
     pub fn render<App>(&mut self, ctx: &mut GraphicsContext<App>) {
+        if ctx
+            .input
+            .key_pressed(engine::exports::winit::keyboard::KeyCode::KeyR)
+        {
+            self.board[0] = BeamTile::Empty;
+        }
+
         for x in 0..self.size.x {
             for y in 0..self.size.y {
                 let index = y * self.size.x + x;
                 let beam = self.board[index];
                 let pos = tile_pos(ctx, self.size, Vector2::new(x, y));
 
+                let sprite = |texture: SpriteRef| {
+                    Sprite::new(texture)
+                        .scale(Vector2::repeat(4.0), Anchor::Center)
+                        .position(pos, Anchor::Center)
+                };
+
                 match beam {
                     BeamTile::Beam { direction } => {
-                        let sprite = Sprite::new(BEAM)
-                            .scale(Vector2::repeat(4.0), Anchor::Center)
-                            .position(pos, Anchor::Center)
-                            .rotate(direction.to_angle(), Anchor::Center);
-                        ctx.draw(sprite);
+                        ctx.draw(sprite(BEAM).rotate(direction.to_angle(), Anchor::Center))
                     }
+                    BeamTile::CrossBeam { .. } => ctx.draw(sprite(CROSS_BEAM)),
                     BeamTile::Mirror { direction, powered } => {
                         for i in powered
                             .iter()
@@ -81,11 +92,7 @@ impl BeamState {
                             .filter_map(|(i, x)| x.is_some().then_some(i))
                         {
                             let rotation = PI * i as f32 - (PI / 2.0) * direction as u8 as f32;
-                            let sprite = Sprite::new(MIRROR_BEAM)
-                                .scale(Vector2::repeat(4.0), Anchor::Center)
-                                .position(pos, Anchor::Center)
-                                .rotate(rotation, Anchor::Center);
-                            ctx.draw(sprite);
+                            ctx.draw(sprite(MIRROR_BEAM).rotate(rotation, Anchor::Center));
                         }
                     }
                     BeamTile::Splitter {
@@ -97,12 +104,7 @@ impl BeamState {
                             Direction::Left => -PI / 2.0,
                             x => x.to_angle(),
                         } + direction as u8 as f32 * PI;
-
-                        let sprite = Sprite::new(SPLITTER_BEAM)
-                            .scale(Vector2::repeat(4.0), Anchor::Center)
-                            .position(pos, Anchor::Center)
-                            .rotate(rotation, Anchor::Center);
-                        ctx.draw(sprite);
+                        ctx.draw(sprite(SPLITTER_BEAM).rotate(rotation, Anchor::Center));
                     }
                     _ => {}
                 }
