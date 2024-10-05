@@ -1,4 +1,7 @@
-use std::f32::consts::PI;
+use std::{
+    f32::consts::PI,
+    ops::{BitOr, BitOrAssign},
+};
 
 use engine::exports::nalgebra::Vector2;
 
@@ -10,6 +13,10 @@ pub enum Direction {
     Right,
     Down,
     Left,
+}
+
+pub struct Directions {
+    inner: u8,
 }
 
 impl Direction {
@@ -57,5 +64,48 @@ impl Direction {
             Self::Right => -PI / 2.0,
             Self::Down => PI,
         }
+    }
+}
+
+impl Directions {
+    pub const fn empty() -> Self {
+        Self { inner: 0 }
+    }
+
+    pub const fn contains(&self, direction: Direction) -> bool {
+        self.inner & 1 << direction as u8 != 0
+    }
+}
+
+impl BitOr<Direction> for Directions {
+    type Output = Self;
+
+    fn bitor(self, rhs: Direction) -> Self::Output {
+        Self {
+            inner: self.inner | 1 << rhs as u8,
+        }
+    }
+}
+
+impl BitOrAssign<Direction> for Directions {
+    fn bitor_assign(&mut self, rhs: Direction) {
+        self.inner |= 1 << rhs as u8;
+    }
+}
+
+impl FromIterator<Direction> for Directions {
+    fn from_iter<I: IntoIterator<Item = Direction>>(iter: I) -> Self {
+        let mut out = Self::empty();
+        for i in iter {
+            out |= i;
+        }
+
+        out
+    }
+}
+
+impl From<&Direction> for Directions {
+    fn from(direction: &Direction) -> Self {
+        Self::empty() | *direction
     }
 }
