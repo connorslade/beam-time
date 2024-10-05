@@ -50,8 +50,24 @@ impl BeamState {
                             if self.source_gone(pos, powered) {
                                 // We can safely unwrap here, because the
                                 // current tile is known to be a mirror.
-                                working_board[index].powered_mut().unwrap()[idx] = None;
+                                working_board[index].mirror_mut().unwrap()[idx] = None;
                             }
+                        }
+                    }
+                    // Splitters effectively act as mirrors that also pass the
+                    // existing beam through. One difference is that they only
+                    // take in one input beam at a time.
+                    BeamTile::Splitter {
+                        direction,
+                        powered: Some(powered),
+                    } => {
+                        let direction =
+                            opposite_if(MIRROR_REFLECTIONS[powered as usize], !direction);
+                        self.power(&mut working_board, pos, powered);
+                        self.power(&mut working_board, pos, direction);
+
+                        if self.source_gone(pos, powered) {
+                            *working_board[index].splitter_mut().unwrap() = None;
                         }
                     }
                     _ => {}

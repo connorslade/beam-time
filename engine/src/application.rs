@@ -232,7 +232,7 @@ impl<'a, App> Application<'a, App> {
                 width: size.width,
                 height: size.height,
                 present_mode: PresentMode::AutoVsync,
-                desired_maximum_frame_latency: 2,
+                desired_maximum_frame_latency: 1,
                 alpha_mode: CompositeAlphaMode::Opaque,
                 view_formats: vec![],
             },

@@ -104,6 +104,12 @@ impl FromIterator<Direction> for Directions {
     }
 }
 
+impl From<Direction> for Directions {
+    fn from(direction: Direction) -> Self {
+        Self::empty() | direction
+    }
+}
+
 impl From<&Direction> for Directions {
     fn from(direction: &Direction) -> Self {
         Self::empty() | *direction

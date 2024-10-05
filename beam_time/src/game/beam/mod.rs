@@ -8,7 +8,7 @@ use engine::{
 use tile::BeamTile;
 
 use crate::{
-    assets::{BEAM, MIRROR_BEAM},
+    assets::{BEAM, MIRROR_BEAM, SPLITTER_BEAM},
     misc::direction::Direction,
 };
 
@@ -48,7 +48,7 @@ impl BeamState {
                 },
                 Tile::Splitter { rotation } => BeamTile::Splitter {
                     direction: *rotation,
-                    powered: false,
+                    powered: None,
                 },
                 Tile::Galvo => todo!(),
                 Tile::Wall => BeamTile::Wall,
@@ -87,6 +87,22 @@ impl BeamState {
                                 .rotate(rotation, Anchor::Center);
                             ctx.draw(sprite);
                         }
+                    }
+                    BeamTile::Splitter {
+                        direction,
+                        powered: Some(powered),
+                    } => {
+                        let rotation = match powered {
+                            Direction::Right => PI / 2.0,
+                            Direction::Left => -PI / 2.0,
+                            x => x.to_angle(),
+                        } + direction as u8 as f32 * PI;
+
+                        let sprite = Sprite::new(SPLITTER_BEAM)
+                            .scale(Vector2::repeat(4.0), Anchor::Center)
+                            .position(pos, Anchor::Center)
+                            .rotate(rotation, Anchor::Center);
+                        ctx.draw(sprite);
                     }
                     _ => {}
                 }

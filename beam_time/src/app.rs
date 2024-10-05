@@ -1,13 +1,6 @@
 use crate::ui::waterfall::WaterfallState;
 
+#[derive(Default)]
 pub struct App {
     pub waterfall: WaterfallState,
-}
-
-impl Default for App {
-    fn default() -> Self {
-        Self {
-            waterfall: WaterfallState::default(),
-        }
-    }
 }

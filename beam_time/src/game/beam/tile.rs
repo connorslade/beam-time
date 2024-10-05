@@ -30,6 +30,7 @@ impl BeamTile {
         match self {
             Self::Emitter { .. } | Self::Beam { .. } => true,
             Self::Mirror { powered, .. } => powered[0].is_some() || powered[1].is_some(),
+            Self::Splitter { powered, .. } => powered.is_some(),
             _ => false,
         }
     }
@@ -43,13 +44,29 @@ impl BeamTile {
                 .flatten()
                 .map(|&powered| opposite_if(MIRROR_REFLECTIONS[powered as usize], !direction))
                 .collect(),
+            Self::Splitter {
+                direction,
+                powered: Some(powered),
+            } => {
+                Directions::from(opposite_if(
+                    MIRROR_REFLECTIONS[*powered as usize],
+                    !*direction,
+                )) | *powered
+            }
             _ => Directions::empty(),
         }
     }
 
-    pub fn powered_mut(&mut self) -> Option<&mut [Option<Direction>; 2]> {
+    pub fn mirror_mut(&mut self) -> Option<&mut [Option<Direction>; 2]> {
         match self {
             Self::Mirror { powered, .. } => Some(powered),
+            _ => None,
+        }
+    }
+
+    pub fn splitter_mut(&mut self) -> Option<&mut Option<Direction>> {
+        match self {
+            Self::Splitter { powered, .. } => Some(powered),
             _ => None,
         }
     }

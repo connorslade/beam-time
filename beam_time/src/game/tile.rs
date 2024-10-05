@@ -44,7 +44,7 @@ impl Tile {
             Tile::Empty => unreachable!(),
             Tile::Emitter { .. } => "Emitter",
             Tile::Mirror { .. } => "Mirror",
-            Tile::Splitter { .. } => "Prism",
+            Tile::Splitter { .. } => "Splitter",
             Tile::Galvo => "Galvo",
             Tile::Wall => "Wall",
         }
@@ -64,8 +64,7 @@ impl Tile {
     pub fn sprite_rotation(&self) -> f32 {
         match self {
             Tile::Emitter { rotation } => rotation.to_angle(),
-            Tile::Mirror { rotation: true } => PI / 2.0,
-            Tile::Splitter { rotation: true } => PI,
+            Tile::Mirror { rotation: true } | Tile::Splitter { rotation: true } => PI / 2.0,
             _ => 0.0,
         }
     }
