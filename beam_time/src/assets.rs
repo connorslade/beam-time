@@ -37,7 +37,9 @@ define_refs! {
         GALVO_TILE,
         EMITTER_TILE,
         EYE_TILE,
-        BEAM
+
+        BEAM,
+        MIRROR_BEAM
     }
 }
 
@@ -67,7 +69,9 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(tiles, GALVO_TILE, (80, 0), (16, 16));
     assets.register_sprite(tiles, EMITTER_TILE, (32, 0), (16, 16));
     assets.register_sprite(tiles, EYE_TILE, (48, 0), (16, 16));
+
     assets.register_sprite(tiles, BEAM, (96, 0), (16, 16));
+    assets.register_sprite(tiles, MIRROR_BEAM, (96, 16), (16, 16));
 
     load_font(
         assets,

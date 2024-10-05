@@ -1,10 +1,15 @@
+use std::f32::consts::{PI, TAU};
+
 use engine::{
     drawable::sprite::Sprite,
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
 };
 
-use crate::{assets::BEAM, misc::direction::Direction};
+use crate::{
+    assets::{BEAM, MIRROR_BEAM},
+    misc::direction::Direction,
+};
 
 use super::{board::Board, tile::Tile};
 
@@ -160,12 +165,29 @@ impl BeamState {
                     + size / 2.0
                     - Vector2::repeat(tile_size / 2.0);
 
-                if let BeamTile::Beam { direction } = beam {
-                    let sprite = Sprite::new(BEAM)
-                        .scale(Vector2::repeat(4.0), Anchor::Center)
-                        .position(pos, Anchor::Center)
-                        .rotate(direction.to_angle(), Anchor::Center);
-                    ctx.draw(sprite);
+                match beam {
+                    BeamTile::Beam { direction } => {
+                        let sprite = Sprite::new(BEAM)
+                            .scale(Vector2::repeat(4.0), Anchor::Center)
+                            .position(pos, Anchor::Center)
+                            .rotate(direction.to_angle(), Anchor::Center);
+                        ctx.draw(sprite);
+                    }
+                    BeamTile::Mirror { direction, powered } => {
+                        for i in powered
+                            .iter()
+                            .enumerate()
+                            .filter_map(|(i, x)| x.is_some().then_some(i))
+                        {
+                            let rotation = PI * i as f32 - (PI / 2.0) * direction as u8 as f32;
+                            let sprite = Sprite::new(MIRROR_BEAM)
+                                .scale(Vector2::repeat(4.0), Anchor::Center)
+                                .position(pos, Anchor::Center)
+                                .rotate(rotation, Anchor::Center);
+                            ctx.draw(sprite);
+                        }
+                    }
+                    _ => {}
                 }
             }
         }
