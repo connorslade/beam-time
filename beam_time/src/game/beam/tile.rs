@@ -19,7 +19,7 @@ pub enum BeamTile {
     },
     Splitter {
         direction: bool,
-        powered: bool,
+        powered: Option<Direction>,
     },
 }
 
@@ -44,6 +44,13 @@ impl BeamTile {
                 .map(|&powered| opposite_if(MIRROR_REFLECTIONS[powered as usize], !direction))
                 .collect(),
             _ => Directions::empty(),
+        }
+    }
+
+    pub fn powered_mut(&mut self) -> Option<&mut [Option<Direction>; 2]> {
+        match self {
+            Self::Mirror { powered, .. } => Some(powered),
+            _ => None,
         }
     }
 }
