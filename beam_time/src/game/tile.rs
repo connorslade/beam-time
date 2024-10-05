@@ -18,10 +18,13 @@ pub enum Tile {
 }
 
 impl Tile {
-    pub const DEFAULT: [Tile; 3] = [
+    pub const DEFAULT: [Tile; 4] = [
         Tile::Mirror { rotation: false },
         Tile::Splitter { rotation: false },
         Tile::Galvo,
+        Tile::Emitter {
+            rotation: Direction::Right,
+        },
     ];
 
     pub fn is_empty(&self) -> bool {

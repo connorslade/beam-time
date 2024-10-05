@@ -7,7 +7,6 @@ use engine::{
 use crate::{
     consts::BACKGROUND_COLOR,
     game::{beam::BeamState, board::Board, tile::Tile},
-    misc::direction::Direction,
     ui::tile_picker::tile_picker,
     App,
 };
@@ -30,6 +29,10 @@ impl Screen<App> for LevelsScreen {
             self.beam = Some(beam);
         }
 
+        if ctx.input.key_pressed(KeyCode::Escape) {
+            self.beam = None;
+        }
+
         ctx.background(BACKGROUND_COLOR);
 
         let sim = self.beam.is_some();
@@ -42,14 +45,7 @@ impl Default for LevelsScreen {
     fn default() -> Self {
         let size = Vector2::repeat(8);
         Self {
-            board: Board::new(size)
-                .with(
-                    Vector2::new(0, 0),
-                    Tile::Emitter {
-                        rotation: Direction::Down,
-                    },
-                )
-                .with(Vector2::new(0, 5), Tile::Wall),
+            board: Board::new(size),
             beam: None,
             holding: None,
         }

@@ -1,15 +1,19 @@
 use engine::{
-    drawable::{sprite::Sprite, text::Text},
+    drawable::sprite::Sprite,
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
 };
 
-use crate::{
-    assets::{BEAM, UNDEAD_FONT},
-    misc::direction::Direction,
-};
+use crate::{assets::BEAM, misc::direction::Direction};
 
 use super::{board::Board, tile::Tile};
+
+const MIRROR_REFLECTIONS: [Direction; 4] = [
+    Direction::Left,
+    Direction::Down,
+    Direction::Right,
+    Direction::Up,
+];
 
 pub struct BeamState {
     board: Vec<BeamTile>,
@@ -29,7 +33,7 @@ enum BeamTile {
     },
     Mirror {
         direction: bool,
-        powered: bool,
+        powered: [Option<Direction>; 2],
     },
     Splitter {
         direction: bool,
@@ -50,7 +54,7 @@ impl BeamState {
                 },
                 Tile::Mirror { rotation } => BeamTile::Mirror {
                     direction: *rotation,
-                    powered: false,
+                    powered: [None; 2],
                 },
                 Tile::Splitter { rotation } => BeamTile::Splitter {
                     direction: *rotation,
@@ -71,7 +75,18 @@ impl BeamState {
             match tile {
                 BeamTile::Empty => *tile = BeamTile::Beam { direction },
                 BeamTile::Beam { direction: dir } if dir.is_perpendicular(direction) => todo!(),
-                BeamTile::Mirror { powered, .. } => *powered = true,
+                BeamTile::Mirror {
+                    direction: dir,
+                    powered,
+                } => {
+                    if *dir {
+                        powered[matches!(direction, Direction::Up | Direction::Right) as usize] =
+                            Some(direction);
+                    } else {
+                        powered[matches!(direction, Direction::Up | Direction::Left) as usize] =
+                            Some(direction);
+                    }
+                }
                 BeamTile::Splitter { powered, .. } => *powered = true,
                 _ => {}
             }
@@ -95,7 +110,7 @@ impl BeamState {
                         if let Some(source) = direction.opposite().offset(self.size, pos) {
                             let source_tile = self.board[to_index(source)];
                             if !source_tile.is_powered()
-                                || source_tile.power_direction() != Some(direction)
+                                || !source_tile.power_direction().contains(&direction)
                             {
                                 working_board[index] = BeamTile::Empty;
                             }
@@ -106,6 +121,23 @@ impl BeamState {
                         if let Some(sink) = direction.offset(self.size, pos) {
                             power(&mut working_board, to_index(sink), direction);
                         }
+                    }
+                    BeamTile::Mirror { direction, powered } => {
+                        let mut mirror_reflection = |dir: bool, powered: Option<Direction>| {
+                            if let Some(powered) = powered {
+                                let mut direction = MIRROR_REFLECTIONS[powered as usize];
+                                if !dir {
+                                    direction = direction.opposite();
+                                }
+
+                                if let Some(sink) = direction.offset(self.size, pos) {
+                                    power(&mut working_board, to_index(sink), direction);
+                                }
+                            }
+                        };
+
+                        mirror_reflection(direction, powered[0]);
+                        mirror_reflection(direction, powered[1]);
                     }
                     _ => {}
                 }
@@ -144,17 +176,35 @@ impl BeamTile {
     pub fn is_powered(&self) -> bool {
         match self {
             Self::Emitter { .. } | Self::Beam { .. } => true,
-            Self::Mirror { powered, .. } | Self::Splitter { powered, .. } => *powered,
+            Self::Mirror { powered, .. } => powered[0].is_some() || powered[1].is_some(),
             _ => false,
         }
     }
 
-    pub fn power_direction(&self) -> Option<Direction> {
-        Some(match self {
-            Self::Emitter { direction } => *direction,
-            Self::Mirror { direction, .. } | Self::Splitter { direction, .. } => todo!(),
-            Self::Beam { direction } => *direction,
-            _ => return None,
-        })
+    // todo: dont use vec? bitset?
+    pub fn power_direction(&self) -> Vec<Direction> {
+        match self {
+            Self::Beam { direction } | Self::Emitter { direction } => vec![*direction],
+            Self::Mirror { direction, powered } => {
+                let mut out = Vec::new();
+
+                let mut mirror_reflection = |dir: bool, powered: Option<Direction>| {
+                    if let Some(powered) = powered {
+                        let mut direction = MIRROR_REFLECTIONS[powered as usize];
+                        if !dir {
+                            direction = direction.opposite();
+                        }
+
+                        out.push(direction);
+                    }
+                };
+
+                mirror_reflection(*direction, powered[0]);
+                mirror_reflection(*direction, powered[1]);
+
+                out
+            }
+            _ => Vec::new(),
+        }
     }
 }
