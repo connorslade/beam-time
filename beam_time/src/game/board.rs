@@ -1,7 +1,10 @@
 use engine::{
     assets::SpriteRef,
     drawable::sprite::Sprite,
-    exports::{nalgebra::Vector2, winit::event::MouseButton},
+    exports::{
+        nalgebra::Vector2,
+        winit::{event::MouseButton, keyboard::KeyCode},
+    },
     graphics_context::{Anchor, GraphicsContext},
 };
 
@@ -72,21 +75,26 @@ impl Board {
                     continue;
                 }
 
-                let hovered = grid.is_hovered(ctx);
-                if sim.is_none() && ctx.input.mouse_pressed(MouseButton::Left) && hovered {
-                    if let Some(was_holding) = holding.take() {
-                        self.tiles[y * self.size.x + x] = was_holding;
-                        if !is_empty {
+                if sim.is_none() && grid.is_hovered(ctx) {
+                    if ctx.input.mouse_pressed(MouseButton::Left) {
+                        if let Some(was_holding) = holding.take() {
+                            self.tiles[y * self.size.x + x] = was_holding;
+                            if !is_empty {
+                                *holding = tile.is_some().then_some(tile);
+                            }
+                        } else if !is_empty && holding.is_none() {
                             *holding = tile.is_some().then_some(tile);
+                            self.tiles[y * self.size.x + x] = Tile::Empty;
                         }
-                    } else if !is_empty && holding.is_none() {
-                        *holding = tile.is_some().then_some(tile);
+                    }
+
+                    if ctx.input.mouse_down(MouseButton::Right) {
                         self.tiles[y * self.size.x + x] = Tile::Empty;
                     }
-                }
 
-                if sim.is_none() && ctx.input.mouse_down(MouseButton::Right) && hovered {
-                    self.tiles[y * self.size.x + x] = Tile::Empty;
+                    if holding.is_none() && ctx.input.key_pressed(KeyCode::KeyR) {
+                        self.tiles[y * self.size.x + x] = tile.rotate();
+                    }
                 }
 
                 ctx.draw(grid);

@@ -45,6 +45,7 @@ impl BeamState {
                 },
                 Tile::Mirror { rotation } => BeamTile::Mirror {
                     direction: *rotation,
+                    original_direction: *rotation,
                     powered: [None; 2],
                 },
                 Tile::Splitter { rotation } => BeamTile::Splitter {
@@ -81,7 +82,9 @@ impl BeamState {
                         ctx.draw(sprite(BEAM).rotate(direction.to_angle(), Anchor::Center))
                     }
                     BeamTile::CrossBeam { .. } => ctx.draw(sprite(CROSS_BEAM)),
-                    BeamTile::Mirror { direction, powered } => {
+                    BeamTile::Mirror {
+                        direction, powered, ..
+                    } => {
                         for i in powered
                             .iter()
                             .enumerate()

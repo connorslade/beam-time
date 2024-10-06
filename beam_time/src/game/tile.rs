@@ -23,7 +23,7 @@ impl Tile {
         Tile::Mirror { rotation: false },
         Tile::Splitter { rotation: false },
         Tile::Galvo {
-            rotation: Direction::Right,
+            rotation: Direction::Up,
         },
         Tile::Emitter {
             rotation: Direction::Up,

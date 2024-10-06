@@ -58,7 +58,9 @@ impl BeamState {
                     // MIRROR_REFLECTIONS table. Powered is an array of two
                     // because rotation state of the mirror has a top and
                     // bottom, which can each be powered independently.
-                    BeamTile::Mirror { direction, powered } => {
+                    BeamTile::Mirror {
+                        direction, powered, ..
+                    } => {
                         for (idx, powered) in powered.iter().enumerate() {
                             let Some(powered) = *powered else { continue };
 
@@ -69,7 +71,7 @@ impl BeamState {
                             if self.source_gone(pos, powered) {
                                 // We can safely unwrap here, because the
                                 // current tile is known to be a mirror.
-                                working_board[index].mirror_mut().unwrap().1[idx] = None;
+                                working_board[index].mirror_mut().unwrap().2[idx] = None;
                             }
                         }
                     }
@@ -95,12 +97,13 @@ impl BeamState {
                         let pointing = direction
                             .offset(self.size, pos)
                             .and_then(|x| working_board[self.to_index(x)].mirror_mut());
-                        let Some((direction, powered_sides)) = pointing else {
+                        let Some((original_direction, direction, powered_sides)) = pointing else {
                             continue;
                         };
 
-                        (*direction != powered.is_some()).then(|| *powered_sides = [None; 2]);
-                        *direction = powered.is_some();
+                        let desired_direction = original_direction ^ powered.is_some();
+                        (*direction != desired_direction).then(|| *powered_sides = [None; 2]);
+                        *direction = desired_direction;
 
                         let Some(powered) = powered else { continue };
                         if self.source_gone(pos, powered) {
@@ -144,6 +147,7 @@ impl BeamState {
             BeamTile::Mirror {
                 direction: dir,
                 powered,
+                ..
             } => {
                 if *dir {
                     powered[matches!(direction, Direction::Up | Direction::Right) as usize] =

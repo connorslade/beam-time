@@ -21,5 +21,5 @@
 - [x] Figure out how to pass an app struct around
 - [x] Strongly typed asset references
 - [x] Split tile_map and tile_picker into ui/game components
-- [ ] Implement beam logic
+- [x] Implement beam logic
 - [ ] Figure out how to apply custom shader effects?
