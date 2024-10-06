@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use crate::misc::direction::{Direction, Directions};
 
 use super::{opposite_if, MIRROR_REFLECTIONS};
@@ -32,6 +34,18 @@ pub enum BeamTile {
 }
 
 impl BeamTile {
+    /// Overwrites the rotation of a tile for rendering purposes. This is mainly
+    /// used for mirrors, which can be rotated by galvos, and that needs to be
+    /// reflected in the rendering.
+    pub fn tile_rotation(&self) -> Option<f32> {
+        match self {
+            Self::Mirror {
+                direction: true, ..
+            } => Some(PI / 2.0),
+            _ => None,
+        }
+    }
+
     /// Checks if a tile is powered. This should be more efficient than
     /// power_direction, which only needs to be called if the tile is powered.
     pub fn is_powered(&self) -> bool {
@@ -66,13 +80,15 @@ impl BeamTile {
         }
     }
 
-    pub fn mirror_mut(&mut self) -> Option<&mut [Option<Direction>; 2]> {
+    /// Returns a mutable reference to the inner data of a mirror tile.
+    pub fn mirror_mut(&mut self) -> Option<(&mut bool, &mut [Option<Direction>; 2])> {
         match self {
-            Self::Mirror { powered, .. } => Some(powered),
+            Self::Mirror { direction, powered } => Some((direction, powered)),
             _ => None,
         }
     }
 
+    /// Returns a mutable reference to the inner data of a splitter tile.
     pub fn splitter_mut(&mut self) -> Option<&mut Option<Direction>> {
         match self {
             Self::Splitter { powered, .. } => Some(powered),
@@ -80,6 +96,7 @@ impl BeamTile {
         }
     }
 
+    /// Returns a mutable reference to the inner data of a galvo tile.
     pub fn galvo_mut(&mut self) -> Option<&mut Option<Direction>> {
         match self {
             Self::Galvo { powered, .. } => Some(powered),

@@ -9,11 +9,7 @@ use engine::{
 
 use crate::{assets::UNDEAD_FONT, consts::FOREGROUND_COLOR, game::tile::Tile};
 
-pub fn tile_picker<App>(ctx: &mut GraphicsContext<App>, sim: bool, holding: &mut Option<Tile>) {
-    if sim {
-        return;
-    }
-
+pub fn tile_picker<App>(ctx: &mut GraphicsContext<App>, holding: &mut Option<Tile>) {
     if ctx.input.mouse_down(MouseButton::Right) {
         *holding = None;
     }

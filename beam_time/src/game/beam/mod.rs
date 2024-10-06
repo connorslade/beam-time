@@ -26,8 +26,8 @@ const MIRROR_REFLECTIONS: [Direction; 4] = [
 ];
 
 pub struct BeamState {
-    board: Vec<BeamTile>,
-    size: Vector2<usize>,
+    pub board: Vec<BeamTile>,
+    pub size: Vector2<usize>,
 }
 
 impl BeamState {

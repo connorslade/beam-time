@@ -34,10 +34,10 @@ impl Screen<App> for LevelsScreen {
         }
 
         ctx.background(BACKGROUND_COLOR);
-
-        let sim = self.beam.is_some();
-        tile_picker(ctx, sim, &mut self.holding);
-        self.board.render(ctx, sim, &mut self.holding);
+        self.board.render(ctx, &self.beam, &mut self.holding);
+        if self.beam.is_none() {
+            tile_picker(ctx, &mut self.holding);
+        }
     }
 }
 

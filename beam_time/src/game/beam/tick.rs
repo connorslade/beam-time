@@ -69,7 +69,7 @@ impl BeamState {
                             if self.source_gone(pos, powered) {
                                 // We can safely unwrap here, because the
                                 // current tile is known to be a mirror.
-                                working_board[index].mirror_mut().unwrap()[idx] = None;
+                                working_board[index].mirror_mut().unwrap().1[idx] = None;
                             }
                         }
                     }
@@ -89,21 +89,22 @@ impl BeamState {
                             *working_board[index].splitter_mut().unwrap() = None;
                         }
                     }
+                    // Galvos change the rotation of the mirror they are
+                    // pointing into when powered by a beam.
                     BeamTile::Galvo { direction, powered } => {
-                        let Some(pointing) = direction.offset(self.size, pos) else {
+                        let pointing = direction
+                            .offset(self.size, pos)
+                            .and_then(|x| working_board[self.to_index(x)].mirror_mut());
+                        let Some((direction, powered_sides)) = pointing else {
                             continue;
                         };
 
-                        if let BeamTile::Mirror { direction, .. } =
-                            &mut working_board[self.to_index(pointing)]
-                        {
-                            *direction = powered.is_some();
-                        }
+                        (*direction != powered.is_some()).then(|| *powered_sides = [None; 2]);
+                        *direction = powered.is_some();
 
-                        if let Some(powered) = powered {
-                            if self.source_gone(pos, powered) {
-                                *working_board[index].galvo_mut().unwrap() = None;
-                            }
+                        let Some(powered) = powered else { continue };
+                        if self.source_gone(pos, powered) {
+                            *working_board[index].galvo_mut().unwrap() = None;
                         }
                     }
                     _ => {}

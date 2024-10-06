@@ -10,7 +10,7 @@ use crate::{
     consts::FOREGROUND_COLOR,
 };
 
-use super::{tile::Tile, tile_pos};
+use super::{beam::BeamState, tile::Tile, tile_pos};
 
 const GRID_TILES: [SpriteRef; 4] = [
     EMPTY_TILE,
@@ -35,13 +35,14 @@ impl Board {
     pub fn render<App>(
         &mut self,
         ctx: &mut GraphicsContext<App>,
-        sim: bool,
+        sim: &Option<BeamState>,
         holding: &mut Option<Tile>,
     ) {
         for x in 0..self.size.x {
             for y in 0..self.size.y {
                 let pos = tile_pos(ctx, self.size, Vector2::new(x, y));
-                let tile = self.tiles[y * self.size.x + x];
+                let index = y * self.size.x + x;
+                let tile = self.tiles[index];
                 let is_empty = tile.is_empty();
 
                 let grid_tile = GRID_TILES[(x == 0) as usize * 2 + (y == 0) as usize];
@@ -51,10 +52,17 @@ impl Board {
                     .z_index(-10);
 
                 if !is_empty {
+                    // Use rotation from the simulation if it exists, otherwise
+                    // use the base tile's rotation.
+                    let rotation = sim
+                        .as_ref()
+                        .and_then(|x| x.board[index].tile_rotation())
+                        .unwrap_or_else(|| tile.sprite_rotation());
+
                     let sprite = Sprite::new(tile.asset())
                         .scale(Vector2::repeat(4.0), Anchor::Center)
                         .position(pos, Anchor::Center)
-                        .rotate(tile.sprite_rotation(), Anchor::Center)
+                        .rotate(rotation, Anchor::Center)
                         .color(FOREGROUND_COLOR);
                     ctx.draw(sprite);
                 }
@@ -65,7 +73,7 @@ impl Board {
                 }
 
                 let hovered = grid.is_hovered(ctx);
-                if !sim && ctx.input.mouse_pressed(MouseButton::Left) && hovered {
+                if sim.is_none() && ctx.input.mouse_pressed(MouseButton::Left) && hovered {
                     if let Some(was_holding) = holding.take() {
                         self.tiles[y * self.size.x + x] = was_holding;
                         if !is_empty {
@@ -77,7 +85,7 @@ impl Board {
                     }
                 }
 
-                if !sim && ctx.input.mouse_down(MouseButton::Right) && hovered {
+                if sim.is_none() && ctx.input.mouse_down(MouseButton::Right) && hovered {
                     self.tiles[y * self.size.x + x] = Tile::Empty;
                 }
 
