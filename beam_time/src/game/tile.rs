@@ -13,17 +13,20 @@ pub enum Tile {
     Emitter { rotation: Direction },
     Mirror { rotation: bool },
     Splitter { rotation: bool },
-    Galvo,
-    Wall,
+    Galvo { rotation: Direction },
+    Wall { permanent: bool },
 }
 
 impl Tile {
-    pub const DEFAULT: [Tile; 4] = [
+    pub const DEFAULT: [Tile; 5] = [
+        Tile::Wall { permanent: false },
         Tile::Mirror { rotation: false },
         Tile::Splitter { rotation: false },
-        Tile::Galvo,
-        Tile::Emitter {
+        Tile::Galvo {
             rotation: Direction::Right,
+        },
+        Tile::Emitter {
+            rotation: Direction::Up,
         },
     ];
 
@@ -36,7 +39,7 @@ impl Tile {
     }
 
     pub fn moveable(&self) -> bool {
-        !matches!(self, Tile::Wall)
+        !matches!(self, Tile::Wall { permanent: true })
     }
 
     pub fn name(&self) -> &str {
@@ -45,8 +48,8 @@ impl Tile {
             Tile::Emitter { .. } => "Emitter",
             Tile::Mirror { .. } => "Mirror",
             Tile::Splitter { .. } => "Splitter",
-            Tile::Galvo => "Galvo",
-            Tile::Wall => "Wall",
+            Tile::Galvo { .. } => "Galvo",
+            Tile::Wall { .. } => "Wall",
         }
     }
 
@@ -56,14 +59,14 @@ impl Tile {
             Tile::Emitter { .. } => EMITTER_TILE,
             Tile::Mirror { .. } => MIRROR_TILE,
             Tile::Splitter { .. } => SPLITTER_TILE,
-            Tile::Galvo => GALVO_TILE,
-            Tile::Wall => WALL_TILE,
+            Tile::Galvo { .. } => GALVO_TILE,
+            Tile::Wall { .. } => WALL_TILE,
         }
     }
 
     pub fn sprite_rotation(&self) -> f32 {
         match self {
-            Tile::Emitter { rotation } => rotation.to_angle(),
+            Tile::Emitter { rotation } | Tile::Galvo { rotation } => rotation.to_angle(),
             Tile::Mirror { rotation: true } | Tile::Splitter { rotation: true } => PI / 2.0,
             _ => 0.0,
         }
@@ -71,7 +74,6 @@ impl Tile {
 
     pub fn rotate(self) -> Self {
         match self {
-            Tile::Empty => Tile::Empty,
             Tile::Emitter { rotation } => Tile::Emitter {
                 rotation: rotation.rotate(),
             },
@@ -81,8 +83,10 @@ impl Tile {
             Tile::Splitter { rotation } => Tile::Splitter {
                 rotation: !rotation,
             },
-            Tile::Galvo => Tile::Galvo,
-            Tile::Wall => Tile::Wall,
+            Tile::Galvo { rotation } => Tile::Galvo {
+                rotation: rotation.rotate(),
+            },
+            x => x,
         }
     }
 }

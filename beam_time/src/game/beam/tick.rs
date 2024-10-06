@@ -89,6 +89,23 @@ impl BeamState {
                             *working_board[index].splitter_mut().unwrap() = None;
                         }
                     }
+                    BeamTile::Galvo { direction, powered } => {
+                        let Some(pointing) = direction.offset(self.size, pos) else {
+                            continue;
+                        };
+
+                        if let BeamTile::Mirror { direction, .. } =
+                            &mut working_board[self.to_index(pointing)]
+                        {
+                            *direction = powered.is_some();
+                        }
+
+                        if let Some(powered) = powered {
+                            if self.source_gone(pos, powered) {
+                                *working_board[index].galvo_mut().unwrap() = None;
+                            }
+                        }
+                    }
                     _ => {}
                 }
             }
@@ -135,7 +152,12 @@ impl BeamState {
                         Some(direction);
                 }
             }
-            BeamTile::Splitter { powered, .. } => *powered = Some(direction),
+            BeamTile::Splitter { powered, .. } if powered.is_none() => *powered = Some(direction),
+            BeamTile::Galvo {
+                direction: dir,
+                powered,
+                ..
+            } if dir.opposite() != direction => *powered = Some(direction),
             _ => {}
         }
     }

@@ -52,7 +52,8 @@ impl SpriteAsset {
         let start = self.uv.map(|x| x as f32).component_div(&size);
         let end = start + self.size.map(|x| x as f32).component_div(&size);
 
-        (start, end)
+        let offset = Vector2::repeat(f32::EPSILON);
+        (start + offset, end - offset)
     }
 }
 

@@ -25,6 +25,10 @@ pub enum BeamTile {
         direction: bool,
         powered: Option<Direction>,
     },
+    Galvo {
+        direction: Direction,
+        powered: Option<Direction>,
+    },
 }
 
 impl BeamTile {
@@ -72,6 +76,13 @@ impl BeamTile {
     pub fn splitter_mut(&mut self) -> Option<&mut Option<Direction>> {
         match self {
             Self::Splitter { powered, .. } => Some(powered),
+            _ => None,
+        }
+    }
+
+    pub fn galvo_mut(&mut self) -> Option<&mut Option<Direction>> {
+        match self {
+            Self::Galvo { powered, .. } => Some(powered),
             _ => None,
         }
     }

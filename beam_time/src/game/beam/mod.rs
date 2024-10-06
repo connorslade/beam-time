@@ -51,8 +51,11 @@ impl BeamState {
                     direction: *rotation,
                     powered: None,
                 },
-                Tile::Galvo => todo!(),
-                Tile::Wall => BeamTile::Wall,
+                Tile::Galvo { rotation } => BeamTile::Galvo {
+                    direction: *rotation,
+                    powered: None,
+                },
+                Tile::Wall { .. } => BeamTile::Wall,
             })
             .collect();
 
@@ -61,13 +64,6 @@ impl BeamState {
 
     /// Renders the beam over the board.
     pub fn render<App>(&mut self, ctx: &mut GraphicsContext<App>) {
-        if ctx
-            .input
-            .key_pressed(engine::exports::winit::keyboard::KeyCode::KeyR)
-        {
-            self.board[0] = BeamTile::Empty;
-        }
-
         for x in 0..self.size.x {
             for y in 0..self.size.y {
                 let index = y * self.size.x + x;
