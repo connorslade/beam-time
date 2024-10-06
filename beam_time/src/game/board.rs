@@ -95,6 +95,14 @@ impl Board {
                     if holding.is_none() && ctx.input.key_pressed(KeyCode::KeyR) {
                         self.tiles[y * self.size.x + x] = tile.rotate();
                     }
+
+                    if !is_empty && ctx.input.key_pressed(KeyCode::KeyQ) {
+                        holding.replace(tile);
+                    }
+
+                    if ctx.input.key_down(KeyCode::KeyW) && holding.take().is_none() {
+                        self.tiles[y * self.size.x + x] = Tile::Empty;
+                    }
                 }
 
                 ctx.draw(grid);
