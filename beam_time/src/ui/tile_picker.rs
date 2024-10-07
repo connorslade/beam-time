@@ -19,6 +19,10 @@ pub fn tile_picker<App>(ctx: &mut GraphicsContext<App>, holding: &mut Option<Til
             *holding = holding.rotate();
         }
 
+        if ctx.input.key_pressed(KeyCode::KeyA) {
+            *holding = holding.activate();
+        }
+
         ctx.draw(
             Sprite::new(holding.asset())
                 .scale(Vector2::repeat(4.0), Anchor::Center)

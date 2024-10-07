@@ -34,7 +34,7 @@ impl Screen<App> for LevelsScreen {
         }
 
         ctx.background(BACKGROUND_COLOR);
-        self.board.render(ctx, &self.beam, &mut self.holding);
+        self.board.render(ctx, &mut self.beam, &mut self.holding);
         if self.beam.is_none() {
             tile_picker(ctx, &mut self.holding);
         }

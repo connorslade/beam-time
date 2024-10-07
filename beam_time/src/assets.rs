@@ -36,6 +36,7 @@ define_refs! {
         WALL_TILE,
         GALVO_TILE,
         EMITTER_TILE,
+        ACTIVE_EMITTER_TILE,
         EYE_TILE,
 
         BEAM,
@@ -70,6 +71,7 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(tiles, WALL_TILE, (64, 0), (16, 16));
     assets.register_sprite(tiles, GALVO_TILE, (80, 0), (16, 16));
     assets.register_sprite(tiles, EMITTER_TILE, (32, 0), (16, 16));
+    assets.register_sprite(tiles, ACTIVE_EMITTER_TILE, (0, 32), (16, 16));
     assets.register_sprite(tiles, EYE_TILE, (48, 0), (16, 16));
 
     assets.register_sprite(tiles, BEAM, (96, 0), (16, 16));

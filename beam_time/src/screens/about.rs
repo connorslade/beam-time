@@ -16,7 +16,9 @@ use crate::{
 const DESCRIPTION: &str = indoc! {"
     Beam time is a logic puzzle about redirecting and splitting laser beams to create circuits. \
     It's made with a custom GPU accelerated game engine.
-    
+
+    Special thanks to Brandon Li for all the artwork.
+
     Source code is available online at https://github.com/connorslade/beam-time.
 
     Assets Used:

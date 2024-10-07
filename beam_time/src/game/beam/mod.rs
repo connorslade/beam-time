@@ -40,8 +40,9 @@ impl BeamState {
             .iter()
             .map(|x| match x {
                 Tile::Empty => BeamTile::Empty,
-                Tile::Emitter { rotation } => BeamTile::Emitter {
+                Tile::Emitter { rotation, active } => BeamTile::Emitter {
                     direction: *rotation,
+                    active: *active,
                 },
                 Tile::Mirror { rotation } => BeamTile::Mirror {
                     direction: *rotation,

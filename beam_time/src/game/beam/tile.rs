@@ -1,6 +1,11 @@
 use std::f32::consts::PI;
 
-use crate::misc::direction::{Direction, Directions};
+use engine::assets::SpriteRef;
+
+use crate::{
+    assets::{ACTIVE_EMITTER_TILE, EMITTER_TILE},
+    misc::direction::{Direction, Directions},
+};
 
 use super::{opposite_if, MIRROR_REFLECTIONS};
 
@@ -18,6 +23,7 @@ pub enum BeamTile {
     },
     Emitter {
         direction: Direction,
+        active: bool,
     },
     Mirror {
         direction: bool,
@@ -38,9 +44,18 @@ impl BeamTile {
     /// Overwrites the rotation of a tile for rendering purposes. This is mainly
     /// used for mirrors, which can be rotated by galvos, and that needs to be
     /// reflected in the rendering.
-    pub fn tile_rotation(&self) -> Option<f32> {
+    pub fn rotation_override(&self) -> Option<f32> {
         match self {
             Self::Mirror { direction, .. } => Some(PI / 2.0 * *direction as u8 as f32),
+            _ => None,
+        }
+    }
+
+    /// Overwrites the texture of a tile for rendering purposes.
+    pub fn texture_override(&self) -> Option<SpriteRef> {
+        match self {
+            BeamTile::Emitter { active: true, .. } => Some(ACTIVE_EMITTER_TILE),
+            BeamTile::Emitter { active: false, .. } => Some(EMITTER_TILE),
             _ => None,
         }
     }
@@ -49,7 +64,7 @@ impl BeamTile {
     /// power_direction, which only needs to be called if the tile is powered.
     pub fn is_powered(&self) -> bool {
         match self {
-            Self::Emitter { .. } | Self::Beam { .. } | Self::CrossBeam { .. } => true,
+            Self::Emitter { active: true, .. } | Self::Beam { .. } | Self::CrossBeam { .. } => true,
             Self::Mirror { powered, .. } => powered[0].is_some() || powered[1].is_some(),
             Self::Splitter { powered, .. } => powered.is_some(),
             _ => false,
@@ -59,7 +74,12 @@ impl BeamTile {
     /// Returns the directions of power output from a tile.
     pub fn power_direction(&self) -> Directions {
         match self {
-            Self::Beam { direction } | Self::Emitter { direction } => direction.into(),
+            Self::Beam { direction }
+            | Self::Emitter {
+                direction,
+                active: true,
+                ..
+            } => direction.into(),
             Self::CrossBeam { directions } => directions.iter().copied().collect(),
             Self::Mirror {
                 direction, powered, ..
@@ -78,6 +98,14 @@ impl BeamTile {
                 )) | *powered
             }
             _ => Directions::empty(),
+        }
+    }
+
+    // todo: doc comment
+    pub fn emitter_mut(&mut self) -> Option<&mut bool> {
+        match self {
+            Self::Emitter { active, .. } => Some(active),
+            _ => None,
         }
     }
 

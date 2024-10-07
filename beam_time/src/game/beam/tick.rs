@@ -20,7 +20,10 @@ impl BeamState {
                     BeamTile::Empty => {}
                     // Emitters send out a constant beam in the direction they
                     // are facing.
-                    BeamTile::Emitter { direction } => {
+                    BeamTile::Emitter {
+                        direction,
+                        active: true,
+                    } => {
                         self.power(&mut working_board, pos, direction);
                     }
                     // A beam will send out power in the direction it is facing

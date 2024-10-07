@@ -38,7 +38,7 @@ impl Board {
     pub fn render<App>(
         &mut self,
         ctx: &mut GraphicsContext<App>,
-        sim: &Option<BeamState>,
+        sim: &mut Option<BeamState>,
         holding: &mut Option<Tile>,
     ) {
         for x in 0..self.size.x {
@@ -59,14 +59,29 @@ impl Board {
                     // use the base tile's rotation.
                     let rotation = sim
                         .as_ref()
-                        .and_then(|x| x.board[index].tile_rotation())
+                        .and_then(|x| x.board[index].rotation_override())
                         .unwrap_or_else(|| tile.sprite_rotation());
 
-                    let sprite = Sprite::new(tile.asset())
+                    let asset = sim
+                        .as_ref()
+                        .and_then(|x| x.board[index].texture_override())
+                        .unwrap_or_else(|| tile.asset());
+
+                    let sprite = Sprite::new(asset)
                         .scale(Vector2::repeat(4.0), Anchor::Center)
                         .position(pos, Anchor::Center)
                         .rotate(rotation, Anchor::Center)
                         .color(FOREGROUND_COLOR);
+
+                    // todo: cleanup
+                    if ctx.input.key_pressed(KeyCode::KeyA) && sprite.is_hovered(ctx) {
+                        if let Some(sim) = sim {
+                            if let Some(emitter) = sim.board[index].emitter_mut() {
+                                *emitter ^= true;
+                            }
+                        }
+                    }
+
                     ctx.draw(sprite);
                 }
 
@@ -78,22 +93,28 @@ impl Board {
                 if sim.is_none() && grid.is_hovered(ctx) {
                     if ctx.input.mouse_pressed(MouseButton::Left) {
                         if let Some(was_holding) = holding.take() {
-                            self.tiles[y * self.size.x + x] = was_holding;
+                            self.tiles[index] = was_holding;
                             if !is_empty {
                                 *holding = tile.is_some().then_some(tile);
                             }
                         } else if !is_empty && holding.is_none() {
                             *holding = tile.is_some().then_some(tile);
-                            self.tiles[y * self.size.x + x] = Tile::Empty;
+                            self.tiles[index] = Tile::Empty;
                         }
                     }
 
                     if ctx.input.mouse_down(MouseButton::Right) {
-                        self.tiles[y * self.size.x + x] = Tile::Empty;
+                        self.tiles[index] = Tile::Empty;
                     }
 
-                    if holding.is_none() && ctx.input.key_pressed(KeyCode::KeyR) {
-                        self.tiles[y * self.size.x + x] = tile.rotate();
+                    if holding.is_none() {
+                        if ctx.input.key_pressed(KeyCode::KeyR) {
+                            self.tiles[index] = tile.rotate();
+                        }
+
+                        if ctx.input.key_pressed(KeyCode::KeyA) {
+                            self.tiles[index] = tile.activate();
+                        }
                     }
 
                     if !is_empty && ctx.input.key_pressed(KeyCode::KeyQ) {
@@ -101,7 +122,7 @@ impl Board {
                     }
 
                     if ctx.input.key_down(KeyCode::KeyW) && holding.take().is_none() {
-                        self.tiles[y * self.size.x + x] = Tile::Empty;
+                        self.tiles[index] = Tile::Empty;
                     }
                 }
 
