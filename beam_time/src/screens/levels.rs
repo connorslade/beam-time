@@ -18,11 +18,11 @@ pub struct LevelsScreen {
 }
 
 impl Screen<App> for LevelsScreen {
-    fn render(&mut self, _state: &mut App, ctx: &mut GraphicsContext<App>) {
+    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
         let space_pressed = ctx.input.key_pressed(KeyCode::Space);
         if let Some(beam) = &mut self.beam {
             space_pressed.then(|| beam.tick());
-            beam.render(ctx);
+            beam.render(ctx, &state);
         } else if space_pressed {
             let mut beam = BeamState::new(&self.board);
             beam.tick();
@@ -34,7 +34,8 @@ impl Screen<App> for LevelsScreen {
         }
 
         ctx.background(BACKGROUND_COLOR);
-        self.board.render(ctx, &mut self.beam, &mut self.holding);
+        self.board
+            .render(ctx, state, &mut self.beam, &mut self.holding);
         if self.beam.is_none() {
             tile_picker(ctx, &mut self.holding);
         }

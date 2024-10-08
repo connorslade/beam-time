@@ -77,6 +77,8 @@ pub const EMITTER: [SpriteRef; 4] = [
     TILE_EMITTER_LEFT,
 ];
 
+pub const SPLITTER: [SpriteRef; 2] = [TILE_SPLITTER_A, TILE_SPLITTER_B];
+
 pub const HALF_BEAM: [SpriteRef; 4] = [
     BEAM_HALF_UP,
     BEAM_HALF_RIGHT,

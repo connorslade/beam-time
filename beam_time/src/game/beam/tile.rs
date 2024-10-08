@@ -1,11 +1,11 @@
-use engine::drawable::sprite::Sprite;
+use engine::{drawable::sprite::Sprite, exports::nalgebra::Vector2};
 
 use crate::{
-    assets::{animated_sprite, EMITTER, GALVO, TILE_MIRROR_A, TILE_MIRROR_B},
+    assets::{animated_sprite, EMITTER, GALVO, SPLITTER, TILE_MIRROR_A, TILE_MIRROR_B},
     misc::direction::{Direction, Directions},
 };
 
-use super::{opposite_if, MIRROR_REFLECTIONS};
+use super::{opposite_if, MIRROR_REFLECTIONS, SPLITTER_TEXTURES};
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub enum BeamTile {
@@ -40,18 +40,28 @@ pub enum BeamTile {
 
 impl BeamTile {
     /// Overwrites the texture of a tile for rendering purposes.
-    pub fn base_sprite(&self) -> Option<Sprite> {
+    pub fn base_sprite(&self, frame: u8) -> Option<Sprite> {
         Some(match self {
             BeamTile::Emitter { direction, active } => {
-                animated_sprite(EMITTER[*direction as usize], *active, 0)
+                animated_sprite(EMITTER[*direction as usize], *active, frame)
             }
-            BeamTile::Mirror { direction, .. } => {
-                Sprite::new([TILE_MIRROR_A, TILE_MIRROR_B][*direction as usize])
-            }
+            BeamTile::Mirror {
+                direction,
+                original_direction,
+                ..
+            } => animated_sprite(
+                [TILE_MIRROR_A, TILE_MIRROR_B][*direction as usize],
+                direction != original_direction,
+                frame,
+            ),
             BeamTile::Galvo {
                 direction,
                 powered: Some(_),
-            } => animated_sprite(GALVO[*direction as usize], true, 0),
+            } => animated_sprite(GALVO[*direction as usize], true, frame),
+            BeamTile::Splitter {
+                direction,
+                powered: Some(..),
+            } => animated_sprite(SPLITTER[*direction as usize], true, frame),
             _ => return None,
         })
     }

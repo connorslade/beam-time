@@ -7,7 +7,7 @@ use engine::{
     graphics_context::{Anchor, GraphicsContext},
 };
 
-use crate::assets::{EMPTY_TILE_A, EMPTY_TILE_B};
+use crate::{app::App, assets::{EMPTY_TILE_A, EMPTY_TILE_B}};
 
 use super::{beam::BeamState, tile::Tile, tile_pos};
 
@@ -24,12 +24,14 @@ impl Board {
         }
     }
 
-    pub fn render<App>(
+    pub fn render(
         &mut self,
         ctx: &mut GraphicsContext<App>,
+        state: &App, 
         sim: &mut Option<BeamState>,
         holding: &mut Option<Tile>,
     ) {
+        let frame = state.frame();
         for x in 0..self.size.x {
             for y in 0..self.size.y {
                 let pos = tile_pos(ctx, self.size, Vector2::new(x, y));
@@ -46,7 +48,7 @@ impl Board {
                 if !is_empty {
                     let sprite = sim
                         .as_ref()
-                        .and_then(|x| x.board[index].base_sprite())
+                        .and_then(|x| x.board[index].base_sprite(frame))
                         .unwrap_or_else(|| Sprite::new(tile.asset()));
 
                     let sprite = sprite

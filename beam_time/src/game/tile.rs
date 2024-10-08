@@ -2,7 +2,8 @@ use engine::assets::SpriteRef;
 
 use crate::{
     assets::{
-        EMITTER, GALVO, TILE_MIRROR_A, TILE_MIRROR_B, TILE_SPLITTER_A, TILE_SPLITTER_B, TILE_WALL,
+        EMITTER, GALVO, SPLITTER, TILE_MIRROR_A, TILE_MIRROR_B, TILE_SPLITTER_A, TILE_SPLITTER_B,
+        TILE_WALL,
     },
     misc::direction::Direction,
 };
@@ -62,10 +63,7 @@ impl Tile {
                 rotation: false, ..
             } => TILE_MIRROR_A,
             Tile::Mirror { rotation: true, .. } => TILE_MIRROR_B,
-            Tile::Splitter {
-                rotation: false, ..
-            } => TILE_SPLITTER_A,
-            Tile::Splitter { rotation: true, .. } => TILE_SPLITTER_B,
+            Tile::Splitter { rotation, .. } => SPLITTER[*rotation as usize],
             Tile::Galvo { rotation, .. } => GALVO[*rotation as usize],
             Tile::Wall { .. } => TILE_WALL,
         }

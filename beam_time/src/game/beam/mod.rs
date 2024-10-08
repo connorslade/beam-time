@@ -7,6 +7,7 @@ use engine::{
 use tile::BeamTile;
 
 use crate::{
+    app::App,
     assets::{
         BEAM_FULL_HORIZONTAL, BEAM_FULL_VERTICAL, BEAM_REFLECT_DOWN_LEFT, BEAM_REFLECT_DOWN_RIGHT,
         BEAM_REFLECT_UP_LEFT, BEAM_REFLECT_UP_RIGHT, BEAM_SPLIT_DOWN, BEAM_SPLIT_LEFT,
@@ -81,7 +82,9 @@ impl BeamState {
     }
 
     /// Renders the beam over the board.
-    pub fn render<App>(&mut self, ctx: &mut GraphicsContext<App>) {
+    pub fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App) {
+        let frame = state.frame() as u32;
+
         for x in 0..self.size.x {
             for y in 0..self.size.y {
                 let index = y * self.size.x + x;
@@ -90,6 +93,7 @@ impl BeamState {
 
                 let sprite = |texture: SpriteRef| {
                     Sprite::new(texture)
+                        .uv_offset(Vector2::new(16 * frame, 0))
                         .scale(Vector2::repeat(4.0), Anchor::Center)
                         .position(pos, Anchor::Center)
                 };
@@ -123,7 +127,10 @@ impl BeamState {
                     BeamTile::Galvo {
                         powered: Some(powered),
                         ..
-                    } => ctx.draw(sprite(HALF_BEAM[powered as usize]).z_index(10)),
+                    } => ctx.draw(
+                        sprite(HALF_BEAM[powered as usize])
+                            .z_index(if powered == Direction::Down { -5 } else { 10 }),
+                    ),
                     _ => {}
                 }
             }
