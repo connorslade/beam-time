@@ -97,7 +97,7 @@ impl BeamState {
                     // Galvos change the rotation of the mirror they are
                     // pointing into when powered by a beam.
                     BeamTile::Galvo { direction, powered } => {
-                        self.track_powered(working_board[index].galvo_mut().unwrap(), pos);
+                        self.track_powered(working_board[index].directions_mut().unwrap(), pos);
 
                         let pointing = direction
                             .offset(self.size, pos)
@@ -113,8 +113,8 @@ impl BeamState {
                             .then(|| *powered_sides = [None; 2]);
                         *mirror_direction = desired_direction;
                     }
-                    BeamTile::Wall { .. } => {
-                        self.track_powered(working_board[index].wall_mut().unwrap(), pos)
+                    BeamTile::Wall { .. } | BeamTile::Detector { .. } => {
+                        self.track_powered(working_board[index].directions_mut().unwrap(), pos)
                     }
                     _ => {}
                 }
@@ -175,7 +175,7 @@ impl BeamState {
                 powered,
                 direction: dir,
             } if direction != dir.opposite() => *powered |= direction,
-            BeamTile::Wall { powered } => *powered |= direction,
+            BeamTile::Wall { powered } | BeamTile::Detector { powered } => *powered |= direction,
             _ => {}
         }
     }

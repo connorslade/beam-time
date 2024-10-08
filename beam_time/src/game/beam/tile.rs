@@ -1,7 +1,7 @@
 use engine::drawable::sprite::Sprite;
 
 use crate::{
-    assets::{animated_sprite, TILE_MIRROR_A, TILE_MIRROR_B},
+    assets::{animated_sprite, TILE_DETECTOR, TILE_MIRROR_A, TILE_MIRROR_B},
     consts::{EMITTER, GALVO, SPLITTER},
     misc::direction::{Direction, Directions},
 };
@@ -26,6 +26,9 @@ pub enum BeamTile {
         direction: Direction,
         active: bool,
     },
+    Detector {
+        powered: Directions,
+    },
     Mirror {
         direction: bool,
         original_direction: bool,
@@ -48,6 +51,7 @@ impl BeamTile {
             BeamTile::Emitter { direction, active } => {
                 animated_sprite(EMITTER[*direction as usize], *active, frame)
             }
+            BeamTile::Detector { powered } => animated_sprite(TILE_DETECTOR, powered.any(), frame),
             BeamTile::Mirror {
                 direction,
                 original_direction,
@@ -136,16 +140,11 @@ impl BeamTile {
         }
     }
 
-    pub fn galvo_mut(&mut self) -> Option<&mut Directions> {
+    pub fn directions_mut(&mut self) -> Option<&mut Directions> {
         match self {
-            Self::Galvo { powered, .. } => Some(powered),
-            _ => None,
-        }
-    }
-
-    pub fn wall_mut(&mut self) -> Option<&mut Directions> {
-        match self {
-            Self::Wall { powered } => Some(powered),
+            Self::Galvo { powered, .. } | Self::Wall { powered } | Self::Detector { powered } => {
+                Some(powered)
+            }
             _ => None,
         }
     }

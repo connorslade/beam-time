@@ -1,7 +1,7 @@
 use engine::assets::SpriteRef;
 
 use crate::{
-    assets::{TILE_MIRROR_A, TILE_MIRROR_B, TILE_WALL},
+    assets::{TILE_DETECTOR, TILE_WALL},
     consts::{EMITTER, GALVO, MIRROR, SPLITTER},
     misc::direction::Direction,
 };
@@ -9,6 +9,7 @@ use crate::{
 #[derive(Copy, Clone)]
 pub enum Tile {
     Empty,
+    Detector,
     Emitter { rotation: Direction, active: bool },
     Mirror { rotation: bool },
     Splitter { rotation: bool },
@@ -17,7 +18,8 @@ pub enum Tile {
 }
 
 impl Tile {
-    pub const DEFAULT: [Tile; 5] = [
+    pub const DEFAULT: [Tile; 6] = [
+        Tile::Detector,
         Tile::Wall { permanent: false },
         Tile::Mirror { rotation: false },
         Tile::Splitter { rotation: false },
@@ -42,9 +44,14 @@ impl Tile {
         !matches!(self, Tile::Wall { permanent: true })
     }
 
+    pub fn permanent(&self) -> bool {
+        matches!(self, Tile::Wall { permanent: true })
+    }
+
     pub fn name(&self) -> &str {
         match self {
             Tile::Empty => unreachable!(),
+            Tile::Detector => "Detector",
             Tile::Emitter { .. } => "Emitter",
             Tile::Mirror { .. } => "Mirror",
             Tile::Splitter { .. } => "Splitter",
@@ -56,6 +63,7 @@ impl Tile {
     pub fn asset(&self) -> SpriteRef {
         match self {
             Tile::Empty => unreachable!(),
+            Tile::Detector => TILE_DETECTOR,
             Tile::Emitter { rotation, .. } => EMITTER[*rotation as usize],
             Tile::Mirror { rotation, .. } => MIRROR[*rotation as usize],
             Tile::Splitter { rotation, .. } => SPLITTER[*rotation as usize],

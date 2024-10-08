@@ -62,6 +62,9 @@ impl BeamState {
                     direction: *rotation,
                     active: *active,
                 },
+                Tile::Detector => BeamTile::Detector {
+                    powered: Directions::empty(),
+                },
                 Tile::Mirror { rotation } => BeamTile::Mirror {
                     direction: *rotation,
                     original_direction: *rotation,
@@ -127,7 +130,9 @@ impl BeamState {
                         let index = (powered as usize + direction as usize * 2) % 4;
                         ctx.draw(sprite(SPLITTER_TEXTURES[index]).z_index(10));
                     }
-                    BeamTile::Galvo { powered, .. } | BeamTile::Wall { powered } => {
+                    BeamTile::Galvo { powered, .. }
+                    | BeamTile::Wall { powered }
+                    | BeamTile::Detector { powered } => {
                         for dir in powered.iter() {
                             ctx.draw(
                                 sprite(HALF_BEAM[dir as usize])

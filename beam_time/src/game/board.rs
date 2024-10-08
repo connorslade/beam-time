@@ -7,7 +7,10 @@ use engine::{
     graphics_context::{Anchor, GraphicsContext},
 };
 
-use crate::{app::App, assets::{EMPTY_TILE_A, EMPTY_TILE_B}};
+use crate::{
+    app::App,
+    assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE},
+};
 
 use super::{beam::BeamState, tile::Tile, tile_pos};
 
@@ -27,7 +30,7 @@ impl Board {
     pub fn render(
         &mut self,
         ctx: &mut GraphicsContext<App>,
-        state: &App, 
+        state: &App,
         sim: &mut Option<BeamState>,
         holding: &mut Option<Tile>,
     ) {
@@ -65,6 +68,15 @@ impl Board {
                     }
 
                     ctx.draw(sprite);
+
+                    if tile.permanent() {
+                        ctx.draw(
+                            Sprite::new(PERMANENT_TILE)
+                                .scale(Vector2::repeat(4.0), Anchor::Center)
+                                .position(pos, Anchor::Center)
+                                .z_index(-9),
+                        );
+                    }
                 }
 
                 if !tile.moveable() {

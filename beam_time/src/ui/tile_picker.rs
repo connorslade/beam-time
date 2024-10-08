@@ -39,7 +39,7 @@ pub fn tile_picker<App>(ctx: &mut GraphicsContext<App>, holding: &mut Option<Til
         let pos = Vector2::new(10.0, (tile_size + text_space) * i as f32 + text_space * 2.0);
         let sprite = Sprite::new(asset)
             .position(pos, Anchor::BottomLeft)
-            .scale(Vector2::repeat(3.0), Anchor::Center);
+            .scale(Vector2::repeat(4.0), Anchor::Center);
 
         if ctx.input.mouse_pressed(MouseButton::Left) && sprite.is_hovered(ctx) {
             *holding = Some(*tile);

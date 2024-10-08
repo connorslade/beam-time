@@ -72,6 +72,10 @@ impl Directions {
         self.inner & 1 << direction as u8 != 0
     }
 
+    pub const fn any(&self) -> bool {
+        self.inner != 0
+    }
+
     pub const fn any_but(&self, direction: Direction) -> bool {
         self.inner & !(1 << direction as u8) != 0
     }

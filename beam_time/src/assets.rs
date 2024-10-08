@@ -30,6 +30,7 @@ define_refs! {
 
         EMPTY_TILE_A,
         EMPTY_TILE_B,
+        PERMANENT_TILE,
 
         TILE_WALL,
         TILE_DETECTOR,
@@ -85,6 +86,7 @@ pub fn init(assets: &mut AssetConstructor) {
     let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
     assets.register_sprite(tiles, EMPTY_TILE_A, (16, 240), (16, 16));
     assets.register_sprite(tiles, EMPTY_TILE_B, (32, 240), (16, 16));
+    assets.register_sprite(tiles, PERMANENT_TILE, (0, 240), (16, 16));
 
     assets.register_sprite(tiles, TILE_WALL, (0, 176), (16, 16));
     assets.register_sprite(tiles, TILE_DETECTOR, (0, 160), (16, 16));
