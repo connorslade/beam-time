@@ -10,6 +10,8 @@ use crate::{
 #[derive(Debug)]
 pub struct Sprite {
     texture: SpriteRef,
+    uv_offset: Vector2<u32>,
+
     color: Rgb<f32>,
     z_index: i16,
 
@@ -27,6 +29,8 @@ impl Sprite {
     pub fn new(texture: SpriteRef) -> Self {
         Self {
             texture,
+            uv_offset: Vector2::zeros(),
+
             color: Rgb::new(1.0, 1.0, 1.0),
             z_index: 0,
 
@@ -87,6 +91,11 @@ impl Sprite {
         self
     }
 
+    pub fn uv_offset(mut self, offset: Vector2<u32>) -> Self {
+        self.uv_offset = offset;
+        self
+    }
+
     fn points<App>(&self, ctx: &GraphicsContext<App>, sprite: &SpriteAsset) -> [Vector2<f32>; 4] {
         let size = sprite.size.map(|x| x as f32) * ctx.scale_factor;
         let scaled_size = size.component_mul(&self.scale);
@@ -123,7 +132,7 @@ impl<App> Drawable<App> for Sprite {
         let points = self.points(ctx, asset);
         ctx.sprites.push(GpuSprite {
             texture: asset.texture,
-            uv: asset.uv(),
+            uv: asset.uv(self.uv_offset),
             points,
             color: Vector3::new(self.color.r, self.color.g, self.color.b),
             z_index: self.z_index,

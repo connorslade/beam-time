@@ -1,5 +1,3 @@
-use std::f32::consts::PI;
-
 use engine::{
     assets::SpriteRef,
     drawable::sprite::Sprite,
@@ -9,7 +7,11 @@ use engine::{
 use tile::BeamTile;
 
 use crate::{
-    assets::{BEAM, CROSS_BEAM, MIRROR_BEAM, SPLITTER_BEAM},
+    assets::{
+        BEAM_FULL_HORIZONTAL, BEAM_FULL_VERTICAL, BEAM_REFLECT_DOWN_LEFT, BEAM_REFLECT_DOWN_RIGHT,
+        BEAM_REFLECT_UP_LEFT, BEAM_REFLECT_UP_RIGHT, BEAM_SPLIT_DOWN, BEAM_SPLIT_LEFT,
+        BEAM_SPLIT_RIGHT, BEAM_SPLIT_UP, HALF_BEAM,
+    },
     misc::direction::Direction,
 };
 
@@ -23,6 +25,20 @@ const MIRROR_REFLECTIONS: [Direction; 4] = [
     Direction::Down,
     Direction::Right,
     Direction::Up,
+];
+
+const MIRROR_TEXTURES: [SpriteRef; 4] = [
+    BEAM_REFLECT_UP_LEFT,
+    BEAM_REFLECT_DOWN_RIGHT,
+    BEAM_REFLECT_UP_RIGHT,
+    BEAM_REFLECT_DOWN_LEFT,
+];
+
+const SPLITTER_TEXTURES: [SpriteRef; 4] = [
+    BEAM_SPLIT_RIGHT,
+    BEAM_SPLIT_UP,
+    BEAM_SPLIT_LEFT,
+    BEAM_SPLIT_DOWN,
 ];
 
 pub struct BeamState {
@@ -79,33 +95,35 @@ impl BeamState {
                 };
 
                 match beam {
-                    BeamTile::Beam { direction } => {
-                        ctx.draw(sprite(BEAM).rotate(direction.to_angle(), Anchor::Center))
+                    BeamTile::Beam {
+                        direction: Direction::Left | Direction::Right,
+                    } => ctx.draw(sprite(BEAM_FULL_HORIZONTAL)),
+                    BeamTile::Beam {
+                        direction: Direction::Up | Direction::Down,
+                    } => ctx.draw(sprite(BEAM_FULL_VERTICAL)),
+                    BeamTile::CrossBeam { .. } => {
+                        ctx.draw(sprite(BEAM_FULL_HORIZONTAL));
+                        ctx.draw(sprite(BEAM_FULL_VERTICAL));
                     }
-                    BeamTile::CrossBeam { .. } => ctx.draw(sprite(CROSS_BEAM)),
                     BeamTile::Mirror {
                         direction, powered, ..
                     } => {
-                        for i in powered
-                            .iter()
-                            .enumerate()
-                            .filter_map(|(i, x)| x.is_some().then_some(i))
-                        {
-                            let rotation = PI * i as f32 - (PI / 2.0) * direction as u8 as f32;
-                            ctx.draw(sprite(MIRROR_BEAM).rotate(rotation, Anchor::Center));
+                        for (idx, _) in powered.iter().enumerate().filter(|x| x.1.is_some()) {
+                            let texture = MIRROR_TEXTURES[idx + direction as usize * 2];
+                            ctx.draw(sprite(texture).z_index(10 * (idx == 1) as i16));
                         }
                     }
                     BeamTile::Splitter {
                         direction,
                         powered: Some(powered),
                     } => {
-                        let rotation = match powered {
-                            Direction::Right => PI / 2.0,
-                            Direction::Left => -PI / 2.0,
-                            x => x.to_angle(),
-                        } + direction as u8 as f32 * PI;
-                        ctx.draw(sprite(SPLITTER_BEAM).rotate(rotation, Anchor::Center));
+                        let index = (powered as usize + direction as usize * 2) % 4;
+                        ctx.draw(sprite(SPLITTER_TEXTURES[index]).z_index(10));
                     }
+                    BeamTile::Galvo {
+                        powered: Some(powered),
+                        ..
+                    } => ctx.draw(sprite(HALF_BEAM[powered as usize]).z_index(10)),
                     _ => {}
                 }
             }

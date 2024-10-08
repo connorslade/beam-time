@@ -1,9 +1,7 @@
-use std::f32::consts::PI;
-
-use engine::assets::SpriteRef;
+use engine::drawable::sprite::Sprite;
 
 use crate::{
-    assets::{ACTIVE_EMITTER_TILE, EMITTER_TILE},
+    assets::{animated_sprite, EMITTER, GALVO, TILE_MIRROR_A, TILE_MIRROR_B},
     misc::direction::{Direction, Directions},
 };
 
@@ -41,23 +39,21 @@ pub enum BeamTile {
 }
 
 impl BeamTile {
-    /// Overwrites the rotation of a tile for rendering purposes. This is mainly
-    /// used for mirrors, which can be rotated by galvos, and that needs to be
-    /// reflected in the rendering.
-    pub fn rotation_override(&self) -> Option<f32> {
-        match self {
-            Self::Mirror { direction, .. } => Some(PI / 2.0 * *direction as u8 as f32),
-            _ => None,
-        }
-    }
-
     /// Overwrites the texture of a tile for rendering purposes.
-    pub fn texture_override(&self) -> Option<SpriteRef> {
-        match self {
-            BeamTile::Emitter { active: true, .. } => Some(ACTIVE_EMITTER_TILE),
-            BeamTile::Emitter { active: false, .. } => Some(EMITTER_TILE),
-            _ => None,
-        }
+    pub fn base_sprite(&self) -> Option<Sprite> {
+        Some(match self {
+            BeamTile::Emitter { direction, active } => {
+                animated_sprite(EMITTER[*direction as usize], *active, 0)
+            }
+            BeamTile::Mirror { direction, .. } => {
+                Sprite::new([TILE_MIRROR_A, TILE_MIRROR_B][*direction as usize])
+            }
+            BeamTile::Galvo {
+                direction,
+                powered: Some(_),
+            } => animated_sprite(GALVO[*direction as usize], true, 0),
+            _ => return None,
+        })
     }
 
     /// Checks if a tile is powered. This should be more efficient than

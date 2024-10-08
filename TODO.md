@@ -23,3 +23,5 @@
 - [x] Split tile_map and tile_picker into ui/game components
 - [x] Implement beam logic
 - [ ] Figure out how to apply custom shader effects?
+- [ ] Fix galvo input logic
+- [ ] Dont overwrite galvo mirror state when rotating

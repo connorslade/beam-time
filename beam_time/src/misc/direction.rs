@@ -1,7 +1,4 @@
-use std::{
-    f32::consts::PI,
-    ops::{BitOr, BitOrAssign},
-};
+use std::ops::{BitOr, BitOrAssign};
 
 use engine::exports::nalgebra::Vector2;
 
@@ -54,15 +51,6 @@ impl Direction {
         match self {
             Self::Up | Self::Down => matches!(other, Self::Left | Self::Right),
             Self::Left | Self::Right => matches!(other, Self::Up | Self::Down),
-        }
-    }
-
-    pub fn to_angle(self) -> f32 {
-        match self {
-            Self::Up => 0.0,
-            Self::Left => PI / 2.0,
-            Self::Right => -PI / 2.0,
-            Self::Down => PI,
         }
     }
 }

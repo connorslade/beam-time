@@ -46,10 +46,10 @@ pub struct FontAsset {
 }
 
 impl SpriteAsset {
-    pub(crate) fn uv(&self) -> (Vector2<f32>, Vector2<f32>) {
+    pub(crate) fn uv(&self, offset: Vector2<u32>) -> (Vector2<f32>, Vector2<f32>) {
         let size = self.texture.size.map(|x| x as f32);
 
-        let start = self.uv.map(|x| x as f32).component_div(&size);
+        let start = (self.uv + offset).map(|x| x as f32).component_div(&size);
         let end = start + self.size.map(|x| x as f32).component_div(&size);
 
         let offset = Vector2::repeat(f32::EPSILON);

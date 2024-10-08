@@ -1,10 +1,8 @@
-use std::f32::consts::PI;
-
 use engine::assets::SpriteRef;
 
 use crate::{
     assets::{
-        ACTIVE_EMITTER_TILE, EMITTER_TILE, GALVO_TILE, MIRROR_TILE, SPLITTER_TILE, WALL_TILE,
+        EMITTER, GALVO, TILE_MIRROR_A, TILE_MIRROR_B, TILE_SPLITTER_A, TILE_SPLITTER_B, TILE_WALL,
     },
     misc::direction::Direction,
 };
@@ -59,20 +57,17 @@ impl Tile {
     pub fn asset(&self) -> SpriteRef {
         match self {
             Tile::Empty => unreachable!(),
-            Tile::Emitter { active: false, .. } => EMITTER_TILE,
-            Tile::Emitter { active: true, .. } => ACTIVE_EMITTER_TILE,
-            Tile::Mirror { .. } => MIRROR_TILE,
-            Tile::Splitter { .. } => SPLITTER_TILE,
-            Tile::Galvo { .. } => GALVO_TILE,
-            Tile::Wall { .. } => WALL_TILE,
-        }
-    }
-
-    pub fn sprite_rotation(&self) -> f32 {
-        match self {
-            Tile::Emitter { rotation, .. } | Tile::Galvo { rotation } => rotation.to_angle(),
-            Tile::Mirror { rotation: true } | Tile::Splitter { rotation: true } => PI / 2.0,
-            _ => 0.0,
+            Tile::Emitter { rotation, .. } => EMITTER[*rotation as usize],
+            Tile::Mirror {
+                rotation: false, ..
+            } => TILE_MIRROR_A,
+            Tile::Mirror { rotation: true, .. } => TILE_MIRROR_B,
+            Tile::Splitter {
+                rotation: false, ..
+            } => TILE_SPLITTER_A,
+            Tile::Splitter { rotation: true, .. } => TILE_SPLITTER_B,
+            Tile::Galvo { rotation, .. } => GALVO[*rotation as usize],
+            Tile::Wall { .. } => TILE_WALL,
         }
     }
 

@@ -1,5 +1,4 @@
 use engine::{
-    assets::SpriteRef,
     drawable::sprite::Sprite,
     exports::{
         nalgebra::Vector2,
@@ -8,19 +7,9 @@ use engine::{
     graphics_context::{Anchor, GraphicsContext},
 };
 
-use crate::{
-    assets::{EMPTY_TILE, EMPTY_TILE_RIGHT, EMPTY_TILE_TOP, EMPTY_TILE_TOP_RIGHT},
-    consts::FOREGROUND_COLOR,
-};
+use crate::assets::{EMPTY_TILE_A, EMPTY_TILE_B};
 
 use super::{beam::BeamState, tile::Tile, tile_pos};
-
-const GRID_TILES: [SpriteRef; 4] = [
-    EMPTY_TILE,
-    EMPTY_TILE_TOP,
-    EMPTY_TILE_RIGHT,
-    EMPTY_TILE_TOP_RIGHT,
-];
 
 pub struct Board {
     pub tiles: Vec<Tile>,
@@ -48,30 +37,21 @@ impl Board {
                 let tile = self.tiles[index];
                 let is_empty = tile.is_empty();
 
-                let grid_tile = GRID_TILES[(x == 0) as usize * 2 + (y == 0) as usize];
+                let grid_tile = [EMPTY_TILE_A, EMPTY_TILE_B][(x + y) % 2];
                 let grid = Sprite::new(grid_tile)
                     .scale(Vector2::repeat(4.0), Anchor::Center)
                     .position(pos, Anchor::Center)
                     .z_index(-10);
 
                 if !is_empty {
-                    // Use rotation from the simulation if it exists, otherwise
-                    // use the base tile's rotation.
-                    let rotation = sim
+                    let sprite = sim
                         .as_ref()
-                        .and_then(|x| x.board[index].rotation_override())
-                        .unwrap_or_else(|| tile.sprite_rotation());
+                        .and_then(|x| x.board[index].base_sprite())
+                        .unwrap_or_else(|| Sprite::new(tile.asset()));
 
-                    let asset = sim
-                        .as_ref()
-                        .and_then(|x| x.board[index].texture_override())
-                        .unwrap_or_else(|| tile.asset());
-
-                    let sprite = Sprite::new(asset)
+                    let sprite = sprite
                         .scale(Vector2::repeat(4.0), Anchor::Center)
-                        .position(pos, Anchor::Center)
-                        .rotate(rotation, Anchor::Center)
-                        .color(FOREGROUND_COLOR);
+                        .position(pos, Anchor::Center);
 
                     // todo: cleanup
                     if ctx.input.key_pressed(KeyCode::KeyA) && sprite.is_hovered(ctx) {

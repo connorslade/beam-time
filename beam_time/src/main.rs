@@ -13,8 +13,8 @@ mod app;
 mod assets;
 mod consts;
 mod game;
-mod screens;
 mod misc;
+mod screens;
 mod ui;
 mod util;
 
