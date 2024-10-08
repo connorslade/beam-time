@@ -11,9 +11,10 @@ use crate::{
     assets::{
         BEAM_FULL_HORIZONTAL, BEAM_FULL_VERTICAL, BEAM_REFLECT_DOWN_LEFT, BEAM_REFLECT_DOWN_RIGHT,
         BEAM_REFLECT_UP_LEFT, BEAM_REFLECT_UP_RIGHT, BEAM_SPLIT_DOWN, BEAM_SPLIT_LEFT,
-        BEAM_SPLIT_RIGHT, BEAM_SPLIT_UP, HALF_BEAM,
+        BEAM_SPLIT_RIGHT, BEAM_SPLIT_UP,
     },
-    misc::direction::Direction,
+    consts::HALF_BEAM,
+    misc::direction::{Direction, Directions},
 };
 
 use super::{board::Board, tile::Tile, tile_pos};
@@ -72,9 +73,11 @@ impl BeamState {
                 },
                 Tile::Galvo { rotation } => BeamTile::Galvo {
                     direction: *rotation,
-                    powered: None,
+                    powered: Directions::empty(),
                 },
-                Tile::Wall { .. } => BeamTile::Wall,
+                Tile::Wall { .. } => BeamTile::Wall {
+                    powered: Directions::empty(),
+                },
             })
             .collect();
 
@@ -124,13 +127,14 @@ impl BeamState {
                         let index = (powered as usize + direction as usize * 2) % 4;
                         ctx.draw(sprite(SPLITTER_TEXTURES[index]).z_index(10));
                     }
-                    BeamTile::Galvo {
-                        powered: Some(powered),
-                        ..
-                    } => ctx.draw(
-                        sprite(HALF_BEAM[powered as usize])
-                            .z_index(if powered == Direction::Down { -5 } else { 10 }),
-                    ),
+                    BeamTile::Galvo { powered, .. } | BeamTile::Wall { powered } => {
+                        for dir in powered.iter() {
+                            ctx.draw(
+                                sprite(HALF_BEAM[dir as usize])
+                                    .z_index(if dir == Direction::Down { -5 } else { 10 }),
+                            )
+                        }
+                    }
                     _ => {}
                 }
             }

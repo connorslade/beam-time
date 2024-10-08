@@ -63,29 +63,6 @@ define_refs! {
     }
 }
 
-pub const GALVO: [SpriteRef; 4] = [
-    TILE_GALVO_UP,
-    TILE_GALVO_RIGHT,
-    TILE_GALVO_DOWN,
-    TILE_GALVO_LEFT,
-];
-
-pub const EMITTER: [SpriteRef; 4] = [
-    TILE_EMITTER_UP,
-    TILE_EMITTER_RIGHT,
-    TILE_EMITTER_DOWN,
-    TILE_EMITTER_LEFT,
-];
-
-pub const SPLITTER: [SpriteRef; 2] = [TILE_SPLITTER_A, TILE_SPLITTER_B];
-
-pub const HALF_BEAM: [SpriteRef; 4] = [
-    BEAM_HALF_UP,
-    BEAM_HALF_RIGHT,
-    BEAM_HALF_DOWN,
-    BEAM_HALF_LEFT,
-];
-
 pub fn animated_sprite(texture: SpriteRef, active: bool, frame: u8) -> Sprite {
     let offset = if active { frame + 1 } else { 0 } * 16;
     Sprite::new(texture).uv_offset(Vector2::new(offset as u32, 0))

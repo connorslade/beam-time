@@ -1,6 +1,6 @@
 use engine::exports::nalgebra::Vector2;
 
-use crate::misc::direction::Direction;
+use crate::misc::direction::{Direction, Directions};
 
 use super::{opposite_if, BeamState, BeamTile, MIRROR_REFLECTIONS};
 
@@ -97,22 +97,24 @@ impl BeamState {
                     // Galvos change the rotation of the mirror they are
                     // pointing into when powered by a beam.
                     BeamTile::Galvo { direction, powered } => {
-                        if let Some(powered) = powered {
-                            if self.source_gone(pos, powered) {
-                                *working_board[index].galvo_mut().unwrap() = None;
-                            }
-                        }
+                        self.track_powered(working_board[index].galvo_mut().unwrap(), pos);
 
                         let pointing = direction
                             .offset(self.size, pos)
                             .and_then(|x| working_board[self.to_index(x)].mirror_mut());
-                        let Some((original_direction, direction, powered_sides)) = pointing else {
+                        let Some((original_direction, mirror_direction, powered_sides)) = pointing
+                        else {
                             continue;
                         };
 
-                        let desired_direction = original_direction ^ powered.is_some();
-                        (*direction != desired_direction).then(|| *powered_sides = [None; 2]);
-                        *direction = desired_direction;
+                        let desired_direction =
+                            original_direction ^ powered.any_but(direction.opposite());
+                        (*mirror_direction != desired_direction)
+                            .then(|| *powered_sides = [None; 2]);
+                        *mirror_direction = desired_direction;
+                    }
+                    BeamTile::Wall { .. } => {
+                        self.track_powered(working_board[index].wall_mut().unwrap(), pos)
                     }
                     _ => {}
                 }
@@ -132,6 +134,13 @@ impl BeamState {
         let source = direction.opposite().offset(self.size, pos).unwrap();
         let source_tile = self.board[self.to_index(source)];
         !source_tile.is_powered() || !source_tile.power_direction().contains(direction)
+    }
+
+    fn track_powered(&self, directions: &mut Directions, pos: Vector2<usize>) {
+        directions
+            .iter()
+            .filter(|&x| self.source_gone(pos, x))
+            .for_each(|x| *directions &= !Directions::from(x));
     }
 
     /// Powers a tile in the given direction.
@@ -163,10 +172,10 @@ impl BeamState {
             }
             BeamTile::Splitter { powered, .. } if powered.is_none() => *powered = Some(direction),
             BeamTile::Galvo {
-                direction: dir,
                 powered,
-                ..
-            } if dir.opposite() != direction => *powered = Some(direction),
+                direction: dir,
+            } if direction != dir.opposite() => *powered |= direction,
+            BeamTile::Wall { powered } => *powered |= direction,
             _ => {}
         }
     }

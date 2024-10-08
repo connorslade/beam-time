@@ -22,7 +22,7 @@ impl Screen<App> for LevelsScreen {
         let space_pressed = ctx.input.key_pressed(KeyCode::Space);
         if let Some(beam) = &mut self.beam {
             space_pressed.then(|| beam.tick());
-            beam.render(ctx, &state);
+            beam.render(ctx, state);
         } else if space_pressed {
             let mut beam = BeamState::new(&self.board);
             beam.tick();

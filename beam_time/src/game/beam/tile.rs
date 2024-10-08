@@ -1,17 +1,20 @@
-use engine::{drawable::sprite::Sprite, exports::nalgebra::Vector2};
+use engine::drawable::sprite::Sprite;
 
 use crate::{
-    assets::{animated_sprite, EMITTER, GALVO, SPLITTER, TILE_MIRROR_A, TILE_MIRROR_B},
+    assets::{animated_sprite, TILE_MIRROR_A, TILE_MIRROR_B},
+    consts::{EMITTER, GALVO, SPLITTER},
     misc::direction::{Direction, Directions},
 };
 
-use super::{opposite_if, MIRROR_REFLECTIONS, SPLITTER_TEXTURES};
+use super::{opposite_if, MIRROR_REFLECTIONS};
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub enum BeamTile {
     #[default]
     Empty,
-    Wall,
+    Wall {
+        powered: Directions,
+    },
     Beam {
         direction: Direction,
     },
@@ -34,7 +37,7 @@ pub enum BeamTile {
     },
     Galvo {
         direction: Direction,
-        powered: Option<Direction>,
+        powered: Directions,
     },
 }
 
@@ -54,10 +57,9 @@ impl BeamTile {
                 direction != original_direction,
                 frame,
             ),
-            BeamTile::Galvo {
-                direction,
-                powered: Some(_),
-            } => animated_sprite(GALVO[*direction as usize], true, frame),
+            BeamTile::Galvo { direction, powered } if powered.any_but(direction.opposite()) => {
+                animated_sprite(GALVO[*direction as usize], true, frame)
+            }
             BeamTile::Splitter {
                 direction,
                 powered: Some(..),
@@ -107,7 +109,7 @@ impl BeamTile {
         }
     }
 
-    // todo: doc comment
+    // todo: don't return options
     pub fn emitter_mut(&mut self) -> Option<&mut bool> {
         match self {
             Self::Emitter { active, .. } => Some(active),
@@ -115,7 +117,6 @@ impl BeamTile {
         }
     }
 
-    /// Returns a mutable reference to the inner data of a mirror tile.
     pub fn mirror_mut(&mut self) -> Option<(bool, &mut bool, &mut [Option<Direction>; 2])> {
         match self {
             Self::Mirror {
@@ -128,7 +129,6 @@ impl BeamTile {
         }
     }
 
-    /// Returns a mutable reference to the inner data of a splitter tile.
     pub fn splitter_mut(&mut self) -> Option<&mut Option<Direction>> {
         match self {
             Self::Splitter { powered, .. } => Some(powered),
@@ -136,10 +136,16 @@ impl BeamTile {
         }
     }
 
-    /// Returns a mutable reference to the inner data of a galvo tile.
-    pub fn galvo_mut(&mut self) -> Option<&mut Option<Direction>> {
+    pub fn galvo_mut(&mut self) -> Option<&mut Directions> {
         match self {
             Self::Galvo { powered, .. } => Some(powered),
+            _ => None,
+        }
+    }
+
+    pub fn wall_mut(&mut self) -> Option<&mut Directions> {
+        match self {
+            Self::Wall { powered } => Some(powered),
             _ => None,
         }
     }
