@@ -17,7 +17,7 @@ use crate::{
     misc::direction::{Direction, Directions},
 };
 
-use super::{board::Board, tile::Tile, tile_pos};
+use super::{board::Board, tile::Tile, SharedState};
 
 mod tick;
 mod tile;
@@ -88,19 +88,19 @@ impl BeamState {
     }
 
     /// Renders the beam over the board.
-    pub fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App) {
+    pub fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App, shared: &SharedState) {
         let frame = state.frame() as u32;
 
         for x in 0..self.size.x {
             for y in 0..self.size.y {
                 let index = y * self.size.x + x;
                 let beam = self.board[index];
-                let pos = tile_pos(ctx, self.size, Vector2::new(x, y));
+                let pos = shared.tile_pos(ctx, self.size, Vector2::new(x, y));
 
                 let sprite = |texture: SpriteRef| {
                     Sprite::new(texture)
                         .uv_offset(Vector2::new(16 * frame, 0))
-                        .scale(Vector2::repeat(4.0), Anchor::Center)
+                        .scale(Vector2::repeat(shared.scale), Anchor::Center)
                         .position(pos, Anchor::Center)
                 };
 

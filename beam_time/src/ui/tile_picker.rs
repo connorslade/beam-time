@@ -7,9 +7,16 @@ use engine::{
     graphics_context::{Anchor, GraphicsContext},
 };
 
-use crate::{assets::UNDEAD_FONT, game::tile::Tile};
+use crate::{
+    assets::UNDEAD_FONT,
+    game::{tile::Tile, SharedState},
+};
 
-pub fn tile_picker<App>(ctx: &mut GraphicsContext<App>, holding: &mut Option<Tile>) {
+pub fn tile_picker<App>(
+    ctx: &mut GraphicsContext<App>,
+    shared: &SharedState,
+    holding: &mut Option<Tile>,
+) {
     if ctx.input.mouse_down(MouseButton::Right) {
         *holding = None;
     }
@@ -25,7 +32,7 @@ pub fn tile_picker<App>(ctx: &mut GraphicsContext<App>, holding: &mut Option<Til
 
         ctx.draw(
             Sprite::new(holding.asset())
-                .scale(Vector2::repeat(4.0), Anchor::Center)
+                .scale(Vector2::repeat(shared.scale), Anchor::Center)
                 .position(ctx.input.mouse, Anchor::Center)
                 .z_index(10),
         );

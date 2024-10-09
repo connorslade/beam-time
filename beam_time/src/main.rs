@@ -5,7 +5,7 @@ use engine::{
     application::{Application, ApplicationArgs},
     exports::winit::{
         dpi::PhysicalSize,
-        window::{Icon, WindowAttributes, WindowButtons},
+        window::{Icon, WindowAttributes},
     },
 };
 
@@ -29,9 +29,7 @@ fn main() -> Result<()> {
         window_attributes: WindowAttributes::default()
             .with_title("Beam Time")
             .with_window_icon(Some(icon))
-            .with_inner_size(PhysicalSize::new(DEFAULT_SIZE.0, DEFAULT_SIZE.1))
-            .with_resizable(false)
-            .with_enabled_buttons(WindowButtons::CLOSE | WindowButtons::MINIMIZE),
+            .with_inner_size(PhysicalSize::new(DEFAULT_SIZE.0, DEFAULT_SIZE.1)),
         app_constructor: Box::new(App::default),
         screen_constructor: Box::new(|| {
             vec![

@@ -1,7 +1,7 @@
 use nalgebra::Vector2;
 use winit::{
     dpi::PhysicalSize,
-    event::{ElementState, KeyEvent, MouseButton, WindowEvent},
+    event::{ElementState, KeyEvent, MouseButton, MouseScrollDelta, WindowEvent},
     keyboard::{KeyCode, PhysicalKey},
 };
 
@@ -9,6 +9,8 @@ use winit::{
 pub struct InputManager {
     pub(crate) window_size: Vector2<u32>,
     pub mouse: Vector2<f32>,
+    pub mouse_delta: Vector2<f32>,
+    pub scroll_delta: f32,
     pub resized: bool,
 
     mouse_down: Vec<MouseButton>,
@@ -23,6 +25,8 @@ impl InputManager {
         Self {
             window_size: Vector2::new(window_size.width, window_size.height),
             mouse: Vector2::new(0.0, 0.0),
+            mouse_delta: Vector2::new(0.0, 0.0),
+            scroll_delta: 0.0,
             resized: false,
 
             mouse_down: Vec::new(),
@@ -73,7 +77,10 @@ impl InputManager {
                 self.resized = true;
             }
             WindowEvent::CursorMoved { position: pos, .. } => {
-                self.mouse = Vector2::new(pos.x as f32, self.window_size.y as f32 - pos.y as f32)
+                let new_mouse =
+                    Vector2::new(pos.x as f32, self.window_size.y as f32 - pos.y as f32);
+                self.mouse_delta += new_mouse - self.mouse;
+                self.mouse = new_mouse;
             }
             WindowEvent::MouseInput { state, button, .. } => {
                 self.mouse_actions.push((*button, *state));
@@ -87,6 +94,12 @@ impl InputManager {
                         }
                     }
                 }
+            }
+            WindowEvent::MouseWheel { delta, .. } => {
+                self.scroll_delta += match delta {
+                    MouseScrollDelta::LineDelta(_, y) => *y,
+                    MouseScrollDelta::PixelDelta(pos) => pos.y as f32,
+                };
             }
             WindowEvent::KeyboardInput { event, .. } => {
                 self.key_actions.push(event.clone());
@@ -108,5 +121,7 @@ impl InputManager {
     pub(crate) fn on_frame_end(&mut self) {
         self.mouse_actions.clear();
         self.key_actions.clear();
+        self.mouse_delta = Vector2::new(0.0, 0.0);
+        self.scroll_delta = 0.0;
     }
 }

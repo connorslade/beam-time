@@ -12,7 +12,7 @@ use crate::{
     assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE},
 };
 
-use super::{beam::BeamState, tile::Tile, tile_pos};
+use super::{beam::BeamState, tile::Tile, SharedState};
 
 pub struct Board {
     pub tiles: Vec<Tile>,
@@ -31,20 +31,21 @@ impl Board {
         &mut self,
         ctx: &mut GraphicsContext<App>,
         state: &App,
+        shared: &SharedState,
         sim: &mut Option<BeamState>,
         holding: &mut Option<Tile>,
     ) {
         let frame = state.frame();
         for x in 0..self.size.x {
             for y in 0..self.size.y {
-                let pos = tile_pos(ctx, self.size, Vector2::new(x, y));
+                let pos = shared.tile_pos(ctx, self.size, Vector2::new(x, y));
                 let index = y * self.size.x + x;
                 let tile = self.tiles[index];
                 let is_empty = tile.is_empty();
 
                 let grid_tile = [EMPTY_TILE_A, EMPTY_TILE_B][(x + y) % 2];
                 let grid = Sprite::new(grid_tile)
-                    .scale(Vector2::repeat(4.0), Anchor::Center)
+                    .scale(Vector2::repeat(shared.scale), Anchor::Center)
                     .position(pos, Anchor::Center)
                     .z_index(-10);
 
@@ -55,15 +56,14 @@ impl Board {
                         .unwrap_or_else(|| Sprite::new(tile.asset()));
 
                     let sprite = sprite
-                        .scale(Vector2::repeat(4.0), Anchor::Center)
+                        .scale(Vector2::repeat(shared.scale), Anchor::Center)
                         .position(pos, Anchor::Center);
 
-                    // todo: cleanup
                     if ctx.input.key_pressed(KeyCode::KeyA) && sprite.is_hovered(ctx) {
-                        if let Some(sim) = sim {
-                            if let Some(emitter) = sim.board[index].emitter_mut() {
-                                *emitter ^= true;
-                            }
+                        if let Some(emitter) =
+                            sim.as_mut().and_then(|sim| sim.board[index].emitter_mut())
+                        {
+                            *emitter ^= true;
                         }
                     }
 
