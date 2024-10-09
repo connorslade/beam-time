@@ -84,8 +84,8 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, ABOUT_BUTTON, (40, 48), (31, 14));
 
     let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
-    assets.register_sprite(tiles, EMPTY_TILE_A, (16, 240), (16, 16));
-    assets.register_sprite(tiles, EMPTY_TILE_B, (32, 240), (16, 16));
+    assets.register_sprite(tiles, EMPTY_TILE_A, (0, 256), (16, 16));
+    assets.register_sprite(tiles, EMPTY_TILE_B, (16, 256), (16, 16));
     assets.register_sprite(tiles, PERMANENT_TILE, (0, 240), (16, 16));
 
     assets.register_sprite(tiles, TILE_WALL, (0, 176), (16, 16));

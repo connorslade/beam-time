@@ -47,7 +47,7 @@ impl Screen<App> for GameScreen {
 
 impl Default for GameScreen {
     fn default() -> Self {
-        let size = Vector2::repeat(8);
+        let size = Vector2::repeat(32);
         Self {
             shared: SharedState::default(),
             board: Board::new(size),
