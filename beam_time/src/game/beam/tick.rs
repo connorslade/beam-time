@@ -16,6 +16,19 @@ impl BeamState {
                 let index = self.to_index(pos);
                 let tile = self.board[index];
 
+                if let BeamTile::Delay { .. } = tile {
+                    let (powered, last_powered) = working_board[index].delay_mut().unwrap();
+                    *last_powered = *powered;
+                }
+            }
+        }
+
+        for y in 0..self.size.y {
+            for x in 0..self.size.x {
+                let pos = Vector2::new(x, y);
+                let index = self.to_index(pos);
+                let tile = self.board[index];
+
                 match tile {
                     BeamTile::Empty => {}
                     // Emitters send out a constant beam in the direction they
@@ -118,9 +131,8 @@ impl BeamState {
                             self.power(&mut working_board, pos, dir);
                         }
 
-                        let (powered, last_powered) = working_board[index].delay_mut().unwrap();
+                        let (powered, _) = working_board[index].delay_mut().unwrap();
                         self.track_powered(powered, pos);
-                        *last_powered = *powered;
                     }
                     BeamTile::Wall { .. } | BeamTile::Detector { .. } => {
                         self.track_powered(working_board[index].directions_mut().unwrap(), pos)

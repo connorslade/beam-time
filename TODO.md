@@ -25,3 +25,5 @@
 - [ ] Figure out how to apply custom shader effects?
 - [ ] Fix galvo input logic
 - [ ] Dont overwrite galvo mirror state when rotating
+- [ ] Fix delay gate rendering z order
+- [ ] Create z_order consts for layers

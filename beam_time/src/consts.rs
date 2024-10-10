@@ -9,7 +9,6 @@ use crate::assets::{
 
 pub const DEFAULT_SIZE: (u32, u32) = (800, 600);
 pub const BACKGROUND_COLOR: Rgb<f32> = Rgb::new(0.235, 0.235, 0.235);
-pub const LIGHT_BACKGROUND: Rgb<f32> = Rgb::new(0.341, 0.216, 0.259);
 pub const FOREGROUND_COLOR: Rgb<f32> = Rgb::new(0.859, 0.89, 0.839);
 pub const ACCENT_COLOR: Rgb<f32> = Rgb::new(0.812, 0.306, 0.306);
 

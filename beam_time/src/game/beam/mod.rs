@@ -134,6 +134,16 @@ impl BeamState {
                         let index = (powered as usize + direction as usize * 2) % 4;
                         ctx.draw(sprite(SPLITTER_TEXTURES[index]).z_index(10));
                     }
+                    BeamTile::Delay {
+                        powered,
+                        last_powered,
+                    } => {
+                        for (idx, set) in [powered, last_powered].into_iter().enumerate() {
+                            for dir in set.iter() {
+                                ctx.draw(sprite(HALF_BEAM[opposite_if(dir, idx > 0) as usize]))
+                            }
+                        }
+                    }
                     BeamTile::Galvo { powered, .. }
                     | BeamTile::Wall { powered }
                     | BeamTile::Detector { powered } => {

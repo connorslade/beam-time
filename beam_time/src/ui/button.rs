@@ -93,7 +93,7 @@ impl<'a, App> Drawable<App> for Button<'a, App> {
             ctx.audio.builder(BUTTON_HOVER).with_gain(0.2).play_now();
         }
 
-        if hover && ctx.input.mouse_down(MouseButton::Left) {
+        if hover && ctx.input.mouse_pressed(MouseButton::Left) {
             ctx.audio
                 .builder(if self.is_back {
                     BUTTON_BACK

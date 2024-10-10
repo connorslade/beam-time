@@ -6,6 +6,5 @@ Beam time is a logic puzzle about redirecting and splitting laser beams to creat
 I'm making a custom GPU accelerated game engine for this, because why not, so this will probably take a while to finish.
 
 Here is an example of an XOR gate implemented in game with some and, or, and nand gates.
-Note that all the textures are temporary.
 
 ![beam_time_CurvZzfsRC](https://github.com/user-attachments/assets/cd4c82c0-fa50-4b4d-bc23-505d96b6a069)
