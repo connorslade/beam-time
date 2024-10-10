@@ -65,6 +65,10 @@ impl BeamState {
                 Tile::Detector => BeamTile::Detector {
                     powered: Directions::empty(),
                 },
+                Tile::Delay => BeamTile::Delay {
+                    powered: Directions::empty(),
+                    last_powered: Directions::empty(),
+                },
                 Tile::Mirror { rotation } => BeamTile::Mirror {
                     direction: *rotation,
                     original_direction: *rotation,

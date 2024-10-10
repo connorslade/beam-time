@@ -34,6 +34,7 @@ define_refs! {
 
         TILE_WALL,
         TILE_DETECTOR,
+        TILE_DELAY,
         TILE_MIRROR_A,
         TILE_MIRROR_B,
         TILE_SPLITTER_A,
@@ -90,6 +91,7 @@ pub fn init(assets: &mut AssetConstructor) {
 
     assets.register_sprite(tiles, TILE_WALL, (0, 176), (16, 16));
     assets.register_sprite(tiles, TILE_DETECTOR, (0, 160), (16, 16));
+    assets.register_sprite(tiles, TILE_DELAY, (0, 224), (16, 16));
     assets.register_sprite(tiles, TILE_MIRROR_A, (0, 64), (16, 16));
     assets.register_sprite(tiles, TILE_MIRROR_B, (0, 80), (16, 16));
     assets.register_sprite(tiles, TILE_SPLITTER_A, (0, 128), (16, 16));

@@ -113,6 +113,15 @@ impl BeamState {
                             .then(|| *powered_sides = [None; 2]);
                         *mirror_direction = desired_direction;
                     }
+                    BeamTile::Delay { last_powered, .. } => {
+                        for dir in last_powered.iter() {
+                            self.power(&mut working_board, pos, dir);
+                        }
+
+                        let (powered, last_powered) = working_board[index].delay_mut().unwrap();
+                        self.track_powered(powered, pos);
+                        *last_powered = *powered;
+                    }
                     BeamTile::Wall { .. } | BeamTile::Detector { .. } => {
                         self.track_powered(working_board[index].directions_mut().unwrap(), pos)
                     }
@@ -175,7 +184,9 @@ impl BeamState {
                 powered,
                 direction: dir,
             } if direction != dir.opposite() => *powered |= direction,
-            BeamTile::Wall { powered } | BeamTile::Detector { powered } => *powered |= direction,
+            BeamTile::Wall { powered }
+            | BeamTile::Detector { powered }
+            | BeamTile::Delay { powered, .. } => *powered |= direction,
             _ => {}
         }
     }

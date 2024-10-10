@@ -1,7 +1,7 @@
 use engine::drawable::sprite::Sprite;
 
 use crate::{
-    assets::{animated_sprite, TILE_DETECTOR, TILE_MIRROR_A, TILE_MIRROR_B},
+    assets::{animated_sprite, TILE_DELAY, TILE_DETECTOR, TILE_MIRROR_A, TILE_MIRROR_B},
     consts::{EMITTER, GALVO, SPLITTER},
     misc::direction::{Direction, Directions},
 };
@@ -29,6 +29,10 @@ pub enum BeamTile {
     Detector {
         powered: Directions,
     },
+    Delay {
+        powered: Directions,
+        last_powered: Directions,
+    },
     Mirror {
         direction: bool,
         original_direction: bool,
@@ -52,6 +56,7 @@ impl BeamTile {
                 animated_sprite(EMITTER[*direction as usize], *active, frame)
             }
             BeamTile::Detector { powered } => animated_sprite(TILE_DETECTOR, powered.any(), frame),
+            BeamTile::Delay { powered, .. } => animated_sprite(TILE_DELAY, powered.any(), frame),
             BeamTile::Mirror {
                 direction,
                 original_direction,
@@ -79,6 +84,7 @@ impl BeamTile {
             Self::Emitter { active: true, .. } | Self::Beam { .. } | Self::CrossBeam { .. } => true,
             Self::Mirror { powered, .. } => powered[0].is_some() || powered[1].is_some(),
             Self::Splitter { powered, .. } => powered.is_some(),
+            Self::Delay { last_powered, .. } => last_powered.any(),
             _ => false,
         }
     }
@@ -109,6 +115,7 @@ impl BeamTile {
                     !*direction,
                 )) | *powered
             }
+            Self::Delay { last_powered, .. } => *last_powered,
             _ => Directions::empty(),
         }
     }
@@ -136,6 +143,16 @@ impl BeamTile {
     pub fn splitter_mut(&mut self) -> Option<&mut Option<Direction>> {
         match self {
             Self::Splitter { powered, .. } => Some(powered),
+            _ => None,
+        }
+    }
+
+    pub fn delay_mut(&mut self) -> Option<(&mut Directions, &mut Directions)> {
+        match self {
+            Self::Delay {
+                powered,
+                last_powered,
+            } => Some((powered, last_powered)),
             _ => None,
         }
     }

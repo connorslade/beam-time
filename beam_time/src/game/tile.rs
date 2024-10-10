@@ -1,7 +1,7 @@
 use engine::assets::SpriteRef;
 
 use crate::{
-    assets::{TILE_DETECTOR, TILE_WALL},
+    assets::{TILE_DELAY, TILE_DETECTOR, TILE_WALL},
     consts::{EMITTER, GALVO, MIRROR, SPLITTER},
     misc::direction::Direction,
 };
@@ -10,6 +10,7 @@ use crate::{
 pub enum Tile {
     Empty,
     Detector,
+    Delay,
     Emitter { rotation: Direction, active: bool },
     Mirror { rotation: bool },
     Splitter { rotation: bool },
@@ -18,8 +19,9 @@ pub enum Tile {
 }
 
 impl Tile {
-    pub const DEFAULT: [Tile; 6] = [
+    pub const DEFAULT: [Tile; 7] = [
         Tile::Detector,
+        Tile::Delay,
         Tile::Wall { permanent: false },
         Tile::Mirror { rotation: false },
         Tile::Splitter { rotation: false },
@@ -53,6 +55,7 @@ impl Tile {
             Tile::Empty => unreachable!(),
             Tile::Detector => "Detector",
             Tile::Emitter { .. } => "Emitter",
+            Tile::Delay => "Delay",
             Tile::Mirror { .. } => "Mirror",
             Tile::Splitter { .. } => "Splitter",
             Tile::Galvo { .. } => "Galvo",
@@ -64,6 +67,7 @@ impl Tile {
         match self {
             Tile::Empty => unreachable!(),
             Tile::Detector => TILE_DETECTOR,
+            Tile::Delay => TILE_DELAY,
             Tile::Emitter { rotation, .. } => EMITTER[*rotation as usize],
             Tile::Mirror { rotation, .. } => MIRROR[*rotation as usize],
             Tile::Splitter { rotation, .. } => SPLITTER[*rotation as usize],
