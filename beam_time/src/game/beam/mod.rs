@@ -13,7 +13,7 @@ use crate::{
         BEAM_REFLECT_UP_LEFT, BEAM_REFLECT_UP_RIGHT, BEAM_SPLIT_DOWN, BEAM_SPLIT_LEFT,
         BEAM_SPLIT_RIGHT, BEAM_SPLIT_UP,
     },
-    consts::HALF_BEAM,
+    consts::{layer, HALF_BEAM},
     misc::direction::{Direction, Directions},
 };
 
@@ -124,7 +124,7 @@ impl BeamState {
                     } => {
                         for (idx, _) in powered.iter().enumerate().filter(|x| x.1.is_some()) {
                             let texture = MIRROR_TEXTURES[idx + direction as usize * 2];
-                            ctx.draw(sprite(texture).z_index(10 * (idx == 1) as i16));
+                            ctx.draw(sprite(texture).z_index(layer::LASER * (idx == 1) as i16));
                         }
                     }
                     BeamTile::Splitter {
@@ -132,7 +132,7 @@ impl BeamState {
                         powered: Some(powered),
                     } => {
                         let index = (powered as usize + direction as usize * 2) % 4;
-                        ctx.draw(sprite(SPLITTER_TEXTURES[index]).z_index(10));
+                        ctx.draw(sprite(SPLITTER_TEXTURES[index]).z_index(layer::LASER));
                     }
                     BeamTile::Delay {
                         powered,
@@ -148,10 +148,12 @@ impl BeamState {
                     | BeamTile::Wall { powered }
                     | BeamTile::Detector { powered } => {
                         for dir in powered.iter() {
-                            ctx.draw(
-                                sprite(HALF_BEAM[dir as usize])
-                                    .z_index(if dir == Direction::Down { -5 } else { 10 }),
-                            )
+                            let layer = if dir == Direction::Down {
+                                layer::UNDER_LASER
+                            } else {
+                                layer::LASER
+                            };
+                            ctx.draw(sprite(HALF_BEAM[dir as usize]).z_index(layer))
                         }
                     }
                     _ => {}

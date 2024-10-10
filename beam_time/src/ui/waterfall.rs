@@ -6,7 +6,7 @@ use engine::{
 };
 use rand::{seq::SliceRandom, thread_rng, Rng};
 
-use crate::consts::TILES;
+use crate::consts::{layer, TILES};
 
 pub struct Waterfall<'a> {
     state: &'a mut WaterfallState,
@@ -62,7 +62,7 @@ impl<'a, App> Drawable<App> for Waterfall<'a> {
                 Sprite::new(tile.asset)
                     .position(tile.pos, Anchor::Center)
                     .scale(Vector2::repeat(4.0), Anchor::Center)
-                    .z_index(-10),
+                    .z_index(layer::TILE_BACKGROUND),
             );
 
             tile.pos.y -= tile.vel * ctx.delta_time;

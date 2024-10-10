@@ -10,6 +10,7 @@ use engine::{
 use crate::{
     app::App,
     assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE},
+    consts::layer,
 };
 
 use super::{beam::BeamState, tile::Tile, SharedState};
@@ -47,7 +48,7 @@ impl Board {
                 let grid = Sprite::new(grid_tile)
                     .scale(Vector2::repeat(shared.scale), Anchor::Center)
                     .position(pos, Anchor::Center)
-                    .z_index(-10);
+                    .z_index(layer::TILE_BACKGROUND);
 
                 if !is_empty {
                     let sprite = sim
@@ -74,7 +75,7 @@ impl Board {
                             Sprite::new(PERMANENT_TILE)
                                 .scale(Vector2::repeat(4.0), Anchor::Center)
                                 .position(pos, Anchor::Center)
-                                .z_index(-9),
+                                .z_index(layer::TILE_BACKGROUND_OVERLAY),
                         );
                     }
                 }

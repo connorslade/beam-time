@@ -26,4 +26,8 @@
 - [ ] Fix galvo input logic
 - [ ] Dont overwrite galvo mirror state when rotating
 - [ ] Fix delay gate rendering z order
-- [ ] Create z_order consts for layers
+- [x] Create z_order consts for layers
+- [ ] Actual Infante Boards
+  - [ ] Use hash map for tile storage
+  - [ ] Use new rendering system
+  - [ ] Destroy beams after traveling too far

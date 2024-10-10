@@ -9,6 +9,7 @@ use engine::{
 
 use crate::{
     assets::UNDEAD_FONT,
+    consts::layer,
     game::{tile::Tile, SharedState},
 };
 
@@ -34,7 +35,7 @@ pub fn tile_picker<App>(
             Sprite::new(holding.asset())
                 .scale(Vector2::repeat(shared.scale), Anchor::Center)
                 .position(ctx.input.mouse, Anchor::Center)
-                .z_index(10),
+                .z_index(layer::TILE_HOLDING),
         );
     }
 
