@@ -5,7 +5,7 @@ use engine::{
 use crate::{
     consts::BACKGROUND_COLOR,
     game::{beam::BeamState, board::Board, tile::Tile, SharedState},
-    ui::tile_picker::tile_picker,
+    ui::tile_picker::TilePicker,
     App,
 };
 
@@ -13,6 +13,8 @@ pub struct GameScreen {
     shared: SharedState,
     board: Board,
     beam: Option<BeamState>,
+
+    tile_picker: TilePicker,
     holding: Option<Tile>,
 }
 
@@ -37,9 +39,8 @@ impl Screen<App> for GameScreen {
         ctx.background(BACKGROUND_COLOR);
         self.board
             .render(ctx, state, &self.shared, &mut self.beam, &mut self.holding);
-        if self.beam.is_none() {
-            tile_picker(ctx, &self.shared, &mut self.holding);
-        }
+        self.tile_picker
+            .render(ctx, &self.shared, self.beam.is_some(), &mut self.holding);
     }
 }
 
@@ -49,6 +50,8 @@ impl Default for GameScreen {
             shared: SharedState::default(),
             board: Board::new(),
             beam: None,
+
+            tile_picker: TilePicker::default(),
             holding: None,
         }
     }

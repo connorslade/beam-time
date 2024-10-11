@@ -16,68 +16,97 @@ use crate::{
     game::{tile::Tile, SharedState},
 };
 
-pub fn tile_picker<App>(
-    ctx: &mut GraphicsContext<App>,
-    shared: &SharedState,
-    holding: &mut Option<Tile>,
-) {
-    if ctx.input.mouse_down(MouseButton::Right) {
-        *holding = None;
-    }
+#[derive(Default)]
+pub struct TilePicker {
+    offset: f32,
+}
 
-    if let Some(holding) = holding {
-        if ctx.input.key_pressed(KeyCode::KeyR) {
-            *holding = holding.rotate();
+impl TilePicker {
+    pub fn render<App>(
+        &mut self,
+        ctx: &mut GraphicsContext<App>,
+        shared: &SharedState,
+        sim: bool,
+        holding: &mut Option<Tile>,
+    ) {
+        self.update_holding(ctx, shared, holding);
+        if !self.update_offset(ctx, sim) {
+            return;
         }
 
-        if ctx.input.key_pressed(KeyCode::KeyA) {
-            *holding = holding.activate();
-        }
+        let tile_size = 16.0 * 4.0 * ctx.scale_factor;
+        for (i, tile) in Tile::DEFAULT.iter().enumerate() {
+            let (asset, name) = (tile.asset(), tile.name());
+            let pos = Vector2::new(tile_size * i as f32, -self.offset);
 
-        ctx.draw(
-            Sprite::new(holding.asset())
-                .scale(Vector2::repeat(shared.scale), Anchor::Center)
-                .position(ctx.input.mouse, Anchor::Center)
-                .z_index(layer::TILE_HOLDING),
-        );
-    }
+            let background_texture = if i == 0 {
+                TILE_PICKER_BACKGROUND_LEFT
+            } else if i == Tile::DEFAULT.len() - 1 {
+                TILE_PICKER_BACKGROUND_RIGHT
+            } else {
+                TILE_PICKER_BACKGROUND_CENTER
+            };
 
-    let tile_size = 16.0 * 4.0 * ctx.scale_factor;
-    for (i, tile) in Tile::DEFAULT.iter().enumerate() {
-        let (asset, name) = (tile.asset(), tile.name());
-        let pos = Vector2::new(tile_size * i as f32, 0.0);
+            let background = Sprite::new(background_texture)
+                .position(pos, Anchor::BottomLeft)
+                .scale(Vector2::repeat(4.0), Anchor::Center);
+            ctx.draw(background);
 
-        let background_texture = if i == 0 {
-            TILE_PICKER_BACKGROUND_LEFT
-        } else if i == Tile::DEFAULT.len() - 1 {
-            TILE_PICKER_BACKGROUND_RIGHT
-        } else {
-            TILE_PICKER_BACKGROUND_CENTER
-        };
+            let sprite = Sprite::new(asset)
+                .position(pos, Anchor::BottomLeft)
+                .scale(Vector2::repeat(4.0), Anchor::Center);
 
-        let background = Sprite::new(background_texture)
-            .position(pos, Anchor::BottomLeft)
-            .scale(Vector2::repeat(4.0), Anchor::Center);
-        ctx.draw(background);
+            if !sim && sprite.is_hovered(ctx) {
+                if holding.is_none() {
+                    let text = Text::new(UNDEAD_FONT, name)
+                        .pos(ctx.input.mouse, Anchor::BottomLeft)
+                        .scale(Vector2::repeat(2.0))
+                        .z_index(layer::TILE_HOLDING);
+                    ctx.draw(text);
+                }
 
-        let sprite = Sprite::new(asset)
-            .position(pos, Anchor::BottomLeft)
-            .scale(Vector2::repeat(4.0), Anchor::Center);
-
-        if sprite.is_hovered(ctx) {
-            if holding.is_none() {
-                let text = Text::new(UNDEAD_FONT, name)
-                    .pos(ctx.input.mouse, Anchor::BottomLeft)
-                    .scale(Vector2::repeat(2.0))
-                    .z_index(layer::TILE_HOLDING);
-                ctx.draw(text);
+                if ctx.input.mouse_pressed(MouseButton::Left) {
+                    *holding = Some(*tile);
+                }
             }
 
-            if ctx.input.mouse_pressed(MouseButton::Left) {
-                *holding = Some(*tile);
-            }
+            ctx.draw(sprite);
+        }
+    }
+
+    fn update_offset<App>(&mut self, ctx: &GraphicsContext<App>, sim: bool) -> bool {
+        self.offset += ctx.delta_time * 750.0 * if sim { 1.0 } else { -1.0 };
+
+        let max_offset = 16.0 * 4.0 * ctx.scale_factor;
+        self.offset = self.offset.clamp(0.0, max_offset);
+        self.offset <= max_offset
+    }
+
+    fn update_holding<App>(
+        &self,
+        ctx: &mut GraphicsContext<App>,
+        shared: &SharedState,
+        holding: &mut Option<Tile>,
+    ) {
+        if ctx.input.mouse_down(MouseButton::Right) {
+            *holding = None;
         }
 
-        ctx.draw(sprite);
+        if let Some(holding) = holding {
+            if ctx.input.key_pressed(KeyCode::KeyR) {
+                *holding = holding.rotate();
+            }
+
+            if ctx.input.key_pressed(KeyCode::KeyA) {
+                *holding = holding.activate();
+            }
+
+            ctx.draw(
+                Sprite::new(holding.asset())
+                    .scale(Vector2::repeat(shared.scale), Anchor::Center)
+                    .position(ctx.input.mouse, Anchor::Center)
+                    .z_index(layer::TILE_HOLDING),
+            );
+        }
     }
 }
