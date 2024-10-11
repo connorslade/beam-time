@@ -8,7 +8,10 @@ use engine::{
 };
 
 use crate::{
-    assets::UNDEAD_FONT,
+    assets::{
+        TILE_PICKER_BACKGROUND_CENTER, TILE_PICKER_BACKGROUND_LEFT, TILE_PICKER_BACKGROUND_RIGHT,
+        UNDEAD_FONT,
+    },
     consts::layer,
     game::{tile::Tile, SharedState},
 };
@@ -40,24 +43,41 @@ pub fn tile_picker<App>(
     }
 
     let tile_size = 16.0 * 4.0 * ctx.scale_factor;
-    let text_space = 20.0 * ctx.scale_factor;
     for (i, tile) in Tile::DEFAULT.iter().enumerate() {
         let (asset, name) = (tile.asset(), tile.name());
+        let pos = Vector2::new(tile_size * i as f32, 0.0);
 
-        let pos = Vector2::new(10.0, (tile_size + text_space) * i as f32 + text_space * 2.0);
+        let background_texture = if i == 0 {
+            TILE_PICKER_BACKGROUND_LEFT
+        } else if i == Tile::DEFAULT.len() - 1 {
+            TILE_PICKER_BACKGROUND_RIGHT
+        } else {
+            TILE_PICKER_BACKGROUND_CENTER
+        };
+
+        let background = Sprite::new(background_texture)
+            .position(pos, Anchor::BottomLeft)
+            .scale(Vector2::repeat(4.0), Anchor::Center);
+        ctx.draw(background);
+
         let sprite = Sprite::new(asset)
             .position(pos, Anchor::BottomLeft)
             .scale(Vector2::repeat(4.0), Anchor::Center);
 
-        if ctx.input.mouse_pressed(MouseButton::Left) && sprite.is_hovered(ctx) {
-            *holding = Some(*tile);
+        if sprite.is_hovered(ctx) {
+            if holding.is_none() {
+                let text = Text::new(UNDEAD_FONT, name)
+                    .pos(ctx.input.mouse, Anchor::BottomLeft)
+                    .scale(Vector2::repeat(2.0))
+                    .z_index(layer::TILE_HOLDING);
+                ctx.draw(text);
+            }
+
+            if ctx.input.mouse_pressed(MouseButton::Left) {
+                *holding = Some(*tile);
+            }
         }
 
         ctx.draw(sprite);
-        ctx.draw(
-            Text::new(UNDEAD_FONT, name)
-                .scale(Vector2::repeat(2.0))
-                .pos(pos + Vector2::new(10.0, -10.0), Anchor::TopLeft),
-        );
     }
 }

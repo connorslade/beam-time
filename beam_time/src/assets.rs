@@ -28,6 +28,10 @@ define_refs! {
         OPTIONS_BUTTON,
         ABOUT_BUTTON,
 
+        TILE_PICKER_BACKGROUND_LEFT,
+        TILE_PICKER_BACKGROUND_CENTER,
+        TILE_PICKER_BACKGROUND_RIGHT,
+
         EMPTY_TILE_A,
         EMPTY_TILE_B,
         PERMANENT_TILE,
@@ -85,6 +89,10 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, ABOUT_BUTTON, (40, 48), (31, 14));
 
     let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
+    assets.register_sprite(tiles, TILE_PICKER_BACKGROUND_LEFT, (80, 256), (16, 16));
+    assets.register_sprite(tiles, TILE_PICKER_BACKGROUND_CENTER, (96, 256), (16, 16));
+    assets.register_sprite(tiles, TILE_PICKER_BACKGROUND_RIGHT, (112, 256), (16, 16));
+
     assets.register_sprite(tiles, EMPTY_TILE_A, (0, 256), (16, 16));
     assets.register_sprite(tiles, EMPTY_TILE_B, (16, 256), (16, 16));
     assets.register_sprite(tiles, PERMANENT_TILE, (0, 240), (16, 16));

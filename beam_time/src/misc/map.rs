@@ -18,7 +18,7 @@ impl<T: Default + Copy + PartialEq> Map<T> {
     }
 
     pub fn get_mut(&mut self, pos: Vector2<i32>) -> &mut T {
-        self.tiles.entry(pos).or_insert(T::default())
+        self.tiles.entry(pos).or_default()
     }
 
     pub fn set(&mut self, pos: Vector2<i32>, tile: T) {

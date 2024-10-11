@@ -1,7 +1,5 @@
-use std::collections::HashMap;
-
 use engine::{
-    drawable::{sprite::Sprite, text::Text},
+    drawable::sprite::Sprite,
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
