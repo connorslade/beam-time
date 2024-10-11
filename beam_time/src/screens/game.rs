@@ -1,7 +1,5 @@
 use engine::{
-    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
-    graphics_context::GraphicsContext,
-    screens::Screen,
+    exports::winit::keyboard::KeyCode, graphics_context::GraphicsContext, screens::Screen,
 };
 
 use crate::{
@@ -47,10 +45,9 @@ impl Screen<App> for GameScreen {
 
 impl Default for GameScreen {
     fn default() -> Self {
-        let size = Vector2::repeat(32);
         Self {
             shared: SharedState::default(),
-            board: Board::new(size),
+            board: Board::new(),
             beam: None,
             holding: None,
         }

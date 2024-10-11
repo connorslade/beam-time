@@ -17,6 +17,7 @@ pub enum BeamTile {
     },
     Beam {
         direction: Direction,
+        distance: u8,
     },
     CrossBeam {
         /// Directions of the two incoming beams.
@@ -92,7 +93,7 @@ impl BeamTile {
     /// Returns the directions of power output from a tile.
     pub fn power_direction(&self) -> Directions {
         match self {
-            Self::Beam { direction }
+            Self::Beam { direction, .. }
             | Self::Emitter {
                 direction,
                 active: true,
@@ -120,49 +121,41 @@ impl BeamTile {
         }
     }
 
-    // todo: don't return options
-    pub fn emitter_mut(&mut self) -> Option<&mut bool> {
-        match self {
-            Self::Emitter { active, .. } => Some(active),
-            _ => None,
-        }
-    }
-
-    pub fn mirror_mut(&mut self) -> Option<(bool, &mut bool, &mut [Option<Direction>; 2])> {
+    pub fn mirror_mut(&mut self) -> (bool, &mut bool, &mut [Option<Direction>; 2]) {
         match self {
             Self::Mirror {
                 direction,
                 original_direction,
                 powered,
                 ..
-            } => Some((*original_direction, direction, powered)),
-            _ => None,
+            } => (*original_direction, direction, powered),
+            _ => panic!(),
         }
     }
 
-    pub fn splitter_mut(&mut self) -> Option<&mut Option<Direction>> {
+    pub fn splitter_mut(&mut self) -> &mut Option<Direction> {
         match self {
-            Self::Splitter { powered, .. } => Some(powered),
-            _ => None,
+            Self::Splitter { powered, .. } => powered,
+            _ => panic!(),
         }
     }
 
-    pub fn delay_mut(&mut self) -> Option<(&mut Directions, &mut Directions)> {
+    pub fn delay_mut(&mut self) -> (&mut Directions, &mut Directions) {
         match self {
             Self::Delay {
                 powered,
                 last_powered,
-            } => Some((powered, last_powered)),
-            _ => None,
+            } => (powered, last_powered),
+            _ => panic!(),
         }
     }
 
-    pub fn directions_mut(&mut self) -> Option<&mut Directions> {
+    pub fn directions_mut(&mut self) -> &mut Directions {
         match self {
             Self::Galvo { powered, .. } | Self::Wall { powered } | Self::Detector { powered } => {
-                Some(powered)
+                powered
             }
-            _ => None,
+            _ => panic!(),
         }
     }
 }

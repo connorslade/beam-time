@@ -1,5 +1,7 @@
+use std::collections::HashMap;
+
 use engine::{
-    drawable::sprite::Sprite,
+    drawable::{sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
@@ -11,21 +13,22 @@ use crate::{
     app::App,
     assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE},
     consts::layer,
+    misc::map::Map,
 };
 
-use super::{beam::BeamState, tile::Tile, SharedState};
+use super::{
+    beam::{tile::BeamTile, BeamState},
+    tile::Tile,
+    SharedState,
+};
 
 pub struct Board {
-    pub tiles: Vec<Tile>,
-    pub size: Vector2<usize>,
+    pub tiles: Map<Tile>,
 }
 
 impl Board {
-    pub fn new(size: Vector2<usize>) -> Self {
-        Self {
-            tiles: vec![Tile::Empty; size.x * size.y],
-            size,
-        }
+    pub fn new() -> Self {
+        Self { tiles: Map::new() }
     }
 
     pub fn render(
@@ -36,35 +39,39 @@ impl Board {
         sim: &mut Option<BeamState>,
         holding: &mut Option<Tile>,
     ) {
+        let tile_counts = shared.tile_counts(ctx.size());
         let frame = state.frame();
-        for x in 0..self.size.x {
-            for y in 0..self.size.y {
-                let pos = shared.tile_pos(ctx, self.size, Vector2::new(x, y));
-                let index = y * self.size.x + x;
-                let tile = self.tiles[index];
+
+        for x in 0..tile_counts.x {
+            for y in 0..tile_counts.y {
+                let render_pos = shared.render_pos((x, y));
+                let pos = shared.tile_pos((x, y));
+
+                let tile = self.tiles.get(pos);
                 let is_empty = tile.is_empty();
 
-                let grid_tile = [EMPTY_TILE_A, EMPTY_TILE_B][(x + y) % 2];
+                let grid_tile =
+                    [EMPTY_TILE_A, EMPTY_TILE_B][(pos.x.abs() + pos.y.abs()) as usize % 2];
                 let grid = Sprite::new(grid_tile)
                     .scale(Vector2::repeat(shared.scale), Anchor::Center)
-                    .position(pos, Anchor::Center)
+                    .position(render_pos, Anchor::Center)
                     .z_index(layer::TILE_BACKGROUND);
 
                 if !is_empty {
                     let sprite = sim
                         .as_ref()
-                        .and_then(|x| x.board[index].base_sprite(frame))
+                        .and_then(|x| x.board.get(pos).base_sprite(frame))
                         .unwrap_or_else(|| Sprite::new(tile.asset()));
 
                     let sprite = sprite
                         .scale(Vector2::repeat(shared.scale), Anchor::Center)
-                        .position(pos, Anchor::Center);
+                        .position(render_pos, Anchor::Center);
 
                     if ctx.input.key_pressed(KeyCode::KeyA) && sprite.is_hovered(ctx) {
-                        if let Some(emitter) =
-                            sim.as_mut().and_then(|sim| sim.board[index].emitter_mut())
+                        if let Some(BeamTile::Emitter { active, .. }) =
+                            sim.as_mut().map(|sim| sim.board.get_mut(pos))
                         {
-                            *emitter ^= true;
+                            *active ^= true;
                         }
                     }
 
@@ -74,7 +81,7 @@ impl Board {
                         ctx.draw(
                             Sprite::new(PERMANENT_TILE)
                                 .scale(Vector2::repeat(4.0), Anchor::Center)
-                                .position(pos, Anchor::Center)
+                                .position(render_pos, Anchor::Center)
                                 .z_index(layer::TILE_BACKGROUND_OVERLAY),
                         );
                     }
@@ -88,27 +95,27 @@ impl Board {
                 if sim.is_none() && grid.is_hovered(ctx) {
                     if ctx.input.mouse_pressed(MouseButton::Left) {
                         if let Some(was_holding) = holding.take() {
-                            self.tiles[index] = was_holding;
+                            self.tiles.set(pos, was_holding);
                             if !is_empty {
                                 *holding = tile.is_some().then_some(tile);
                             }
                         } else if !is_empty && holding.is_none() {
                             *holding = tile.is_some().then_some(tile);
-                            self.tiles[index] = Tile::Empty;
+                            self.tiles.remove(pos);
                         }
                     }
 
                     if ctx.input.mouse_down(MouseButton::Right) {
-                        self.tiles[index] = Tile::Empty;
+                        self.tiles.remove(pos);
                     }
 
                     if holding.is_none() {
                         if ctx.input.key_pressed(KeyCode::KeyR) {
-                            self.tiles[index] = tile.rotate();
+                            self.tiles.set(pos, tile.rotate());
                         }
 
                         if ctx.input.key_pressed(KeyCode::KeyA) {
-                            self.tiles[index] = tile.activate();
+                            self.tiles.set(pos, tile.activate());
                         }
                     }
 
@@ -117,7 +124,7 @@ impl Board {
                     }
 
                     if ctx.input.key_down(KeyCode::KeyW) && holding.take().is_none() {
-                        self.tiles[index] = Tile::Empty;
+                        self.tiles.remove(pos);
                     }
                 }
 

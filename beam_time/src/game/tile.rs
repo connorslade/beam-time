@@ -6,16 +6,28 @@ use crate::{
     misc::direction::Direction,
 };
 
-#[derive(Copy, Clone)]
+#[derive(Default, Copy, Clone, PartialEq, Eq)]
 pub enum Tile {
+    #[default]
     Empty,
     Detector,
     Delay,
-    Emitter { rotation: Direction, active: bool },
-    Mirror { rotation: bool },
-    Splitter { rotation: bool },
-    Galvo { rotation: Direction },
-    Wall { permanent: bool },
+    Emitter {
+        rotation: Direction,
+        active: bool,
+    },
+    Mirror {
+        rotation: bool,
+    },
+    Splitter {
+        rotation: bool,
+    },
+    Galvo {
+        rotation: Direction,
+    },
+    Wall {
+        permanent: bool,
+    },
 }
 
 impl Tile {

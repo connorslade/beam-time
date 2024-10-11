@@ -34,16 +34,13 @@ impl Direction {
         }
     }
 
-    pub fn offset(&self, size: Vector2<usize>, pos: Vector2<usize>) -> Option<Vector2<usize>> {
-        let new_pos = match self {
-            Direction::Up => Vector2::new(pos.x as i32, pos.y as i32 - 1),
-            Direction::Right => Vector2::new(pos.x as i32 - 1, pos.y as i32),
-            Direction::Down => Vector2::new(pos.x as i32, pos.y as i32 + 1),
-            Direction::Left => Vector2::new(pos.x as i32 + 1, pos.y as i32),
-        };
-
-        (new_pos.x >= 0 && new_pos.y >= 0 && new_pos.x < size.x as i32 && new_pos.y < size.y as i32)
-            .then(|| new_pos.map(|x| x as usize))
+    pub fn offset(&self, pos: Vector2<i32>) -> Vector2<i32> {
+        match self {
+            Direction::Up => Vector2::new(pos.x, pos.y + 1),
+            Direction::Right => Vector2::new(pos.x + 1, pos.y),
+            Direction::Down => Vector2::new(pos.x, pos.y - 1),
+            Direction::Left => Vector2::new(pos.x - 1, pos.y),
+        }
     }
 
     pub fn opposite(self) -> Self {
