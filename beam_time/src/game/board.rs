@@ -42,8 +42,8 @@ impl Board {
 
         for x in 0..tile_counts.x {
             for y in 0..tile_counts.y {
-                let render_pos = shared.render_pos((x, y));
-                let pos = shared.tile_pos((x, y));
+                let render_pos = shared.render_pos(ctx, (x, y));
+                let pos = shared.tile_pos(ctx, (x, y));
 
                 let tile = self.tiles.get(pos);
                 let is_empty = tile.is_empty();

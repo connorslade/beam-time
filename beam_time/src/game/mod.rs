@@ -22,12 +22,16 @@ impl SharedState {
         }
     }
 
-    pub fn origin_tile(&self) -> Vector2<i32> {
-        (self.pan / (16.0 * self.scale)).map(|x| x.floor() as i32)
+    pub fn origin_tile<App>(&self, ctx: &GraphicsContext<App>) -> Vector2<i32> {
+        (self.pan / (16.0 * self.scale * ctx.scale_factor)).map(|x| x.floor() as i32)
     }
 
-    pub fn render_pos(&self, (x, y): (usize, usize)) -> Vector2<f32> {
-        let tile_size = 16.0 * self.scale;
+    pub fn render_pos<App>(
+        &self,
+        ctx: &GraphicsContext<App>,
+        (x, y): (usize, usize),
+    ) -> Vector2<f32> {
+        let tile_size = 16.0 * self.scale * ctx.scale_factor;
         let half_tile = Vector2::repeat(tile_size / 2.0);
 
         let pan_offset = (self.pan / tile_size).map(|x| x.fract()) * tile_size;
@@ -43,8 +47,12 @@ impl SharedState {
         (size / (16.0 * self.scale)).map(|x| 1 + x.ceil() as usize)
     }
 
-    pub fn tile_pos(&self, (x, y): (usize, usize)) -> Vector2<i32> {
-        Vector2::new(x as i32, y as i32) - self.origin_tile()
+    pub fn tile_pos<App>(
+        &self,
+        ctx: &GraphicsContext<App>,
+        (x, y): (usize, usize),
+    ) -> Vector2<i32> {
+        Vector2::new(x as i32, y as i32) - self.origin_tile(ctx)
     }
 }
 

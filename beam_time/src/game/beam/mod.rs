@@ -92,12 +92,12 @@ impl BeamState {
     pub fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App, shared: &SharedState) {
         let size = ctx.size();
 
-        let origin = shared.origin_tile();
+        let origin = shared.origin_tile(ctx);
         let frame = state.frame() as u32;
 
         for (pos, tile) in self.board.iter() {
             let pos = pos + origin;
-            let render_pos = shared.render_pos((pos.x as usize, pos.y as usize));
+            let render_pos = shared.render_pos(ctx, (pos.x as usize, pos.y as usize));
 
             if render_pos.x < 0.0
                 || render_pos.y < 0.0
