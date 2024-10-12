@@ -32,4 +32,4 @@
   - [x] Use hash map for tile storage
   - [x] Destroy beams after traveling too far
 - [ ] Cleanup coordinate systems
-- [ ] Zoom around the cursor position
+- [x] Zoom around the cursor position

@@ -15,8 +15,15 @@ pub struct SharedState {
 
 impl SharedState {
     pub fn update<App>(&mut self, ctx: &GraphicsContext<App>) {
+        let old_scale = self.scale;
         self.scale_goal = (self.scale_goal + ctx.input.scroll_delta).max(1.0);
         self.scale += (self.scale_goal - self.scale) * 10.0 * ctx.delta_time;
+
+        // Scale around the curser position, not the world origin. Don't ask how
+        // long this took me to get right...
+        let scale_center = ctx.input.mouse;
+        self.pan += (scale_center - self.pan) * (old_scale - self.scale) / old_scale;
+
         if ctx.input.mouse_down(MouseButton::Middle) {
             self.pan += ctx.input.mouse_delta;
         }
