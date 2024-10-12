@@ -1,5 +1,8 @@
 use engine::{
-    exports::{nalgebra::Vector2, winit::event::MouseButton},
+    exports::{
+        nalgebra::Vector2,
+        winit::{event::MouseButton, keyboard::KeyCode},
+    },
     graphics_context::GraphicsContext,
 };
 
@@ -11,22 +14,42 @@ pub struct SharedState {
     pub pan: Vector2<f32>,
     pub scale: f32,
     scale_goal: f32,
+    pan_goal: Vector2<f32>,
 }
+
+const PAN_KEYS: [(KeyCode, Vector2<f32>); 4] = [
+    (KeyCode::KeyW, Vector2::new(0.0, -1.0)),
+    (KeyCode::KeyA, Vector2::new(1.0, 0.0)),
+    (KeyCode::KeyS, Vector2::new(0.0, 1.0)),
+    (KeyCode::KeyD, Vector2::new(-1.0, 0.0)),
+];
 
 impl SharedState {
     pub fn update<App>(&mut self, ctx: &GraphicsContext<App>) {
         let old_scale = self.scale;
-        self.scale_goal = (self.scale_goal + ctx.input.scroll_delta).max(1.0);
-        self.scale += (self.scale_goal - self.scale) * 10.0 * ctx.delta_time;
+        self.scale_goal = (self.scale_goal + ctx.input.scroll_delta * 0.1).max(1.0);
+
+        let lerp_speed = 10.0 * ctx.delta_time;
+        self.scale += (self.scale_goal - self.scale) * lerp_speed;
+        self.pan += (self.pan_goal - self.pan) * lerp_speed;
+
+        let mut delta_pan = Vector2::zeros();
 
         // Scale around the curser position, not the world origin. Don't ask how
         // long this took me to get right...
         let scale_center = ctx.input.mouse;
-        self.pan += (scale_center - self.pan) * (old_scale - self.scale) / old_scale;
+        delta_pan += (scale_center - self.pan) * (old_scale - self.scale) / old_scale;
 
-        if ctx.input.mouse_down(MouseButton::Middle) {
-            self.pan += ctx.input.mouse_delta;
+        delta_pan += ctx.input.mouse_down(MouseButton::Middle) as u8 as f32 * ctx.input.mouse_delta;
+
+        for (key, dir) in PAN_KEYS.iter() {
+            if ctx.input.key_down(*key) {
+                self.pan_goal += *dir * 500.0 * ctx.delta_time;
+            }
         }
+
+        self.pan_goal += delta_pan;
+        self.pan += delta_pan;
     }
 
     pub fn origin_tile<App>(&self, ctx: &GraphicsContext<App>) -> Vector2<i32> {
@@ -67,8 +90,10 @@ impl Default for SharedState {
     fn default() -> Self {
         Self {
             pan: Vector2::zeros(),
-            scale_goal: 4.0,
+            pan_goal: Vector2::zeros(),
+
             scale: 4.0,
+            scale_goal: 4.0,
         }
     }
 }

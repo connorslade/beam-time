@@ -101,7 +101,7 @@ impl InputManager {
                     MouseScrollDelta::PixelDelta(pos) => pos.y as f32,
                 };
             }
-            WindowEvent::KeyboardInput { event, .. } => {
+            WindowEvent::KeyboardInput { event, .. } if !event.repeat => {
                 self.key_actions.push(event.clone());
 
                 match event.state {
