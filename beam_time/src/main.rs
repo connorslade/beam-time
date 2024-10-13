@@ -20,10 +20,17 @@ mod util;
 
 use app::App;
 use consts::DEFAULT_SIZE;
+use env_logger::WriteStyle;
+use log::LevelFilter;
 use screens::{overlay::debug::DebugOverlay, title::TitleScreen};
 use util::include_atlas;
 
 fn main() -> Result<()> {
+    env_logger::builder()
+        .filter(Some("beam_time"), LevelFilter::Trace)
+        .write_style(WriteStyle::Always)
+        .init();
+
     let icon = Icon::from_rgba(include_atlas!("icon.png").into_vec(), 30, 30)?;
     Application::new(ApplicationArgs {
         window_attributes: WindowAttributes::default()

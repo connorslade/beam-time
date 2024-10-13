@@ -9,6 +9,7 @@ use engine::{
     },
     graphics_context::{Anchor, GraphicsContext},
 };
+use log::info;
 
 use crate::{
     app::App,
@@ -30,6 +31,7 @@ pub struct Board {
 
 impl Board {
     pub fn load(path: &PathBuf) -> Result<Self> {
+        info!("Loading board from {path:#?}");
         let raw = fs::read(path)?;
         Ok(Board {
             tiles: bincode::deserialize(&raw)?,
@@ -37,6 +39,7 @@ impl Board {
     }
 
     pub fn save(&self, path: &PathBuf) -> Result<()> {
+        info!("Saving board to {path:#?}");
         let raw = bincode::serialize(&self.tiles)?;
         fs::write(path, raw)?;
         Ok(())

@@ -122,7 +122,9 @@ impl BeamState {
 
                     let desired_direction =
                         *original_direction ^ powered.any_but(direction.opposite());
-                    (*mirror_direction != desired_direction).then(|| *powered_sides = [None; 2]);
+                    if *mirror_direction != desired_direction {
+                        powered_sides.swap(0, 1);
+                    }
                     *mirror_direction = desired_direction;
                 }
                 BeamTile::Delay { last_powered, .. } => {
