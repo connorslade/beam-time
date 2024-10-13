@@ -1,4 +1,5 @@
 use engine::assets::SpriteRef;
+use serde::{Deserialize, Serialize};
 
 use crate::{
     assets::{TILE_DELAY, TILE_DETECTOR, TILE_WALL},
@@ -6,7 +7,7 @@ use crate::{
     misc::direction::Direction,
 };
 
-#[derive(Default, Copy, Clone, PartialEq, Eq)]
+#[derive(Default, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Tile {
     #[default]
     Empty,

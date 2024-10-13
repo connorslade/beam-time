@@ -11,7 +11,7 @@ use crate::{
     consts::ACCENT_COLOR,
 };
 
-type ClickHandler<App> = Box<dyn FnMut(&mut GraphicsContext<App>)>;
+type ClickHandler<App> = Box<dyn FnOnce(&mut GraphicsContext<App>)>;
 
 pub struct Button<'a, App> {
     asset: SpriteRef,
@@ -57,7 +57,7 @@ impl<'a, App> Button<'a, App> {
         self
     }
 
-    pub fn on_click(mut self, on_click: impl FnMut(&mut GraphicsContext<App>) + 'static) -> Self {
+    pub fn on_click(mut self, on_click: impl FnOnce(&mut GraphicsContext<App>) + 'static) -> Self {
         self.on_click = Box::new(on_click);
         self
     }
@@ -75,7 +75,7 @@ impl ButtonState {
 }
 
 impl<'a, App> Drawable<App> for Button<'a, App> {
-    fn draw(mut self, ctx: &mut GraphicsContext<App>) {
+    fn draw(self, ctx: &mut GraphicsContext<App>) {
         let color = self.color.lerp(ACCENT_COLOR, self.state.hover_time / 0.1);
         let scale =
             self.scale + Vector2::repeat(self.state.hover_time / 2.0).component_mul(&self.scale);

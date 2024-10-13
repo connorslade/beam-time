@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use engine::{
     exports::winit::keyboard::KeyCode, graphics_context::GraphicsContext, screens::Screen,
 };
@@ -10,6 +12,8 @@ use crate::{
 };
 
 pub struct GameScreen {
+    save_file: PathBuf,
+
     shared: SharedState,
     board: Board,
     beam: Option<BeamState>,
@@ -42,17 +46,23 @@ impl Screen<App> for GameScreen {
         self.tile_picker
             .render(ctx, &self.shared, self.beam.is_some(), &mut self.holding);
     }
+
+    fn on_destroy(&mut self, _state: &mut App) {
+        self.board.save(&self.save_file).unwrap();
+    }
 }
 
-impl Default for GameScreen {
-    fn default() -> Self {
+impl GameScreen {
+    pub fn new(save_file: PathBuf) -> Self {
         Self {
             shared: SharedState::default(),
-            board: Board::new(),
+            board: Board::load(&save_file).unwrap_or_default(),
             beam: None,
 
             tile_picker: TilePicker::default(),
             holding: None,
+
+            save_file,
         }
     }
 }

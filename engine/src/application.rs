@@ -209,6 +209,15 @@ impl<'a, App> ApplicationHandler for Application<'a, App> {
     }
 }
 
+impl<'a, App> Drop for Application<'a, App> {
+    fn drop(&mut self) {
+        let Some(state) = self.state.as_mut() else {
+            return;
+        };
+        state.screens.destroy(&mut state.app);
+    }
+}
+
 impl<'a, App> Application<'a, App> {
     pub fn run(mut self) -> Result<()> {
         let event_loop_builder = EventLoopBuilder::default().build()?;

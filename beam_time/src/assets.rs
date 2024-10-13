@@ -24,7 +24,7 @@ define_refs! {
         COPYRIGHT,
 
         BACK_BUTTON,
-        START_BUTTON,
+        SANDBOX_BUTTON,
         OPTIONS_BUTTON,
         ABOUT_BUTTON,
 
@@ -83,8 +83,8 @@ pub fn init(assets: &mut AssetConstructor) {
     let interface = assets.register_atlas(include_atlas!("interface.png"));
     assets.register_sprite(interface, TITLE, (0, 0), (81, 20));
     assets.register_sprite(interface, COPYRIGHT, (0, 20), (30, 8));
-    assets.register_sprite(interface, BACK_BUTTON, (58, 32), (26, 14));
-    assets.register_sprite(interface, START_BUTTON, (0, 32), (57, 14));
+    assets.register_sprite(interface, BACK_BUTTON, (43, 32), (26, 14));
+    assets.register_sprite(interface, SANDBOX_BUTTON, (0, 32), (42, 14));
     assets.register_sprite(interface, OPTIONS_BUTTON, (0, 48), (39, 14));
     assets.register_sprite(interface, ABOUT_BUTTON, (40, 48), (31, 14));
 

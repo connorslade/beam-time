@@ -8,7 +8,7 @@ use engine::{
 };
 
 use crate::{
-    assets::{ABOUT_BUTTON, COPYRIGHT, OPTIONS_BUTTON, START_BUTTON, TITLE},
+    assets::{ABOUT_BUTTON, COPYRIGHT, OPTIONS_BUTTON, SANDBOX_BUTTON, TITLE},
     consts::BACKGROUND_COLOR,
     ui::{
         button::{Button, ButtonState},
@@ -49,11 +49,12 @@ impl Screen<App> for TitleScreen {
         );
 
         // Buttons
+        let save_file = state.data_dir.join("sandbox.bin");
         ctx.draw(
-            Button::new(START_BUTTON, &mut self.start_button)
+            Button::new(SANDBOX_BUTTON, &mut self.start_button)
                 .pos(ctx.center(), Anchor::Center)
                 .scale(Vector2::repeat(4.0))
-                .on_click(|ctx| ctx.push_screen(GameScreen::default())),
+                .on_click(|ctx| ctx.push_screen(GameScreen::new(save_file))),
         );
 
         ctx.draw(

@@ -1,3 +1,6 @@
+use std::{fs, path::PathBuf};
+
+use anyhow::Result;
 use engine::{
     drawable::sprite::Sprite,
     exports::{
@@ -20,13 +23,23 @@ use super::{
     SharedState,
 };
 
+#[derive(Default)]
 pub struct Board {
     pub tiles: Map<Tile>,
 }
 
 impl Board {
-    pub fn new() -> Self {
-        Self { tiles: Map::new() }
+    pub fn load(path: &PathBuf) -> Result<Self> {
+        let raw = fs::read(path)?;
+        Ok(Board {
+            tiles: bincode::deserialize(&raw)?,
+        })
+    }
+
+    pub fn save(&self, path: &PathBuf) -> Result<()> {
+        let raw = bincode::serialize(&self.tiles)?;
+        fs::write(path, raw)?;
+        Ok(())
     }
 
     pub fn render(
