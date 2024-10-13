@@ -130,6 +130,7 @@ impl<'a, App> ApplicationHandler for Application<'a, App> {
             return;
         }
 
+        let old_size = state.input.window_size;
         state.input.on_window_event(&event);
         match event {
             WindowEvent::CloseRequested => event_loop.exit(),
@@ -198,9 +199,10 @@ impl<'a, App> ApplicationHandler for Application<'a, App> {
                 gcx.window.request_redraw();
             }
             WindowEvent::Resized(size) => {
+                let new_size = Vector2::new(size.width as f32, size.height as f32);
                 state
                     .screens
-                    .on_resize(Vector2::new(size.width as f32, size.height as f32), app);
+                    .on_resize(old_size.map(|x| x as f32), new_size, app);
                 state.depth_buffer = create_depth_buffer(&state.graphics.device, size);
                 self.resize_surface();
             }

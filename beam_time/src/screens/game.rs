@@ -1,7 +1,9 @@
 use std::path::PathBuf;
 
 use engine::{
-    exports::winit::keyboard::KeyCode, graphics_context::GraphicsContext, screens::Screen,
+    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
+    graphics_context::GraphicsContext,
+    screens::Screen,
 };
 
 use crate::{
@@ -49,6 +51,10 @@ impl Screen<App> for GameScreen {
 
     fn on_destroy(&mut self, _state: &mut App) {
         self.board.save(&self.save_file).unwrap();
+    }
+
+    fn on_resize(&mut self, _state: &mut App, old_size: Vector2<f32>, new_size: Vector2<f32>) {
+        self.shared.on_resize(old_size, new_size);
     }
 }
 

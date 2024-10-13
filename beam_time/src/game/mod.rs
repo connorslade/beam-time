@@ -44,15 +44,23 @@ impl SharedState {
         delta_pan += (scale_center - self.pan) * (old_scale - self.scale) / old_scale;
 
         delta_pan += ctx.input.mouse_down(MouseButton::Middle) as u8 as f32 * ctx.input.mouse_delta;
+        self.delta_pan(delta_pan);
 
         for (key, dir) in PAN_KEYS.iter() {
             if ctx.input.key_down(*key) {
                 self.pan_goal += *dir * state.config.movement_speed * ctx.delta_time;
             }
         }
+    }
 
-        self.pan_goal += delta_pan;
-        self.pan += delta_pan;
+    pub fn on_resize(&mut self, old_size: Vector2<f32>, new_size: Vector2<f32>) {
+        let delta_size = new_size - old_size;
+        self.delta_pan(delta_size / 2.0);
+    }
+
+    fn delta_pan(&mut self, delta: Vector2<f32>) {
+        self.pan += delta;
+        self.pan_goal += delta;
     }
 
     pub fn origin_tile<App>(&self, ctx: &GraphicsContext<App>) -> Vector2<i32> {

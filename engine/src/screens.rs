@@ -8,7 +8,7 @@ pub trait Screen<App> {
     fn post_render(&mut self, _state: &mut App, _ctx: &mut GraphicsContext<App>) {}
 
     fn on_init(&mut self, _state: &mut App) {}
-    fn on_resize(&mut self, _state: &mut App, _size: Vector2<f32>) {}
+    fn on_resize(&mut self, _state: &mut App, _old_size: Vector2<f32>, _new_size: Vector2<f32>) {}
     fn on_destroy(&mut self, _state: &mut App) {}
 }
 
@@ -48,9 +48,10 @@ impl<App> Screens<App> {
             .for_each(|x| x.post_render(state, ctx));
     }
 
-    pub fn on_resize(&mut self, size: Vector2<f32>, state: &mut App) {
-        self.top().on_resize(state, size);
-        self.inner.iter_mut().for_each(|x| x.on_resize(state, size));
+    pub fn on_resize(&mut self, old_size: Vector2<f32>, new_size: Vector2<f32>, state: &mut App) {
+        self.inner
+            .iter_mut()
+            .for_each(|x| x.on_resize(state, old_size, new_size));
     }
 
     pub fn destroy(&mut self, state: &mut App) {

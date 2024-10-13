@@ -84,7 +84,7 @@ impl Screen<App> for TitleScreen {
         self.options_button.reset();
     }
 
-    fn on_resize(&mut self, state: &mut App, _size: Vector2<f32>) {
+    fn on_resize(&mut self, state: &mut App, _old_size: Vector2<f32>, _size: Vector2<f32>) {
         state.waterfall.reset();
     }
 }
