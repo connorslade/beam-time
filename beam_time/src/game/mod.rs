@@ -48,10 +48,13 @@ impl SharedState {
             delta_pan += ctx.input.mouse_delta;
         }
 
-        for (key, dir) in PAN_KEYS.iter() {
-            if ctx.input.key_down(*key) {
-                self.pan_goal += *dir * state.config.movement_speed * ctx.delta_time;
-            }
+        let direction = PAN_KEYS
+            .iter()
+            .filter(|(key, _)| ctx.input.key_down(*key))
+            .map(|(_, dir)| *dir)
+            .sum::<Vector2<_>>();
+        if direction.magnitude_squared() != 0.0 {
+            self.pan_goal += direction.normalize() * state.config.movement_speed * ctx.delta_time;
         }
 
         self.delta_pan(delta_pan);

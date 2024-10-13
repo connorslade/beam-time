@@ -1,4 +1,7 @@
-use std::path::PathBuf;
+use std::{
+    path::PathBuf,
+    time::{Duration, Instant},
+};
 
 use engine::{
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
@@ -22,6 +25,8 @@ pub struct GameScreen {
 
     tile_picker: TilePicker,
     holding: Option<Tile>,
+    running: bool,
+    last_tick: Instant,
 }
 
 impl Screen<App> for GameScreen {
@@ -29,10 +34,19 @@ impl Screen<App> for GameScreen {
         self.shared.update(ctx, state);
 
         let space_pressed = ctx.input.key_pressed(KeyCode::Space);
+        let play_pressed = ctx.input.key_pressed(KeyCode::KeyP);
+
         if let Some(beam) = &mut self.beam {
-            space_pressed.then(|| beam.tick());
+            if !self.running && space_pressed
+                || self.running && self.last_tick.elapsed() >= Duration::from_millis(100)
+            {
+                self.last_tick = Instant::now();
+                beam.tick();
+            }
+
             beam.render(ctx, state, &self.shared);
-        } else if space_pressed {
+        } else if space_pressed || play_pressed {
+            self.running = play_pressed;
             let mut beam = BeamState::new(&self.board);
             beam.tick();
             self.beam = Some(beam);
@@ -67,6 +81,8 @@ impl GameScreen {
 
             tile_picker: TilePicker::default(),
             holding: None,
+            running: false,
+            last_tick: Instant::now(),
 
             save_file,
         }
