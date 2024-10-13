@@ -1,7 +1,7 @@
 use engine::{
     exports::{
         nalgebra::Vector2,
-        winit::{event::MouseButton, keyboard::KeyCode},
+        winit::{event::MouseButton, keyboard::KeyCode, window::CursorIcon},
     },
     graphics_context::GraphicsContext,
 };
@@ -27,7 +27,7 @@ const PAN_KEYS: [(KeyCode, Vector2<f32>); 4] = [
 ];
 
 impl SharedState {
-    pub fn update(&mut self, ctx: &GraphicsContext<App>, state: &App) {
+    pub fn update(&mut self, ctx: &mut GraphicsContext<App>, state: &App) {
         let old_scale = self.scale;
         self.scale_goal =
             (self.scale_goal + ctx.input.scroll_delta * state.config.zoom_sensitivity).max(1.0);
@@ -43,14 +43,18 @@ impl SharedState {
         let scale_center = ctx.input.mouse;
         delta_pan += (scale_center - self.pan) * (old_scale - self.scale) / old_scale;
 
-        delta_pan += ctx.input.mouse_down(MouseButton::Middle) as u8 as f32 * ctx.input.mouse_delta;
-        self.delta_pan(delta_pan);
+        if ctx.input.mouse_down(MouseButton::Middle) {
+            ctx.set_cursor(CursorIcon::Grabbing);
+            delta_pan += ctx.input.mouse_delta;
+        }
 
         for (key, dir) in PAN_KEYS.iter() {
             if ctx.input.key_down(*key) {
                 self.pan_goal += *dir * state.config.movement_speed * ctx.delta_time;
             }
         }
+
+        self.delta_pan(delta_pan);
     }
 
     pub fn on_resize(&mut self, old_size: Vector2<f32>, new_size: Vector2<f32>) {

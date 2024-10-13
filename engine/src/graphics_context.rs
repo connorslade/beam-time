@@ -2,6 +2,7 @@ use std::rc::Rc;
 
 use nalgebra::Vector2;
 use wgpu::Color;
+use winit::window::Cursor;
 
 use crate::{
     assets::{manager::AssetManager, SpriteRef},
@@ -25,6 +26,8 @@ pub struct GraphicsContext<'a, App> {
     pub(crate) next_screen: Vec<Box<dyn Screen<App>>>,
     /// Screens to close for next_frame
     pub(crate) close_screen: usize,
+    /// The cursor to use for the next frame
+    pub(crate) cursor: Cursor,
 
     pub input: &'a InputManager,
     /// Current window scale_factor
@@ -69,6 +72,7 @@ impl<'a, App> GraphicsContext<'a, App> {
             sprites: Vec::new(),
             next_screen: Vec::new(),
             close_screen: 0,
+            cursor: Cursor::default(),
             input,
             scale_factor,
             delta_time,
@@ -105,6 +109,10 @@ impl<'a, App> GraphicsContext<'a, App> {
 
     pub fn draw(&mut self, drawable: impl Drawable<App>) {
         drawable.draw(self);
+    }
+
+    pub fn set_cursor(&mut self, cursor: impl Into<Cursor>) {
+        self.cursor = cursor.into();
     }
 }
 

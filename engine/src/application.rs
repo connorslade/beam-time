@@ -14,7 +14,7 @@ use winit::{
     dpi::PhysicalSize,
     event::WindowEvent,
     event_loop::{ActiveEventLoop, ControlFlow, EventLoopBuilder},
-    window::{Window, WindowAttributes, WindowId},
+    window::{Cursor, Window, WindowAttributes, WindowId},
 };
 
 use crate::{
@@ -43,12 +43,14 @@ pub struct State<'a, App> {
     // Misc
     pub graphics: RenderContext<'a>,
     pub input: InputManager,
-    pub last_frame: Instant,
     pub app: App,
 
     pub assets: Rc<AssetManager>,
     pub audio: AudioManager,
     pub screens: Screens<App>,
+
+    pub last_frame: Instant,
+    pub last_cursor: Cursor,
 
     // Rendering stuff (pipelines & buffers)
     pub sprite_renderer: SpriteRenderPipeline,
@@ -113,6 +115,7 @@ impl<'a, App> ApplicationHandler for Application<'a, App> {
             },
             screens: Screens::new((self.args.screen_constructor)()),
             last_frame: Instant::now(),
+            last_cursor: Cursor::default(),
             app: (self.args.app_constructor)(),
         });
     }
@@ -151,6 +154,11 @@ impl<'a, App> ApplicationHandler for Application<'a, App> {
                 state.screens.render(&mut ctx, app);
                 state.screens.pop_n(ctx.close_screen, app);
                 state.screens.extend(mem::take(&mut ctx.next_screen), app);
+
+                if ctx.cursor != state.last_cursor {
+                    gcx.window.set_cursor(ctx.cursor.clone());
+                    state.last_cursor = mem::take(&mut ctx.cursor);
+                }
 
                 state.sprite_renderer.prepare(&gcx.device, &gcx.queue, &ctx);
 
