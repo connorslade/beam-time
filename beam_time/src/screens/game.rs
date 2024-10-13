@@ -20,7 +20,7 @@ pub struct GameScreen {
 
 impl Screen<App> for GameScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
-        self.shared.update(ctx);
+        self.shared.update(ctx, state);
 
         let space_pressed = ctx.input.key_pressed(KeyCode::Space);
         if let Some(beam) = &mut self.beam {

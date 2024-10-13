@@ -6,6 +6,8 @@ use engine::{
     graphics_context::GraphicsContext,
 };
 
+use crate::app::App;
+
 pub mod beam;
 pub mod board;
 pub mod tile;
@@ -25,9 +27,10 @@ const PAN_KEYS: [(KeyCode, Vector2<f32>); 4] = [
 ];
 
 impl SharedState {
-    pub fn update<App>(&mut self, ctx: &GraphicsContext<App>) {
+    pub fn update(&mut self, ctx: &GraphicsContext<App>, state: &App) {
         let old_scale = self.scale;
-        self.scale_goal = (self.scale_goal + ctx.input.scroll_delta).max(1.0);
+        self.scale_goal =
+            (self.scale_goal + ctx.input.scroll_delta * state.config.zoom_sensitivity).max(1.0);
 
         let lerp_speed = 10.0 * ctx.delta_time;
         self.scale += (self.scale_goal - self.scale) * lerp_speed;
@@ -44,7 +47,7 @@ impl SharedState {
 
         for (key, dir) in PAN_KEYS.iter() {
             if ctx.input.key_down(*key) {
-                self.pan_goal += *dir * 500.0 * ctx.delta_time;
+                self.pan_goal += *dir * state.config.movement_speed * ctx.delta_time;
             }
         }
 

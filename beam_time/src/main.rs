@@ -30,7 +30,7 @@ fn main() -> Result<()> {
             .with_title("Beam Time")
             .with_window_icon(Some(icon))
             .with_inner_size(PhysicalSize::new(DEFAULT_SIZE.0, DEFAULT_SIZE.1)),
-        app_constructor: Box::new(App::default),
+        app_constructor: Box::new(App::new),
         screen_constructor: Box::new(|| {
             vec![
                 Box::new(DebugOverlay::default()),

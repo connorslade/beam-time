@@ -8,6 +8,8 @@ use crate::assets::{
 };
 
 pub const DEFAULT_SIZE: (u32, u32) = (800, 600);
+pub const CONFIG_FILE: &str = "config.toml";
+
 pub const BACKGROUND_COLOR: Rgb<f32> = Rgb::new(0.235, 0.235, 0.235);
 pub const FOREGROUND_COLOR: Rgb<f32> = Rgb::new(0.859, 0.89, 0.839);
 pub const ACCENT_COLOR: Rgb<f32> = Rgb::new(0.812, 0.306, 0.306);
