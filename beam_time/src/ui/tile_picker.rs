@@ -97,7 +97,7 @@ impl TilePicker {
                 *holding = holding.rotate();
             }
 
-            if ctx.input.key_pressed(KeyCode::KeyA) {
+            if ctx.input.key_pressed(KeyCode::KeyE) {
                 *holding = holding.activate();
             }
 

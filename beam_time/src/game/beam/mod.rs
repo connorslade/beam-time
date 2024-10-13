@@ -90,7 +90,8 @@ impl BeamState {
 
     /// Renders the beam over the board.
     pub fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App, shared: &SharedState) {
-        let size = ctx.size();
+        let half_tile = Vector2::repeat(ctx.scale_factor * shared.scale * 16.0 / 2.0);
+        let size = ctx.size() + half_tile;
 
         let origin = shared.origin_tile(ctx);
         let frame = state.frame() as u32;
@@ -99,8 +100,8 @@ impl BeamState {
             let pos = pos + origin;
             let render_pos = shared.render_pos(ctx, (pos.x as usize, pos.y as usize));
 
-            if render_pos.x < 0.0
-                || render_pos.y < 0.0
+            if render_pos.x < -half_tile.x
+                || render_pos.y < -half_tile.y
                 || render_pos.x > size.x
                 || render_pos.y > size.y
             {

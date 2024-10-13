@@ -65,7 +65,7 @@ impl Board {
                         .scale(Vector2::repeat(shared.scale), Anchor::Center)
                         .position(render_pos, Anchor::Center);
 
-                    if ctx.input.key_pressed(KeyCode::KeyA) && sprite.is_hovered(ctx) {
+                    if ctx.input.key_pressed(KeyCode::KeyE) && sprite.is_hovered(ctx) {
                         if let Some(BeamTile::Emitter { active, .. }) =
                             sim.as_mut().map(|sim| sim.board.get_mut(pos))
                         {
@@ -112,17 +112,13 @@ impl Board {
                             self.tiles.set(pos, tile.rotate());
                         }
 
-                        if ctx.input.key_pressed(KeyCode::KeyA) {
+                        if ctx.input.key_pressed(KeyCode::KeyE) {
                             self.tiles.set(pos, tile.activate());
                         }
                     }
 
                     if !is_empty && ctx.input.key_pressed(KeyCode::KeyQ) {
                         holding.replace(tile);
-                    }
-
-                    if ctx.input.key_down(KeyCode::KeyW) && holding.take().is_none() {
-                        self.tiles.remove(pos);
                     }
                 }
 

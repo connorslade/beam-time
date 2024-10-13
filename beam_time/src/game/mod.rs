@@ -27,7 +27,7 @@ const PAN_KEYS: [(KeyCode, Vector2<f32>); 4] = [
 impl SharedState {
     pub fn update<App>(&mut self, ctx: &GraphicsContext<App>) {
         let old_scale = self.scale;
-        self.scale_goal = (self.scale_goal + ctx.input.scroll_delta * 0.1).max(1.0);
+        self.scale_goal = (self.scale_goal + ctx.input.scroll_delta).max(1.0);
 
         let lerp_speed = 10.0 * ctx.delta_time;
         self.scale += (self.scale_goal - self.scale) * lerp_speed;
