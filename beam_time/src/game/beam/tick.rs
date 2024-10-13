@@ -123,9 +123,22 @@ impl BeamState {
                     let desired_direction =
                         *original_direction ^ powered.any_but(direction.opposite());
                     if *mirror_direction != desired_direction {
-                        powered_sides.swap(0, 1);
+                        *mirror_direction = desired_direction;
+
+                        // false => horizontal, true => vertical
+                        let top_direction =
+                            matches!(powered_sides[0], Some(Direction::Up | Direction::Down));
+                        let bottom_direction =
+                            matches!(powered_sides[1], Some(Direction::Up | Direction::Down));
+
+                        if top_direction && !bottom_direction {
+                            powered_sides[1] = None;
+                        } else if bottom_direction && !top_direction {
+                            powered_sides[0] = None;
+                        } else if !top_direction || !bottom_direction {
+                            powered_sides.swap(0, 1);
+                        }
                     }
-                    *mirror_direction = desired_direction;
                 }
                 BeamTile::Delay { last_powered, .. } => {
                     for dir in last_powered.iter() {

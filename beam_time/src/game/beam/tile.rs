@@ -35,8 +35,12 @@ pub enum BeamTile {
         last_powered: Directions,
     },
     Mirror {
+        /// The direction the mirror is facing.
+        /// `0 => /`, `1 => \`
         direction: bool,
+        /// The direction the mirror was placed in.
         original_direction: bool,
+        /// Which direction the beam is coming from for each side.
         powered: [Option<Direction>; 2],
     },
     Splitter {

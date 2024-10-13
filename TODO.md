@@ -23,8 +23,8 @@
 - [x] Split tile_map and tile_picker into ui/game components
 - [x] Implement beam logic
 - [ ] Figure out how to apply custom shader effects?
-- [ ] Fix galvo input logic
-- [ ] Dont overwrite galvo mirror state when rotating
+- [x] Fix galvo input logic
+- [x] Dont overwrite galvo mirror state when rotating
 - [ ] Fix delay gate rendering z order
 - [x] Create z_order consts for layers
 - [x] Actual Infante Boards
