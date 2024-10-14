@@ -29,8 +29,9 @@ const PAN_KEYS: [(KeyCode, Vector2<f32>); 4] = [
 impl SharedState {
     pub fn update(&mut self, ctx: &mut GraphicsContext<App>, state: &App) {
         let old_scale = self.scale;
-        self.scale_goal =
-            (self.scale_goal + ctx.input.scroll_delta * state.config.zoom_sensitivity).max(1.0);
+        self.scale_goal = (self.scale_goal
+            + ctx.input.scroll_delta * state.config.zoom_sensitivity)
+            .clamp(1.0, 10.0);
 
         let lerp_speed = 10.0 * ctx.delta_time;
         self.scale += (self.scale_goal - self.scale) * lerp_speed;
@@ -54,7 +55,8 @@ impl SharedState {
             .map(|(_, dir)| *dir)
             .sum::<Vector2<_>>();
         if direction.magnitude_squared() != 0.0 {
-            self.pan_goal += direction.normalize() * state.config.movement_speed * ctx.delta_time;
+            self.pan_goal +=
+                direction.normalize() * self.scale * state.config.movement_speed * ctx.delta_time;
         }
 
         self.delta_pan(delta_pan);
