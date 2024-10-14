@@ -33,3 +33,9 @@
   - [x] Destroy beams after traveling too far
 - [ ] Cleanup coordinate systems
 - [x] Zoom around the cursor position
+- [x] Sandbox save selection screen
+- [ ] Allow managing (creating, deleting) saves
+- [ ] Saves should have a header at the start
+  - Save name
+  - Playtime
+  - Last open date

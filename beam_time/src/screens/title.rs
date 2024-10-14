@@ -17,7 +17,7 @@ use crate::{
     App,
 };
 
-use super::{about::AboutScreen, game::GameScreen, options::OptionsScreen};
+use super::{about::AboutScreen, options::OptionsScreen, sandbox::SandboxScreen};
 
 pub struct TitleScreen {
     start_time: Instant,
@@ -49,12 +49,11 @@ impl Screen<App> for TitleScreen {
         );
 
         // Buttons
-        let save_file = state.data_dir.join("sandbox.bin");
         ctx.draw(
             Button::new(SANDBOX_BUTTON, &mut self.start_button)
                 .pos(ctx.center(), Anchor::Center)
                 .scale(Vector2::repeat(4.0))
-                .on_click(|ctx| ctx.push_screen(GameScreen::new(save_file))),
+                .on_click(|ctx| ctx.push_screen(SandboxScreen::default())),
         );
 
         ctx.draw(
