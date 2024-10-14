@@ -1,5 +1,6 @@
-use std::path::PathBuf;
+use std::{fs::File, path::PathBuf};
 
+use anyhow::Result;
 use engine::{
     color::Rgb,
     drawable::text::Text,
@@ -7,17 +8,20 @@ use engine::{
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
 };
+use log::warn;
 
 use crate::{
     assets::UNDEAD_FONT,
+    game::board::BoardMeta,
     screens::game::GameScreen,
     ui::{button::ButtonState, misc::titled_screen},
+    util::in_bounds,
     App,
 };
 
 #[derive(Default)]
 pub struct SandboxScreen {
-    worlds: Vec<PathBuf>,
+    worlds: Vec<(PathBuf, BoardMeta)>,
     back_button: ButtonState,
 }
 
@@ -39,12 +43,11 @@ impl Screen<App> for SandboxScreen {
             let line_spacing = line_height + (font_desc.leading * 2.0) * SCALE;
             let total_height = line_spacing * self.worlds.len() as f32;
 
-            for (i, world) in self.worlds.iter().enumerate() {
-                let name = world.file_name().unwrap().to_str().unwrap();
+            for (i, (world, meta)) in self.worlds.iter().enumerate() {
                 let pos =
                     ctx.center() + Vector2::new(0.0, total_height / 2.0 - line_spacing * i as f32);
 
-                let mut text = Text::new(UNDEAD_FONT, name)
+                let mut text = Text::new(UNDEAD_FONT, &meta.name)
                     .pos(pos, Anchor::Center)
                     .scale(Vector2::repeat(SCALE));
 
@@ -69,15 +72,23 @@ impl Screen<App> for SandboxScreen {
         // todo: make async with poll_promise?
         let world_dir = state.data_dir.join("sandbox");
         if world_dir.exists() {
-            self.worlds = world_dir
-                .read_dir()
-                .unwrap()
-                .map(|e| e.unwrap().path())
-                .collect();
+            for world in world_dir.read_dir().unwrap().filter_map(Result::ok) {
+                let path = world.path();
+                let meta = match load_meta(&path) {
+                    Ok(meta) => meta,
+                    Err(err) => {
+                        warn!("Failed to load meta for {:?}: {}", path, err);
+                        continue;
+                    }
+                };
+
+                self.worlds.push((path, meta));
+            }
         }
     }
 }
 
-fn in_bounds(pos: Vector2<f32>, bounds: (Vector2<f32>, Vector2<f32>)) -> bool {
-    pos.x >= bounds.0.x && pos.x <= bounds.1.x && pos.y >= bounds.0.y && pos.y <= bounds.1.y
+fn load_meta(path: &PathBuf) -> Result<BoardMeta> {
+    let file = File::open(path)?;
+    Ok(bincode::deserialize_from(file)?)
 }

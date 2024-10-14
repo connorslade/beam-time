@@ -1,4 +1,5 @@
 use std::{
+    mem,
     path::PathBuf,
     time::{Duration, Instant},
 };
@@ -64,7 +65,8 @@ impl Screen<App> for GameScreen {
     }
 
     fn on_destroy(&mut self, _state: &mut App) {
-        self.board.save(&self.save_file).unwrap();
+        let board = mem::take(&mut self.board);
+        board.save(&self.save_file).unwrap();
     }
 
     fn on_resize(&mut self, _state: &mut App, old_size: Vector2<f32>, new_size: Vector2<f32>) {

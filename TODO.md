@@ -35,7 +35,7 @@
 - [x] Zoom around the cursor position
 - [x] Sandbox save selection screen
 - [ ] Allow managing (creating, deleting) saves
-- [ ] Saves should have a header at the start
+- [x] Saves should have a header at the start
   - Save name
   - Playtime
   - Last open date

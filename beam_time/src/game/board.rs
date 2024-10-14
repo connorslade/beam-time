@@ -1,6 +1,7 @@
-use std::{fs, path::PathBuf};
+use std::{fs, path::PathBuf, time::Instant};
 
 use anyhow::Result;
+use chrono::{DateTime, Utc};
 use engine::{
     drawable::sprite::Sprite,
     exports::{
@@ -9,7 +10,8 @@ use engine::{
     },
     graphics_context::{Anchor, GraphicsContext},
 };
-use log::info;
+use log::{info, trace};
+use serde::{Deserialize, Serialize};
 
 use crate::{
     app::App,
@@ -24,23 +26,38 @@ use super::{
     SharedState,
 };
 
-#[derive(Default)]
+#[derive(Serialize, Deserialize)]
 pub struct Board {
+    pub meta: BoardMeta,
     pub tiles: Map<Tile>,
+
+    #[serde(skip)]
+    #[serde(default = "Instant::now")]
+    open_timestamp: Instant,
+}
+
+#[derive(Default, Debug, Serialize, Deserialize)]
+pub struct BoardMeta {
+    pub name: String,
+    pub last_played: DateTime<Utc>,
+    pub playtime: u64,
 }
 
 impl Board {
     pub fn load(path: &PathBuf) -> Result<Self> {
-        info!("Loading board from {path:#?}");
+        info!("Loading board from {path:?}");
         let raw = fs::read(path)?;
-        Ok(Board {
-            tiles: bincode::deserialize(&raw)?,
-        })
+        let board = bincode::deserialize::<Board>(&raw)?;
+        trace!("{:?}", board.meta);
+        Ok(board)
     }
 
-    pub fn save(&self, path: &PathBuf) -> Result<()> {
-        info!("Saving board to {path:#?}");
-        let raw = bincode::serialize(&self.tiles)?;
+    pub fn save(mut self, path: &PathBuf) -> Result<()> {
+        self.meta.playtime += self.open_timestamp.elapsed().as_secs();
+        self.meta.last_played = Utc::now();
+
+        info!("Saving board to {path:?}");
+        let raw = bincode::serialize(&self)?;
         fs::write(path, raw)?;
         Ok(())
     }
@@ -140,6 +157,16 @@ impl Board {
 
                 ctx.draw(grid);
             }
+        }
+    }
+}
+
+impl Default for Board {
+    fn default() -> Self {
+        Self {
+            meta: Default::default(),
+            tiles: Default::default(),
+            open_timestamp: Instant::now(),
         }
     }
 }
