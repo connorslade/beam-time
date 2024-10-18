@@ -28,6 +28,7 @@ const PAN_KEYS: [(KeyCode, Vector2<f32>); 4] = [
 
 impl SharedState {
     pub fn update(&mut self, ctx: &mut GraphicsContext<App>, state: &App) {
+        // TODO: Dont allow scale goal to be non integer values when close to 1.0
         let old_scale = self.scale;
         self.scale_goal = (self.scale_goal
             + ctx.input.scroll_delta * state.config.zoom_sensitivity)
@@ -57,11 +58,6 @@ impl SharedState {
             self.pan_goal +=
                 direction.normalize() * self.scale * state.config.movement_speed * ctx.delta_time;
         }
-
-        // TODO: Not sure about this
-        let key_scale_speed = 2.5 * ctx.delta_time;
-        self.scale_goal += ctx.input.key_down(KeyCode::Equal) as u8 as f32 * key_scale_speed;
-        self.scale_goal -= ctx.input.key_down(KeyCode::Minus) as u8 as f32 * key_scale_speed;
 
         self.delta_pan(delta_pan);
     }
@@ -107,6 +103,14 @@ impl SharedState {
         (x, y): (usize, usize),
     ) -> Vector2<i32> {
         Vector2::new(x as i32, y as i32) - self.origin_tile(ctx)
+    }
+
+    pub fn screen_to_world_space<App>(
+        &self,
+        ctx: &GraphicsContext<App>,
+        pos: Vector2<f32>,
+    ) -> Vector2<f32> {
+        (pos - self.pan) / (16.0 * self.scale * ctx.scale_factor)
     }
 }
 

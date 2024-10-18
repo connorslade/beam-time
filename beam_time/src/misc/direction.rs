@@ -1,4 +1,7 @@
-use std::ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, Not};
+use std::{
+    f32::consts::PI,
+    ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, Mul, Not},
+};
 
 use engine::exports::nalgebra::Vector2;
 use serde::{Deserialize, Serialize};
@@ -59,6 +62,15 @@ impl Direction {
             Self::Left | Self::Right => matches!(other, Self::Up | Self::Down),
         }
     }
+
+    pub fn to_angle(self) -> f32 {
+        match self {
+            Self::Down => 0.0,
+            Self::Left => PI / 2.0,
+            Self::Right => -PI / 2.0,
+            Self::Up => PI,
+        }
+    }
 }
 
 impl Directions {
@@ -95,6 +107,16 @@ impl BitOr<Direction> for Directions {
     }
 }
 
+impl BitOr<Directions> for Directions {
+    type Output = Self;
+
+    fn bitor(self, rhs: Directions) -> Self::Output {
+        Self {
+            inner: self.inner | rhs.inner,
+        }
+    }
+}
+
 impl BitAnd<Direction> for Directions {
     type Output = bool;
 
@@ -122,6 +144,18 @@ impl BitOrAssign<Direction> for Directions {
 impl BitAndAssign<Directions> for Directions {
     fn bitand_assign(&mut self, rhs: Directions) {
         self.inner &= rhs.inner;
+    }
+}
+
+impl Mul<bool> for Direction {
+    type Output = Directions;
+
+    fn mul(self, rhs: bool) -> Self::Output {
+        if rhs {
+            Self::Output::empty() | self
+        } else {
+            Self::Output::empty()
+        }
     }
 }
 

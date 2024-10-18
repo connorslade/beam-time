@@ -1,4 +1,4 @@
-use engine::exports::nalgebra::Vector2;
+use engine::exports::nalgebra::{Scalar, Vector2};
 
 pub macro include_asset($name:expr) {
     include_bytes!(concat!("../assets/", $name))
@@ -10,6 +10,9 @@ pub macro include_atlas($name:expr) {
         .to_rgba8()
 }
 
-pub fn in_bounds(pos: Vector2<f32>, bounds: (Vector2<f32>, Vector2<f32>)) -> bool {
+pub fn in_bounds<T: Scalar + PartialOrd>(
+    pos: Vector2<T>,
+    bounds: (Vector2<T>, Vector2<T>),
+) -> bool {
     pos.x >= bounds.0.x && pos.x <= bounds.1.x && pos.y >= bounds.0.y && pos.y <= bounds.1.y
 }
