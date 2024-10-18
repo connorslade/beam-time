@@ -28,21 +28,7 @@ const PAN_KEYS: [(KeyCode, Vector2<f32>); 4] = [
 
 impl SharedState {
     pub fn update(&mut self, ctx: &mut GraphicsContext<App>, state: &App) {
-        // TODO: Dont allow scale goal to be non integer values when close to 1.0
-        let old_scale = self.scale;
-        self.scale_goal = (self.scale_goal
-            + ctx.input.scroll_delta * state.config.zoom_sensitivity)
-            .clamp(1.0, 10.0);
-
-        let lerp_speed = 10.0 * ctx.delta_time;
-        self.scale += (self.scale_goal - self.scale) * lerp_speed;
-        self.pan += (self.pan_goal - self.pan) * lerp_speed;
-
         let mut delta_pan = Vector2::zeros();
-
-        // Scale around the curser position, not the world origin. Don't ask how
-        // long this took me to get right...
-        delta_pan += (ctx.input.mouse - self.pan) * (old_scale - self.scale) / old_scale;
 
         if ctx.input.mouse_down(MouseButton::Middle) {
             ctx.set_cursor(CursorIcon::Grabbing);
@@ -58,6 +44,20 @@ impl SharedState {
             self.pan_goal +=
                 direction.normalize() * self.scale * state.config.movement_speed * ctx.delta_time;
         }
+
+        // TODO: Dont allow scale goal to be non integer values when close to 1.0
+        let old_scale = self.scale;
+        self.scale_goal = (self.scale_goal
+            + ctx.input.scroll_delta * state.config.zoom_sensitivity)
+            .clamp(1.0, 10.0);
+
+        let lerp_speed = 10.0 * ctx.delta_time;
+        self.scale += (self.scale_goal - self.scale) * lerp_speed;
+        self.pan += (self.pan_goal - self.pan) * lerp_speed;
+
+        // Scale around the curser position, not the world origin. Don't ask how
+        // long this took me to get right...
+        delta_pan += (ctx.input.mouse - self.pan) * (old_scale - self.scale) / old_scale;
 
         self.delta_pan(delta_pan);
     }
