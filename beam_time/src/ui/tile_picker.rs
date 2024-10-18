@@ -16,6 +16,16 @@ use crate::{
     game::{tile::Tile, SharedState},
 };
 
+const TILE_SHORTCUTS: [KeyCode; 7] = [
+    KeyCode::Digit1,
+    KeyCode::Digit2,
+    KeyCode::Digit3,
+    KeyCode::Digit4,
+    KeyCode::Digit5,
+    KeyCode::Digit6,
+    KeyCode::Digit7,
+];
+
 #[derive(Default)]
 pub struct TilePicker {
     offset: f32,
@@ -35,7 +45,11 @@ impl TilePicker {
         }
 
         let tile_size = 16.0 * 4.0 * ctx.scale_factor;
-        for (i, tile) in Tile::DEFAULT.iter().enumerate() {
+        for (i, (tile, key)) in Tile::DEFAULT.iter().zip(TILE_SHORTCUTS).enumerate() {
+            if !sim && ctx.input.key_pressed(key) {
+                *holding = Some(*tile);
+            }
+
             let (asset, name) = (tile.asset(), tile.name());
             let pos = Vector2::new(tile_size * i as f32, -self.offset);
 
