@@ -37,17 +37,18 @@ impl Screen<App> for GameScreen {
         let space_pressed = ctx.input.key_pressed(KeyCode::Space);
         let play_pressed = ctx.input.key_pressed(KeyCode::KeyP);
 
+        self.running |= play_pressed;
+        self.running &= !space_pressed;
+
         if let Some(beam) = &mut self.beam {
-            if !self.running && space_pressed
-                || self.running && self.last_tick.elapsed() >= Duration::from_millis(100)
-            {
+            let tick_needed = self.last_tick.elapsed() >= Duration::from_millis(100);
+            if space_pressed || (self.running && tick_needed) {
                 self.last_tick = Instant::now();
                 beam.tick();
             }
 
             beam.render(ctx, state, &self.shared);
         } else if space_pressed || play_pressed {
-            self.running = play_pressed;
             let mut beam = BeamState::new(&self.board);
             beam.tick();
             self.beam = Some(beam);
