@@ -96,11 +96,6 @@ impl Sprite {
         self
     }
 
-    pub fn clamp(mut self, min: Vector2<f32>, max: Vector2<f32>) -> Self {
-        // TODO: use https://github.com/ishape-rust/ioverlay
-        todo!()
-    }
-
     fn points<App>(&self, ctx: &GraphicsContext<App>, sprite: &SpriteAsset) -> [Vector2<f32>; 4] {
         let size = sprite.size.map(|x| x as f32) * ctx.scale_factor;
         let scaled_size = size.component_mul(&self.scale);

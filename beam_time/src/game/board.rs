@@ -5,7 +5,7 @@ use chrono::{DateTime, Utc};
 use engine::{
     drawable::sprite::Sprite,
     exports::{
-        nalgebra::Vector2,
+        nalgebra::{Vector, Vector2},
         winit::{event::MouseButton, keyboard::KeyCode},
     },
     graphics_context::{Anchor, GraphicsContext},
@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     app::App,
-    assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE},
+    assets::{EMPTY_TILE_A, EMPTY_TILE_B, OVERLAY_SELECTION, PERMANENT_TILE},
     consts::layer,
     misc::map::Map,
 };
@@ -31,9 +31,13 @@ pub struct Board {
     pub meta: BoardMeta,
     pub tiles: Map<Tile>,
 
-    #[serde(skip)]
-    #[serde(default = "Instant::now")]
+    // Split into transiant board state?
+    #[serde(skip, default = "Instant::now")]
     open_timestamp: Instant,
+    #[serde(skip)]
+    selection: Vec<Vector2<i32>>,
+    #[serde(skip)]
+    selection_anchor: Option<Vector2<i32>>,
 }
 
 #[derive(Default, Debug, Serialize, Deserialize)]
@@ -111,11 +115,19 @@ impl Board {
                     if tile.permanent() {
                         ctx.draw(
                             Sprite::new(PERMANENT_TILE)
-                                .scale(Vector2::repeat(4.0), Anchor::Center)
+                                .scale(Vector2::repeat(shared.scale), Anchor::Center)
                                 .position(render_pos, Anchor::Center)
                                 .z_index(layer::TILE_BACKGROUND_OVERLAY),
                         );
                     }
+                }
+
+                if self.selection.contains(&pos) {
+                    let selection_overlay = Sprite::new(OVERLAY_SELECTION)
+                        .scale(Vector2::repeat(shared.scale), Anchor::Center)
+                        .position(render_pos, Anchor::Center)
+                        .z_index(layer::TILE_BACKGROUND_OVERLAY);
+                    ctx.draw(selection_overlay);
                 }
 
                 if !tile.moveable() {
@@ -167,6 +179,8 @@ impl Default for Board {
             meta: Default::default(),
             tiles: Default::default(),
             open_timestamp: Instant::now(),
+            selection: Default::default(),
+            selection_anchor: Default::default(),
         }
     }
 }

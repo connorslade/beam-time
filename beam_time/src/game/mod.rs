@@ -41,8 +41,7 @@ impl SharedState {
 
         // Scale around the curser position, not the world origin. Don't ask how
         // long this took me to get right...
-        let scale_center = ctx.input.mouse;
-        delta_pan += (scale_center - self.pan) * (old_scale - self.scale) / old_scale;
+        delta_pan += (ctx.input.mouse - self.pan) * (old_scale - self.scale) / old_scale;
 
         if ctx.input.mouse_down(MouseButton::Middle) {
             ctx.set_cursor(CursorIcon::Grabbing);
@@ -58,6 +57,11 @@ impl SharedState {
             self.pan_goal +=
                 direction.normalize() * self.scale * state.config.movement_speed * ctx.delta_time;
         }
+
+        // TODO: Not sure about this
+        let key_scale_speed = 2.5 * ctx.delta_time;
+        self.scale_goal += ctx.input.key_down(KeyCode::Equal) as u8 as f32 * key_scale_speed;
+        self.scale_goal -= ctx.input.key_down(KeyCode::Minus) as u8 as f32 * key_scale_speed;
 
         self.delta_pan(delta_pan);
     }

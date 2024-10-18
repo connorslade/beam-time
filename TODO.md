@@ -39,3 +39,5 @@
   - Save name
   - Playtime
   - Last open date
+- [ ] Copy & paste tiles
+- [ ] Undo
