@@ -1,4 +1,4 @@
-use std::{fs, path::PathBuf, time::Instant};
+use std::{collections::HashSet, fs, path::PathBuf, time::Instant};
 
 use anyhow::Result;
 use chrono::{DateTime, Utc};
@@ -6,7 +6,7 @@ use engine::{
     drawable::sprite::Sprite,
     exports::{
         nalgebra::Vector2,
-        winit::{event::MouseButton, keyboard::KeyCode},
+        winit::{event::MouseButton, keyboard::KeyCode, window::CursorIcon},
     },
     graphics_context::{Anchor, GraphicsContext},
 };
@@ -42,7 +42,7 @@ pub struct Board {
 pub struct TransientBoardState {
     open_timestamp: Instant,
 
-    selection: Vec<Vector2<i32>>,
+    selection: HashSet<Vector2<i32>>,
     selection_start: Option<Vector2<i32>>,
 }
 
@@ -102,9 +102,32 @@ impl Board {
             (working_selection, ctx.input.mouse_down(MouseButton::Left))
         {
             self.transient.selection_start = None;
-            self.transient.selection = (selection.0.x..=selection.1.x)
+            let new_selection = (selection.0.x..=selection.1.x)
                 .flat_map(|x| (selection.0.y..=selection.1.y).map(move |y| Vector2::new(x, y)))
                 .collect();
+
+            // if ctrl down, add to selection
+            // if alt down, remove from selection
+            if ctx.input.key_down(KeyCode::ControlLeft) {
+                self.transient.selection.extend(new_selection);
+            } else if ctx.input.key_down(KeyCode::AltLeft) {
+                // remove new_selection from selection
+                self.transient.selection = self
+                    .transient
+                    .selection
+                    .difference(&new_selection)
+                    .copied()
+                    .collect();
+            } else {
+                self.transient.selection = new_selection;
+            }
+        }
+
+        if ctx.input.key_pressed(KeyCode::Delete) {
+            for pos in self.transient.selection.iter() {
+                self.tiles.remove(*pos);
+            }
+            self.transient.selection.clear();
         }
 
         for x in 0..tile_counts.x {
@@ -122,8 +145,8 @@ impl Board {
                         let directions = Directions::empty()
                             | Direction::Left * (pos.x == min.x)
                             | Direction::Right * (pos.x == max.x)
-                            | Direction::Up * (pos.y == min.y)
-                            | Direction::Down * (pos.y == max.y);
+                            | Direction::Up * (pos.y == max.y)
+                            | Direction::Down * (pos.y == min.y);
 
                         for dir in directions.iter() {
                             let selection_overlay = Sprite::new(OVERLAY_SELECTION)
@@ -136,19 +159,20 @@ impl Board {
                     }
                 }
 
-                // if self.transient.selection.contains(&pos)
-                //     || working_selection
-                //         .map(|bounds| in_bounds(pos, bounds))
-                //         .unwrap_or_default()
-                // {
-                //     let left_edge = pos.x == bounds.0.x;
-
-                //     let selection_overlay = Sprite::new(OVERLAY_SELECTION)
-                //         .scale(Vector2::repeat(shared.scale), Anchor::Center)
-                //         .position(render_pos, Anchor::Center)
-                //         .z_index(layer::TILE_BACKGROUND_OVERLAY);
-                //     ctx.draw(selection_overlay);
-                // }
+                // draw overlay_selection if the tile is in the selection and the direction is not
+                if self.transient.selection.contains(&pos) {
+                    for dir in Direction::ALL {
+                        let offset_point = dir.offset(pos);
+                        if !self.transient.selection.contains(&offset_point) {
+                            let selection_overlay = Sprite::new(OVERLAY_SELECTION)
+                                .scale(Vector2::repeat(shared.scale), Anchor::Center)
+                                .position(render_pos, Anchor::Center)
+                                .rotate(dir.to_angle(), Anchor::Center)
+                                .z_index(layer::TILE_BACKGROUND_OVERLAY);
+                            ctx.draw(selection_overlay);
+                        }
+                    }
+                }
 
                 let tile = self.tiles.get(pos);
                 let is_empty = tile.is_empty();

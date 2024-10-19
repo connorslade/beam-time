@@ -1,7 +1,4 @@
-use std::{
-    f32::consts::PI,
-    ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, Mul, Not},
-};
+use std::{f32::consts::PI, ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, Mul, Not}};
 
 use engine::exports::nalgebra::Vector2;
 use serde::{Deserialize, Serialize};
@@ -65,10 +62,10 @@ impl Direction {
 
     pub fn to_angle(self) -> f32 {
         match self {
-            Self::Down => 0.0,
+            Self::Up => 0.0,
             Self::Left => PI / 2.0,
             Self::Right => -PI / 2.0,
-            Self::Up => PI,
+            Self::Down => PI,
         }
     }
 }

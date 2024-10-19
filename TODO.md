@@ -40,4 +40,13 @@
   - Playtime
   - Last open date
 - [ ] Copy & paste tiles
+  - [x] Allow making selections
+  - [x] Allow adding and subtracting from selections
+  - [ ] Add some selection operations
+    - [x] Delete
+    - [ ] Duplicate into holding
+    - [ ] Move into holding
 - [ ] Undo
+  - [ ] Store list of modifications
+- [ ] Add sticky notes with text
+- [ ] Persist window size
