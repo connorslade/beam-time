@@ -51,10 +51,6 @@ impl Tile {
         matches!(self, Tile::Empty)
     }
 
-    pub fn is_some(&self) -> bool {
-        !self.is_empty()
-    }
-
     pub fn moveable(&self) -> bool {
         !matches!(self, Tile::Wall { permanent: true })
     }

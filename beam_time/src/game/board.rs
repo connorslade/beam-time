@@ -23,6 +23,7 @@ use crate::{
 
 use super::{
     beam::{tile::BeamTile, BeamState},
+    holding::Holding,
     selection::SelectionState,
     tile::Tile,
     SharedState,
@@ -34,10 +35,12 @@ pub struct Board {
     pub tiles: Map<Tile>,
 
     #[serde(skip)]
-    transient: TransientBoardState,
+    pub transient: TransientBoardState,
 }
 
 pub struct TransientBoardState {
+    pub holding: Holding,
+
     open_timestamp: Instant,
     selection: SelectionState,
 }
@@ -74,7 +77,6 @@ impl Board {
         state: &App,
         shared: &SharedState,
         sim: &mut Option<BeamState>,
-        holding: &mut Option<Tile>,
     ) {
         let tile_size = 16.0 * shared.scale * ctx.scale_factor;
         let half_tile = Vector2::repeat(tile_size / 2.0);
@@ -83,6 +85,7 @@ impl Board {
         let frame = state.frame();
 
         let shift_down = ctx.input.key_down(KeyCode::ShiftLeft);
+        self.transient.holding.render(ctx, shared);
         self.transient
             .selection
             .update(ctx, &mut self.tiles, shared);
@@ -147,16 +150,20 @@ impl Board {
                 }
 
                 if sim.is_none() && grid.is_hovered(ctx) {
+                    let holding = &mut self.transient.holding;
+
                     if ctx.input.mouse_pressed(MouseButton::Left) {
                         if let Some(was_holding) = holding.take() {
                             self.tiles.set(pos, was_holding);
-                            if !is_empty {
-                                *holding = tile.is_some().then_some(tile);
-                            }
                         } else if !is_empty && holding.is_none() {
-                            *holding = tile.is_some().then_some(tile);
                             self.tiles.remove(pos);
                         }
+
+                        *holding = if !is_empty {
+                            Holding::Tile(tile)
+                        } else {
+                            Holding::None
+                        };
                     }
 
                     if ctx.input.mouse_down(MouseButton::Right) {
@@ -174,7 +181,7 @@ impl Board {
                     }
 
                     if !is_empty && ctx.input.key_pressed(KeyCode::KeyQ) {
-                        holding.replace(tile);
+                        *holding = Holding::Tile(tile);
                     }
                 }
 
@@ -188,6 +195,7 @@ impl Default for TransientBoardState {
     fn default() -> Self {
         Self {
             open_timestamp: Instant::now(),
+            holding: Default::default(),
             selection: Default::default(),
         }
     }

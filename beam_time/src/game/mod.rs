@@ -10,6 +10,7 @@ use crate::app::App;
 
 pub mod beam;
 pub mod board;
+pub mod holding;
 mod selection;
 pub mod tile;
 

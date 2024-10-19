@@ -12,7 +12,7 @@ use engine::{
 
 use crate::{
     consts::BACKGROUND_COLOR,
-    game::{beam::BeamState, board::Board, tile::Tile, SharedState},
+    game::{beam::BeamState, board::Board, SharedState},
     ui::tile_picker::TilePicker,
     App,
 };
@@ -25,7 +25,6 @@ pub struct GameScreen {
     beam: Option<BeamState>,
 
     tile_picker: TilePicker,
-    holding: Option<Tile>,
     running: bool,
     last_tick: Instant,
 }
@@ -59,10 +58,9 @@ impl Screen<App> for GameScreen {
         }
 
         ctx.background(BACKGROUND_COLOR);
-        self.board
-            .render(ctx, state, &self.shared, &mut self.beam, &mut self.holding);
+        self.board.render(ctx, state, &self.shared, &mut self.beam);
         self.tile_picker
-            .render(ctx, &self.shared, self.beam.is_some(), &mut self.holding);
+            .render(ctx, self.beam.is_some(), &mut self.board.transient.holding);
     }
 
     fn on_destroy(&mut self, _state: &mut App) {
@@ -83,7 +81,6 @@ impl GameScreen {
             beam: None,
 
             tile_picker: TilePicker::default(),
-            holding: None,
             running: false,
             last_tick: Instant::now(),
 

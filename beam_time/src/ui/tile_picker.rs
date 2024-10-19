@@ -13,7 +13,7 @@ use crate::{
         UNDEAD_FONT,
     },
     consts::layer,
-    game::{tile::Tile, SharedState},
+    game::{holding::Holding, tile::Tile},
 };
 
 const TILE_SHORTCUTS: [KeyCode; 7] = [
@@ -35,11 +35,9 @@ impl TilePicker {
     pub fn render<App>(
         &mut self,
         ctx: &mut GraphicsContext<App>,
-        shared: &SharedState,
         sim: bool,
-        holding: &mut Option<Tile>,
+        holding: &mut Holding,
     ) {
-        self.update_holding(ctx, shared, holding);
         if !self.update_offset(ctx, sim) {
             return;
         }
@@ -47,7 +45,7 @@ impl TilePicker {
         let tile_size = 16.0 * 4.0 * ctx.scale_factor;
         for (i, (tile, key)) in Tile::DEFAULT.iter().zip(TILE_SHORTCUTS).enumerate() {
             if !sim && ctx.input.key_pressed(key) {
-                *holding = Some(*tile);
+                *holding = Holding::Tile(*tile);
             }
 
             let (asset, name) = (tile.asset(), tile.name());
@@ -80,7 +78,7 @@ impl TilePicker {
                 }
 
                 if ctx.input.mouse_pressed(MouseButton::Left) {
-                    *holding = Some(*tile);
+                    *holding = Holding::Tile(*tile);
                 }
             }
 
@@ -94,33 +92,5 @@ impl TilePicker {
         let max_offset = 16.0 * 4.0 * ctx.scale_factor;
         self.offset = self.offset.clamp(0.0, max_offset);
         self.offset <= max_offset
-    }
-
-    fn update_holding<App>(
-        &self,
-        ctx: &mut GraphicsContext<App>,
-        shared: &SharedState,
-        holding: &mut Option<Tile>,
-    ) {
-        if ctx.input.mouse_down(MouseButton::Right) {
-            *holding = None;
-        }
-
-        if let Some(holding) = holding {
-            if ctx.input.key_pressed(KeyCode::KeyR) {
-                *holding = holding.rotate();
-            }
-
-            if ctx.input.key_pressed(KeyCode::KeyE) {
-                *holding = holding.activate();
-            }
-
-            ctx.draw(
-                Sprite::new(holding.asset())
-                    .scale(Vector2::repeat(shared.scale), Anchor::Center)
-                    .position(ctx.input.mouse, Anchor::Center)
-                    .z_index(layer::TILE_HOLDING),
-            );
-        }
     }
 }
