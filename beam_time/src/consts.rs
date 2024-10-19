@@ -7,7 +7,6 @@ use crate::assets::{
     TILE_SPLITTER_A, TILE_SPLITTER_B, TILE_WALL,
 };
 
-pub const DEFAULT_SIZE: (u32, u32) = (800, 600);
 pub const CONFIG_FILE: &str = "config.toml";
 
 pub const BACKGROUND_COLOR: Rgb<f32> = Rgb::new(0.235, 0.235, 0.235);

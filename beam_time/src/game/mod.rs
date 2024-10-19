@@ -10,6 +10,7 @@ use crate::app::App;
 
 pub mod beam;
 pub mod board;
+mod selection;
 pub mod tile;
 
 pub struct SharedState {

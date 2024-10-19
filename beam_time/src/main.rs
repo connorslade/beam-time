@@ -3,10 +3,7 @@
 use anyhow::Result;
 use engine::{
     application::{Application, ApplicationArgs},
-    exports::winit::{
-        dpi::PhysicalSize,
-        window::{Icon, WindowAttributes},
-    },
+    exports::winit::window::{Icon, WindowAttributes},
 };
 
 mod app;
@@ -19,7 +16,6 @@ mod ui;
 mod util;
 
 use app::App;
-use consts::DEFAULT_SIZE;
 use env_logger::WriteStyle;
 use log::LevelFilter;
 use screens::{overlay::debug::DebugOverlay, title::TitleScreen};
@@ -35,8 +31,7 @@ fn main() -> Result<()> {
     Application::new(ApplicationArgs {
         window_attributes: WindowAttributes::default()
             .with_title("Beam Time")
-            .with_window_icon(Some(icon))
-            .with_inner_size(PhysicalSize::new(DEFAULT_SIZE.0, DEFAULT_SIZE.1)),
+            .with_window_icon(Some(icon)),
         app_constructor: Box::new(App::new),
         screen_constructor: Box::new(|| {
             vec![
