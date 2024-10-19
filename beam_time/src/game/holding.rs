@@ -11,23 +11,15 @@ use crate::consts::layer;
 
 use super::{tile::Tile, SharedState};
 
-#[derive(Default, Copy, Clone, PartialEq, Eq)]
+#[derive(Default, Clone, PartialEq, Eq)]
 pub enum Holding {
     #[default]
     None,
     Tile(Tile),
+    Paste(Vec<(Vector2<i32>, Tile)>),
 }
 
 impl Holding {
-    pub fn take(&mut self) -> Option<Tile> {
-        if let Holding::Tile(tile) = *self {
-            *self = Holding::None;
-            Some(tile)
-        } else {
-            None
-        }
-    }
-
     pub fn is_none(&self) -> bool {
         *self == Holding::None
     }
@@ -37,21 +29,36 @@ impl Holding {
             *self = Holding::None;
         }
 
-        if let Holding::Tile(tile) = self {
-            if ctx.input.key_pressed(KeyCode::KeyR) {
-                *tile = tile.rotate();
-            }
+        match self {
+            Holding::None => {}
+            Holding::Tile(tile) => {
+                if ctx.input.key_pressed(KeyCode::KeyR) {
+                    *tile = tile.rotate();
+                }
 
-            if ctx.input.key_pressed(KeyCode::KeyE) {
-                *tile = tile.activate();
-            }
+                if ctx.input.key_pressed(KeyCode::KeyE) {
+                    *tile = tile.activate();
+                }
 
-            ctx.draw(
-                Sprite::new(tile.asset())
-                    .scale(Vector2::repeat(shared.scale), Anchor::Center)
-                    .position(ctx.input.mouse, Anchor::Center)
-                    .z_index(layer::TILE_HOLDING),
-            );
+                ctx.draw(
+                    Sprite::new(tile.asset())
+                        .scale(Vector2::repeat(shared.scale), Anchor::Center)
+                        .position(ctx.input.mouse, Anchor::Center)
+                        .z_index(layer::TILE_HOLDING),
+                );
+            }
+            Holding::Paste(tiles) => {
+                let tile_size = 16.0 * shared.scale * ctx.scale_factor;
+                for (pos, tile) in tiles.iter() {
+                    let render_pos = ctx.input.mouse + tile_size * pos.map(|x| x as f32);
+                    ctx.draw(
+                        Sprite::new(tile.asset())
+                            .scale(Vector2::repeat(shared.scale), Anchor::Center)
+                            .position(render_pos, Anchor::Center)
+                            .z_index(layer::TILE_HOLDING),
+                    );
+                }
+            }
         }
     }
 }

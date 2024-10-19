@@ -20,7 +20,7 @@ use crate::{
     util::in_bounds,
 };
 
-use super::{tile::Tile, SharedState};
+use super::{holding::Holding, tile::Tile, SharedState};
 
 #[derive(Default)]
 pub struct SelectionState {
@@ -34,8 +34,9 @@ impl SelectionState {
     pub fn update(
         &mut self,
         ctx: &mut GraphicsContext<App>,
-        tiles: &mut Map<Tile>,
         shared: &SharedState,
+        tiles: &mut Map<Tile>,
+        holding: &mut Holding,
     ) {
         self.working_selection = self.selection_start.map(|start| {
             let end = shared
@@ -78,6 +79,32 @@ impl SelectionState {
             for pos in self.selection.iter() {
                 tiles.remove(*pos);
             }
+            self.selection.clear();
+        }
+
+        let copy = ctx.input.key_pressed(KeyCode::KeyC);
+        let cut = ctx.input.key_pressed(KeyCode::KeyX);
+
+        if ctx.input.key_down(KeyCode::ControlLeft) && (copy || cut) {
+            let mut list = Vec::new();
+            let mut center = Vector2::zeros();
+
+            for pos in self.selection.iter() {
+                let tile = tiles.get(*pos);
+                if !tile.is_empty() {
+                    center += *pos;
+                    list.push((*pos, tile.clone()));
+                }
+
+                cut.then(|| tiles.remove(*pos));
+            }
+
+            let count = list.len() as i32;
+            for (pos, _) in list.iter_mut() {
+                *pos -= center / count;
+            }
+
+            *holding = Holding::Paste(list);
             self.selection.clear();
         }
     }

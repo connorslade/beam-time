@@ -88,7 +88,7 @@ impl Board {
         self.transient.holding.render(ctx, shared);
         self.transient
             .selection
-            .update(ctx, &mut self.tiles, shared);
+            .update(ctx, shared, &mut self.tiles, &mut self.transient.holding);
 
         for x in 0..tile_counts.x {
             for y in 0..tile_counts.y {
@@ -149,21 +149,28 @@ impl Board {
                     continue;
                 }
 
+                // TODO: Move to holding.rs?
                 if sim.is_none() && grid.is_hovered(ctx) {
                     let holding = &mut self.transient.holding;
 
                     if ctx.input.mouse_pressed(MouseButton::Left) {
-                        if let Some(was_holding) = holding.take() {
-                            self.tiles.set(pos, was_holding);
-                        } else if !is_empty && holding.is_none() {
-                            self.tiles.remove(pos);
+                        match holding {
+                            Holding::None if !is_empty => {
+                                self.tiles.remove(pos);
+                                *holding = Holding::Tile(tile);
+                            }
+                            Holding::Tile(tile) => {
+                                self.tiles.set(pos, *tile);
+                                *holding = Holding::None;
+                            }
+                            Holding::Paste(vec) => {
+                                for (paste_pos, paste_tile) in vec.into_iter() {
+                                    self.tiles.set(pos + *paste_pos, *paste_tile);
+                                }
+                                *holding = Holding::None;
+                            }
+                            _ => {}
                         }
-
-                        *holding = if !is_empty {
-                            Holding::Tile(tile)
-                        } else {
-                            Holding::None
-                        };
                     }
 
                     if ctx.input.mouse_down(MouseButton::Right) {

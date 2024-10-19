@@ -39,13 +39,13 @@
   - Save name
   - Playtime
   - Last open date
-- [ ] Copy & paste tiles
+- [x] Copy & paste tiles
   - [x] Allow making selections
   - [x] Allow adding and subtracting from selections
-  - [ ] Add some selection operations
+  - [x] Add some selection operations
     - [x] Delete
-    - [ ] Duplicate into holding
-    - [ ] Move into holding
+    - [x] Duplicate into holding
+    - [x] Move into holding
 - [ ] Undo
   - [ ] Store list of modifications
 - [ ] Add sticky notes with text
