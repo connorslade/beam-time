@@ -6,7 +6,7 @@ use engine::{
     graphics_context::GraphicsContext,
 };
 
-use crate::app::App;
+use crate::{app::App, util::exp_decay};
 
 pub mod beam;
 pub mod board;
@@ -53,10 +53,10 @@ impl SharedState {
             + ctx.input.scroll_delta * state.config.zoom_sensitivity)
             .clamp(1.0, 10.0);
 
-        let lerp_speed = 10.0 * ctx.delta_time;
-        self.scale = lerp(self.scale, self.scale_goal, lerp_speed);
-        self.pan.x = lerp(self.pan.x, self.pan_goal.x, lerp_speed);
-        self.pan.y = lerp(self.pan.y, self.pan_goal.y, lerp_speed);
+        let (decay, dt) = (10.0, ctx.delta_time);
+        self.scale = exp_decay(self.scale, self.scale_goal, decay, dt);
+        self.pan.x = exp_decay(self.pan.x, self.pan_goal.x, decay, dt);
+        self.pan.y = exp_decay(self.pan.y, self.pan_goal.y, decay, dt);
 
         // Scale around the curser position, not the world origin. Don't ask how
         // long this took me to get right...
@@ -127,9 +127,4 @@ impl Default for SharedState {
             scale_goal: 4.0,
         }
     }
-}
-
-fn lerp(start: f32, end: f32, t: f32) -> f32 {
-    let lerp = start + (end - start) * t;
-    lerp.clamp(start.min(end), start.max(end))
 }
