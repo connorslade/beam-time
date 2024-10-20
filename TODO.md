@@ -50,3 +50,8 @@
   - [ ] Store list of modifications
 - [ ] Add sticky notes with text
 - [ ] Persist window size
+- [ ] Autosave interval
+- [ ] Improve FPS
+  - [ ] Benchmarking system
+- [x] Don't overstep pan/zoom goals during lag spikes
+- [ ] Anti-aliasing

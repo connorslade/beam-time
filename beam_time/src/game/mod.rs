@@ -54,8 +54,9 @@ impl SharedState {
             .clamp(1.0, 10.0);
 
         let lerp_speed = 10.0 * ctx.delta_time;
-        self.scale += (self.scale_goal - self.scale) * lerp_speed;
-        self.pan += (self.pan_goal - self.pan) * lerp_speed;
+        self.scale = lerp(self.scale, self.scale_goal, lerp_speed);
+        self.pan.x = lerp(self.pan.x, self.pan_goal.x, lerp_speed);
+        self.pan.y = lerp(self.pan.y, self.pan_goal.y, lerp_speed);
 
         // Scale around the curser position, not the world origin. Don't ask how
         // long this took me to get right...
@@ -126,4 +127,9 @@ impl Default for SharedState {
             scale_goal: 4.0,
         }
     }
+}
+
+fn lerp(start: f32, end: f32, t: f32) -> f32 {
+    let lerp = start + (end - start) * t;
+    lerp.clamp(start.min(end), start.max(end))
 }
