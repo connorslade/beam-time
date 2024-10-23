@@ -7,4 +7,4 @@ I'm making a custom GPU accelerated game engine for this, because why not, so th
 
 Here is an example of an XOR gate implemented in game with some and, or, and nand gates.
 
-![beam_time_CurvZzfsRC](https://github.com/user-attachments/assets/cd4c82c0-fa50-4b4d-bc23-505d96b6a069)
+![beam-time](https://github.com/user-attachments/assets/048c6ee1-29c8-436c-85b8-eac9329639c2)
