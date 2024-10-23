@@ -40,7 +40,7 @@ impl Screen<App> for GameScreen {
         self.running &= !space_pressed;
 
         if let Some(beam) = &mut self.beam {
-            let tick_needed = self.last_tick.elapsed() >= Duration::from_millis(100);
+            let tick_needed = self.last_tick.elapsed() >= Duration::from_millis(10);
             if space_pressed || (self.running && tick_needed) {
                 self.last_tick = Instant::now();
                 beam.tick();

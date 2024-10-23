@@ -28,6 +28,7 @@ pub struct SelectionState {
     selection_start: Option<Vector2<i32>>,
 
     working_selection: Option<(Vector2<i32>, Vector2<i32>)>,
+    last_holding: Holding,
 }
 
 impl SelectionState {
@@ -82,30 +83,35 @@ impl SelectionState {
             self.selection.clear();
         }
 
+        let ctrl = ctx.input.key_down(KeyCode::ControlLeft);
         let copy = ctx.input.key_pressed(KeyCode::KeyC);
         let cut = ctx.input.key_pressed(KeyCode::KeyX);
+        let paste = ctx.input.key_pressed(KeyCode::KeyV);
 
-        if ctx.input.key_down(KeyCode::ControlLeft) && (copy || cut) {
+        if ctrl && (copy || cut) {
             let mut list = Vec::new();
-            let mut center = Vector2::zeros();
 
             for pos in self.selection.iter() {
                 let tile = tiles.get(*pos);
                 if !tile.is_empty() {
-                    center += *pos;
                     list.push((*pos, tile.clone()));
                 }
 
                 cut.then(|| tiles.remove(*pos));
             }
 
-            let count = list.len() as i32;
-            for (pos, _) in list.iter_mut() {
-                *pos -= center / count;
-            }
+            let origin = shared
+                .screen_to_world_space(ctx, ctx.input.mouse)
+                .map(|x| x.ceil() as i32);
+            list.iter_mut().for_each(|(pos, _)| *pos -= origin);
 
             *holding = Holding::Paste(list);
+            self.last_holding = holding.clone();
             self.selection.clear();
+        }
+
+        if ctrl && paste {
+            *holding = self.last_holding.clone();
         }
     }
 
