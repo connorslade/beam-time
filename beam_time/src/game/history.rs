@@ -10,9 +10,9 @@ pub struct History {
     actions: VecDeque<Action>,
 }
 
-pub enum Action {
-    Delete { tiles: Vec<(Vector2<i32>, Tile)> },
-    Replace { pos: Vector2<i32>, old: Tile },
+enum Action {
+    Many { tiles: Vec<(Vector2<i32>, Tile)> },
+    One { pos: Vector2<i32>, old: Tile },
 }
 
 impl History {
@@ -22,7 +22,15 @@ impl History {
         }
     }
 
-    pub fn track(&mut self, action: Action) {
+    pub fn track_one(&mut self, pos: Vector2<i32>, old: Tile) {
+        self.track(Action::One { pos, old });
+    }
+
+    pub fn track_many(&mut self, tiles: Vec<(Vector2<i32>, Tile)>) {
+        self.track(Action::Many { tiles });
+    }
+
+    fn track(&mut self, action: Action) {
         self.actions.push_back(action);
 
         while self.actions.len() > MAX_HISTORY {
@@ -40,10 +48,10 @@ impl History {
 impl Action {
     fn undo(&self, map: &mut Map<Tile>) {
         match self {
-            Action::Delete { tiles } => {
+            Action::Many { tiles } => {
                 tiles.iter().for_each(|(pos, tile)| map.set(*pos, *tile));
             }
-            Action::Replace { pos, old } => map.set(*pos, *old),
+            Action::One { pos, old } => map.set(*pos, *old),
         }
     }
 }

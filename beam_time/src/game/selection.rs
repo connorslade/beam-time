@@ -20,12 +20,7 @@ use crate::{
     util::in_bounds,
 };
 
-use super::{
-    history::{Action, History},
-    holding::Holding,
-    tile::Tile,
-    SharedState,
-};
+use super::{history::History, holding::Holding, tile::Tile, SharedState};
 
 #[derive(Default)]
 pub struct SelectionState {
@@ -88,7 +83,7 @@ impl SelectionState {
                 old.push((*pos, tiles.get(*pos)));
                 tiles.remove(*pos);
             }
-            history.track(Action::Delete { tiles: old });
+            history.track_many(old);
             self.selection.clear();
         }
 
@@ -103,16 +98,16 @@ impl SelectionState {
 
             for pos in self.selection.iter() {
                 let tile = tiles.get(*pos);
-                old.push((*pos, tile.clone()));
+                old.push((*pos, tile));
 
                 if !tile.is_empty() {
-                    list.push((*pos, tile.clone()));
+                    list.push((*pos, tile));
                 }
 
                 cut.then(|| tiles.remove(*pos));
             }
 
-            history.track(Action::Delete { tiles: old });
+            history.track_many(old);
 
             let origin = shared
                 .screen_to_world_space(ctx, ctx.input.mouse)

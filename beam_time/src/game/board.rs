@@ -23,7 +23,7 @@ use crate::{
 
 use super::{
     beam::{tile::BeamTile, BeamState},
-    history::{Action, History},
+    history::History,
     holding::Holding,
     selection::SelectionState,
     tile::Tile,
@@ -170,24 +170,24 @@ impl Board {
                         let old = tile;
                         match holding {
                             Holding::None if !is_empty => {
-                                self.transient.history.track(Action::Replace { pos, old });
+                                self.transient.history.track_one(pos, old);
                                 self.tiles.remove(pos);
                                 *holding = Holding::Tile(tile);
                             }
                             Holding::Tile(tile) => {
-                                self.transient.history.track(Action::Replace { pos, old });
+                                self.transient.history.track_one(pos, old);
                                 self.tiles.set(pos, *tile);
                                 *holding = Holding::None;
                             }
                             Holding::Paste(vec) => {
                                 let mut old = Vec::new();
-                                for (paste_pos, paste_tile) in vec.into_iter() {
+                                for (paste_pos, paste_tile) in vec.iter() {
                                     let pos = pos + *paste_pos;
                                     old.push((pos, self.tiles.get(pos)));
                                     self.tiles.set(pos, *paste_tile);
                                 }
 
-                                self.transient.history.track(Action::Delete { tiles: old });
+                                self.transient.history.track_many(old);
                                 *holding = Holding::None;
                             }
                             _ => {}
@@ -196,15 +196,21 @@ impl Board {
 
                     if ctx.input.mouse_down(MouseButton::Right) {
                         self.tiles.remove(pos);
+
+                        if !tile.is_empty() {
+                            self.transient.history.track_one(pos, tile);
+                        }
                     }
 
                     if holding.is_none() {
                         if ctx.input.key_pressed(KeyCode::KeyR) {
                             self.tiles.set(pos, tile.rotate());
+                            self.transient.history.track_one(pos, tile);
                         }
 
                         if ctx.input.key_pressed(KeyCode::KeyE) {
                             self.tiles.set(pos, tile.activate());
+                            self.transient.history.track_one(pos, tile);
                         }
                     }
 
