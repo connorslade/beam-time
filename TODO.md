@@ -46,12 +46,12 @@
     - [x] Delete
     - [x] Duplicate into holding
     - [x] Move into holding
-- [ ] Undo
-  - [ ] Store list of modifications
+- [x] Undo
+  - [x] Store list of modifications
 - [ ] Add sticky notes with text
 - [ ] Persist window size
 - [ ] Autosave interval
 - [ ] Improve FPS
   - [ ] Benchmarking system
 - [x] Don't overstep pan/zoom goals during lag spikes
-- [ ] Anti-aliasing
+- [ ] Engine key chord pressed

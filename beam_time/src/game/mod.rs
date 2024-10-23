@@ -10,6 +10,7 @@ use crate::{app::App, util::exp_decay};
 
 pub mod beam;
 pub mod board;
+pub mod history;
 pub mod holding;
 mod selection;
 pub mod tile;

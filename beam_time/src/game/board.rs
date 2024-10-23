@@ -23,6 +23,7 @@ use crate::{
 
 use super::{
     beam::{tile::BeamTile, BeamState},
+    history::{Action, History},
     holding::Holding,
     selection::SelectionState,
     tile::Tile,
@@ -40,6 +41,7 @@ pub struct Board {
 
 pub struct TransientBoardState {
     pub holding: Holding,
+    pub history: History,
 
     open_timestamp: Instant,
     selection: SelectionState,
@@ -86,9 +88,20 @@ impl Board {
 
         let shift_down = ctx.input.key_down(KeyCode::ShiftLeft);
         self.transient.holding.render(ctx, shared);
-        self.transient
-            .selection
-            .update(ctx, shared, &mut self.tiles, &mut self.transient.holding);
+        self.transient.selection.update(
+            ctx,
+            shared,
+            &mut self.tiles,
+            &mut self.transient.history,
+            &mut self.transient.holding,
+        );
+
+        if sim.is_none()
+            && ctx.input.key_down(KeyCode::ControlLeft)
+            && ctx.input.key_pressed(KeyCode::KeyZ)
+        {
+            self.transient.history.pop(&mut self.tiles);
+        }
 
         for x in 0..tile_counts.x {
             for y in 0..tile_counts.y {
@@ -154,19 +167,27 @@ impl Board {
                     let holding = &mut self.transient.holding;
 
                     if ctx.input.mouse_pressed(MouseButton::Left) {
+                        let old = tile;
                         match holding {
                             Holding::None if !is_empty => {
+                                self.transient.history.track(Action::Replace { pos, old });
                                 self.tiles.remove(pos);
                                 *holding = Holding::Tile(tile);
                             }
                             Holding::Tile(tile) => {
+                                self.transient.history.track(Action::Replace { pos, old });
                                 self.tiles.set(pos, *tile);
                                 *holding = Holding::None;
                             }
                             Holding::Paste(vec) => {
+                                let mut old = Vec::new();
                                 for (paste_pos, paste_tile) in vec.into_iter() {
-                                    self.tiles.set(pos + *paste_pos, *paste_tile);
+                                    let pos = pos + *paste_pos;
+                                    old.push((pos, self.tiles.get(pos)));
+                                    self.tiles.set(pos, *paste_tile);
                                 }
+
+                                self.transient.history.track(Action::Delete { tiles: old });
                                 *holding = Holding::None;
                             }
                             _ => {}
@@ -203,6 +224,7 @@ impl Default for TransientBoardState {
         Self {
             open_timestamp: Instant::now(),
             holding: Default::default(),
+            history: History::new(),
             selection: Default::default(),
         }
     }

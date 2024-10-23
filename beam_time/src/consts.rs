@@ -8,6 +8,7 @@ use crate::assets::{
 };
 
 pub const CONFIG_FILE: &str = "config.toml";
+pub const MAX_HISTORY: usize = 100;
 
 pub const BACKGROUND_COLOR: Rgb<f32> = Rgb::new(0.235, 0.235, 0.235);
 pub const FOREGROUND_COLOR: Rgb<f32> = Rgb::new(0.859, 0.89, 0.839);

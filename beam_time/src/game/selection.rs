@@ -20,7 +20,12 @@ use crate::{
     util::in_bounds,
 };
 
-use super::{holding::Holding, tile::Tile, SharedState};
+use super::{
+    history::{Action, History},
+    holding::Holding,
+    tile::Tile,
+    SharedState,
+};
 
 #[derive(Default)]
 pub struct SelectionState {
@@ -37,6 +42,7 @@ impl SelectionState {
         ctx: &mut GraphicsContext<App>,
         shared: &SharedState,
         tiles: &mut Map<Tile>,
+        history: &mut History,
         holding: &mut Holding,
     ) {
         self.working_selection = self.selection_start.map(|start| {
@@ -77,9 +83,12 @@ impl SelectionState {
         }
 
         if ctx.input.key_pressed(KeyCode::Delete) {
+            let mut old = Vec::new();
             for pos in self.selection.iter() {
+                old.push((*pos, tiles.get(*pos)));
                 tiles.remove(*pos);
             }
+            history.track(Action::Delete { tiles: old });
             self.selection.clear();
         }
 
@@ -90,15 +99,20 @@ impl SelectionState {
 
         if ctrl && (copy || cut) {
             let mut list = Vec::new();
+            let mut old = Vec::new();
 
             for pos in self.selection.iter() {
                 let tile = tiles.get(*pos);
+                old.push((*pos, tile.clone()));
+
                 if !tile.is_empty() {
                     list.push((*pos, tile.clone()));
                 }
 
                 cut.then(|| tiles.remove(*pos));
             }
+
+            history.track(Action::Delete { tiles: old });
 
             let origin = shared
                 .screen_to_world_space(ctx, ctx.input.mouse)
