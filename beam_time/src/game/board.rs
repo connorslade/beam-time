@@ -91,6 +91,7 @@ impl Board {
         self.transient.selection.update(
             ctx,
             shared,
+            sim,
             &mut self.tiles,
             &mut self.transient.history,
             &mut self.transient.holding,

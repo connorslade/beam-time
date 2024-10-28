@@ -55,3 +55,5 @@
   - [ ] Benchmarking system
 - [x] Don't overstep pan/zoom goals during lag spikes
 - [ ] Engine key chord pressed
+- [x] Stop simulation on delete, cut, or copy
+- [ ] Cleanup history track_once vs track_many

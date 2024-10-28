@@ -1,4 +1,7 @@
-use std::{f32::consts::PI, ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, Mul, Not}};
+use std::{
+    f32::consts::PI,
+    ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, Mul, Not},
+};
 
 use engine::exports::nalgebra::Vector2;
 use serde::{Deserialize, Serialize};
@@ -147,11 +150,12 @@ impl BitAndAssign<Directions> for Directions {
 impl Mul<bool> for Direction {
     type Output = Directions;
 
+    #[allow(clippy::suspicious_arithmetic_impl)]
     fn mul(self, rhs: bool) -> Self::Output {
         if rhs {
-            Self::Output::empty() | self
+            Directions::empty() | self
         } else {
-            Self::Output::empty()
+            Directions::empty()
         }
     }
 }

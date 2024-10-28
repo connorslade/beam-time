@@ -20,7 +20,7 @@ use crate::{
     util::in_bounds,
 };
 
-use super::{history::History, holding::Holding, tile::Tile, SharedState};
+use super::{beam::BeamState, history::History, holding::Holding, tile::Tile, SharedState};
 
 #[derive(Default)]
 pub struct SelectionState {
@@ -36,6 +36,7 @@ impl SelectionState {
         &mut self,
         ctx: &mut GraphicsContext<App>,
         shared: &SharedState,
+        sim: &mut Option<BeamState>,
         tiles: &mut Map<Tile>,
         history: &mut History,
         holding: &mut Holding,
@@ -83,6 +84,7 @@ impl SelectionState {
                 old.push((*pos, tiles.get(*pos)));
                 tiles.remove(*pos);
             }
+            *sim = None;
             history.track_many(old);
             self.selection.clear();
         }
@@ -114,12 +116,14 @@ impl SelectionState {
                 .map(|x| x.ceil() as i32);
             list.iter_mut().for_each(|(pos, _)| *pos -= origin);
 
+            *sim = None;
             *holding = Holding::Paste(list);
             self.last_holding = holding.clone();
             self.selection.clear();
         }
 
         if ctrl && paste {
+            *sim = None;
             *holding = self.last_holding.clone();
         }
     }
@@ -135,10 +139,10 @@ impl SelectionState {
         if let Some(bounds @ (min, max)) = self.working_selection {
             if in_bounds(pos, bounds) {
                 let directions = Directions::empty()
-                    | Direction::Left * (pos.x == min.x)
-                    | Direction::Right * (pos.x == max.x)
-                    | Direction::Up * (pos.y == max.y)
-                    | Direction::Down * (pos.y == min.y);
+                    | (Direction::Left * (pos.x == min.x))
+                    | (Direction::Right * (pos.x == max.x))
+                    | (Direction::Up * (pos.y == max.y))
+                    | (Direction::Down * (pos.y == min.y));
 
                 for dir in directions.iter() {
                     let selection_overlay = Sprite::new(OVERLAY_SELECTION)
