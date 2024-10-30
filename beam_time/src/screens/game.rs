@@ -33,6 +33,10 @@ impl Screen<App> for GameScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
         self.shared.update(ctx, state);
 
+        if !self.beam.is_some() && ctx.input.key_pressed(KeyCode::Escape) {
+            ctx.pop_screen()
+        }
+
         let space_pressed = ctx.input.key_pressed(KeyCode::Space);
         let play_pressed = ctx.input.key_pressed(KeyCode::KeyP);
 

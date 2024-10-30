@@ -57,3 +57,5 @@
 - [ ] Engine key chord pressed
 - [x] Stop simulation on delete, cut, or copy
 - [ ] Cleanup history track_once vs track_many
+- [x] Pop screen & save/free simulation on ESC
+- [ ] Allow changing simulation speed

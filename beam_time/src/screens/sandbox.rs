@@ -58,7 +58,6 @@ impl Screen<App> for SandboxScreen {
                     text = text.color(Rgb::new(0.5, 0.5, 0.5));
 
                     if ctx.input.mouse_pressed(MouseButton::Left) {
-                        ctx.pop_screen();
                         ctx.push_screen(GameScreen::new(world.clone()));
                     }
                 }

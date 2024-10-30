@@ -23,7 +23,9 @@ impl<App> Screens<App> {
 
     pub fn pop_n(&mut self, n: usize, state: &mut App) {
         for _ in 0..n {
-            self.inner.pop();
+            if let Some(mut screen) = self.inner.pop() {
+                screen.on_destroy(state);
+            }
         }
 
         if n > 0 {
