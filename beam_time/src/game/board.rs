@@ -49,7 +49,9 @@ pub struct TransientBoardState {
 
 #[derive(Default, Debug, Serialize, Deserialize)]
 pub struct BoardMeta {
+    pub version: u32,
     pub name: String,
+    pub size: Option<Vector2<u32>>,
     pub last_played: DateTime<Utc>,
     pub playtime: u64,
 }
@@ -108,6 +110,12 @@ impl Board {
             for y in 0..tile_counts.y {
                 let render_pos = shared.render_pos(ctx, (x, y));
                 let pos = shared.tile_pos(ctx, (x, y));
+
+                if let Some(size) = self.meta.size {
+                    if pos.x < 0 || pos.y < 0 || pos.x as u32 > size.x || pos.y as u32 > size.y {
+                        continue;
+                    }
+                }
 
                 let hovered = in_bounds(
                     ctx.input.mouse,
