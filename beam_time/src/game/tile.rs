@@ -26,9 +26,7 @@ pub enum Tile {
     Galvo {
         rotation: Direction,
     },
-    Wall {
-        permanent: bool,
-    },
+    Wall,
 }
 
 impl Tile {
@@ -43,20 +41,12 @@ impl Tile {
         Tile::Splitter { rotation: false },
         Tile::Mirror { rotation: false },
         Tile::Delay,
-        Tile::Wall { permanent: false },
+        Tile::Wall,
         Tile::Detector,
     ];
 
     pub fn is_empty(&self) -> bool {
         matches!(self, Tile::Empty)
-    }
-
-    pub fn moveable(&self) -> bool {
-        !matches!(self, Tile::Wall { permanent: true })
-    }
-
-    pub fn permanent(&self) -> bool {
-        matches!(self, Tile::Wall { permanent: true })
     }
 
     pub fn name(&self) -> &str {

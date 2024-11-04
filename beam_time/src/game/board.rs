@@ -1,9 +1,9 @@
-use std::{fs, path::PathBuf, time::Instant};
+use std::{collections::HashSet, fs, path::PathBuf, time::Instant};
 
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use engine::{
-    drawable::sprite::Sprite,
+    drawable::{sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     app::App,
-    assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE},
+    assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B, UNDEAD_FONT},
     consts::layer,
     misc::map::Map,
     util::in_bounds,
@@ -34,6 +34,7 @@ use super::{
 pub struct Board {
     pub meta: BoardMeta,
     pub tiles: Map<Tile>,
+    pub permanent: HashSet<Vector2<i32>>,
 
     #[serde(skip)]
     pub transient: TransientBoardState,
@@ -69,10 +70,35 @@ impl Board {
         self.meta.playtime += self.transient.open_timestamp.elapsed().as_secs();
         self.meta.last_played = Utc::now();
 
+        self.meta = BoardMeta {
+            version: 2,
+            name: "Level-1".to_owned(),
+            size: Some(Vector2::new(6, 6)),
+            last_played: Utc::now(),
+            playtime: 0,
+        };
+        self.permanent = HashSet::new();
+        self.permanent.insert(Vector2::new(0, 6));
+        // self.permanent.insert(Vector2::new(0, 5));
+        self.tiles = Map::default();
+        self.tiles.set(
+            Vector2::new(0, 6),
+            Tile::Emitter {
+                rotation: crate::misc::direction::Direction::Down,
+                active: true,
+            },
+        );
+
         info!("Saving board to {path:?}");
         let raw = bincode::serialize(&self)?;
         fs::write(path, raw)?;
         Ok(())
+    }
+}
+
+impl Board {
+    fn is_permanent(&self, pos: &Vector2<i32>) -> bool {
+        self.permanent.contains(pos)
     }
 
     pub fn render(
@@ -127,14 +153,27 @@ impl Board {
                     .update_tile(ctx, shared, hovered, pos, render_pos);
 
                 let tile = self.tiles.get(pos);
+                let permanent = self.is_permanent(&pos);
                 let is_empty = tile.is_empty();
 
-                let grid_tile =
-                    [EMPTY_TILE_A, EMPTY_TILE_B][(pos.x.abs() + pos.y.abs()) as usize % 2];
+                let grid_color = (pos.x.abs() + pos.y.abs()) as usize % 2;
+                let grid_tile = [
+                    [EMPTY_TILE_A, EMPTY_TILE_B],
+                    [PERMANENT_TILE_A, PERMANENT_TILE_B],
+                ][permanent as usize][grid_color];
                 let grid = Sprite::new(grid_tile)
                     .scale(Vector2::repeat(shared.scale), Anchor::Center)
                     .position(render_pos, Anchor::Center)
                     .z_index(layer::TILE_BACKGROUND);
+
+                // let offset = 7.0 * shared.scale * ctx.scale_factor;
+                // let offset = Vector2::new(offset, -offset);
+                // ctx.draw(
+                //     Text::new(UNDEAD_FONT, "A")
+                //         .scale(Vector2::repeat(shared.scale / 2.0))
+                //         .pos(render_pos + offset, Anchor::BottomRight)
+                //         .z_index(layer::TILE_BACKGROUND_OVERLAY),
+                // );
 
                 if !is_empty {
                     let sprite = sim
@@ -155,18 +194,9 @@ impl Board {
                     }
 
                     ctx.draw(sprite);
-
-                    if tile.permanent() {
-                        ctx.draw(
-                            Sprite::new(PERMANENT_TILE)
-                                .scale(Vector2::repeat(shared.scale), Anchor::Center)
-                                .position(render_pos, Anchor::Center)
-                                .z_index(layer::TILE_BACKGROUND_OVERLAY),
-                        );
-                    }
                 }
 
-                if shift_down || !tile.moveable() {
+                if shift_down || permanent {
                     ctx.draw(grid);
                     continue;
                 }

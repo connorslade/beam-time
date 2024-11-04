@@ -9,10 +9,6 @@ pub struct Map<T> {
 }
 
 impl<T: Default + Copy + PartialEq> Map<T> {
-    pub fn clear(&mut self) {
-        self.tiles.clear();
-    }
-
     pub fn get(&self, pos: Vector2<i32>) -> T {
         self.tiles.get(&pos).copied().unwrap_or_default()
     }

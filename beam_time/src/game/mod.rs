@@ -12,6 +12,7 @@ pub mod beam;
 pub mod board;
 pub mod history;
 pub mod holding;
+pub mod level;
 mod selection;
 pub mod tile;
 

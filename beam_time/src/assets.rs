@@ -34,7 +34,8 @@ define_refs! {
 
         EMPTY_TILE_A,
         EMPTY_TILE_B,
-        PERMANENT_TILE,
+        PERMANENT_TILE_A,
+        PERMANENT_TILE_B,
         OVERLAY_SELECTION,
 
         TILE_WALL,
@@ -96,7 +97,8 @@ pub fn init(assets: &mut AssetConstructor) {
 
     assets.register_sprite(tiles, EMPTY_TILE_A, (0, 256), (16, 16));
     assets.register_sprite(tiles, EMPTY_TILE_B, (16, 256), (16, 16));
-    assets.register_sprite(tiles, PERMANENT_TILE, (0, 240), (16, 16));
+    assets.register_sprite(tiles, PERMANENT_TILE_A, (32, 256), (16, 16));
+    assets.register_sprite(tiles, PERMANENT_TILE_B, (48, 256), (16, 16));
     assets.register_sprite(tiles, OVERLAY_SELECTION, (64, 256), (16, 16));
 
     assets.register_sprite(tiles, TILE_WALL, (0, 176), (16, 16));
