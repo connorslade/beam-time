@@ -59,3 +59,13 @@
 - [ ] Cleanup history track_once vs track_many
 - [x] Pop screen & save/free simulation on ESC
 - [ ] Allow changing simulation speed
+- [x] Allow rotating copied selections
+
+## Levels
+
+1. Route the inputs to the outputs
+2. Route the inputs to the outputs
+3. Turn the output on when the input is off and turn it off when the input is on
+4. Turn the output on when either of the inputs are on
+5. Turn the output on when both of the inputs are on
+6. Turn the output on when only one of the inputs are on

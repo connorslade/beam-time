@@ -104,6 +104,19 @@ impl Tile {
         }
     }
 
+    pub fn rotate_reverse(self) -> Self {
+        match self {
+            Tile::Emitter { rotation, active } => Tile::Emitter {
+                rotation: rotation.roate_reverse(),
+                active,
+            },
+            Tile::Galvo { rotation } => Tile::Galvo {
+                rotation: rotation.roate_reverse(),
+            },
+            x => x.rotate(),
+        }
+    }
+
     pub fn activate(self) -> Self {
         match self {
             Self::Emitter { rotation, active } => Self::Emitter {

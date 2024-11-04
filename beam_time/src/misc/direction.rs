@@ -38,6 +38,15 @@ impl Direction {
         }
     }
 
+    pub fn roate_reverse(self) -> Self {
+        match self {
+            Self::Up => Self::Left,
+            Self::Right => Self::Up,
+            Self::Down => Self::Right,
+            Self::Left => Self::Down,
+        }
+    }
+
     pub fn offset(&self, pos: Vector2<i32>) -> Vector2<i32> {
         match self {
             Direction::Up => Vector2::new(pos.x, pos.y + 1),

@@ -25,7 +25,7 @@ impl Holding {
     }
 
     pub fn render<App>(&mut self, ctx: &mut GraphicsContext<App>, shared: &SharedState) {
-        if ctx.input.mouse_down(MouseButton::Right) {
+        if ctx.input.mouse_down(MouseButton::Right) || ctx.input.key_pressed(KeyCode::KeyQ) {
             *self = Holding::None;
         }
 
@@ -48,6 +48,13 @@ impl Holding {
                 );
             }
             Holding::Paste(tiles) => {
+                if ctx.input.key_pressed(KeyCode::KeyR) {
+                    for (pos, tile) in tiles.iter_mut() {
+                        *pos = Vector2::new(-pos.y, pos.x);
+                        *tile = tile.rotate_reverse();
+                    }
+                }
+
                 let tile_size = 16.0 * shared.scale * ctx.scale_factor;
                 for (pos, tile) in tiles.iter() {
                     let render_pos = ctx.input.mouse + tile_size * pos.map(|x| x as f32);
