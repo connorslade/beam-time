@@ -60,11 +60,15 @@ pub struct LevelState {
 impl BeamState {
     /// Creates a new BeamState from a Board by converting Tiles into their
     /// BeamTile counterparts.
-    pub fn new(board: &Board) -> Self {
-        let level = board.transient.level.map(|level| LevelState {
-            level,
-            test_case: 0,
-        });
+    pub fn new(board: &Board, test: bool) -> Self {
+        let level = if test {
+            board.transient.level.map(|level| LevelState {
+                level,
+                test_case: 0,
+            })
+        } else {
+            None
+        };
 
         let board = board.tiles.map(|x| match x {
             Tile::Empty => BeamTile::Empty,

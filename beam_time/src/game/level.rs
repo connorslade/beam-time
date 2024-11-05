@@ -11,7 +11,10 @@ use crate::misc::map::Map;
 use super::tile::Tile;
 
 pub static LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
-    vec![Level::load_slice(include_bytes!("../../assets/levels/level_1.ron")).unwrap()]
+    vec![
+        Level::load_slice(include_bytes!("../../assets/levels/level_1.ron")).unwrap(),
+        Level::load_slice(include_bytes!("../../assets/levels/level_2.ron")).unwrap(),
+    ]
 });
 
 #[derive(Debug, Deserialize)]

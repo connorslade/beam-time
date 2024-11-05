@@ -192,10 +192,12 @@ impl Board {
                         .position(render_pos, Anchor::Center);
 
                     if ctx.input.key_pressed(KeyCode::KeyE) && hovered {
-                        if let Some(BeamTile::Emitter { active, .. }) =
-                            sim.as_mut().map(|sim| sim.board.get_mut(pos))
-                        {
-                            *active ^= true;
+                        if let Some(sim) = sim {
+                            if let (BeamTile::Emitter { active, .. }, true) =
+                                (sim.board.get_mut(pos), sim.level.is_none())
+                            {
+                                *active ^= true;
+                            }
                         }
                     }
 

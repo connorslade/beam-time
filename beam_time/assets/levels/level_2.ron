@@ -1,0 +1,43 @@
+Level(
+    id: "3eb940dd-1f76-46c5-8aea-800ae0951364",
+    name: "XOR Gate",
+    description: "Turn the output on when only one of the inputs are on",
+
+    size: Some((6, 6)),
+    permanent: [ (0, 5), (1, 5), (5, 0) ],
+    tiles: {
+        (0, 5): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (1, 5): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (5, 0): Detector
+    },
+
+    tests: Tests(
+        lasers: [ Static((0, 5)), Static((1, 5)) ],
+        detectors: [ Static((5, 0)) ],
+
+        cases: [
+            TestCase(
+                lasers: [ false, false ],
+                detectors: [ false ],
+            ),
+            TestCase(
+                lasers: [ true, false ],
+                detectors: [ true ],
+            ),
+            TestCase(
+                lasers: [ true, true ],
+                detectors: [ false ],
+            ),
+            TestCase(
+                lasers: [ false, true ],
+                detectors: [ true ],
+            )
+        ]
+    )
+)
