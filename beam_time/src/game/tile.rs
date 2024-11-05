@@ -7,7 +7,7 @@ use crate::{
     misc::direction::Direction,
 };
 
-#[derive(Default, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Default, Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Tile {
     #[default]
     Empty,

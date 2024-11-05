@@ -25,6 +25,7 @@ define_refs! {
 
         BACK_BUTTON,
         SANDBOX_BUTTON,
+        CAMPAIGN_BUTTON,
         OPTIONS_BUTTON,
         ABOUT_BUTTON,
 
@@ -87,6 +88,7 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, COPYRIGHT, (0, 20), (30, 8));
     assets.register_sprite(interface, BACK_BUTTON, (43, 32), (26, 14));
     assets.register_sprite(interface, SANDBOX_BUTTON, (0, 32), (42, 14));
+    assets.register_sprite(interface, CAMPAIGN_BUTTON, (72, 48), (49, 14));
     assets.register_sprite(interface, OPTIONS_BUTTON, (0, 48), (39, 14));
     assets.register_sprite(interface, ABOUT_BUTTON, (40, 48), (31, 14));
 

@@ -78,10 +78,10 @@ impl Screen<App> for GameScreen {
 }
 
 impl GameScreen {
-    pub fn new(save_file: PathBuf) -> Self {
+    pub fn new(board: Board, save_file: PathBuf) -> Self {
         Self {
             shared: SharedState::default(),
-            board: Board::load(&save_file).unwrap_or_default(),
+            board,
             beam: None,
 
             tile_picker: TilePicker::default(),
@@ -90,5 +90,9 @@ impl GameScreen {
 
             save_file,
         }
+    }
+
+    pub fn load(save_file: PathBuf) -> Self {
+        GameScreen::new(Board::load(&save_file).unwrap_or_default(), save_file)
     }
 }

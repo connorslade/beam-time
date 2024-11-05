@@ -1,4 +1,5 @@
 use engine::{
+    assets::FontRef,
     drawable::text::Text,
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::{Anchor, GraphicsContext},
@@ -46,4 +47,18 @@ pub fn titled_screen(
     );
 
     pos
+}
+
+pub fn font_scale<App>(
+    ctx: &mut GraphicsContext<App>,
+    font: FontRef,
+    scale: f32,
+    lines: usize,
+) -> (f32, f32, f32) {
+    let font_desc = &ctx.assets.get_font(font).desc;
+    let line_height = font_desc.height * scale;
+    let line_spacing = line_height + (font_desc.leading * 2.0) * scale * ctx.scale_factor;
+    let total_height = line_spacing * lines as f32;
+
+    (line_height, line_spacing, total_height)
 }

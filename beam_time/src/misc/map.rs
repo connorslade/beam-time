@@ -3,7 +3,8 @@ use std::collections::HashMap;
 use engine::exports::nalgebra::Vector2;
 use serde::{Deserialize, Serialize};
 
-#[derive(Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(transparent)]
 pub struct Map<T> {
     tiles: HashMap<Vector2<i32>, T>,
 }

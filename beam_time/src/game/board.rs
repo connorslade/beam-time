@@ -3,7 +3,7 @@ use std::{collections::HashSet, fs, path::PathBuf, time::Instant};
 use anyhow::Result;
 use chrono::{DateTime, Utc};
 use engine::{
-    drawable::{sprite::Sprite, text::Text},
+    drawable::sprite::Sprite,
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
@@ -12,10 +12,11 @@ use engine::{
 };
 use log::{info, trace};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::{
     app::App,
-    assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B, UNDEAD_FONT},
+    assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B},
     consts::layer,
     misc::map::Map,
     util::in_bounds,
@@ -51,10 +52,19 @@ pub struct TransientBoardState {
 #[derive(Default, Debug, Serialize, Deserialize)]
 pub struct BoardMeta {
     pub version: u32,
+
     pub name: String,
+    pub level: Option<LevelMeta>,
     pub size: Option<Vector2<u32>>,
+
     pub last_played: DateTime<Utc>,
     pub playtime: u64,
+}
+
+#[derive(Default, Debug, Serialize, Deserialize)]
+pub struct LevelMeta {
+    id: Uuid,
+    solved: bool,
 }
 
 impl Board {
@@ -69,25 +79,6 @@ impl Board {
     pub fn save(mut self, path: &PathBuf) -> Result<()> {
         self.meta.playtime += self.transient.open_timestamp.elapsed().as_secs();
         self.meta.last_played = Utc::now();
-
-        self.meta = BoardMeta {
-            version: 2,
-            name: "Level-1".to_owned(),
-            size: Some(Vector2::new(6, 6)),
-            last_played: Utc::now(),
-            playtime: 0,
-        };
-        self.permanent = HashSet::new();
-        self.permanent.insert(Vector2::new(0, 6));
-        // self.permanent.insert(Vector2::new(0, 5));
-        self.tiles = Map::default();
-        self.tiles.set(
-            Vector2::new(0, 6),
-            Tile::Emitter {
-                rotation: crate::misc::direction::Direction::Down,
-                active: true,
-            },
-        );
 
         info!("Saving board to {path:?}");
         let raw = bincode::serialize(&self)?;

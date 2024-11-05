@@ -8,7 +8,7 @@ use engine::{
 };
 
 use crate::{
-    assets::{ABOUT_BUTTON, COPYRIGHT, OPTIONS_BUTTON, SANDBOX_BUTTON, TITLE},
+    assets::{ABOUT_BUTTON, CAMPAIGN_BUTTON, COPYRIGHT, OPTIONS_BUTTON, SANDBOX_BUTTON, TITLE},
     consts::BACKGROUND_COLOR,
     ui::{
         button::{Button, ButtonState},
@@ -17,12 +17,15 @@ use crate::{
     App,
 };
 
-use super::{about::AboutScreen, options::OptionsScreen, sandbox::SandboxScreen};
+use super::{
+    about::AboutScreen, campaign::CampaignScreen, options::OptionsScreen, sandbox::SandboxScreen,
+};
 
 pub struct TitleScreen {
     start_time: Instant,
 
-    start_button: ButtonState,
+    sandbox_button: ButtonState,
+    campaign_button: ButtonState,
     options_button: ButtonState,
     about_button: ButtonState,
 }
@@ -50,8 +53,18 @@ impl Screen<App> for TitleScreen {
 
         // Buttons
         ctx.draw(
-            Button::new(SANDBOX_BUTTON, &mut self.start_button)
+            Button::new(CAMPAIGN_BUTTON, &mut self.campaign_button)
                 .pos(ctx.center(), Anchor::Center)
+                .scale(Vector2::repeat(4.0))
+                .on_click(|ctx| ctx.push_screen(CampaignScreen::default())),
+        );
+
+        ctx.draw(
+            Button::new(SANDBOX_BUTTON, &mut self.sandbox_button)
+                .pos(
+                    ctx.center() - Vector2::new(0.0, 14.0 * 5.0 * ctx.scale_factor),
+                    Anchor::Center,
+                )
                 .scale(Vector2::repeat(4.0))
                 .on_click(|ctx| ctx.push_screen(SandboxScreen::default())),
         );
@@ -59,7 +72,7 @@ impl Screen<App> for TitleScreen {
         ctx.draw(
             Button::new(OPTIONS_BUTTON, &mut self.options_button)
                 .pos(
-                    ctx.center() - Vector2::new(0.0, 14.0 * 5.0 * ctx.scale_factor),
+                    ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0 * ctx.scale_factor),
                     Anchor::Center,
                 )
                 .scale(Vector2::repeat(4.0))
@@ -69,7 +82,7 @@ impl Screen<App> for TitleScreen {
         ctx.draw(
             Button::new(ABOUT_BUTTON, &mut self.about_button)
                 .pos(
-                    ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0 * ctx.scale_factor),
+                    ctx.center() - Vector2::new(0.0, 3.0 * 14.0 * 5.0 * ctx.scale_factor),
                     Anchor::Center,
                 )
                 .scale(Vector2::repeat(4.0))
@@ -78,7 +91,7 @@ impl Screen<App> for TitleScreen {
     }
 
     fn on_init(&mut self, _state: &mut App) {
-        self.start_button.reset();
+        self.sandbox_button.reset();
         self.about_button.reset();
         self.options_button.reset();
     }
@@ -93,7 +106,8 @@ impl Default for TitleScreen {
         Self {
             start_time: Instant::now(),
 
-            start_button: ButtonState::default(),
+            campaign_button: ButtonState::default(),
+            sandbox_button: ButtonState::default(),
             about_button: ButtonState::default(),
             options_button: ButtonState::default(),
         }

@@ -14,7 +14,7 @@ use crate::{
     assets::UNDEAD_FONT,
     game::board::BoardMeta,
     screens::game::GameScreen,
-    ui::{button::ButtonState, misc::titled_screen},
+    ui::{button::ButtonState, misc::{font_scale, titled_screen}},
     util::in_bounds,
     App,
 };
@@ -37,11 +37,8 @@ impl Screen<App> for SandboxScreen {
             );
         } else {
             const SCALE: f32 = 3.0;
-
-            let font_desc = &ctx.assets.get_font(UNDEAD_FONT).desc;
-            let line_height = font_desc.height * SCALE;
-            let line_spacing = line_height + (font_desc.leading * 2.0) * SCALE;
-            let total_height = line_spacing * self.worlds.len() as f32;
+            let (line_height, line_spacing, total_height) =
+                font_scale(ctx, UNDEAD_FONT, SCALE, self.worlds.len());
 
             for (i, (world, meta)) in self.worlds.iter().enumerate() {
                 let pos =
@@ -58,7 +55,7 @@ impl Screen<App> for SandboxScreen {
                     text = text.color(Rgb::new(0.5, 0.5, 0.5));
 
                     if ctx.input.mouse_pressed(MouseButton::Left) {
-                        ctx.push_screen(GameScreen::new(world.clone()));
+                        ctx.push_screen(GameScreen::load(world.clone()));
                     }
                 }
 

@@ -1,16 +1,26 @@
 Level(
+    id: "58fc60ca-3831-4f27-a29a-b4878a5dd68a",
     name: "Level 1",
     description: "Connect the laser to the detector",
 
+    size: Some((6, 6)),
+    tiles: {
+        (0, 5): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (5, 0): Detector
+    },
+
     tests: Tests(
-        lasers: [ ElementLocation::Static((0, 5)) ],
-        detectors: [ ElementLocation::Static((5, 0)) ],
+        lasers: [ Static((0, 5)) ],
+        detectors: [ Static((5, 0)) ],
 
         cases: [
-            TestCase {
+            TestCase(
                 lasers: [ true ],
                 detectors: [ true ],
-            }
+            )
         ]
     )
 )
