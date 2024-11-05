@@ -1,0 +1,83 @@
+Level(
+    id: "321e6dc9-4be6-4624-9f37-3b84f799f6a0",
+    name: "Multiplexer",
+    description: "Turn the output on when only one of the inputs are on",
+
+    size: Some((6, 6)),
+    permanent: [ (0, 5), (1, 5), (2, 5), (4, 5), (5, 5), (5, 0) ],
+    tiles: {
+        (0, 5): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (1, 5): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (2, 5): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (5, 5): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (4, 5): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (5, 0): Detector
+    },
+
+    tests: Tests(
+        lasers: [
+            // Inptus
+            Static((0, 5)),
+            Static((1, 5)),
+            Static((2, 5)),
+            
+            // Selector
+            Static((4, 5)),
+            Static((5, 5))
+        ],
+        detectors: [ Static((5, 0)) ],
+
+        cases: [
+            TestCase(
+                lasers: [
+                    true, false, false,
+                    false, false
+                ],
+                detectors: [ true ],
+            ),
+            TestCase(
+                lasers: [
+                    false, true, false,
+                    false, false
+                ],
+                detectors: [ false ],
+            ),
+            TestCase(
+                lasers: [
+                    false, true, false,
+                    false, true
+                ],
+                detectors: [ true ],
+            ),
+            TestCase(
+                lasers: [
+                    true, true, false,
+                    true, false
+                ],
+                detectors: [ false ],
+            ),
+            TestCase(
+                lasers: [
+                    true, true, true,
+                    true, false
+                ],
+                detectors: [ true ],
+            ),
+        ]   
+    )
+)

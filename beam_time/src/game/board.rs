@@ -1,4 +1,5 @@
 use std::{
+    collections::HashSet,
     fs::{self, File},
     path::PathBuf,
     time::Instant,
@@ -89,6 +90,7 @@ impl Board {
     pub fn save(mut self, path: &PathBuf) -> Result<()> {
         self.meta.playtime += self.transient.open_timestamp.elapsed().as_secs();
         self.meta.last_played = Utc::now();
+        self.meta.version = 3;
 
         info!("Saving board to {path:?}");
         let raw = bincode::serialize(&self)?;

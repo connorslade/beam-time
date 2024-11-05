@@ -38,6 +38,6 @@ Level(
                 lasers: [ false, true ],
                 detectors: [ true ],
             )
-        ]
+        ]   
     )
 )

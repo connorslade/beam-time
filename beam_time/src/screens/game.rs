@@ -52,7 +52,9 @@ impl Screen<App> for GameScreen {
 
         let space_pressed = ctx.input.key_pressed(KeyCode::Space);
         let play_pressed = ctx.input.key_pressed(KeyCode::KeyP);
-        let test_pressed = ctx.input.key_pressed(KeyCode::KeyT) && self.beam.is_none();
+        let test_pressed = ctx.input.key_pressed(KeyCode::KeyT)
+            && self.beam.is_none()
+            && self.board.meta.level.is_some();
 
         self.running |= play_pressed || test_pressed;
         self.running &= !space_pressed;
