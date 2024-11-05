@@ -63,8 +63,8 @@ pub struct BoardMeta {
 
 #[derive(Default, Debug, Serialize, Deserialize)]
 pub struct LevelMeta {
-    id: Uuid,
-    solved: bool,
+    pub id: Uuid,
+    pub solved: bool,
 }
 
 impl Board {
@@ -82,6 +82,11 @@ impl Board {
 
         info!("Saving board to {path:?}");
         let raw = bincode::serialize(&self)?;
+
+        if let Some(parent) = path.parent() {
+            fs::create_dir_all(parent)?;
+        }
+
         fs::write(path, raw)?;
         Ok(())
     }
@@ -129,7 +134,7 @@ impl Board {
                 let pos = shared.tile_pos(ctx, (x, y));
 
                 if let Some(size) = self.meta.size {
-                    if pos.x < 0 || pos.y < 0 || pos.x as u32 > size.x || pos.y as u32 > size.y {
+                    if pos.x < 0 || pos.y < 0 || pos.x as u32 >= size.x || pos.y as u32 >= size.y {
                         continue;
                     }
                 }

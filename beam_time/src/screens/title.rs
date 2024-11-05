@@ -70,19 +70,9 @@ impl Screen<App> for TitleScreen {
         );
 
         ctx.draw(
-            Button::new(OPTIONS_BUTTON, &mut self.options_button)
-                .pos(
-                    ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0 * ctx.scale_factor),
-                    Anchor::Center,
-                )
-                .scale(Vector2::repeat(4.0))
-                .on_click(|ctx| ctx.push_screen(OptionsScreen::default())),
-        );
-
-        ctx.draw(
             Button::new(ABOUT_BUTTON, &mut self.about_button)
                 .pos(
-                    ctx.center() - Vector2::new(0.0, 3.0 * 14.0 * 5.0 * ctx.scale_factor),
+                    ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0 * ctx.scale_factor),
                     Anchor::Center,
                 )
                 .scale(Vector2::repeat(4.0))

@@ -13,9 +13,10 @@ use crate::{
     app::App,
     assets::UNDEAD_FONT,
     game::{
-        board::{Board, BoardMeta},
+        board::{Board, BoardMeta, LevelMeta},
         level::LEVELS,
     },
+    screens::game::GameScreen,
     ui::{
         button::ButtonState,
         misc::{font_scale, titled_screen},
@@ -52,7 +53,29 @@ impl Screen<App> for CampaignScreen {
                 text = text.color(Rgb::new(0.5, 0.5, 0.5));
 
                 if ctx.input.mouse_pressed(MouseButton::Left) {
-                    // ctx.push_screen(GameScreen::new(Board{}));
+                    if let Some((path, _meta)) = self.worlds.get(&level.id) {
+                        ctx.push_screen(GameScreen::load(path.to_path_buf()));
+                    } else {
+                        let board = Board {
+                            meta: BoardMeta {
+                                name: level.name.to_owned(),
+                                level: Some(LevelMeta {
+                                    id: level.id,
+                                    solved: false,
+                                }),
+                                size: level.size,
+                                ..Default::default()
+                            },
+                            tiles: level.tiles.clone(),
+                            ..Default::default()
+                        };
+                        let path = state
+                            .data_dir
+                            .join("campaign")
+                            .join(level.id.to_string())
+                            .with_extension("bin");
+                        ctx.push_screen(GameScreen::new(board, path));
+                    }
                 }
             }
 
