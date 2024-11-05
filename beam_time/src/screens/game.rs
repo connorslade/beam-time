@@ -27,11 +27,24 @@ pub struct GameScreen {
     tile_picker: TilePicker,
     running: bool,
     last_tick: Instant,
+    needs_init: bool,
 }
 
 impl Screen<App> for GameScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
         self.shared.update(ctx, state);
+
+        if self.needs_init {
+            if let Some(size) = self.board.meta.size {
+                let tile_size = 16.0 * self.shared.scale * ctx.scale_factor;
+                let half_board = size.map(|x| x as f32) * tile_size / 2.0;
+                let pan = ctx.center() + Vector2::repeat(tile_size) - half_board;
+                self.shared.pan = pan;
+                self.shared.pan_goal = pan;
+            }
+
+            self.needs_init = false;
+        }
 
         if self.beam.is_none() && ctx.input.key_pressed(KeyCode::Escape) {
             ctx.pop_screen()
@@ -101,6 +114,7 @@ impl GameScreen {
             last_tick: Instant::now(),
 
             save_file,
+            needs_init: true,
         }
     }
 

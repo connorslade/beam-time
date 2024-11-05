@@ -19,8 +19,8 @@ pub mod tile;
 pub struct SharedState {
     pub pan: Vector2<f32>,
     pub scale: f32,
-    scale_goal: f32,
-    pan_goal: Vector2<f32>,
+    pub scale_goal: f32,
+    pub pan_goal: Vector2<f32>,
 }
 
 const PAN_KEYS: [(KeyCode, Vector2<f32>); 4] = [
