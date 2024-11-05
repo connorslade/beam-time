@@ -40,7 +40,7 @@ pub struct TestCase {
     pub detectors: Vec<bool>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Copy, Deserialize)]
 pub enum ElementLocation {
     Static(Vector2<i32>),
     Dynamic(usize),
@@ -59,9 +59,9 @@ impl Level {
 }
 
 impl ElementLocation {
-    pub fn into_pos(&self) -> Vector2<i32> {
+    pub fn into_pos(self) -> Vector2<i32> {
         match self {
-            ElementLocation::Static(pos) => *pos,
+            ElementLocation::Static(pos) => pos,
             ElementLocation::Dynamic(_) => todo!(),
         }
     }

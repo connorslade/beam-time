@@ -21,12 +21,7 @@ use crate::{
     },
 };
 
-use super::{
-    board::Board,
-    level::{ElementLocation, Level},
-    tile::Tile,
-    SharedState,
-};
+use super::{board::Board, level::Level, tile::Tile, SharedState};
 
 mod tick;
 pub mod tile;

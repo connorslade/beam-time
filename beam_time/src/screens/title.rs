@@ -8,7 +8,7 @@ use engine::{
 };
 
 use crate::{
-    assets::{ABOUT_BUTTON, CAMPAIGN_BUTTON, COPYRIGHT, OPTIONS_BUTTON, SANDBOX_BUTTON, TITLE},
+    assets::{ABOUT_BUTTON, CAMPAIGN_BUTTON, COPYRIGHT, SANDBOX_BUTTON, TITLE},
     consts::BACKGROUND_COLOR,
     ui::{
         button::{Button, ButtonState},
@@ -17,9 +17,7 @@ use crate::{
     App,
 };
 
-use super::{
-    about::AboutScreen, campaign::CampaignScreen, options::OptionsScreen, sandbox::SandboxScreen,
-};
+use super::{about::AboutScreen, campaign::CampaignScreen, sandbox::SandboxScreen};
 
 pub struct TitleScreen {
     start_time: Instant,

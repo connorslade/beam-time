@@ -1,6 +1,5 @@
-use std::{fs::File, path::PathBuf};
+use std::path::PathBuf;
 
-use anyhow::Result;
 use engine::{
     color::Rgb,
     drawable::text::Text,
@@ -8,11 +7,10 @@ use engine::{
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
 };
-use log::warn;
 
 use crate::{
     assets::UNDEAD_FONT,
-    game::board::{Board, BoardMeta},
+    game::board::BoardMeta,
     screens::game::GameScreen,
     ui::{
         button::ButtonState,

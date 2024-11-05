@@ -1,4 +1,8 @@
-use std::{collections::HashSet, fs::{self, File}, path::PathBuf, time::Instant};
+use std::{
+    fs::{self, File},
+    path::PathBuf,
+    time::Instant,
+};
 
 use anyhow::Result;
 use chrono::{DateTime, Utc};
