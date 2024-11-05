@@ -1,4 +1,4 @@
-use std::{fs::File, path::PathBuf};
+use std::{collections::HashSet, fs::File, path::PathBuf};
 
 use anyhow::Result;
 use engine::exports::nalgebra::Vector2;
@@ -21,6 +21,7 @@ pub struct Level {
     pub description: String,
 
     pub size: Option<Vector2<u32>>,
+    pub permanent: HashSet<Vector2<i32>>,
     pub tiles: Map<Tile>,
 
     pub tests: Tests,
@@ -28,15 +29,15 @@ pub struct Level {
 
 #[derive(Debug, Deserialize)]
 pub struct Tests {
-    cases: Vec<TestCase>,
+    pub cases: Vec<TestCase>,
 
-    lasers: Vec<ElementLocation>,
-    detectors: Vec<ElementLocation>,
+    pub lasers: Vec<ElementLocation>,
+    pub detectors: Vec<ElementLocation>,
 }
 #[derive(Debug, Deserialize)]
 pub struct TestCase {
-    lasers: Vec<bool>,
-    detectors: Vec<bool>,
+    pub lasers: Vec<bool>,
+    pub detectors: Vec<bool>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -54,5 +55,14 @@ impl Level {
 
     pub fn load_slice(slice: &[u8]) -> Result<Self> {
         Ok(ron::de::from_bytes(slice)?)
+    }
+}
+
+impl ElementLocation {
+    pub fn into_pos(&self) -> Vector2<i32> {
+        match self {
+            ElementLocation::Static(pos) => *pos,
+            ElementLocation::Dynamic(_) => todo!(),
+        }
     }
 }

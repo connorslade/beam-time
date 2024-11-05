@@ -1,4 +1,5 @@
 use engine::exports::nalgebra::Vector2;
+use log::trace;
 
 use crate::misc::{
     direction::{Direction, Directions},
@@ -9,6 +10,20 @@ use super::{opposite_if, BeamState, BeamTile, MIRROR_REFLECTIONS};
 
 impl BeamState {
     pub fn tick(&mut self) {
+        if let Some(level) = &mut self.level {
+            if level.case_correct(&mut self.board) {
+                trace!("Passed case #{}", level.test_case);
+                level.test_case += 1;
+
+                if level.test_case >= level.level.tests.cases.len() {
+                    trace!("Passed all cases!");
+                    return;
+                }
+
+                level.setup_case(&mut self.board);
+            }
+        }
+
         // To avoid issues that would arise from modifying the board in place, a
         // copy is made to store the new state.
         let mut working_board = self.board.clone();

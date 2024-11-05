@@ -12,7 +12,7 @@ use engine::{
 
 use crate::{
     consts::BACKGROUND_COLOR,
-    game::{beam::BeamState, board::Board, SharedState},
+    game::{beam::BeamState, board::Board, level::LEVELS, SharedState},
     ui::tile_picker::TilePicker,
     App,
 };
@@ -47,7 +47,12 @@ impl Screen<App> for GameScreen {
             let tick_needed = self.last_tick.elapsed() >= Duration::from_millis(10);
             if space_pressed || (self.running && tick_needed) {
                 self.last_tick = Instant::now();
-                beam.tick();
+                let is_complete = beam.level.as_ref().map(|x| x.is_complete());
+                if is_complete == Some(true) {
+                    self.running = false;
+                } else {
+                    beam.tick();
+                }
             }
 
             beam.render(ctx, state, &self.shared);
@@ -57,7 +62,7 @@ impl Screen<App> for GameScreen {
             self.beam = Some(beam);
         }
 
-        if ctx.input.key_pressed(KeyCode::Escape) {
+        if !self.running || ctx.input.key_pressed(KeyCode::Escape) {
             self.beam = None;
         }
 
@@ -78,7 +83,12 @@ impl Screen<App> for GameScreen {
 }
 
 impl GameScreen {
-    pub fn new(board: Board, save_file: PathBuf) -> Self {
+    pub fn new(mut board: Board, save_file: PathBuf) -> Self {
+        board.transient.level = board
+            .meta
+            .level
+            .map(|x| LEVELS.iter().find(|y| y.id == x.id).unwrap());
+
         Self {
             shared: SharedState::default(),
             board,

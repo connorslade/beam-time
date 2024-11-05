@@ -26,6 +26,7 @@ use super::{
     beam::{tile::BeamTile, BeamState},
     history::History,
     holding::Holding,
+    level::Level,
     selection::SelectionState,
     tile::Tile,
     SharedState,
@@ -35,7 +36,6 @@ use super::{
 pub struct Board {
     pub meta: BoardMeta,
     pub tiles: Map<Tile>,
-    pub permanent: HashSet<Vector2<i32>>,
 
     #[serde(skip)]
     pub transient: TransientBoardState,
@@ -44,6 +44,7 @@ pub struct Board {
 pub struct TransientBoardState {
     pub holding: Holding,
     pub history: History,
+    pub level: Option<&'static Level>,
 
     open_timestamp: Instant,
     selection: SelectionState,
@@ -61,7 +62,7 @@ pub struct BoardMeta {
     pub playtime: u64,
 }
 
-#[derive(Default, Debug, Serialize, Deserialize)]
+#[derive(Default, Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct LevelMeta {
     pub id: Uuid,
     pub solved: bool,
@@ -94,7 +95,7 @@ impl Board {
 
 impl Board {
     fn is_permanent(&self, pos: &Vector2<i32>) -> bool {
-        self.permanent.contains(pos)
+        self.transient.level.map(|x| x.permanent.contains(pos)) == Some(true)
     }
 
     pub fn render(
@@ -265,6 +266,7 @@ impl Default for TransientBoardState {
         Self {
             open_timestamp: Instant::now(),
             holding: Default::default(),
+            level: None,
             history: History::new(),
             selection: Default::default(),
         }

@@ -4,6 +4,7 @@ Level(
     description: "Connect the laser to the detector",
 
     size: Some((6, 6)),
+    permanent: [],
     tiles: {
         (0, 5): Emitter(
             rotation: Down,

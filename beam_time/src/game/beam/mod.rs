@@ -4,6 +4,7 @@ use engine::{
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
 };
+use log::trace;
 use tile::BeamTile;
 
 use crate::{
@@ -20,7 +21,12 @@ use crate::{
     },
 };
 
-use super::{board::Board, tile::Tile, SharedState};
+use super::{
+    board::Board,
+    level::{ElementLocation, Level},
+    tile::Tile,
+    SharedState,
+};
 
 mod tick;
 pub mod tile;
@@ -48,12 +54,23 @@ const SPLITTER_TEXTURES: [SpriteRef; 4] = [
 
 pub struct BeamState {
     pub board: Map<BeamTile>,
+    pub level: Option<LevelState>,
+}
+
+pub struct LevelState {
+    level: &'static Level,
+    test_case: usize,
 }
 
 impl BeamState {
     /// Creates a new BeamState from a Board by converting Tiles into their
     /// BeamTile counterparts.
     pub fn new(board: &Board) -> Self {
+        let level = board.transient.level.map(|level| LevelState {
+            level,
+            test_case: 0,
+        });
+
         let board = board.tiles.map(|x| match x {
             Tile::Empty => BeamTile::Empty,
             Tile::Emitter { rotation, active } => BeamTile::Emitter {
@@ -85,7 +102,14 @@ impl BeamState {
             },
         });
 
-        Self { board }
+        let mut state = Self { board, level };
+
+        if let Some(level) = &mut state.level {
+            trace!("Running with level: {}", level.level.name);
+            level.setup_case(&mut state.board);
+        }
+
+        state
     }
 
     /// Renders the beam over the board.
@@ -168,6 +192,42 @@ impl BeamState {
                 _ => {}
             }
         }
+    }
+}
+
+impl LevelState {
+    pub fn is_complete(&self) -> bool {
+        self.test_case >= self.level.tests.cases.len()
+    }
+
+    fn setup_case(&mut self, board: &mut Map<BeamTile>) {
+        let tests = &self.level.tests;
+        let case = &tests.cases[self.test_case];
+
+        for (pos, state) in tests.lasers.iter().zip(&case.lasers) {
+            let pos = pos.into_pos();
+            if let BeamTile::Emitter { active, .. } = board.get_mut(pos) {
+                *active = *state;
+            }
+        }
+    }
+
+    fn case_correct(&self, board: &mut Map<BeamTile>) -> bool {
+        let tests = &self.level.tests;
+        let case = &tests.cases[self.test_case];
+
+        for (pos, state) in tests.detectors.iter().zip(&case.detectors) {
+            let pos = pos.into_pos();
+            let BeamTile::Detector { powered } = board.get(pos) else {
+                return false;
+            };
+
+            if powered.any() != *state {
+                return false;
+            }
+        }
+
+        true
     }
 }
 
