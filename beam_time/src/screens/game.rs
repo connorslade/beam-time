@@ -39,7 +39,7 @@ impl Screen<App> for GameScreen {
 
         let space_pressed = ctx.input.key_pressed(KeyCode::Space);
         let play_pressed = ctx.input.key_pressed(KeyCode::KeyP);
-        let test_pressed = ctx.input.key_pressed(KeyCode::KeyT);
+        let test_pressed = ctx.input.key_pressed(KeyCode::KeyT) && self.beam.is_none();
 
         self.running |= play_pressed || test_pressed;
         self.running &= !space_pressed;
@@ -48,22 +48,23 @@ impl Screen<App> for GameScreen {
             let tick_needed = self.last_tick.elapsed() >= Duration::from_millis(50);
             if space_pressed || (self.running && tick_needed) {
                 self.last_tick = Instant::now();
-                let is_complete = beam.level.as_ref().map(|x| x.is_complete());
-                if is_complete == Some(true) {
-                    self.running = false;
-                } else {
-                    beam.tick();
-                }
+                beam.tick();
             }
 
-            beam.render(ctx, state, &self.shared);
+            let is_complete = beam.level.as_ref().map(|x| x.is_complete());
+            if is_complete == Some(true) {
+                self.running = false;
+                self.beam = None;
+            } else {
+                beam.render(ctx, state, &self.shared);
+            }
         } else if space_pressed || play_pressed || test_pressed {
             let mut beam = BeamState::new(&self.board, test_pressed);
             beam.tick();
             self.beam = Some(beam);
         }
 
-        if !self.running || ctx.input.key_pressed(KeyCode::Escape) {
+        if ctx.input.key_pressed(KeyCode::Escape) {
             self.beam = None;
         }
 
