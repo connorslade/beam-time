@@ -1,0 +1,23 @@
+Level(
+    id: "5d317b17-a9b5-4b5c-b07f-e006064581f1",
+    name: "Two-Tick Clock",
+    description: "...",
+
+    size: Some((6, 6)),
+    permanent: [ (5, 0) ],
+    tiles: {
+        (5, 0): Detector
+    },
+
+    tests: Tests(
+        lasers: [ ],
+        detectors: [ Static((5, 0)) ],
+
+        cases: [
+            TestCase(
+                lasers: [ ],
+                detectors: [ true ]
+            )
+        ]
+    )
+)

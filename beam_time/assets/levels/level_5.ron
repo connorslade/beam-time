@@ -1,0 +1,47 @@
+Level(
+    id: "d46980e0-b2d0-4102-ab95-8bdc16d00ca9",
+    name: "Or Gate",
+    description: "...",
+
+    size: Some((6, 6)),
+    permanent: [ (0, 5), (1, 5), (5, 0) ],
+    tiles: {
+        (0, 5): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (1, 5): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (5, 0): Detector
+    },
+
+    tests: Tests(
+        lasers: [ Static((0, 5)), Static((1, 5)) ],
+        detectors: [ Static((5, 0)) ],
+
+        cases: [
+            TestCase(
+                lasers: [ true, false ],
+                detectors: [ true ],
+            ),
+            TestCase(
+                lasers: [ false, false ],
+                detectors: [ false ],
+            ),
+            TestCase(
+                lasers: [ false, true ],
+                detectors: [ true ],
+            ),
+            TestCase(
+                lasers: [ false, false ],
+                detectors: [ false ],
+            ),
+            TestCase(
+                lasers: [ true, true ],
+                detectors: [ true ],
+            )
+        ]
+    )
+)

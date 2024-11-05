@@ -2,6 +2,7 @@ use std::{collections::HashSet, fs::File, path::PathBuf};
 
 use anyhow::Result;
 use engine::exports::nalgebra::Vector2;
+use log::warn;
 use once_cell::sync::Lazy;
 use serde::Deserialize;
 use uuid::Uuid;
@@ -10,13 +11,35 @@ use crate::misc::map::Map;
 
 use super::tile::Tile;
 
+pub macro default_level {
+    ($name:expr) => {
+        Level::load_slice(include_bytes!(concat!("../../assets/levels/", $name)))
+    },
+    ($($name:expr),*) => {{
+        let mut out = Vec::new();
+        $(
+            match default_level!($name) {
+                Ok(x) => out.push(x),
+                Err(err) => warn!("Error loading level `{}`: {err}", $name)
+            };
+        )*
+        return out;
+    }}
+}
+
 pub static LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
-    vec![
-        Level::load_slice(include_bytes!("../../assets/levels/level_1.ron")).unwrap(),
-        Level::load_slice(include_bytes!("../../assets/levels/level_2.ron")).unwrap(),
-        Level::load_slice(include_bytes!("../../assets/levels/level_3.ron")).unwrap(),
-        Level::load_slice(include_bytes!("../../assets/levels/level_7.ron")).unwrap(),
-    ]
+    default_level!(
+        "level_1.ron",
+        "level_2.ron",
+        "level_3.ron",
+        "level_4.ron",
+        "level_5.ron",
+        "level_6.ron",
+        "level_7.ron",
+        "level_8.ron",
+        "level_9.ron",
+        "level_10.ron"
+    )
 });
 
 #[derive(Debug, Deserialize)]

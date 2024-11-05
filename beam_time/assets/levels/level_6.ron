@@ -1,0 +1,46 @@
+Level(
+    id: "86456173-e27c-4918-ae11-ef5a36147037",
+    name: "Synchronization",
+    description: "...",
+
+    size: Some((6, 6)),
+    permanent: [
+        (0, 5), (1, 5), (2, 5), (3, 5), (4, 5), (5, 5),
+        (1, 0), (2, 0), (3, 0), (4, 0), (5, 0)
+    ],
+    tiles: {
+        (0, 5): Emitter(
+            rotation: Right,
+            active: true
+        ),
+        (1, 5): Splitter( rotation: true ),
+        (2, 5): Splitter( rotation: true ),
+        (3, 5): Splitter( rotation: true ),
+        (4, 5): Splitter( rotation: true ),
+        (5, 5): Mirror( rotation: true ),
+
+        (1, 0): Detector,
+        (2, 0): Detector,
+        (3, 0): Detector,
+        (4, 0): Detector,
+        (5, 0): Detector
+    },
+
+    tests: Tests(
+        lasers: [ Static((0, 5)) ],
+        detectors: [
+            Static((1, 0)),
+            Static((2, 0)),
+            Static((3, 0)),
+            Static((4, 0)),
+            Static((5, 0))
+        ],
+
+        cases: [
+            TestCase(
+                lasers: [ true ],
+                detectors: [ true, true, true, true, true ],
+            )
+        ]
+    )
+)
