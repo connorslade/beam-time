@@ -55,6 +55,7 @@ pub struct BeamState {
 pub struct LevelState {
     level: &'static Level,
     test_case: usize,
+    cooldown: u32,
 }
 
 impl BeamState {
@@ -65,6 +66,7 @@ impl BeamState {
             board.transient.level.map(|level| LevelState {
                 level,
                 test_case: 0,
+                cooldown: level.tests.delay.unwrap_or_default(),
             })
         } else {
             None
@@ -203,6 +205,10 @@ impl LevelState {
         let tests = &self.level.tests;
         let case = &tests.cases[self.test_case];
 
+        if let Some(cooldown) = tests.delay {
+            self.cooldown = cooldown;
+        }
+
         for (pos, state) in tests.lasers.iter().zip(&case.lasers) {
             let pos = pos.into_pos();
             if let BeamTile::Emitter { active, .. } = board.get_mut(pos) {
@@ -211,7 +217,12 @@ impl LevelState {
         }
     }
 
-    fn case_correct(&self, board: &mut Map<BeamTile>) -> bool {
+    fn case_correct(&mut self, board: &mut Map<BeamTile>) -> bool {
+        if self.cooldown > 0 {
+            self.cooldown -= 1;
+            return false;
+        }
+
         let tests = &self.level.tests;
         let case = &tests.cases[self.test_case];
 

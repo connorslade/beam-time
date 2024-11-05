@@ -1,43 +1,44 @@
 Level(
-    id: "3eb940dd-1f76-46c5-8aea-800ae0951364",
-    name: "XOR Gate",
-    description: "Turn the output on when only one of the inputs are on",
+    id: "3d01432a-228c-4cfd-9be3-407a796b49c8",
+    name: "Slightly Less Basic Routing",
+    description: "Connect the laser to all detectors",
 
     size: Some((6, 6)),
-    permanent: [ (0, 5), (1, 5), (5, 0) ],
+    permanent: [
+        (0, 5), (5, 0), (5, 4),
+        (3, 0), (1, 1), (5, 1), (3, 2), (0, 3), (5, 3), (2, 4), (4, 5)
+    ],
     tiles: {
         (0, 5): Emitter(
             rotation: Down,
             active: true
         ),
-        (1, 5): Emitter(
-            rotation: Down,
-            active: true
-        ),
-        (5, 0): Detector
+        (5, 0): Detector,
+        (5, 4): Detector,
+
+        (3, 0): Wall,
+        (1, 1): Wall,
+        (5, 1): Wall,
+        (3, 2): Wall,
+        (0, 3): Wall,
+        (5, 3): Wall,
+        (2, 4): Wall,
+        (4, 5): Wall
     },
 
     tests: Tests(
-        lasers: [ Static((0, 5)), Static((1, 5)) ],
-        detectors: [ Static((5, 0)) ],
+        lasers: [ Static((0, 5)) ],
+        detectors: [ Static((5, 0)), Static((5, 4)) ],
 
         cases: [
             TestCase(
-                lasers: [ false, false ],
-                detectors: [ false ],
+                lasers: [ true ],
+                detectors: [ true, true ],
             ),
             TestCase(
-                lasers: [ true, false ],
-                detectors: [ true ],
-            ),
-            TestCase(
-                lasers: [ true, true ],
-                detectors: [ false ],
-            ),
-            TestCase(
-                lasers: [ false, true ],
-                detectors: [ true ],
+                lasers: [ false ],
+                detectors: [ false, false ],
             )
-        ]   
+        ]
     )
 )

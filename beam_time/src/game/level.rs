@@ -15,6 +15,7 @@ pub static LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
         Level::load_slice(include_bytes!("../../assets/levels/level_1.ron")).unwrap(),
         Level::load_slice(include_bytes!("../../assets/levels/level_2.ron")).unwrap(),
         Level::load_slice(include_bytes!("../../assets/levels/level_3.ron")).unwrap(),
+        Level::load_slice(include_bytes!("../../assets/levels/level_7.ron")).unwrap(),
     ]
 });
 
@@ -33,6 +34,8 @@ pub struct Level {
 
 #[derive(Debug, Deserialize)]
 pub struct Tests {
+    #[serde(default)]
+    pub delay: Option<u32>,
     pub cases: Vec<TestCase>,
 
     pub lasers: Vec<ElementLocation>,

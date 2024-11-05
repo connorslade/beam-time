@@ -24,7 +24,7 @@ pub fn titled_screen(
 ) -> Vector2<f32> {
     ctx.input.resized.then(|| state.waterfall.reset());
     ctx.input
-        .key_down(KeyCode::Escape)
+        .key_pressed(KeyCode::Escape)
         .then(|| ctx.pop_screen());
 
     ctx.background(BACKGROUND_COLOR);
@@ -57,7 +57,7 @@ pub fn font_scale<App>(
 ) -> (f32, f32, f32) {
     let font_desc = &ctx.assets.get_font(font).desc;
     let line_height = font_desc.height * scale;
-    let line_spacing = line_height + (font_desc.leading * 2.0) * scale * ctx.scale_factor;
+    let line_spacing = (line_height + 2.0 * font_desc.leading * scale * ctx.scale_factor) * 1.5;
     let total_height = line_spacing * lines as f32;
 
     (line_height, line_spacing, total_height)
