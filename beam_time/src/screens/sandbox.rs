@@ -12,10 +12,13 @@ use log::warn;
 
 use crate::{
     assets::UNDEAD_FONT,
-    game::board::BoardMeta,
+    game::board::{Board, BoardMeta},
     screens::game::GameScreen,
-    ui::{button::ButtonState, misc::{font_scale, titled_screen}},
-    util::in_bounds,
+    ui::{
+        button::ButtonState,
+        misc::{font_scale, titled_screen},
+    },
+    util::{in_bounds, load_level_dir},
     App,
 };
 
@@ -68,23 +71,7 @@ impl Screen<App> for SandboxScreen {
         // todo: make async with poll_promise?
         let world_dir = state.data_dir.join("sandbox");
         if world_dir.exists() {
-            for world in world_dir.read_dir().unwrap().filter_map(Result::ok) {
-                let path = world.path();
-                let meta = match load_meta(&path) {
-                    Ok(meta) => meta,
-                    Err(err) => {
-                        warn!("Failed to load meta for {:?}: {}", path, err);
-                        continue;
-                    }
-                };
-
-                self.worlds.push((path, meta));
-            }
+            self.worlds = load_level_dir(world_dir);
         }
     }
-}
-
-fn load_meta(path: &PathBuf) -> Result<BoardMeta> {
-    let file = File::open(path)?;
-    Ok(bincode::deserialize_from(file)?)
 }

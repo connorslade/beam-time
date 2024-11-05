@@ -4,7 +4,7 @@
 - [x] Support multiple atlases
 - [x] Text rendering
 - [x] Convert all positions to floats
-- [ ] Should scale be automatically multiplied by scale_factor if position cant?
+- [x] Should scale be automatically multiplied by scale_factor if position cant?
 - [x] Supply all four points in GpuSprite
 - [x] Allow rotating sprites
 - [ ] Look into anti aliasing

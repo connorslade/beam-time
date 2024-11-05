@@ -21,7 +21,7 @@ use crate::{
         button::ButtonState,
         misc::{font_scale, titled_screen},
     },
-    util::in_bounds,
+    util::{in_bounds, load_level_dir},
 };
 
 #[derive(Default)]
@@ -80,6 +80,16 @@ impl Screen<App> for CampaignScreen {
             }
 
             ctx.draw(text);
+        }
+    }
+
+    fn on_init(&mut self, state: &mut App) {
+        let dir = state.data_dir.join("campaign");
+        if dir.exists() {
+            for (path, meta) in load_level_dir(dir) {
+                let Some(level) = meta.level else { continue };
+                self.worlds.insert(level.id, (path, meta));
+            }
         }
     }
 }

@@ -1,4 +1,9 @@
+use std::path::PathBuf;
+
 use engine::exports::nalgebra::{Scalar, Vector2};
+use log::warn;
+
+use crate::game::board::{Board, BoardMeta};
 
 pub macro include_asset($name:expr) {
     include_bytes!(concat!("../assets/", $name))
@@ -25,4 +30,23 @@ pub fn lerp(start: f32, end: f32, t: f32) -> f32 {
 pub fn exp_decay(start: f32, end: f32, decay: f32, dt: f32) -> f32 {
     let lerp_speed = (-decay * dt).exp();
     lerp(end, start, lerp_speed)
+}
+
+pub fn load_level_dir(dir: PathBuf) -> Vec<(PathBuf, BoardMeta)> {
+    let mut out = Vec::new();
+
+    for world in dir.read_dir().unwrap().filter_map(Result::ok) {
+        let path = world.path();
+        let meta = match Board::load_meta(&path) {
+            Ok(meta) => meta,
+            Err(err) => {
+                warn!("Failed to load meta for {:?}: {}", path, err);
+                continue;
+            }
+        };
+
+        out.push((path, meta));
+    }
+
+    out
 }

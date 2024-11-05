@@ -1,4 +1,4 @@
-use std::{collections::HashSet, fs, path::PathBuf, time::Instant};
+use std::{collections::HashSet, fs::{self, File}, path::PathBuf, time::Instant};
 
 use anyhow::Result;
 use chrono::{DateTime, Utc};
@@ -75,6 +75,11 @@ impl Board {
         let board = bincode::deserialize::<Board>(&raw)?;
         trace!("{:?}", board.meta);
         Ok(board)
+    }
+
+    pub fn load_meta(path: &PathBuf) -> Result<BoardMeta> {
+        let file = File::open(path)?;
+        Ok(bincode::deserialize_from(file)?)
     }
 
     pub fn save(mut self, path: &PathBuf) -> Result<()> {
