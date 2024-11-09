@@ -60,7 +60,18 @@ impl BeamState {
                     }
 
                     if self.source_gone(pos, direction) {
-                        working_board.remove(pos);
+                        if let BeamTile::CrossBeam { directions } = working_board.get(pos) {
+                            let index = directions.iter().position(|&x| x == direction).unwrap();
+                            let direction = directions[1 - index];
+
+                            let new_tile = BeamTile::Beam {
+                                direction,
+                                distance,
+                            };
+                            working_board.set(pos, new_tile);
+                        } else {
+                            working_board.remove(pos);
+                        }
                     }
 
                     self.power(&mut working_board, pos, direction);
