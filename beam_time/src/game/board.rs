@@ -1,11 +1,11 @@
 use std::{
-    collections::HashSet,
     fs::{self, File},
     path::PathBuf,
     time::Instant,
 };
 
 use anyhow::Result;
+use bincode::Options;
 use chrono::{DateTime, Utc};
 use engine::{
     drawable::sprite::Sprite,
@@ -76,15 +76,23 @@ pub struct LevelMeta {
 impl Board {
     pub fn load(path: &PathBuf) -> Result<Self> {
         info!("Loading board from {path:?}");
-        let raw = fs::read(path)?;
-        let board = bincode::deserialize::<Board>(&raw)?;
+
+        let file = File::open(path)?;
+        let board = bincode::DefaultOptions::new()
+            .with_varint_encoding()
+            .deserialize_from::<_, Board>(file)?;
+
         trace!("{:?}", board.meta);
         Ok(board)
     }
 
     pub fn load_meta(path: &PathBuf) -> Result<BoardMeta> {
         let file = File::open(path)?;
-        Ok(bincode::deserialize_from(file)?)
+        let meta = bincode::DefaultOptions::new()
+            .with_varint_encoding()
+            .allow_trailing_bytes()
+            .deserialize_from::<_, BoardMeta>(file)?;
+        Ok(meta)
     }
 
     pub fn save(mut self, path: &PathBuf) -> Result<()> {
@@ -93,13 +101,15 @@ impl Board {
         self.meta.version = 3;
 
         info!("Saving board to {path:?}");
-        let raw = bincode::serialize(&self)?;
-
         if let Some(parent) = path.parent() {
             fs::create_dir_all(parent)?;
         }
 
-        fs::write(path, raw)?;
+        let file = File::create(path)?;
+        bincode::DefaultOptions::new()
+            .with_varint_encoding()
+            .serialize_into(file, &self)?;
+
         Ok(())
     }
 }
