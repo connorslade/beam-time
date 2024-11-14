@@ -38,7 +38,7 @@ impl Direction {
         }
     }
 
-    pub fn roate_reverse(self) -> Self {
+    pub fn rotate_reverse(self) -> Self {
         match self {
             Self::Up => Self::Left,
             Self::Right => Self::Up,
@@ -62,6 +62,22 @@ impl Direction {
             Self::Right => Self::Left,
             Self::Down => Self::Up,
             Self::Left => Self::Right,
+        }
+    }
+
+    pub fn flip_vertical(self) -> Self {
+        match self {
+            Direction::Left | Direction::Right => self,
+            Direction::Up => Direction::Down,
+            Direction::Down => Direction::Up,
+        }
+    }
+
+    pub fn flip_horizontal(self) -> Self {
+        match self {
+            Direction::Up | Direction::Down => self,
+            Direction::Right => Direction::Left,
+            Direction::Left => Direction::Right,
         }
     }
 

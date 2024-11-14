@@ -55,6 +55,20 @@ impl Holding {
                     }
                 }
 
+                if ctx.input.key_pressed(KeyCode::KeyV) {
+                    for (pos, tile) in tiles.iter_mut() {
+                        *pos = Vector2::new(pos.x, -pos.y);
+                        *tile = tile.flip_vertical();
+                    }
+                }
+
+                 if ctx.input.key_pressed(KeyCode::KeyH) {
+                    for (pos, tile) in tiles.iter_mut() {
+                        *pos = Vector2::new(-pos.x, pos.y);
+                        *tile = tile.flip_horizontal();
+                    }
+                }
+
                 let tile_size = 16.0 * shared.scale * ctx.scale_factor;
                 for (pos, tile) in tiles.iter() {
                     let render_pos = ctx.input.mouse + tile_size * pos.map(|x| x as f32);

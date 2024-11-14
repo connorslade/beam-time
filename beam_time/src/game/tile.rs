@@ -97,13 +97,41 @@ impl Tile {
     pub fn rotate_reverse(self) -> Self {
         match self {
             Tile::Emitter { rotation, active } => Tile::Emitter {
-                rotation: rotation.roate_reverse(),
+                rotation: rotation.rotate_reverse(),
                 active,
             },
             Tile::Galvo { rotation } => Tile::Galvo {
-                rotation: rotation.roate_reverse(),
+                rotation: rotation.rotate_reverse(),
             },
             x => x.rotate(),
+        }
+    }
+
+    pub fn flip_horizontal(self) -> Self {
+        match self {
+            Tile::Emitter { rotation, active } => Tile::Emitter {
+                rotation: rotation.flip_horizontal(),
+                active,
+            },
+            Tile::Galvo { rotation } => Tile::Galvo {
+                rotation: rotation.flip_horizontal(),
+            },
+            Tile::Mirror { .. } | Tile::Splitter { .. } => self.rotate(),
+            x => x,
+        }
+    }
+
+    pub fn flip_vertical(self) -> Self {
+        match self {
+            Tile::Emitter { rotation, active } => Tile::Emitter {
+                rotation: rotation.flip_vertical(),
+                active,
+            },
+            Tile::Galvo { rotation } => Tile::Galvo {
+                rotation: rotation.flip_vertical(),
+            },
+            Tile::Mirror { .. } | Tile::Splitter { .. } => self.rotate(),
+            x => x,
         }
     }
 
