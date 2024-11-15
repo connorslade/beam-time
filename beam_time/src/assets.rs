@@ -74,7 +74,7 @@ define_refs! {
 
 pub fn animated_sprite(texture: SpriteRef, active: bool, frame: u8) -> Sprite {
     let offset = if active { frame + 1 } else { 0 } * 16;
-    Sprite::new(texture).uv_offset(Vector2::new(offset as u32, 0))
+    Sprite::new(texture).uv_offset(Vector2::new(offset as i32, 0))
 }
 
 pub fn init(assets: &mut AssetConstructor) {
@@ -93,31 +93,31 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, ABOUT_BUTTON, (40, 48), (31, 14));
 
     let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
-    assets.register_sprite(tiles, TILE_PICKER_BACKGROUND_LEFT, (80, 256), (16, 16));
-    assets.register_sprite(tiles, TILE_PICKER_BACKGROUND_CENTER, (96, 256), (16, 16));
-    assets.register_sprite(tiles, TILE_PICKER_BACKGROUND_RIGHT, (112, 256), (16, 16));
+    assets.register_sprite(tiles, TILE_PICKER_BACKGROUND_LEFT, (80, 288), (16, 16));
+    assets.register_sprite(tiles, TILE_PICKER_BACKGROUND_CENTER, (96, 288), (16, 16));
+    assets.register_sprite(tiles, TILE_PICKER_BACKGROUND_RIGHT, (112, 288), (16, 16));
 
-    assets.register_sprite(tiles, EMPTY_TILE_A, (0, 256), (16, 16));
-    assets.register_sprite(tiles, EMPTY_TILE_B, (16, 256), (16, 16));
-    assets.register_sprite(tiles, PERMANENT_TILE_A, (32, 256), (16, 16));
-    assets.register_sprite(tiles, PERMANENT_TILE_B, (48, 256), (16, 16));
-    assets.register_sprite(tiles, OVERLAY_SELECTION, (64, 256), (16, 16));
+    assets.register_sprite(tiles, EMPTY_TILE_A, (0, 288), (16, 16));
+    assets.register_sprite(tiles, EMPTY_TILE_B, (16, 288), (16, 16));
+    assets.register_sprite(tiles, PERMANENT_TILE_A, (32, 288), (16, 16));
+    assets.register_sprite(tiles, PERMANENT_TILE_B, (48, 288), (16, 16));
+    assets.register_sprite(tiles, OVERLAY_SELECTION, (64, 288), (16, 16));
 
-    assets.register_sprite(tiles, TILE_WALL, (0, 176), (16, 16));
-    assets.register_sprite(tiles, TILE_DETECTOR, (0, 160), (16, 16));
-    assets.register_sprite(tiles, TILE_DELAY, (0, 224), (16, 16));
+    assets.register_sprite(tiles, TILE_WALL, (0, 208), (16, 16));
+    assets.register_sprite(tiles, TILE_DETECTOR, (0, 192), (16, 16));
+    assets.register_sprite(tiles, TILE_DELAY, (0, 256), (16, 16));
     assets.register_sprite(tiles, TILE_MIRROR_A, (0, 64), (16, 16));
     assets.register_sprite(tiles, TILE_MIRROR_B, (0, 80), (16, 16));
-    assets.register_sprite(tiles, TILE_SPLITTER_A, (0, 128), (16, 16));
-    assets.register_sprite(tiles, TILE_SPLITTER_B, (0, 144), (16, 16));
-    assets.register_sprite(tiles, TILE_GALVO_UP, (64, 192), (16, 16));
-    assets.register_sprite(tiles, TILE_GALVO_RIGHT, (0, 192), (16, 16));
-    assets.register_sprite(tiles, TILE_GALVO_DOWN, (64, 208), (16, 16));
-    assets.register_sprite(tiles, TILE_GALVO_LEFT, (0, 208), (16, 16));
-    assets.register_sprite(tiles, TILE_EMITTER_UP, (64, 96), (16, 16));
-    assets.register_sprite(tiles, TILE_EMITTER_DOWN, (64, 112), (16, 16));
-    assets.register_sprite(tiles, TILE_EMITTER_LEFT, (0, 112), (16, 16));
-    assets.register_sprite(tiles, TILE_EMITTER_RIGHT, (0, 96), (16, 16));
+    assets.register_sprite(tiles, TILE_SPLITTER_A, (0, 160), (16, 16));
+    assets.register_sprite(tiles, TILE_SPLITTER_B, (0, 176), (16, 16));
+    assets.register_sprite(tiles, TILE_GALVO_UP, (64, 224), (16, 16));
+    assets.register_sprite(tiles, TILE_GALVO_RIGHT, (0, 224), (16, 16));
+    assets.register_sprite(tiles, TILE_GALVO_DOWN, (64, 240), (16, 16));
+    assets.register_sprite(tiles, TILE_GALVO_LEFT, (0, 240), (16, 16));
+    assets.register_sprite(tiles, TILE_EMITTER_UP, (16, 128), (16, 16));
+    assets.register_sprite(tiles, TILE_EMITTER_DOWN, (16, 144), (16, 16));
+    assets.register_sprite(tiles, TILE_EMITTER_LEFT, (16, 112), (16, 16));
+    assets.register_sprite(tiles, TILE_EMITTER_RIGHT, (16, 96), (16, 16));
 
     assets.register_sprite(tiles, BEAM_FULL_HORIZONTAL, (16, 32), (16, 16));
     assets.register_sprite(tiles, BEAM_FULL_VERTICAL, (16, 48), (16, 16));
@@ -125,10 +125,10 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(tiles, BEAM_REFLECT_DOWN_LEFT, (80, 48), (16, 16));
     assets.register_sprite(tiles, BEAM_REFLECT_UP_RIGHT, (80, 80), (16, 16));
     assets.register_sprite(tiles, BEAM_REFLECT_DOWN_RIGHT, (80, 64), (16, 16));
-    assets.register_sprite(tiles, BEAM_SPLIT_UP, (80, 128), (16, 16));
-    assets.register_sprite(tiles, BEAM_SPLIT_RIGHT, (80, 144), (16, 16));
-    assets.register_sprite(tiles, BEAM_SPLIT_DOWN, (80, 160), (16, 16));
-    assets.register_sprite(tiles, BEAM_SPLIT_LEFT, (80, 176), (16, 16));
+    assets.register_sprite(tiles, BEAM_SPLIT_UP, (80, 160), (16, 16));
+    assets.register_sprite(tiles, BEAM_SPLIT_RIGHT, (80, 176), (16, 16));
+    assets.register_sprite(tiles, BEAM_SPLIT_DOWN, (80, 192), (16, 16));
+    assets.register_sprite(tiles, BEAM_SPLIT_LEFT, (80, 208), (16, 16));
     assets.register_sprite(tiles, BEAM_HALF_UP, (80, 0), (16, 16));
     assets.register_sprite(tiles, BEAM_HALF_RIGHT, (16, 0), (16, 16));
     assets.register_sprite(tiles, BEAM_HALF_DOWN, (80, 16), (16, 16));

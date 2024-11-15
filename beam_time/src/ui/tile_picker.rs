@@ -64,7 +64,7 @@ impl TilePicker {
                 .scale(Vector2::repeat(4.0), Anchor::Center);
             ctx.draw(background);
 
-            let sprite = Sprite::new(asset)
+            let sprite = asset
                 .position(pos, Anchor::BottomLeft)
                 .scale(Vector2::repeat(4.0), Anchor::Center);
 

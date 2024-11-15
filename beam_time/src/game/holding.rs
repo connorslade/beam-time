@@ -1,5 +1,4 @@
 use engine::{
-    drawable::sprite::Sprite,
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
@@ -41,7 +40,7 @@ impl Holding {
                 }
 
                 ctx.draw(
-                    Sprite::new(tile.asset())
+                    tile.asset()
                         .scale(Vector2::repeat(shared.scale), Anchor::Center)
                         .position(ctx.input.mouse, Anchor::Center)
                         .z_index(layer::TILE_HOLDING),
@@ -62,7 +61,7 @@ impl Holding {
                     }
                 }
 
-                 if ctx.input.key_pressed(KeyCode::KeyH) {
+                if ctx.input.key_pressed(KeyCode::KeyH) {
                     for (pos, tile) in tiles.iter_mut() {
                         *pos = Vector2::new(-pos.x, pos.y);
                         *tile = tile.flip_horizontal();
@@ -73,7 +72,7 @@ impl Holding {
                 for (pos, tile) in tiles.iter() {
                     let render_pos = ctx.input.mouse + tile_size * pos.map(|x| x as f32);
                     ctx.draw(
-                        Sprite::new(tile.asset())
+                        tile.asset()
                             .scale(Vector2::repeat(shared.scale), Anchor::Center)
                             .position(render_pos, Anchor::Center)
                             .z_index(layer::TILE_HOLDING),

@@ -8,3 +8,14 @@ I'm making a custom GPU accelerated game engine for this, because why not, so th
 Here is an example of an XOR gate implemented in game with some and, or, and nand gates.
 
 ![beam-time](https://github.com/user-attachments/assets/048c6ee1-29c8-436c-85b8-eac9329639c2)
+
+## Key Binds
+
+|Key|Action|
+|--|--|
+|<kbd>Q</kbd>|Copy hovered tile into cursor|
+|<kbd>E</kbd>|Toggle state of the hovered emitter|
+|<kbd>R</kbd>|Rotates the tile to selection in the cursor|
+|<kbd>V</kbd>|Flip vertically|
+|<kbd>H</kbd>|Flip horizontally|
+|<kbd></kbd>||

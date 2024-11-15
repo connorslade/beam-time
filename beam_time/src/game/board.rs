@@ -197,7 +197,7 @@ impl Board {
                     let sprite = sim
                         .as_ref()
                         .and_then(|x| x.board.get(pos).base_sprite(frame))
-                        .unwrap_or_else(|| Sprite::new(tile.asset()));
+                        .unwrap_or_else(|| tile.asset());
 
                     let sprite = sprite
                         .scale(Vector2::repeat(shared.scale), Anchor::Center)

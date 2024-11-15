@@ -10,7 +10,7 @@ use crate::{
 #[derive(Debug)]
 pub struct Sprite {
     texture: SpriteRef,
-    uv_offset: Vector2<u32>,
+    uv_offset: Vector2<i32>,
 
     color: Rgb<f32>,
     z_index: i16,
@@ -91,7 +91,7 @@ impl Sprite {
         self
     }
 
-    pub fn uv_offset(mut self, offset: Vector2<u32>) -> Self {
+    pub fn uv_offset(mut self, offset: Vector2<i32>) -> Self {
         self.uv_offset = offset;
         self
     }

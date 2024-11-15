@@ -61,4 +61,4 @@
 - [ ] Allow changing simulation speed
 - [x] Allow rotating copied selections
 - [ ] Fix simulation bug when two galvos are pointed at the same mirror
-- [ ] Render the little light pixel on active emitters
+- [x] Render the little light pixel on active emitters

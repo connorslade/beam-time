@@ -135,7 +135,7 @@ impl BeamState {
 
             let sprite = |texture: SpriteRef| {
                 Sprite::new(texture)
-                    .uv_offset(Vector2::new(16 * frame, 0))
+                    .uv_offset(Vector2::new(16 * frame as i32, 0))
                     .scale(Vector2::repeat(shared.scale), Anchor::Center)
                     .position(render_pos, Anchor::Center)
             };
