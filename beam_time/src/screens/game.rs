@@ -12,7 +12,7 @@ use engine::{
 
 use crate::{
     consts::BACKGROUND_COLOR,
-    game::{beam::BeamState, board::Board, level::LEVELS, SharedState},
+    game::{beam::state::BeamState, board::Board, level::LEVELS, SharedState},
     ui::tile_picker::TilePicker,
     App,
 };

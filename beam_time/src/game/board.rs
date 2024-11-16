@@ -28,13 +28,8 @@ use crate::{
 };
 
 use super::{
-    beam::{tile::BeamTile, BeamState},
-    history::History,
-    holding::Holding,
-    level::Level,
-    selection::SelectionState,
-    tile::Tile,
-    SharedState,
+    beam::{state::BeamState, tile::BeamTile}, history::History, holding::Holding, level::Level,
+    selection::SelectionState, tile::Tile, SharedState,
 };
 
 #[derive(Default, Serialize, Deserialize)]
@@ -52,9 +47,10 @@ pub struct TransientBoardState {
     pub level: Option<&'static Level>,
 
     save_path: Option<PathBuf>,
+    selection: SelectionState,
+
     open_timestamp: Instant,
     last_save: Instant,
-    selection: SelectionState,
 }
 
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
@@ -307,13 +303,15 @@ impl Board {
 impl Default for TransientBoardState {
     fn default() -> Self {
         Self {
+            holding: Default::default(),
+            history: History::new(),
+            level: None,
+
+            save_path: None,
+            selection: Default::default(),
+
             open_timestamp: Instant::now(),
             last_save: Instant::now(),
-            holding: Default::default(),
-            save_path: None,
-            level: None,
-            history: History::new(),
-            selection: Default::default(),
         }
     }
 }

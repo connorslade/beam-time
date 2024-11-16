@@ -6,7 +6,7 @@ use crate::misc::{
     map::Map,
 };
 
-use super::{opposite_if, BeamState, BeamTile, MIRROR_REFLECTIONS};
+use super::{opposite_if, state::BeamState, tile::BeamTile, MIRROR_REFLECTIONS};
 
 impl BeamState {
     pub fn tick(&mut self) {

@@ -20,7 +20,7 @@ use crate::{
     util::in_bounds,
 };
 
-use super::{beam::BeamState, history::History, holding::Holding, tile::Tile, SharedState};
+use super::{beam::state::BeamState, history::History, holding::Holding, tile::Tile, SharedState};
 
 #[derive(Default)]
 pub struct SelectionState {

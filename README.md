@@ -9,7 +9,7 @@ Here is an example of an XOR gate implemented in game with some and, or, and nan
 
 ![beam-time](https://github.com/user-attachments/assets/048c6ee1-29c8-436c-85b8-eac9329639c2)
 
-## Key Binds
+## Controls
 
 Use WASD or middle mouse + drag to pan and scroll to zoom.
 
