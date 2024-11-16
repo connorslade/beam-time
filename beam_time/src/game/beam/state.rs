@@ -56,7 +56,6 @@ impl BeamState {
             .then(|| {
                 board.transient.level.map(|level| LevelState {
                     level,
-                    cooldown: level.tests.delay.unwrap_or_default(),
                     ..Default::default()
                 })
             })

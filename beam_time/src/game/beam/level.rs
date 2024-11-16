@@ -12,7 +12,6 @@ use super::tile::BeamTile;
 pub struct LevelState {
     pub level: &'static Level,
     pub test_case: usize,
-    pub cooldown: u32,
 
     pub history: HashMap<u64, usize>,
     // todo: replace with unpacked bitvec
@@ -49,10 +48,6 @@ impl LevelState {
     pub fn setup_case(&mut self, board: &mut Map<BeamTile>) {
         let tests = &self.level.tests;
         let case = &tests.cases[self.test_case];
-
-        if let Some(cooldown) = tests.delay {
-            self.cooldown = cooldown;
-        }
 
         for (pos, state) in tests.lasers.iter().zip(&case.lasers) {
             let pos = pos.into_pos();
@@ -100,7 +95,6 @@ impl Default for LevelState {
         Self {
             level: &LEVELS[0],
             test_case: Default::default(),
-            cooldown: Default::default(),
             history: Default::default(),
             history_states: Default::default(),
         }

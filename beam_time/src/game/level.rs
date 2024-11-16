@@ -34,11 +34,13 @@ pub static LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
         "3_not_gate.ron",
         "4_and_gate.ron",
         "5_or_gate.ron",
-        "6_synchronization.ron",
-        "7_multiplexer.ron",
-        "8_two_tick_cock.ron",
-        "9_half_adder.ron",
-        "10_xor_gate.ron"
+        "6_basic_oscillator.ron",
+        "7_synchronization.ron",
+        "8_two_way_multiplexer.ron",
+        "9_xor_gate.ron",
+        "10_half_adder.ron",
+        "11_two_tick_clock.ron",
+        "15_count_ones.ron"
     )
 });
 
@@ -57,8 +59,6 @@ pub struct Level {
 
 #[derive(Debug, Deserialize)]
 pub struct Tests {
-    #[serde(default)]
-    pub delay: Option<u32>,
     pub cases: Vec<TestCase>,
 
     pub lasers: Vec<ElementLocation>,

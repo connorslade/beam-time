@@ -1,0 +1,72 @@
+Level(
+    id: "52108765-b8d2-47cf-a0c7-36b3b73cc644",
+    name: "Double It",
+    description: "",
+
+    size: Some((8, 5)),
+    permanent: [
+        (0, 4), (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4), (7, 4),
+        (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0)
+    ],
+    tiles: {
+        (0, 4): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (1, 4): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (2, 4): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (3, 4): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (4, 4): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (5, 4): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (6, 4): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (7, 4): Emitter(
+            rotation: Down,
+            active: true
+        ),
+
+        (0, 0): Detector,
+        (1, 0): Detector,
+        (2, 0): Detector,
+        (3, 0): Detector,
+        (4, 0): Detector,
+        (5, 0): Detector,
+        (6, 0): Detector,
+        (7, 0): Detector
+    },
+
+    tests: Tests(
+        lasers: [ ],
+        detectors: [
+            Static((0, 4)),
+            Static((1, 4)),
+            Static((2, 4))
+            Static((3, 4))
+            Static((4, 4)), 
+            Static((5, 4)), 
+            Static((6, 4)), 
+            Static((7, 4))
+        ],
+
+        cases: [
+            // todo: this
+        ]
+    )
+)

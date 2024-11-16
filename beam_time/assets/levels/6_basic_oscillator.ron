@@ -1,0 +1,23 @@
+Level(
+    id: "aa28086a-564e-46d3-9233-894c157d92fe",
+    name: "Basic Oscillator",
+    description: "The output should osciliate between on and off states every two ticks, for a total cycle time of four ticks.",
+
+    size: Some((6, 6)),
+    permanent: [ (5, 0) ],
+    tiles: {
+        (5, 0): Detector
+    },
+
+    tests: Tests(
+        lasers: [ ],
+        detectors: [ Static((5, 0)) ],
+
+        cases: [
+            TestCase(
+                lasers: [ ],
+                detectors: [ [ false ], [ false ], [ true ], [ true ] ],
+            )
+        ]
+    )
+)

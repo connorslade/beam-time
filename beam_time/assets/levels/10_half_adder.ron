@@ -22,7 +22,6 @@ Level(
         lasers: [ Static((0, 5)), Static((1, 5)) ],
         detectors: [ Static((4, 0)), Static((5, 0)) ],
 
-        delay: Some(16),
         cases: [
             TestCase(
                 lasers: [ false, false ],

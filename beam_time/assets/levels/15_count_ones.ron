@@ -1,0 +1,112 @@
+Level(
+    id: "b59c1a75-8d7a-4c91-bdd4-6831e3b1f41a",
+    name: "Count Ones",
+    description: "Output the number of on inputs using binary where the leftmost output represents four, the middle represents two and the rightmost represents one.",
+
+    size: Some((20, 20)),
+    permanent: [
+        (0, 19), (1, 19), (2, 19), (3, 19),
+        (17, 0), (18, 0), (19, 0)
+    ],
+    tiles: {
+        (0, 19): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (1, 19): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (2, 19): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (3, 19): Emitter(
+            rotation: Down,
+            active: true
+        ),
+
+        (17, 0): Detector,
+        (18, 0): Detector,
+        (19, 0): Detector
+    },
+
+    tests: Tests(
+        lasers: [ Static((0, 19)), Static((1, 19)), Static((2, 19)), Static((3, 19)) ],
+        detectors: [ Static((17, 0)), Static((18, 0)), Static((19, 0)) ],
+
+        cases: [
+            TestCase(
+                lasers: [ false, false, false, false ],
+                detectors: [ [ false, false, false ] ]
+            ),
+            TestCase(
+                lasers: [ false, false, false, true  ],
+                detectors: [ [ false, false, true  ] ]
+            ),
+            TestCase(
+                lasers: [ false, false, true,  false ],
+                detectors: [ [ false, false, true  ] ]
+            ),
+            TestCase(
+                lasers: [ false, false, true,  true  ],
+                detectors: [ [ false, true,  false ] ]
+            ),
+            TestCase(
+                lasers: [ false, true,  false, false ],
+                detectors: [ [ false, false, true  ] ]
+            ),
+            TestCase(
+                lasers: [ false, true,  false, true  ],
+                detectors: [ [ false, true,  false ] ]
+            ),
+            TestCase(
+                lasers: [ false, true,  true,  false ],
+                detectors: [ [ false, true,  false ] ]
+            ),
+            TestCase(
+                lasers: [ false, true,  true,  true  ],
+                detectors: [ [ false, true,  true  ] ]
+            ),
+            TestCase(
+                lasers: [ true,  false, false, false ],
+                detectors: [ [ false, false, true  ] ]
+            ),
+            TestCase(
+                lasers: [ true,  false, false, true  ],
+                detectors: [ [ false, true,  false ] ]
+            ),
+            TestCase(
+                lasers: [ true,  false, true,  false ],
+                detectors: [ [ false, true,  false ] ]
+            ),
+            TestCase(
+                lasers: [ true,  false, true,  true  ],
+                detectors: [ [ false, true,  true  ] ]
+            ),
+            TestCase(
+                lasers: [ true,  true,  false, false ],
+                detectors: [ [ false, true,  false ] ]
+            ),
+            TestCase(
+                lasers: [ true,  true,  false, true  ],
+                detectors: [ [ false, true,  true  ] ]
+            ),
+            TestCase(
+                lasers: [ true,  true,  true,  false ],
+                detectors: [ [ false, true,  true  ] ]
+            ),
+            TestCase(
+                lasers: [ true,  true,  true,  true  ],
+                detectors: [ [ true,  false, false ] ]
+            ),
+        ]
+    )
+)
+
+// See https://imgur.com/screenshot-mtqo5bp for simple solution
+
+// Test cases generated with the following code and find+replace.
+// for i in 0b0000..=0b1111_u32 {
+//     println!("{i:04b}: {:03b}", i.count_ones());
+// }

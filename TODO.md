@@ -67,10 +67,6 @@
 
 ## Level Ideas
 
-- Basic oscillator
-- N-Tick oscillators
 - Memory cell
-- Counting Inputs
-- Double the number
 - Invert the number
 - 2-Way Multiplexer

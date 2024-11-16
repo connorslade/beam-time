@@ -1,0 +1,26 @@
+Level(
+    id: "d1d080f7-06c4-421d-9125-dceadc5b6f32",
+    name: "Even Oscillators",
+    description: "Build three oscillators with (from left to right) periods of 8, 6, and 4.",
+
+    size: Some((6, 6)),
+    permanent: [ (3, 0), (4, 0), (5, 0) ],
+    tiles: {
+        (3, 0): Detector
+        (4, 0): Detector
+        (5, 0): Detector
+    },
+
+    tests: Tests(
+        lasers: [ ],
+        detectors: [ Static((3, 0)), Static((4, 0)), Static((5, 0)) ],
+
+        cases: [
+            // todo: this
+            TestCase(
+                lasers: [ ],
+                detectors: [ [true, true, true ], [ false, false, false ] ]
+            )
+        ]
+    )
+)
