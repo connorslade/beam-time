@@ -6,7 +6,7 @@ use std::{
 use engine::exports::nalgebra::Vector2;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[repr(u8)]
 pub enum Direction {
     #[default]
@@ -16,7 +16,7 @@ pub enum Direction {
     Left,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Directions {
     inner: u8,
 }

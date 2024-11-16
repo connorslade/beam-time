@@ -67,7 +67,7 @@ pub struct Tests {
 #[derive(Debug, Deserialize)]
 pub struct TestCase {
     pub lasers: Vec<bool>,
-    pub detectors: Vec<bool>,
+    pub detectors: Vec<Vec<bool>>,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize)]

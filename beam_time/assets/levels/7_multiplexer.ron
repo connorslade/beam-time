@@ -49,42 +49,42 @@ Level(
                     false, false, true,
                     false, false
                 ],
-                detectors: [ true ],
+                detectors: [ [ true ] ],
             ),
             TestCase(
                 lasers: [
                     false, true, false,
                     false, false
                 ],
-                detectors: [ false ],
+                detectors: [ [ false ] ],
             ),
             TestCase(
                 lasers: [
                     false, true, false,
                     true, false
                 ],
-                detectors: [ false ],
+                detectors: [ [ false ] ],
             ),
             TestCase(
                 lasers: [
                     false, true, false,
                     false, true
                 ],
-                detectors: [ true ],
+                detectors: [ [ true ] ],
             ),
             TestCase(
                 lasers: [
                     false, true, true,
                     true, false
                 ],
-                detectors: [ false ],
+                detectors: [ [ false ] ],
             ),
             TestCase(
                 lasers: [
                     true, true, true,
                     true, false
                 ],
-                detectors: [ true ],
+                detectors: [ [ true ] ],
             ),
         ]
     )

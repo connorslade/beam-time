@@ -33,11 +33,11 @@ Level(
         cases: [
             TestCase(
                 lasers: [ true ],
-                detectors: [ true, true ],
+                detectors: [ [ true, true ] ],
             ),
             TestCase(
                 lasers: [ false ],
-                detectors: [ false, false ],
+                detectors: [ [ false, false ] ],
             )
         ]
     )

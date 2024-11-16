@@ -1,3 +1,8 @@
+use std::{
+    collections::HashMap,
+    hash::{DefaultHasher, Hash, Hasher},
+};
+
 use engine::{
     assets::SpriteRef,
     drawable::sprite::Sprite,
@@ -19,6 +24,7 @@ use crate::{
         direction::{Direction, Directions},
         map::Map,
     },
+    util::in_bounds,
 };
 
 use super::{level::LevelState, opposite_if, tile::BeamTile};
@@ -46,15 +52,15 @@ impl BeamState {
     /// Creates a new BeamState from a Board by converting Tiles into their
     /// BeamTile counterparts.
     pub fn new(board: &Board, test: bool) -> Self {
-        let level = if test {
-            board.transient.level.map(|level| LevelState {
-                level,
-                test_case: 0,
-                cooldown: level.tests.delay.unwrap_or_default(),
+        let level = test
+            .then(|| {
+                board.transient.level.map(|level| LevelState {
+                    level,
+                    cooldown: level.tests.delay.unwrap_or_default(),
+                    ..Default::default()
+                })
             })
-        } else {
-            None
-        };
+            .flatten();
 
         let board = board.tiles.map(|x| match x {
             Tile::Empty => BeamTile::Empty,
@@ -95,6 +101,22 @@ impl BeamState {
         }
 
         state
+    }
+
+    pub fn hash(&self) -> u64 {
+        let size = self.level.as_ref().unwrap().level.size.unwrap();
+        let bounds = (Vector2::zeros(), size.map(|x| x as i32));
+
+        let mut tiles = self.board.iter().collect::<Vec<_>>();
+        tiles.sort_by(|(a, _), (b, _)| a.x.cmp(&b.x).then(a.y.cmp(&b.y)));
+
+        let mut hasher = DefaultHasher::new();
+        for (pos, tile) in tiles.iter().filter(|(pos, _)| in_bounds(*pos, bounds)) {
+            pos.hash(&mut hasher);
+            tile.hash(&mut hasher);
+        }
+
+        hasher.finish()
     }
 
     /// Renders the beam over the board.

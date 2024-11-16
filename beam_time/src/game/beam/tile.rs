@@ -8,7 +8,7 @@ use crate::{
 
 use super::{opposite_if, MIRROR_REFLECTIONS};
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum BeamTile {
     #[default]
     Empty,
