@@ -63,3 +63,14 @@
 - [x] Allow rotating copied selections
 - [ ] Fix simulation bug when two galvos are pointed at the same mirror
 - [x] Render the little light pixel on active emitters
+- [ ] Visual feedback for test cases
+
+## Level Ideas
+
+- Basic oscillator
+- N-Tick oscillators
+- Memory cell
+- Counting Inputs
+- Double the number
+- Invert the number
+- 2-Way Multiplexer

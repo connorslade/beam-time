@@ -30,8 +30,6 @@ impl LevelState {
 
         if let Some(idx) = self.history.insert(hash, idx) {
             let cycle = &self.history_states[idx..self.history_states.len() - 1];
-            println!("Found Cycle: {:?}", cycle);
-
             if equivalent_cycles(cycle, &self.level.tests.cases[self.test_case].detectors) {
                 trace!("Passed case #{}", self.test_case);
                 self.test_case += 1;

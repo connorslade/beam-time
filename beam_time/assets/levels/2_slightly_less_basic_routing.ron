@@ -34,10 +34,6 @@ Level(
             TestCase(
                 lasers: [ true ],
                 detectors: [ [ true, true ] ],
-            ),
-            TestCase(
-                lasers: [ false ],
-                detectors: [ [ false, false ] ],
             )
         ]
     )

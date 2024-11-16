@@ -31,15 +31,15 @@ pub enum Tile {
 
 impl Tile {
     pub const DEFAULT: [Tile; 7] = [
+        Tile::Mirror { rotation: false },
+        Tile::Splitter { rotation: false },
+        Tile::Galvo {
+            rotation: Direction::Up,
+        },
         Tile::Emitter {
             rotation: Direction::Up,
             active: true,
         },
-        Tile::Galvo {
-            rotation: Direction::Up,
-        },
-        Tile::Splitter { rotation: false },
-        Tile::Mirror { rotation: false },
         Tile::Delay,
         Tile::Wall,
         Tile::Detector,

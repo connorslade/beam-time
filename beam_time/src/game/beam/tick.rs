@@ -9,9 +9,9 @@ use super::{opposite_if, state::BeamState, tile::BeamTile, MIRROR_REFLECTIONS};
 
 impl BeamState {
     pub fn tick(&mut self) {
-        // todo: bad!
-        let hash = self.hash();
-        if let Some(level) = &mut self.level {
+        if self.level.is_some() {
+            let hash = self.hash();
+            let level = self.level.as_mut().unwrap();
             if level.tick(hash, &mut self.board) {
                 return;
             }
