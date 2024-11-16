@@ -15,6 +15,16 @@ pub macro include_atlas($name:expr) {
         .to_rgba8()
 }
 
+pub macro key_events(
+    $ctx:expr, { $($key:expr => $action:expr),* }
+) {
+    $(
+        if $ctx.input.key_pressed($key) {
+            $action;
+        }
+    )*
+}
+
 pub fn in_bounds<T: Scalar + PartialOrd>(
     pos: Vector2<T>,
     bounds: (Vector2<T>, Vector2<T>),

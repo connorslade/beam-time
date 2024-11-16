@@ -24,12 +24,17 @@ use crate::{
     assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B},
     consts::{layer, AUTOSAVE_INTERVAL},
     misc::map::Map,
-    util::in_bounds,
+    util::{in_bounds, key_events},
 };
 
 use super::{
-    beam::{state::BeamState, tile::BeamTile}, history::History, holding::Holding, level::Level,
-    selection::SelectionState, tile::Tile, SharedState,
+    beam::{state::BeamState, tile::BeamTile},
+    history::History,
+    holding::Holding,
+    level::Level,
+    selection::SelectionState,
+    tile::Tile,
+    SharedState,
 };
 
 #[derive(Default, Serialize, Deserialize)]
@@ -278,15 +283,16 @@ impl Board {
                     }
 
                     if holding.is_none() {
-                        if ctx.input.key_pressed(KeyCode::KeyR) {
-                            self.tiles.set(pos, tile.rotate());
-                            self.transient.history.track_one(pos, tile);
-                        }
-
-                        if ctx.input.key_pressed(KeyCode::KeyE) {
-                            self.tiles.set(pos, tile.activate());
-                            self.transient.history.track_one(pos, tile);
-                        }
+                        key_events!(ctx, {
+                            KeyCode::KeyR => {
+                                self.tiles.set(pos, tile.rotate());
+                                self.transient.history.track_one(pos, tile);
+                            },
+                            KeyCode::KeyE => {
+                                self.tiles.set(pos, tile.activate());
+                                self.transient.history.track_one(pos, tile);
+                            }
+                        });
                     }
 
                     if !is_empty && ctx.input.key_pressed(KeyCode::KeyQ) {

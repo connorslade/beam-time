@@ -1,4 +1,4 @@
-use std::{mem, path::PathBuf};
+use std::{mem, path::PathBuf, time::Duration};
 
 use engine::{
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
@@ -15,6 +15,7 @@ use crate::{
         SharedState,
     },
     ui::tile_picker::TilePicker,
+    util::key_events,
     App,
 };
 
@@ -26,6 +27,7 @@ pub struct GameScreen {
     beam: SimulationState,
     tile_picker: TilePicker,
     needs_init: bool,
+    tps: f32,
 }
 
 impl Screen<App> for GameScreen {
@@ -44,7 +46,16 @@ impl Screen<App> for GameScreen {
             self.needs_init = false;
         }
 
+        key_events!(ctx, {
+            KeyCode::Digit0 => self.tps = 20.0,
+            KeyCode::Equal => self.tps += 5.0,
+            KeyCode::Minus => self.tps -= 5.0
+        });
+
+        self.tps = self.tps.max(0.0);
+
         let mut sim = self.beam.get();
+        sim.runtime.time_per_tick = Duration::from_secs_f32(self.tps.max(1.0).recip());
 
         if sim.beam.is_none() && ctx.input.key_pressed(KeyCode::Escape) {
             ctx.pop_screen()
@@ -112,6 +123,7 @@ impl GameScreen {
             tile_picker: TilePicker::default(),
             save_file,
             needs_init: true,
+            tps: 20.0,
         }
     }
 

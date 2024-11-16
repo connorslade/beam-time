@@ -17,7 +17,7 @@ use crate::{
         direction::{Direction, Directions},
         map::Map,
     },
-    util::in_bounds,
+    util::{in_bounds, key_events},
 };
 
 use super::{beam::state::BeamState, history::History, holding::Holding, tile::Tile, SharedState};
@@ -73,21 +73,22 @@ impl SelectionState {
             }
         }
 
-        if ctx.input.key_pressed(KeyCode::KeyU) {
-            self.selection_start = None;
-            self.selection.clear();
-        }
-
-        if ctx.input.key_pressed(KeyCode::Delete) {
-            let mut old = Vec::new();
-            for pos in self.selection.iter() {
-                old.push((*pos, tiles.get(*pos)));
-                tiles.remove(*pos);
+        key_events!(ctx, {
+            KeyCode::KeyU => {
+                self.selection_start = None;
+                self.selection.clear();
+            },
+            KeyCode::Delete => {
+                let mut old = Vec::new();
+                for pos in self.selection.iter() {
+                    old.push((*pos, tiles.get(*pos)));
+                    tiles.remove(*pos);
+                }
+                *sim = None;
+                history.track_many(old);
+                self.selection.clear();
             }
-            *sim = None;
-            history.track_many(old);
-            self.selection.clear();
-        }
+        });
 
         let ctrl = ctx.input.key_down(KeyCode::ControlLeft);
         let copy = ctx.input.key_pressed(KeyCode::KeyC);

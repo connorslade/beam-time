@@ -76,7 +76,7 @@ impl SimulationState {
 
                     let elapsed = timestamp.elapsed();
                     if elapsed < runtime.time_per_tick {
-                        thread::sleep(runtime.time_per_tick - timestamp.elapsed());
+                        thread::sleep(runtime.time_per_tick - elapsed);
                     }
                 }
             }
