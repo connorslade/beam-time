@@ -13,10 +13,16 @@ Here is an example of an XOR gate implemented in game with some and, or, and nan
 
 Use WASD or middle mouse + drag to pan and scroll to zoom.
 
-| Key                         | Action                                      |
-| --------------------------- | ------------------------------------------- |
-| <kbd>Q</kbd>                | Copy hovered tile into cursor               |
-| <kbd>E</kbd>                | Toggle state of the hovered emitter         |
-| <kbd>R</kbd>                | Rotates the tile to selection in the cursor |
-| <kbd>V</kbd>                | Flip vertically                             |
-| <kbd>H</kbd>                | Flip horizontally                           |
+| Key              | Action                                      |
+| ---------------- | ------------------------------------------- |
+| <kbd>Q</kbd>     | Copy hovered tile into cursor               |
+| <kbd>E</kbd>     | Toggle state of the hovered emitter         |
+| <kbd>R</kbd>     | Rotates the tile to selection in the cursor |
+| <kbd>V</kbd>     | Flip vertically                             |
+| <kbd>H</kbd>     | Flip horizontally                           |
+| <kbd>P</kbd>     | Start (play) simulation                     |
+| <kbd>T</kbd>     | Run cases (when in campaign level)          |
+| <kbd>Space</kbd> | Run one simulation step                     |
+| <kbd>+</kbd>     | Increase simulation speed                   |
+| <kbd>-</kbd>     | Decrease simulation speed                   |
+| <kbd>0</kbd>     | Reset simulation speed                      |
