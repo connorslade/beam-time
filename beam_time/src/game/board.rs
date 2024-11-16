@@ -15,14 +15,14 @@ use engine::{
     },
     graphics_context::{Anchor, GraphicsContext},
 };
-use log::{info, trace};
+use log::{info, trace, warn};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
     app::App,
     assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B},
-    consts::layer,
+    consts::{layer, AUTOSAVE_INTERVAL},
     misc::map::Map,
     util::in_bounds,
 };
@@ -51,11 +51,13 @@ pub struct TransientBoardState {
     pub history: History,
     pub level: Option<&'static Level>,
 
+    save_path: Option<PathBuf>,
     open_timestamp: Instant,
+    last_save: Instant,
     selection: SelectionState,
 }
 
-#[derive(Default, Debug, Serialize, Deserialize)]
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct BoardMeta {
     pub version: u32,
 
@@ -78,9 +80,10 @@ impl Board {
         info!("Loading board from {path:?}");
 
         let file = File::open(path)?;
-        let board = bincode::DefaultOptions::new()
+        let mut board = bincode::DefaultOptions::new()
             .with_varint_encoding()
             .deserialize_from::<_, Board>(file)?;
+        board.transient.save_path = Some(path.to_path_buf());
 
         trace!("{:?}", board.meta);
         Ok(board)
@@ -100,6 +103,7 @@ impl Board {
         self.meta.last_played = Utc::now();
         self.meta.version = 3;
 
+        let start = Instant::now();
         info!("Saving board to {path:?}");
         if let Some(parent) = path.parent() {
             fs::create_dir_all(parent)?;
@@ -110,6 +114,7 @@ impl Board {
             .with_varint_encoding()
             .serialize_into(file, &self)?;
 
+        info!("Save took {:?}", start.elapsed());
         Ok(())
     }
 }
@@ -119,6 +124,19 @@ impl Board {
         self.transient.level.map(|x| x.permanent.contains(pos)) == Some(true)
     }
 
+    fn tick_autosave(&mut self) {
+        if let Some(path) = &self.transient.save_path {
+            if self.transient.last_save.elapsed() >= AUTOSAVE_INTERVAL {
+                trace!("Autosaving...");
+                self.transient.last_save = Instant::now();
+                // run async if causing issues
+                if let Err(err) = self.clone().save(path) {
+                    warn!("Autosave failure: {err}");
+                }
+            }
+        }
+    }
+
     pub fn render(
         &mut self,
         ctx: &mut GraphicsContext<App>,
@@ -126,6 +144,8 @@ impl Board {
         shared: &SharedState,
         sim: &mut Option<BeamState>,
     ) {
+        self.tick_autosave();
+
         let tile_size = 16.0 * shared.scale * ctx.scale_factor;
         let half_tile = Vector2::repeat(tile_size / 2.0);
 
@@ -288,10 +308,22 @@ impl Default for TransientBoardState {
     fn default() -> Self {
         Self {
             open_timestamp: Instant::now(),
+            last_save: Instant::now(),
             holding: Default::default(),
+            save_path: None,
             level: None,
             history: History::new(),
             selection: Default::default(),
+        }
+    }
+}
+
+impl Clone for Board {
+    fn clone(&self) -> Self {
+        Self {
+            meta: self.meta.clone(),
+            tiles: self.tiles.clone(),
+            transient: TransientBoardState::default(),
         }
     }
 }

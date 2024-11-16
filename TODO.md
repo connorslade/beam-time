@@ -49,8 +49,8 @@
 - [x] Undo
   - [x] Store list of modifications
 - [ ] Add sticky notes with text
-- [ ] Persist window size
-- [ ] Autosave interval
+- [ ] ~~Persist window size~~
+- [x] Autosave interval
 - [ ] Improve FPS
   - [ ] Benchmarking system
 - [x] Don't overstep pan/zoom goals during lag spikes
@@ -59,6 +59,7 @@
 - [ ] Cleanup history track_once vs track_many
 - [x] Pop screen & save/free simulation on ESC
 - [ ] Allow changing simulation speed
+  - [ ] Decouple simulation from renderer
 - [x] Allow rotating copied selections
 - [ ] Fix simulation bug when two galvos are pointed at the same mirror
 - [x] Render the little light pixel on active emitters
