@@ -59,7 +59,7 @@
 - [ ] Cleanup history track_once vs track_many
 - [x] Pop screen & save/free simulation on ESC
 - [ ] Allow changing simulation speed
-  - [ ] Decouple simulation from renderer
+  - [x] Decouple simulation from renderer
 - [x] Allow rotating copied selections
 - [ ] Fix simulation bug when two galvos are pointed at the same mirror
 - [x] Render the little light pixel on active emitters

@@ -1,4 +1,15 @@
+use std::{
+    sync::Arc,
+    thread,
+    time::{Duration, Instant},
+};
+
+use clone_macro::clone;
+use parking_lot::{Condvar, Mutex, MutexGuard};
+
 use crate::misc::direction::Direction;
+
+use state::BeamState;
 
 mod level;
 pub mod state;
@@ -11,6 +22,77 @@ const MIRROR_REFLECTIONS: [Direction; 4] = [
     Direction::Right,
     Direction::Up,
 ];
+
+pub struct SimulationState {
+    inner: Arc<(Mutex<InnerSimulationState>, Condvar)>,
+}
+
+#[derive(Clone, Copy)]
+pub struct RuntimeConfig {
+    pub time_per_tick: Duration,
+    pub running: bool,
+}
+
+pub struct InnerSimulationState {
+    pub beam: Option<BeamState>,
+    pub runtime: RuntimeConfig,
+}
+
+impl SimulationState {
+    pub fn new() -> Self {
+        let inner = Arc::new((
+            Mutex::new(InnerSimulationState {
+                beam: None,
+                runtime: RuntimeConfig {
+                    time_per_tick: Duration::from_secs_f32(1.0 / 20.0),
+                    running: false,
+                },
+            }),
+            Condvar::new(),
+        ));
+
+        // todo: shutdown logic somehow?
+        thread::spawn(clone!([inner], move || {
+            let (mutex, cond) = &*inner;
+
+            loop {
+                let mut state = mutex.lock();
+
+                // wait for running to be true
+                while !state.runtime.running {
+                    cond.wait(&mut state);
+                }
+
+                let timestamp = Instant::now();
+                if let Some(beam) = &mut state.beam {
+                    beam.tick();
+
+                    let runtime = state.runtime;
+                    drop(state);
+
+                    if !runtime.running {
+                        continue;
+                    }
+
+                    let elapsed = timestamp.elapsed();
+                    if elapsed < runtime.time_per_tick {
+                        thread::sleep(runtime.time_per_tick - timestamp.elapsed());
+                    }
+                }
+            }
+        }));
+
+        Self { inner }
+    }
+
+    pub fn get(&self) -> MutexGuard<InnerSimulationState> {
+        self.inner.0.lock()
+    }
+
+    pub fn notify_running(&self) {
+        self.inner.1.notify_all();
+    }
+}
 
 fn opposite_if(direction: Direction, condition: bool) -> Direction {
     if condition {

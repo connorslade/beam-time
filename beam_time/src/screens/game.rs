@@ -1,8 +1,4 @@
-use std::{
-    mem,
-    path::PathBuf,
-    time::{Duration, Instant},
-};
+use std::{mem, path::PathBuf};
 
 use engine::{
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
@@ -12,7 +8,12 @@ use engine::{
 
 use crate::{
     consts::BACKGROUND_COLOR,
-    game::{beam::state::BeamState, board::Board, level::LEVELS, SharedState},
+    game::{
+        beam::{state::BeamState, SimulationState},
+        board::Board,
+        level::LEVELS,
+        SharedState,
+    },
     ui::tile_picker::TilePicker,
     App,
 };
@@ -22,11 +23,8 @@ pub struct GameScreen {
 
     shared: SharedState,
     board: Board,
-    beam: Option<BeamState>,
-
+    beam: SimulationState,
     tile_picker: TilePicker,
-    running: bool,
-    last_tick: Instant,
     needs_init: bool,
 }
 
@@ -46,47 +44,48 @@ impl Screen<App> for GameScreen {
             self.needs_init = false;
         }
 
-        if self.beam.is_none() && ctx.input.key_pressed(KeyCode::Escape) {
+        let mut sim = self.beam.get();
+
+        if sim.beam.is_none() && ctx.input.key_pressed(KeyCode::Escape) {
             ctx.pop_screen()
         }
 
         let space_pressed = ctx.input.key_pressed(KeyCode::Space);
         let play_pressed = ctx.input.key_pressed(KeyCode::KeyP);
         let test_pressed = ctx.input.key_pressed(KeyCode::KeyT)
-            && self.beam.is_none()
+            && sim.beam.is_none()
             && self.board.meta.level.is_some();
 
-        self.running |= play_pressed || test_pressed;
-        self.running &= !space_pressed;
+        sim.runtime.running |= play_pressed || test_pressed;
+        sim.runtime.running &= !space_pressed;
 
-        if let Some(beam) = &mut self.beam {
-            let tick_needed = self.last_tick.elapsed() >= Duration::from_millis(50);
-            if space_pressed || (self.running && tick_needed) {
-                self.last_tick = Instant::now();
-                beam.tick();
+        if let Some(beam_state) = &mut sim.beam {
+            // Make async?
+            if space_pressed {
+                beam_state.tick();
             }
 
-            let is_complete = beam.level.as_ref().map(|x| x.is_complete());
+            let is_complete = beam_state.level.as_ref().map(|x| x.is_complete());
             if is_complete == Some(true) {
-                self.running = false;
-                self.beam = None;
+                sim.runtime.running = false;
+                sim.beam = None;
             } else {
-                beam.render(ctx, state, &self.shared);
+                beam_state.render(ctx, state, &self.shared);
             }
+
+            self.beam.notify_running();
         } else if space_pressed || play_pressed || test_pressed {
-            let mut beam = BeamState::new(&self.board, test_pressed);
-            beam.tick();
-            self.beam = Some(beam);
+            sim.beam = Some(BeamState::new(&self.board, test_pressed));
         }
 
         if ctx.input.key_pressed(KeyCode::Escape) {
-            self.beam = None;
+            sim.beam = None;
         }
 
         ctx.background(BACKGROUND_COLOR);
-        self.board.render(ctx, state, &self.shared, &mut self.beam);
+        self.board.render(ctx, state, &self.shared, &mut sim.beam);
         self.tile_picker
-            .render(ctx, self.beam.is_some(), &mut self.board.transient.holding);
+            .render(ctx, sim.beam.is_some(), &mut self.board.transient.holding);
     }
 
     fn on_destroy(&mut self, _state: &mut App) {
@@ -109,12 +108,8 @@ impl GameScreen {
         Self {
             shared: SharedState::default(),
             board,
-            beam: None,
-
+            beam: SimulationState::new(),
             tile_picker: TilePicker::default(),
-            running: false,
-            last_tick: Instant::now(),
-
             save_file,
             needs_init: true,
         }
