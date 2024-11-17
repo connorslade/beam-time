@@ -29,22 +29,22 @@ pub macro default_level {
 
 pub static LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
     default_level!(
-        "1_basic_routing.ron",
-        "2_slightly_less_basic_routing.ron",
-        "3_not_gate.ron",
-        "4_and_gate.ron",
-        "5_or_gate.ron",
-        "6_basic_oscillator.ron",
-        "7_synchronization.ron",
-        "8_two_way_multiplexer.ron",
-        "9_xor_gate.ron",
-        "10_half_adder.ron",
-        "11_two_tick_clock.ron",
-        "12_even_oscillators.ron",
-        // "13_rs_latch.ron",
-        // "14_gated_d_latch.ron",
-        // "15_double_it.ron",
-        "16_count_ones.ron"
+        "basic_routing.ron",
+        "slightly_less_basic_routing.ron",
+        "not_gate.ron",
+        "and_gate.ron",
+        "or_gate.ron",
+        "basic_oscillator.ron",
+        "synchronization.ron",
+        "two_way_multiplexer.ron",
+        "xor_gate.ron",
+        "half_adder.ron",
+        "two_tick_clock.ron",
+        "even_oscillators.ron",
+        // "rs_latch.ron",
+        // "gated_d_latch.ron",
+        // "double_it.ron",
+        "count_ones.ron"
     )
 });
 

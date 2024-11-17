@@ -13,6 +13,10 @@ const SIZE: (usize, usize) = (4, 2);
 
 impl LevelPanel {
     pub fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App) {
+        if true {
+            return;
+        }
+
         let scale = state.config.ui_scale * 4.0;
         let tile_size = scale * ctx.scale_factor * 16.0;
 
