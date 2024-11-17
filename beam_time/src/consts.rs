@@ -18,8 +18,12 @@ pub const FOREGROUND_COLOR: Rgb<f32> = Rgb::new(0.859, 0.89, 0.839);
 pub const ACCENT_COLOR: Rgb<f32> = Rgb::new(0.812, 0.306, 0.306);
 
 pub mod layer {
-    pub const OVERLAY: i16 = 3;
-    pub const TILE_HOLDING: i16 = 2;
+    pub const TILE_HOLDING: i16 = 5;
+
+    pub const UI_ELEMENT: i16 = 4;
+    pub const UI_BACKGROUND: i16 = 3;
+
+    pub const OVERLAY: i16 = 2;
     pub const LASER: i16 = 1;
     pub const UNDER_LASER: i16 = -1;
     pub const TILE_BACKGROUND_OVERLAY: i16 = -2;

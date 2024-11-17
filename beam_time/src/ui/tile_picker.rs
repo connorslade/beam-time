@@ -8,10 +8,7 @@ use engine::{
 };
 
 use crate::{
-    assets::{
-        TILE_PICKER_BACKGROUND_CENTER, TILE_PICKER_BACKGROUND_LEFT, TILE_PICKER_BACKGROUND_RIGHT,
-        UNDEAD_FONT,
-    },
+    assets::{TILE_PICKER_CENTER, TILE_PICKER_LEFT, TILE_PICKER_RIGHT, UNDEAD_FONT},
     consts::layer,
     game::{holding::Holding, tile::Tile},
 };
@@ -52,21 +49,23 @@ impl TilePicker {
             let pos = Vector2::new(tile_size * i as f32, -self.offset);
 
             let background_texture = if i == 0 {
-                TILE_PICKER_BACKGROUND_LEFT
+                TILE_PICKER_LEFT
             } else if i == Tile::DEFAULT.len() - 1 {
-                TILE_PICKER_BACKGROUND_RIGHT
+                TILE_PICKER_RIGHT
             } else {
-                TILE_PICKER_BACKGROUND_CENTER
+                TILE_PICKER_CENTER
             };
 
             let background = Sprite::new(background_texture)
                 .position(pos, Anchor::BottomLeft)
-                .scale(Vector2::repeat(4.0), Anchor::Center);
+                .scale(Vector2::repeat(4.0), Anchor::Center)
+                .z_index(layer::UI_BACKGROUND);
             ctx.draw(background);
 
             let sprite = asset
                 .position(pos, Anchor::BottomLeft)
-                .scale(Vector2::repeat(4.0), Anchor::Center);
+                .scale(Vector2::repeat(4.0), Anchor::Center)
+                .z_index(layer::UI_ELEMENT);
 
             if !sim && sprite.is_hovered(ctx) {
                 if holding.is_none() {

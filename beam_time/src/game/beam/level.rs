@@ -75,19 +75,24 @@ impl LevelState {
 }
 
 fn equivalent_cycles(long: &[Vec<bool>], short: &[Vec<bool>]) -> bool {
-    assert!(long.len() >= short.len());
-
-    if long.len() % short.len() != 0 {
+    if short.len() > long.len() || long.len() % short.len() != 0 {
         return false;
     }
 
-    for i in 0..(long.len() / short.len()) {
-        if &long[i * short.len()..(i + 1) * short.len()] != short {
-            return false;
+    'outer: for offset in 0..short.len() {
+        for i in 0..(long.len() / short.len()) {
+            let start = (i * short.len() + offset) % long.len();
+
+            let mut matched = long.iter().cycle().skip(start).zip(short.iter());
+            if matched.any(|(a, b)| a != b) {
+                continue 'outer;
+            }
         }
+
+        return true;
     }
 
-    true
+    false
 }
 
 impl Default for LevelState {

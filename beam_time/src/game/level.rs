@@ -40,7 +40,11 @@ pub static LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
         "9_xor_gate.ron",
         "10_half_adder.ron",
         "11_two_tick_clock.ron",
-        "15_count_ones.ron"
+        "12_even_oscillators.ron",
+        // "13_rs_latch.ron",
+        // "14_gated_d_latch.ron",
+        // "15_double_it.ron",
+        "16_count_ones.ron"
     )
 });
 

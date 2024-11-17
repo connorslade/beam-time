@@ -29,9 +29,11 @@ define_refs! {
         OPTIONS_BUTTON,
         ABOUT_BUTTON,
 
-        TILE_PICKER_BACKGROUND_LEFT,
-        TILE_PICKER_BACKGROUND_CENTER,
-        TILE_PICKER_BACKGROUND_RIGHT,
+        TILE_PICKER_LEFT,
+        TILE_PICKER_CENTER,
+        TILE_PICKER_RIGHT,
+
+        INFO_PANEL,
 
         EMPTY_TILE_A,
         EMPTY_TILE_B,
@@ -92,11 +94,13 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, OPTIONS_BUTTON, (0, 48), (39, 14));
     assets.register_sprite(interface, ABOUT_BUTTON, (40, 48), (31, 14));
 
-    let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
-    assets.register_sprite(tiles, TILE_PICKER_BACKGROUND_LEFT, (80, 288), (16, 16));
-    assets.register_sprite(tiles, TILE_PICKER_BACKGROUND_CENTER, (96, 288), (16, 16));
-    assets.register_sprite(tiles, TILE_PICKER_BACKGROUND_RIGHT, (112, 288), (16, 16));
+    assets.register_sprite(interface, TILE_PICKER_LEFT, (64, 112), (16, 16));
+    assets.register_sprite(interface, TILE_PICKER_CENTER, (80, 112), (16, 16));
+    assets.register_sprite(interface, TILE_PICKER_RIGHT, (96, 112), (16, 16));
 
+    assets.register_sprite(interface, INFO_PANEL, (80, 80), (16, 16));
+
+    let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
     assets.register_sprite(tiles, EMPTY_TILE_A, (0, 288), (16, 16));
     assets.register_sprite(tiles, EMPTY_TILE_B, (16, 288), (16, 16));
     assets.register_sprite(tiles, PERMANENT_TILE_A, (32, 288), (16, 16));
