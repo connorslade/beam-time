@@ -64,6 +64,11 @@
 - [ ] Fix simulation bug when two galvos are pointed at the same mirror
 - [x] Render the little light pixel on active emitters
 - [ ] Visual feedback for test cases
+- [ ] Blueprint system
+  - [ ] Allow saving and loading premade-structures in-game
+  - [ ] Allow importing and exporting them as base64 encoded strs
+- [ ] Dont overwrite when placing tile normally
+- [ ] Dont allow interacting with protected tiles through selections
 
 ## Level Ideas
 

@@ -1,7 +1,7 @@
 Level(
     id: "91d5f245-75e8-4d3e-8994-7dcbdcd70670",
     name: "Half Adder",
-    description: "...",
+    description: "left is and, right is xor",
 
     size: Some((6, 6)),
     permanent: [ (0, 5), (1, 5), (4, 0), (5, 0) ],

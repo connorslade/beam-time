@@ -1,0 +1,26 @@
+Level(
+    id: "46c56d9a-fda5-4876-aaa7-de80a7fcc710",
+    name: "Gated D Latch",
+    description: "...",
+
+    size: Some((6, 6)),
+    permanent: [ (0, 5), (1, 5), (5, 0) ],
+    tiles: {
+        (0, 5): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (1, 5): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (5, 0): Detector
+    },
+
+    tests: Tests(
+        lasers: [ Static((0, 5)), Static((1, 5)) ],
+        detectors: [ Static((5, 0)) ],
+
+        cases: [ ]
+    )
+)

@@ -4,81 +4,75 @@ Level(
     description: "",
 
     size: Some((6, 6)),
-    permanent: [ (1, 6), (2, 6), (5, 6), (6, 0) ],
+    permanent: [ (1, 5), (2, 5), (5, 5), (5, 0) ],
     tiles: {
-        (1, 6): Emitter(
+        (1, 5): Emitter(
             rotation: Down,
             active: true
         ),
-        (2, 6): Emitter(
+        (2, 5): Emitter(
             rotation: Down,
             active: true
         ),
-        (3, 6): Emitter(
+        (5, 5): Emitter(
             rotation: Down,
             active: true
         ),
-        (5, 6): Emitter(
-            rotation: Down,
-            active: true
-        ),
-        (6, 0): Detector
+        (5, 0): Detector
     },
 
     tests: Tests(
         lasers: [
             // Inptus
-            Static((1, 6)),
-            Static((2, 6)),
+            Static((1, 5)),
+            Static((2, 5)),
 
             // Selector
-            Static((5, 6)),
+            Static((5, 5)),
         ],
-        detectors: [ Static((6, 0)) ],
+        detectors: [ Static((5, 0)) ],
 
         cases: [
             TestCase(
-                lasers: [
-                    false, false, true,
-                    false, false
-                ],
+                lasers: [ false, false, false ],
+                detectors: [ [ false ] ],
+            ),
+            TestCase(
+                lasers: [ false, false, true ],
+                detectors: [ [ false ] ],
+            ),
+            TestCase(
+                lasers: [ false, true, false ],
+                detectors: [ [ false ] ],
+            ),
+            TestCase(
+                lasers: [ false, true, true ],
                 detectors: [ [ true ] ],
             ),
             TestCase(
-                lasers: [
-                    false, true, false,
-                    false, false
-                ],
-                detectors: [ [ false ] ],
-            ),
-            TestCase(
-                lasers: [
-                    false, true, false,
-                    true, false
-                ],
-                detectors: [ [ false ] ],
-            ),
-            TestCase(
-                lasers: [
-                    false, true, false,
-                    false, true
-                ],
+                lasers: [ true, false, false ],
                 detectors: [ [ true ] ],
             ),
             TestCase(
-                lasers: [
-                    false, true, true,
-                    true, false
-                ],
+                lasers: [ true, false, true ],
                 detectors: [ [ false ] ],
             ),
             TestCase(
-                lasers: [
-                    true, true, true,
-                    true, false
-                ],
+                lasers: [ true, true, false ],
+                detectors: [ [ true ] ],
+            ),
+            TestCase(
+                lasers: [ true, true, true ],
                 detectors: [ [ true ] ],
             ),
         ]
     )
 )
+
+// Cases generated with:
+// for i in 0b000..=0b111_u32 {
+//     let a = i & 0b100 != 0;
+//     let b = i & 0b010 != 0;
+//     let s = i & 0b001 != 0;
+//     println!("{a}, {b}, {s}: {}", [a, b][s as u8 as usize]);
+// }
