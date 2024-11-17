@@ -72,6 +72,4 @@
 
 ## Level Ideas
 
-- Memory cell
 - Invert the number
-- 2-Way Multiplexer

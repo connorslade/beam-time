@@ -1,7 +1,7 @@
 Level(
     id: "46c56d9a-fda5-4876-aaa7-de80a7fcc710",
     name: "Gated D Latch",
-    description: "...",
+    description: "When enable (E) is active, the signal on D should be forewarded to the output. When E is disabled continue outputting the current value of D.",
 
     size: Some((6, 6)),
     permanent: [ (0, 5), (1, 5), (5, 0) ],
@@ -18,9 +18,34 @@ Level(
     },
 
     tests: Tests(
-        lasers: [ Static((0, 5)), Static((1, 5)) ],
+        lasers: [ Static((0, 5)), Static((1, 5)) ], // DE
         detectors: [ Static((5, 0)) ],
 
-        cases: [ ]
+        cases: [
+            TestCase(
+                lasers: [ false, false ],
+                detectors: [ [ false ] ],
+            ),
+            TestCase(
+                lasers: [ true, false ],
+                detectors: [ [ false ] ],
+            ),
+            TestCase(
+                lasers: [ true, true ],
+                detectors: [ [ true ] ],
+            ),
+            TestCase(
+                lasers: [ false, false ],
+                detectors: [ [ true ] ],
+            ),
+            TestCase(
+                lasers: [ true, false ],
+                detectors: [ [ true ] ],
+            ),
+            TestCase(
+                lasers: [ false, true ],
+                detectors: [ [ false ] ],
+            ),
+        ]
     )
 )
