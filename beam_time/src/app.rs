@@ -18,6 +18,7 @@ pub struct App {
 pub struct Config {
     pub zoom_sensitivity: f32,
     pub movement_speed: f32,
+    pub ui_scale: f32,
 }
 
 impl App {
@@ -59,6 +60,7 @@ impl Default for Config {
         Self {
             zoom_sensitivity: 1.0,
             movement_speed: 500.0,
+            ui_scale: 1.0,
         }
     }
 }

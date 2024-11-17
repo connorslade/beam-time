@@ -14,18 +14,20 @@ use crate::{
         level::LEVELS,
         SharedState,
     },
-    ui::tile_picker::TilePicker,
+    ui::{level_panel::LevelPanel, tile_picker::TilePicker},
     util::key_events,
     App,
 };
 
 pub struct GameScreen {
-    save_file: PathBuf,
-
     shared: SharedState,
     board: Board,
     beam: SimulationState,
+
     tile_picker: TilePicker,
+    level_panel: LevelPanel,
+
+    save_file: PathBuf,
     needs_init: bool,
     tps: f32,
 }
@@ -97,6 +99,7 @@ impl Screen<App> for GameScreen {
         self.board.render(ctx, state, &self.shared, &mut sim.beam);
         self.tile_picker
             .render(ctx, sim.beam.is_some(), &mut self.board.transient.holding);
+        self.level_panel.render(ctx);
     }
 
     fn on_destroy(&mut self, _state: &mut App) {
@@ -120,7 +123,10 @@ impl GameScreen {
             shared: SharedState::default(),
             board,
             beam: SimulationState::new(),
+
             tile_picker: TilePicker::default(),
+            level_panel: LevelPanel::default(),
+
             save_file,
             needs_init: true,
             tps: 20.0,
