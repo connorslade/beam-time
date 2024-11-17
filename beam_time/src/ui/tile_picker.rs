@@ -8,6 +8,7 @@ use engine::{
 };
 
 use crate::{
+    app::App,
     assets::{TILE_PICKER_CENTER, TILE_PICKER_LEFT, TILE_PICKER_RIGHT, UNDEAD_FONT},
     consts::layer,
     game::{holding::Holding, tile::Tile},
@@ -29,9 +30,10 @@ pub struct TilePicker {
 }
 
 impl TilePicker {
-    pub fn render<App>(
+    pub fn render(
         &mut self,
         ctx: &mut GraphicsContext<App>,
+        state: &App,
         sim: bool,
         holding: &mut Holding,
     ) {
@@ -39,13 +41,18 @@ impl TilePicker {
             return;
         }
 
-        let tile_size = 16.0 * 4.0 * ctx.scale_factor;
+        let scale = state.config.ui_scale * 4.0;
+        let tile_size = scale * ctx.scale_factor * 16.0;
         for (i, (tile, key)) in Tile::DEFAULT.iter().zip(TILE_SHORTCUTS).enumerate() {
             if !sim && ctx.input.key_pressed(key) {
                 *holding = Holding::Tile(*tile);
             }
 
-            let (asset, name) = (tile.asset(), tile.name());
+            let render_tile = match tile {
+                x @ Tile::Emitter { .. } | x @ Tile::Galvo { .. } => &x.rotate(),
+                x => x,
+            };
+            let (asset, name) = (render_tile.asset(), tile.name());
             let pos = Vector2::new(tile_size * i as f32, -self.offset);
 
             let background_texture = if i == 0 {
@@ -58,20 +65,20 @@ impl TilePicker {
 
             let background = Sprite::new(background_texture)
                 .position(pos, Anchor::BottomLeft)
-                .scale(Vector2::repeat(4.0), Anchor::Center)
+                .scale(Vector2::repeat(scale), Anchor::Center)
                 .z_index(layer::UI_BACKGROUND);
             ctx.draw(background);
 
             let sprite = asset
                 .position(pos, Anchor::BottomLeft)
-                .scale(Vector2::repeat(4.0), Anchor::Center)
+                .scale(Vector2::repeat(scale), Anchor::Center)
                 .z_index(layer::UI_ELEMENT);
 
             if !sim && sprite.is_hovered(ctx) {
                 if holding.is_none() {
                     let text = Text::new(UNDEAD_FONT, name)
                         .pos(ctx.input.mouse, Anchor::BottomLeft)
-                        .scale(Vector2::repeat(2.0))
+                        .scale(Vector2::repeat(2.0 * state.config.ui_scale))
                         .z_index(layer::TILE_HOLDING);
                     ctx.draw(text);
                 }
