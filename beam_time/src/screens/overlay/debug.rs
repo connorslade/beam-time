@@ -7,11 +7,7 @@ use engine::{
     screens::Screen,
 };
 
-use crate::{
-    assets::UNDEAD_FONT,
-    consts::{layer::OVERLAY, FOREGROUND_COLOR},
-    App,
-};
+use crate::{assets::UNDEAD_FONT, consts::layer::OVERLAY, App};
 
 pub struct DebugOverlay {
     last_update: Instant,
@@ -33,8 +29,7 @@ impl Screen<App> for DebugOverlay {
 
         ctx.draw(
             Text::new(UNDEAD_FONT, &text)
-                .color(FOREGROUND_COLOR)
-                .position(Vector2::new(10.0, ctx.size().y - 10.0), Anchor::TopLeft)
+                .position(ctx.size() - Vector2::new(20.0, 10.0), Anchor::TopRight)
                 .scale(Vector2::repeat(2.0))
                 .z_index(OVERLAY),
         );
