@@ -15,7 +15,7 @@ pub macro default_level {
     ($name:expr) => {
         Level::load_slice(include_bytes!(concat!("../../assets/levels/", $name)))
     },
-    ($($name:expr),*) => {{
+    ($($name:expr),* $(,)?) => {{
         let mut out = Vec::new();
         $(
             match default_level!($name) {
@@ -42,15 +42,19 @@ pub static LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
         "even_oscillators.ron",
         "two_tick_clock.ron",
         "double_it.ron",
+        "edge_detectors.ron",
         "rs_latch.ron",
         "gated_d_latch.ron",
         "t_flip_flop.ron",
-        "count_ones.ron"
+        "counter.ron",
+        "count_ones.ron",
     )
 });
 
 #[derive(Debug, Deserialize)]
 pub struct Level {
+    /// The ID is stored in the save file, meaning you can share your campaign
+    /// levels and other can view correctly them in sandbox mode.
     pub id: Uuid,
     pub name: String,
     pub description: String,
@@ -64,11 +68,21 @@ pub struct Level {
 
 #[derive(Debug, Deserialize)]
 pub struct Tests {
-    pub cases: Vec<TestCase>,
-
     pub lasers: Vec<ElementLocation>,
     pub detectors: Vec<ElementLocation>,
+
+    #[serde(default)]
+    pub checker: Checker,
+    pub cases: Vec<TestCase>,
 }
+
+#[derive(Default, Debug, Deserialize)]
+pub enum Checker {
+    Basic,
+    #[default]
+    Cycle,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct TestCase {
     pub lasers: Vec<bool>,

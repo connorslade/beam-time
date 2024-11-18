@@ -32,7 +32,13 @@ impl Holding {
             Holding::None => {}
             Holding::Tile(tile) => {
                 key_events!(ctx, {
-                    KeyCode::KeyR => *tile = tile.rotate(),
+                    KeyCode::KeyR => {
+                        *tile = if ctx.input.key_down(KeyCode::ShiftLeft) {
+                            tile.rotate_reverse()
+                        } else {
+                            tile.rotate()
+                        };
+                    },
                     KeyCode::KeyE => *tile = tile.activate()
                 });
 
@@ -45,9 +51,18 @@ impl Holding {
             }
             Holding::Paste(tiles) => {
                 key_events!(ctx, {
-                    KeyCode::KeyR => for (pos, tile) in tiles.iter_mut() {
-                        *pos = Vector2::new(-pos.y, pos.x);
-                        *tile = tile.rotate_reverse();
+                    KeyCode::KeyR => {
+                        if ctx.input.key_down(KeyCode::ShiftLeft) {
+                            for (pos, tile) in tiles.iter_mut() {
+                                *pos = Vector2::new(-pos.y, pos.x);
+                                *tile = tile.rotate_reverse();
+                            }
+                        }  else {
+                            for (pos, tile) in tiles.iter_mut() {
+                                *pos = Vector2::new(pos.y, -pos.x);
+                                *tile = tile.rotate();
+                            }
+                        }
                     },
                     KeyCode::KeyV => for (pos, tile) in tiles.iter_mut() {
                         *pos = Vector2::new(pos.x, -pos.y);

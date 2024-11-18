@@ -285,7 +285,11 @@ impl Board {
                     if holding.is_none() {
                         key_events!(ctx, {
                             KeyCode::KeyR => {
-                                self.tiles.set(pos, tile.rotate());
+                                if ctx.input.key_down(KeyCode::ShiftLeft) {
+                                    self.tiles.set(pos, tile.rotate_reverse());
+                                } else {
+                                    self.tiles.set(pos, tile.rotate());
+                                }
                                 self.transient.history.track_one(pos, tile);
                             },
                             KeyCode::KeyE => {

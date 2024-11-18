@@ -1,0 +1,46 @@
+Level(
+    id: "bd637589-b931-40d5-984c-60f158d1c8a9",
+    name: "Edge Detectors",
+    description: "On the rising-edge of the input signal, send a pulse to the leftmost output and send an output to the right output on the falling-edge.",
+
+    size: Some((6, 6)),
+    permanent: [ (0, 5), (4, 0), (5, 0) ],
+    tiles: {
+        (0, 5): Emitter(
+            rotation: Down,
+            active: true
+        ),
+        (4, 0): Detector,
+        (5, 0): Detector
+    },
+
+    // todo: dont use cycle detection
+    tests: Tests(
+        lasers: [ Static((0, 5)) ],
+        detectors: [ Static((4, 0)), Static((5, 0)) ], // RF
+
+        checker: Basic,
+        cases: [
+            TestCase(
+                lasers: [ false ],
+                detectors: [ [ false, false ] ],
+            ),
+            TestCase(
+                lasers: [ true ],
+                detectors: [ [ true, false ] ],
+            ),
+            TestCase(
+                lasers: [ true ],
+                detectors: [ [ false, false ] ],
+            ),
+            TestCase(
+                lasers: [ false ],
+                detectors: [ [ true, true ] ],
+            ),
+            TestCase(
+                lasers: [ false ],
+                detectors: [ [ false, false ] ],
+            ),
+        ]
+    )
+)

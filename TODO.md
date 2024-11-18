@@ -69,6 +69,11 @@
   - [ ] Allow importing and exporting them as base64 encoded strs
 - [ ] Dont overwrite when placing tile normally
 - [ ] Dont allow interacting with protected tiles through selections
+- [x] Use shift to reverse rotation direction
+- [ ] Cleanup selection renderer with holes
+- [ ] Bias scale to integer zoom levels when at small zooms
+- [ ] Detect failed test cases
+- [ ] Allow disabling cycle detection for pluse based solutions
 
 ## Level Ideas
 
