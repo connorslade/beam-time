@@ -43,7 +43,7 @@ impl Screen<App> for CampaignScreen {
                 ctx.center() + Vector2::new(0.0, total_height / 2.0 - line_spacing * i as f32);
 
             let mut text = Text::new(UNDEAD_FONT, &level.name)
-                .pos(pos, Anchor::Center)
+                .position(pos, Anchor::Center)
                 .scale(Vector2::repeat(SCALE));
 
             let width = text.width(ctx) * SCALE;

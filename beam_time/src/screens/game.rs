@@ -48,8 +48,9 @@ impl Screen<App> for GameScreen {
             self.needs_init = false;
         }
 
+        let shift = ctx.input.key_down(KeyCode::ShiftLeft);
         key_events!(ctx, {
-            KeyCode::Digit0 => self.tps = 20.0,
+            KeyCode::Digit0 => self.tps = 20.0 * !shift as u8 as f32,
             KeyCode::Equal => self.tps += 5.0,
             KeyCode::Minus => self.tps -= 5.0
         });
@@ -103,7 +104,7 @@ impl Screen<App> for GameScreen {
             sim.beam.is_some(),
             &mut self.board.transient.holding,
         );
-        self.level_panel.render(ctx, &state);
+        self.level_panel.render(ctx, &state, &self.board);
     }
 
     fn on_destroy(&mut self, _state: &mut App) {

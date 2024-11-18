@@ -77,7 +77,7 @@ impl TilePicker {
             if !sim && sprite.is_hovered(ctx) {
                 if holding.is_none() {
                     let text = Text::new(UNDEAD_FONT, name)
-                        .pos(ctx.input.mouse, Anchor::BottomLeft)
+                        .position(ctx.input.mouse, Anchor::BottomLeft)
                         .scale(Vector2::repeat(2.0 * state.config.ui_scale))
                         .z_index(layer::TILE_HOLDING);
                     ctx.draw(text);

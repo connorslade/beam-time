@@ -55,7 +55,7 @@ impl<'a> Text<'a> {
         width.max(x).min(self.max_width * scale.x)
     }
 
-    pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
+    pub fn position(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
         self.pos = pos;
         self.anchor = anchor;
         self

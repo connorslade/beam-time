@@ -1,10 +1,15 @@
 use engine::{
-    drawable::sprite::Sprite,
+    drawable::{sprite::Sprite, text::Text},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
 };
 
-use crate::{app::App, assets::INFO_PANEL, consts::layer};
+use crate::{
+    app::App,
+    assets::{INFO_PANEL, UNDEAD_FONT},
+    consts::layer,
+    game::board::Board,
+};
 
 #[derive(Default)]
 pub struct LevelPanel {}
@@ -12,10 +17,10 @@ pub struct LevelPanel {}
 const SIZE: (usize, usize) = (4, 2);
 
 impl LevelPanel {
-    pub fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App) {
-        if true {
+    pub fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App, board: &Board) {
+        let Some(level) = board.transient.level else {
             return;
-        }
+        };
 
         let scale = state.config.ui_scale * 4.0;
         let tile_size = scale * ctx.scale_factor * 16.0;
@@ -36,5 +41,11 @@ impl LevelPanel {
                 );
             }
         }
+
+        ctx.draw(
+            Text::new(UNDEAD_FONT, &level.name)
+                .position(Vector2::new(0.0, ctx.size().y), Anchor::TopLeft)
+                .z_index(layer::UI_ELEMENT),
+        );
     }
 }

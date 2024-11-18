@@ -34,7 +34,7 @@ pub fn titled_screen(
     ctx.draw(
         Text::new(ALAGARD_FONT, title)
             .color(FOREGROUND_COLOR)
-            .pos(pos, Anchor::TopCenter)
+            .position(pos, Anchor::TopCenter)
             .scale(Vector2::repeat(6.0)),
     );
 

@@ -34,7 +34,7 @@ impl Screen<App> for DebugOverlay {
         ctx.draw(
             Text::new(UNDEAD_FONT, &text)
                 .color(FOREGROUND_COLOR)
-                .pos(Vector2::new(10.0, ctx.size().y - 10.0), Anchor::TopLeft)
+                .position(Vector2::new(10.0, ctx.size().y - 10.0), Anchor::TopLeft)
                 .scale(Vector2::repeat(2.0))
                 .z_index(OVERLAY),
         );

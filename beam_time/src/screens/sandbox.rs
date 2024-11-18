@@ -33,7 +33,7 @@ impl Screen<App> for SandboxScreen {
         if self.worlds.is_empty() {
             ctx.draw(
                 Text::new(UNDEAD_FONT, "No worlds...")
-                    .pos(ctx.center(), Anchor::Center)
+                    .position(ctx.center(), Anchor::Center)
                     .scale(Vector2::repeat(4.0)),
             );
         } else {
@@ -46,7 +46,7 @@ impl Screen<App> for SandboxScreen {
                     ctx.center() + Vector2::new(0.0, total_height / 2.0 - line_spacing * i as f32);
 
                 let mut text = Text::new(UNDEAD_FONT, &meta.name)
-                    .pos(pos, Anchor::Center)
+                    .position(pos, Anchor::Center)
                     .scale(Vector2::repeat(SCALE));
 
                 let width = text.width(ctx) * SCALE;
