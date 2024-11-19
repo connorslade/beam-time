@@ -5,6 +5,7 @@ Level(
 
     size: Some((20, 6)),
     permanent: [ (4, 0), (8, 0), (12, 0), (16, 0), (19, 5) ],
+    lables: { },
     tiles: {
         (19, 5): Emitter(
             rotation: Down,

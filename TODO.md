@@ -75,7 +75,7 @@
 - [ ] Detect failed test cases
 - [ ] Allow disabling cycle detection for pluse based solutions
 - [ ] Experiment with animation icon?
-- [ ] Allow labeling emitters / outputs / tiles in general?
+- [x] Allow labeling emitters / outputs / tiles in general?
 - [ ] Splitters take input from all sides to avoid non-determistic behavior when used as or gates
 
 ## Level Ideas

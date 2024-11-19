@@ -56,7 +56,7 @@ impl TextLayout {
                 }
             }
 
-            width = width.max(pos.x + char_width);
+            width = width.max(pos.x - font.tracking * scale.x);
         }
 
         chars.iter_mut().for_each(|(_, x)| x.y -= pos.y);

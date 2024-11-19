@@ -1,10 +1,14 @@
 Level(
     id: "bd637589-b931-40d5-984c-60f158d1c8a9",
     name: "Edge Detectors",
-    description: "On the rising-edge of the input signal, send a pulse to the leftmost output and send an output to the right output on the falling-edge.",
+    description: "On the rising-edge of the input signal, send a pulse to output R and send an output to output F on the falling-edge.",
 
     size: Some((6, 6)),
     permanent: [ (0, 5), (4, 0), (5, 0) ],
+    lables: {
+        (4, 0): "R",
+        (5, 0): "F"
+    },
     tiles: {
         (0, 5): Emitter(
             rotation: Down,

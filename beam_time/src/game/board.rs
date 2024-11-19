@@ -8,7 +8,7 @@ use anyhow::Result;
 use bincode::Options;
 use chrono::{DateTime, Utc};
 use engine::{
-    drawable::sprite::Sprite,
+    drawable::{sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
@@ -21,7 +21,7 @@ use uuid::Uuid;
 
 use crate::{
     app::App,
-    assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B},
+    assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B, UNDEAD_FONT},
     consts::{layer, AUTOSAVE_INTERVAL},
     misc::map::Map,
     util::{in_bounds, key_events},
@@ -205,14 +205,16 @@ impl Board {
                     .position(render_pos, Anchor::Center)
                     .z_index(layer::TILE_BACKGROUND);
 
-                // let offset = 7.0 * shared.scale * ctx.scale_factor;
-                // let offset = Vector2::new(offset, -offset);
-                // ctx.draw(
-                //     Text::new(UNDEAD_FONT, "A")
-                //         .scale(Vector2::repeat(shared.scale / 2.0))
-                //         .pos(render_pos + offset, Anchor::BottomRight)
-                //         .z_index(layer::TILE_BACKGROUND_OVERLAY),
-                // );
+                if let Some(lable) = self.transient.level.map(|x| x.lables.get(&pos)).flatten() {
+                    let offset = shared.scale * ctx.scale_factor;
+                    let offset = Vector2::new(6.5 * offset, -7.5 * offset);
+                    ctx.draw(
+                        Text::new(UNDEAD_FONT, &lable)
+                            .scale(Vector2::repeat(shared.scale / 2.0))
+                            .position(render_pos + offset, Anchor::BottomRight)
+                            .z_index(layer::OVERLAY),
+                    );
+                }
 
                 if !is_empty {
                     let sprite = sim

@@ -1,10 +1,15 @@
 Level(
     id: "d1d080f7-06c4-421d-9125-dceadc5b6f32",
     name: "Even Oscillators",
-    description: "Build three oscillators with (from left to right) periods of 8, 6, and 4.",
+    description: "Build three oscillators with (from left to right) periods of 16, 12, and 8.",
 
     size: Some((6, 6)),
     permanent: [ (3, 0), (4, 0), (5, 0) ],
+    lables: {
+        (3, 0): "16",
+        (4, 0): "12",
+        (5, 0): "8"
+    },
     tiles: {
         (3, 0): Detector,
         (4, 0): Detector,
