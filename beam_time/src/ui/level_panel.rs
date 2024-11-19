@@ -33,7 +33,7 @@ impl LevelPanel {
             .position(Vector2::new(padding, y), Anchor::TopLeft)
             .scale(Vector2::repeat(state.config.ui_scale * 3.0))
             .z_index(layer::UI_ELEMENT);
-        y -= title.size(ctx).y + 10.0;
+        y -= title.size(ctx).y + 10.0 * state.config.ui_scale * ctx.scale_factor;
         ctx.draw(title);
 
         let description = Text::new(UNDEAD_FONT, &level.description)

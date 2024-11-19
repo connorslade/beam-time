@@ -36,7 +36,8 @@ impl TextLayout {
                 c => {
                     let character = font.characters.get(&c).copied();
                     let character = character.unwrap_or(font.unknown);
-                    chars.push((character, pos));
+                    let baseline_shift = Vector2::y() * character.baseline_shift as f32 * scale.y;
+                    chars.push((character, pos + baseline_shift));
 
                     char_width = character.size.x as f32 * scale.x;
                     pos.x += char_width + font.tracking * scale.x;
@@ -59,12 +60,7 @@ impl TextLayout {
         }
 
         chars.iter_mut().for_each(|(_, x)| x.y -= pos.y);
-
-        if pos.x > 0.0 {
-            pos.y -= line_height;
-        }
-
-        let size = Vector2::new(width, -pos.y - font.leading * scale.y);
+        let size = Vector2::new(width, -pos.y + font.height * scale.y);
         Self { chars, size }
     }
 }

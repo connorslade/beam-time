@@ -27,9 +27,10 @@ impl Screen<App> for DebugOverlay {
         let (fps, sprites, scale) = (self.last_frames, ctx.sprite_count(), ctx.scale_factor);
         let text = format!("FPS: {fps}\nSprites: {sprites}\nScale: {scale:.1}");
 
+        let pos = ctx.size() - Vector2::new(10.0, 10.0) * scale;
         ctx.draw(
             Text::new(UNDEAD_FONT, &text)
-                .position(ctx.size() - Vector2::new(10.0, 10.0), Anchor::TopRight)
+                .position(pos, Anchor::TopRight)
                 .scale(Vector2::repeat(2.0))
                 .z_index(OVERLAY),
         );

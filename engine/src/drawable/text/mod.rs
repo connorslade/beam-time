@@ -40,8 +40,9 @@ impl<'a> Text<'a> {
     }
 
     pub fn size<App>(&self, ctx: &GraphicsContext<App>) -> Vector2<f32> {
+        let scale = self.scale * ctx.scale_factor;
         let font = ctx.assets.get_font(self.font);
-        TextLayout::generate(&font.desc, self.max_width, self.scale, self.text).size
+        TextLayout::generate(&font.desc, self.max_width, scale, self.text).size
     }
 
     pub fn position(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
@@ -85,10 +86,7 @@ impl<'a, App> Drawable<App> for Text<'a> {
             let uv_b = process_uv(character.uv + character.size);
 
             let size = character.size.map(|x| x as f32).component_mul(&scale);
-            let baseline_shift = Vector2::y() * character.baseline_shift as f32 * scale.y;
-
-            let pos = (pos + self.pos + baseline_shift + self.anchor.offset(layout.size))
-                .map(|x| x.round());
+            let pos = (pos + self.pos + self.anchor.offset(layout.size)).map(|x| x.round());
 
             ctx.sprites.push(GpuSprite {
                 texture: font.texture,
