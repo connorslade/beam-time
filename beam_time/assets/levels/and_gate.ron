@@ -1,7 +1,7 @@
 Level(
     id: "1c9ddabc-8e4b-41a1-bc0c-e0623226e5c3",
     name: "And Gate",
-    description: "...",
+    description: "Output a signal only when both inputs are active.",
 
     size: Some((6, 6)),
     permanent: [ (0, 5), (1, 5), (5, 0) ],

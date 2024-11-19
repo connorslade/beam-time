@@ -1,7 +1,7 @@
 Level(
     id: "aa28086a-564e-46d3-9233-894c157d92fe",
     name: "Basic Oscillator",
-    description: "The output should osciliate between on and off states every two ticks, for a total cycle time of four ticks.",
+    description: "The output should osciliate between on and off states every four ticks, for a total cycle peroid of eight ticks.",
 
     size: Some((6, 6)),
     permanent: [ (5, 0) ],

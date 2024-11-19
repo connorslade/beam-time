@@ -42,7 +42,7 @@ impl Screen<App> for AboutScreen {
         ctx.draw(
             Text::new(UNDEAD_FONT, DESCRIPTION)
                 .max_width(ctx.size().x - 20.0)
-                .position(Vector2::new(10.0, pos.y - height), Anchor::TopLeft)
+                .position(Vector2::new(10.0, pos.y - height - 20.0), Anchor::TopLeft)
                 .scale(Vector2::repeat(3.0)),
         );
     }

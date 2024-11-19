@@ -75,6 +75,7 @@
 - [ ] Detect failed test cases
 - [ ] Allow disabling cycle detection for pluse based solutions
 - [ ] Experiment with animation icon?
+- [ ] Allow labeling emitters / outputs / tiles in general?
 
 ## Level Ideas
 

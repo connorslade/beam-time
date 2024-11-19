@@ -24,6 +24,7 @@ impl TextLayout {
         for chr in text.chars() {
             let mut char_width = 0.0;
             match chr {
+                '\r' => {}
                 '\n' => {
                     pos.x = 0.0;
                     pos.y -= line_height;
@@ -57,14 +58,13 @@ impl TextLayout {
             width = width.max(pos.x + char_width);
         }
 
-        let y_offset = pos.y + font.leading * scale.y;
-        chars.iter_mut().for_each(|(_, x)| x.y += y_offset);
+        chars.iter_mut().for_each(|(_, x)| x.y -= pos.y);
 
         if pos.x > 0.0 {
-            pos.y += line_height;
+            pos.y -= line_height;
         }
 
-        let size = Vector2::new(width, pos.y + font.leading * scale.y);
+        let size = Vector2::new(width, -pos.y - font.leading * scale.y);
         Self { chars, size }
     }
 }

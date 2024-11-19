@@ -79,7 +79,7 @@ impl<'a, App> Drawable<App> for Text<'a> {
         let atlas_size = font.texture.size.map(|x| x as f32);
         let process_uv = |uv: Vector2<u32>| uv.map(|x| x as f32).component_div(&atlas_size);
 
-        let layout = TextLayout::generate(&font.desc, self.max_width, self.scale, self.text);
+        let layout = TextLayout::generate(&font.desc, self.max_width, scale, self.text);
         for (character, pos) in layout.chars {
             let uv_a = process_uv(character.uv);
             let uv_b = process_uv(character.uv + character.size);

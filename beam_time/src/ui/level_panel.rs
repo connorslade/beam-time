@@ -14,7 +14,7 @@ use crate::{
 #[derive(Default)]
 pub struct LevelPanel {}
 
-const SIZE: (usize, usize) = (6, 2);
+const WIDTH: usize = 6;
 
 impl LevelPanel {
     pub fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App, board: &Board) {
@@ -27,30 +27,36 @@ impl LevelPanel {
 
         // Render text
         let padding = tile_size / 4.0;
-        let base_y = ctx.size().y - padding;
+        let mut y = ctx.size().y - padding;
 
         let title = Text::new(UNDEAD_FONT, &level.name)
-            .position(Vector2::new(padding, base_y), Anchor::TopLeft)
+            .position(Vector2::new(padding, y), Anchor::TopLeft)
             .scale(Vector2::repeat(state.config.ui_scale * 3.0))
             .z_index(layer::UI_ELEMENT);
-        let line_height = title.size(ctx).y;
+        y -= title.size(ctx).y + 10.0;
         ctx.draw(title);
 
-        ctx.draw(
-            Text::new(UNDEAD_FONT, &level.description)
-                .position(Vector2::new(padding, base_y - line_height), Anchor::TopLeft)
-                .scale(Vector2::repeat(state.config.ui_scale * 2.0))
-                .max_width(SIZE.0 as f32 * tile_size - padding * 2.0)
-                .z_index(layer::UI_ELEMENT),
-        );
+        let description = Text::new(UNDEAD_FONT, &level.description)
+            .position(Vector2::new(padding, y), Anchor::TopLeft)
+            .scale(Vector2::repeat(state.config.ui_scale * 2.0))
+            .max_width(WIDTH as f32 * tile_size - padding * 2.0)
+            .z_index(layer::UI_ELEMENT);
+        y -= description.size(ctx).y;
+        ctx.draw(description);
 
         // Render backgrounds
-        for y in 0..SIZE.1 {
-            for x in 0..SIZE.0 {
-                let pos = Vector2::new(x as f32 * tile_size, ctx.size().y - tile_size * y as f32);
+        let height = ((ctx.size().y - y + padding) / tile_size).ceil() as usize;
+        for yi in 0..height {
+            for xi in 0..WIDTH {
+                let mut pos =
+                    Vector2::new(xi as f32 * tile_size, ctx.size().y - tile_size * yi as f32);
 
-                let side = (x == SIZE.0 - 1) as i32 - (x == 0) as i32;
-                let uv_offset = Vector2::new(side * 16, 16 * (y == SIZE.1 - 1) as i32);
+                if yi + 1 == height {
+                    pos.y = y + tile_size - padding;
+                }
+
+                let side = (xi == WIDTH - 1) as i32 - (xi == 0) as i32;
+                let uv_offset = Vector2::new(side * 16, 16 * (yi == height - 1) as i32);
 
                 ctx.draw(
                     Sprite::new(INFO_PANEL)

@@ -1,7 +1,7 @@
 Level(
     id: "cafeb123-66dc-4b04-b560-5cf80868cae4",
     name: "Not Gate",
-    description: "...",
+    description: "Enable the output only when the input is not active, and disable it only when the input is active. Effectively inverting the input.\n\nFor this level you will need to use the galvo. This is a component that flips the mirror it is facing when powered.",
 
     size: Some((6, 6)),
     permanent: [ (0, 5), (5, 0) ],

@@ -1,7 +1,7 @@
 Level(
     id: "fc3b280e-6a80-41d2-84d1-c8fa55a3946f",
     name: "Counter",
-    description: "...",
+    description: "Each time a pulse is recived from the input, the output should count up by one in binary (big-endian).",
 
     size: Some((20, 6)),
     permanent: [ (4, 0), (8, 0), (12, 0), (16, 0), (19, 5) ],

@@ -1,7 +1,7 @@
 Level(
     id: "3eb940dd-1f76-46c5-8aea-800ae0951364",
     name: "XOR Gate",
-    description: "Turn the output on when only one of the inputs are on",
+    description: "Turn the output on when exactly one of the inputs are on.",
 
     size: Some((6, 6)),
     permanent: [ (0, 5), (1, 5), (5, 0) ],

@@ -1,7 +1,7 @@
 Level(
     id: "52108765-b8d2-47cf-a0c7-36b3b73cc644",
     name: "Double It",
-    description: "",
+    description: "Double the numeric of the big-endian binary value.",
 
     size: Some((8, 5)),
     permanent: [
