@@ -29,7 +29,7 @@ impl Screen<App> for DebugOverlay {
 
         ctx.draw(
             Text::new(UNDEAD_FONT, &text)
-                .position(ctx.size() - Vector2::new(20.0, 10.0), Anchor::TopRight)
+                .position(ctx.size() - Vector2::new(10.0, 10.0), Anchor::TopRight)
                 .scale(Vector2::repeat(2.0))
                 .z_index(OVERLAY),
         );

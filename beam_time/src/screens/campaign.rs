@@ -46,7 +46,7 @@ impl Screen<App> for CampaignScreen {
                 .position(pos, Anchor::Center)
                 .scale(Vector2::repeat(SCALE));
 
-            let width = text.width(ctx) * SCALE;
+            let width = text.size(ctx).x * SCALE;
             let half_size = Vector2::new(width / 2.0, line_height / 2.0) * ctx.scale_factor;
             let hovered = in_bounds(ctx.input.mouse, (pos - half_size, pos + half_size));
             if hovered {

@@ -100,11 +100,11 @@ impl Screen<App> for GameScreen {
         self.board.render(ctx, state, &self.shared, &mut sim.beam);
         self.tile_picker.render(
             ctx,
-            &&state,
+            state,
             sim.beam.is_some(),
             &mut self.board.transient.holding,
         );
-        self.level_panel.render(ctx, &state, &self.board);
+        self.level_panel.render(ctx, state, &self.board);
     }
 
     fn on_destroy(&mut self, _state: &mut App) {

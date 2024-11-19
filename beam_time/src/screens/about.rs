@@ -8,7 +8,6 @@ use indoc::indoc;
 
 use crate::{
     assets::{ALAGARD_FONT, UNDEAD_FONT},
-    consts::FOREGROUND_COLOR,
     ui::{button::ButtonState, misc::titled_screen},
     App,
 };
@@ -17,14 +16,13 @@ const DESCRIPTION: &str = indoc! {"
     Beam time is a logic puzzle about redirecting and splitting laser beams to create circuits. \
     It's made with a custom GPU accelerated game engine.
 
-    Special thanks to Brandon Li for all the artwork.
+    Special thanks to Brandon Li for all the artwork. (aspiringLich on GitHub)
 
     Source code is available online at https://github.com/connorslade/beam-time.
 
     Assets Used:
 
     • Alagard, Font by Hewett Tsoi
-    • Sock Puppet Supremacy, Song by FADE
     • Undead Pixel Light, Font by Not Jam
     • Universal UI/Menu Soundpack, by Cyrex Studios
 "};
@@ -45,7 +43,6 @@ impl Screen<App> for AboutScreen {
             Text::new(UNDEAD_FONT, DESCRIPTION)
                 .max_width(ctx.size().x - 20.0)
                 .position(Vector2::new(10.0, pos.y - height), Anchor::TopLeft)
-                .color(FOREGROUND_COLOR)
                 .scale(Vector2::repeat(3.0)),
         );
     }

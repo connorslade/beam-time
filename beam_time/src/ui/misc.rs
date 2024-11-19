@@ -8,7 +8,7 @@ use engine::{
 use crate::{
     app::App,
     assets::{ALAGARD_FONT, BACK_BUTTON},
-    consts::{BACKGROUND_COLOR, FOREGROUND_COLOR},
+    consts::BACKGROUND_COLOR,
 };
 
 use super::{
@@ -33,7 +33,6 @@ pub fn titled_screen(
     let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
     ctx.draw(
         Text::new(ALAGARD_FONT, title)
-            .color(FOREGROUND_COLOR)
             .position(pos, Anchor::TopCenter)
             .scale(Vector2::repeat(6.0)),
     );

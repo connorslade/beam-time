@@ -1,13 +1,16 @@
 use core::f32;
 
+use layout::layout_text;
 use nalgebra::{Vector2, Vector3};
 
 use crate::{
-    assets::{font::FontChar, FontRef},
+    assets::FontRef,
     color::Rgb,
     graphics_context::{Anchor, Drawable, GraphicsContext},
     render::sprite::GpuSprite,
 };
+
+mod layout;
 
 pub struct Text<'a> {
     font: FontRef,
@@ -36,23 +39,9 @@ impl<'a> Text<'a> {
         }
     }
 
-    pub fn width<App>(&self, ctx: &GraphicsContext<App>) -> f32 {
-        let scale = self.scale * ctx.scale_factor;
+    pub fn size<App>(&self, ctx: &GraphicsContext<App>) -> Vector2<f32> {
         let font = ctx.assets.get_font(self.font);
-
-        let mut width = 0.0_f32;
-        let mut x = 0.0_f32;
-
-        font.desc.process_string(self.text).for_each(|c| match c {
-            FontChar::Char(c) => x += c.size.x as f32 + font.desc.tracking,
-            FontChar::Space => x += font.desc.space_width,
-            FontChar::Newline => {
-                width = width.max(x);
-                x = 0.0;
-            }
-        });
-
-        width.max(x).min(self.max_width * scale.x)
+        layout_text(&font.desc, self.max_width, self.scale, self.text).size
     }
 
     pub fn position(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
@@ -90,62 +79,29 @@ impl<'a, App> Drawable<App> for Text<'a> {
         let atlas_size = font.texture.size.map(|x| x as f32);
         let process_uv = |uv: Vector2<u32>| uv.map(|x| x as f32).component_div(&atlas_size);
 
-        let mut pos = Vector2::zeros();
-        let mut n = 0;
-        for character in font.desc.process_string(self.text) {
-            let character = match character {
-                FontChar::Char(character) => character,
-                FontChar::Newline => {
-                    pos.y -= (font.desc.height + font.desc.leading) * scale.y;
-                    pos.x = 0.0;
-                    continue;
-                }
-                FontChar::Space => {
-                    pos.x += font.desc.space_width * self.scale.x;
-                    continue;
-                }
-            };
-
+        let layout = layout_text(&font.desc, self.max_width, self.scale, self.text);
+        for (character, pos) in layout.chars {
             let uv_a = process_uv(character.uv);
             let uv_b = process_uv(character.uv + character.size);
 
             let size = character.size.map(|x| x as f32).component_mul(&scale);
-            let baseline_shift = character.baseline_shift as f32 * scale.y;
+            let baseline_shift = Vector2::y() * character.baseline_shift as f32 * scale.y;
+
+            let pos = (pos + self.pos + baseline_shift + self.anchor.offset(layout.size))
+                .map(|x| x.round());
 
             ctx.sprites.push(GpuSprite {
                 texture: font.texture,
                 uv: (uv_a, uv_b),
-                // kinda a hack
                 points: [
-                    size,
-                    pos + Vector2::y() * baseline_shift,
-                    Vector2::zeros(),
-                    Vector2::zeros(),
+                    pos,
+                    pos + Vector2::new(0.0, size.y),
+                    pos + size,
+                    pos + Vector2::new(size.x, 0.0),
                 ],
                 color: Vector3::new(self.color.r, self.color.g, self.color.b),
                 z_index: self.z_index,
             });
-
-            pos.x += (character.size.x as f32 + font.desc.tracking) * scale.x;
-            n += 1;
-
-            if pos.x > self.max_width {
-                pos.y -= (font.desc.height + font.desc.leading) * scale.y;
-                pos.x = 0.0;
-            }
-        }
-
-        for i in ctx.sprites.len() - n..ctx.sprites.len() {
-            let [size, offset, ..] = ctx.sprites[i].points;
-            let offset_size = Vector2::new(pos.x, font.desc.height * scale.y);
-            let pos = (self.pos + offset + self.anchor.offset(offset_size)).map(|x| x.round());
-
-            ctx.sprites[i].points = [
-                pos,
-                pos + Vector2::new(0.0, size.y),
-                pos + size,
-                pos + Vector2::new(size.x, 0.0),
-            ];
         }
     }
 }
