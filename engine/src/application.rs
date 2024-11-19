@@ -49,6 +49,7 @@ pub struct State<'a, App> {
     pub audio: AudioManager,
     pub screens: Screens<App>,
 
+    pub frame: u64,
     pub last_frame: Instant,
     pub last_cursor: Cursor,
 
@@ -114,6 +115,7 @@ impl<'a, App> ApplicationHandler for Application<'a, App> {
                 queue,
             },
             screens: Screens::new((self.args.screen_constructor)()),
+            frame: 0,
             last_frame: Instant::now(),
             last_cursor: Cursor::default(),
             app: (self.args.app_constructor)(),
@@ -149,7 +151,9 @@ impl<'a, App> ApplicationHandler for Application<'a, App> {
                     &state.input,
                     &state.audio,
                     delta_time,
+                    state.frame,
                 );
+                state.frame = state.frame.wrapping_add(1);
 
                 state.screens.render(&mut ctx, app);
                 state.screens.pop_n(ctx.close_screen, app);

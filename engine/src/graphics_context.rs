@@ -34,6 +34,8 @@ pub struct GraphicsContext<'a, App> {
     pub scale_factor: f32,
     /// One over the time since the last frame
     pub delta_time: f32,
+    /// Which frame is currently being rendered (starting from zero)
+    pub frame: u64,
 }
 
 pub trait Drawable<App> {
@@ -64,6 +66,7 @@ impl<'a, App> GraphicsContext<'a, App> {
         input: &'a InputManager,
         audio: &'a AudioManager,
         delta_time: f32,
+        frame: u64,
     ) -> Self {
         GraphicsContext {
             assets,
@@ -76,6 +79,7 @@ impl<'a, App> GraphicsContext<'a, App> {
             input,
             scale_factor,
             delta_time,
+            frame,
         }
     }
 

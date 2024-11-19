@@ -74,6 +74,7 @@
 - [ ] Bias scale to integer zoom levels when at small zooms
 - [ ] Detect failed test cases
 - [ ] Allow disabling cycle detection for pluse based solutions
+- [ ] Experiment with animation icon?
 
 ## Level Ideas
 
