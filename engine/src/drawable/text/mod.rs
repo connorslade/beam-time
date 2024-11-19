@@ -86,7 +86,9 @@ impl<'a, App> Drawable<App> for Text<'a> {
             let uv_b = process_uv(character.uv + character.size);
 
             let size = character.size.map(|x| x as f32).component_mul(&scale);
-            let pos = (pos + self.pos + self.anchor.offset(layout.size)).map(|x| x.round());
+            let baseline_shift = Vector2::y() * character.baseline_shift as f32 * scale.y;
+            let pos = (pos + self.pos + baseline_shift + self.anchor.offset(layout.size))
+                .map(|x| x.round());
 
             ctx.sprites.push(GpuSprite {
                 texture: font.texture,

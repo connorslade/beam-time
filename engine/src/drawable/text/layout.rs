@@ -36,8 +36,7 @@ impl TextLayout {
                 c => {
                     let character = font.characters.get(&c).copied();
                     let character = character.unwrap_or(font.unknown);
-                    let baseline_shift = Vector2::y() * character.baseline_shift as f32 * scale.y;
-                    chars.push((character, pos + baseline_shift));
+                    chars.push((character, pos));
 
                     char_width = character.size.x as f32 * scale.x;
                     pos.x += char_width + font.tracking * scale.x;

@@ -5,7 +5,10 @@ Level(
 
     size: Some((6, 6)),
     permanent: [ (0, 5), (1, 5), (5, 0) ],
-    lables: { },
+    lables: {
+        (0, 5): "R",
+        (1, 5): "S",
+    },
     tiles: {
         (0, 5): Emitter(
             rotation: Down,
