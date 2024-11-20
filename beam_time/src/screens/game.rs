@@ -52,7 +52,13 @@ impl Screen<App> for GameScreen {
 
         let shift = ctx.input.key_down(KeyCode::ShiftLeft);
         key_events!(ctx, {
-            KeyCode::Digit0 => self.tps = 20.0 * !shift as u8 as f32,
+            KeyCode::Digit0 => {
+                if shift {
+                    self.tps = f32::MAX;
+                } else {
+                    self.tps = 20.0;
+                }
+            },
             KeyCode::Equal => self.tps += 5.0,
             KeyCode::Minus => self.tps -= 5.0
         });
@@ -85,14 +91,7 @@ impl Screen<App> for GameScreen {
             if is_complete == Some(true) {
                 sim.runtime.running = false;
                 sim.beam = None;
-
-                let mut rng = thread_rng();
-                for i in 0..3 {
-                    let center = ctx
-                        .size()
-                        .component_mul(&Vector2::new(rng.gen(), rng.gen()));
-                    self.confetti.emit(center, 100, 0.2 * i as f32);
-                }
+                create_fireworks(&mut self.confetti, ctx);
             } else {
                 beam_state.render(ctx, state, &self.shared);
             }
@@ -152,5 +151,22 @@ impl GameScreen {
 
     pub fn load(save_file: PathBuf) -> Self {
         GameScreen::new(Board::load(&save_file).unwrap_or_default(), save_file)
+    }
+}
+
+fn create_fireworks<App>(confetti: &mut Confetti, ctx: &mut GraphicsContext<App>) {
+    const POINTS: &[Vector2<f32>] = &[
+        Vector2::new(0.25, 0.3),
+        Vector2::new(0.5, 0.75),
+        Vector2::new(0.75, 0.3),
+    ];
+
+    let mut rng = thread_rng();
+    let randomness = ctx.size() * 0.25;
+
+    for (i, center) in POINTS.iter().enumerate() {
+        let offset_percent = Vector2::new(rng.gen(), rng.gen()) * 2.0 - Vector2::repeat(1.0);
+        let pos = center.component_mul(&ctx.size()) + randomness.component_mul(&offset_percent);
+        confetti.emit(pos, 100, 0.2 * i as f32);
     }
 }

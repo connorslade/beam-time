@@ -16,6 +16,7 @@ pub struct Confetti {
 struct Particle {
     sprite: Sprite,
     timer: f32,
+    rotation: f32,
     position: Vector2<f32>,
     velocity: Vector2<f32>,
 }
@@ -43,10 +44,12 @@ impl Confetti {
             let angle = rng.gen_range(0.0..=2.0 * PI);
             let strength = rng.gen::<f32>() * 400.0;
             let velocity = Rotation2::new(angle) * Vector2::x() * strength;
+            let rotation = (rng.gen::<f32>() * 2.0 - 1.0) * 3.0;
 
             self.particles.push(Particle {
                 sprite,
                 timer,
+                rotation,
                 position,
                 velocity,
             });
@@ -71,12 +74,19 @@ impl Confetti {
 
             if particle.position.y < viewport.y + half_size {
                 let sprite = particle.sprite.clone();
-                ctx.draw(sprite.position(particle.position, Anchor::Center));
+                ctx.draw(
+                    sprite
+                        .position(particle.position, Anchor::Center)
+                        .rotate(ctx.frame as f32 / 100.0 * particle.rotation, Anchor::Center),
+                );
             }
 
-            particle.velocity.y -= 200.0 * ctx.delta_time;
+            const GRAVITY: f32 = 400.0;
+            let half_dt = ctx.delta_time / 2.0;
+
+            particle.velocity.y -= GRAVITY * half_dt;
             particle.position += particle.velocity * ctx.delta_time;
-            particle.velocity.y -= 200.0 * ctx.delta_time;
+            particle.velocity.y -= GRAVITY * half_dt;
         }
     }
 }

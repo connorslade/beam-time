@@ -46,6 +46,7 @@ pub static LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
         "even_oscillators.ron",
         "two_tick_clock.ron",
         "double_it.ron",
+        "four_bit_not.ron",
         "edge_detectors.ron",
         "rs_latch.ron",
         "gated_d_latch.ron",
