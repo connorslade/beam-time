@@ -22,7 +22,6 @@ impl TextLayout {
         let line_height = (font.height + font.leading) * scale.y;
 
         for chr in text.chars() {
-            let mut char_width = 0.0;
             match chr {
                 '\r' => {}
                 '\n' => {
@@ -38,7 +37,7 @@ impl TextLayout {
                     let character = character.unwrap_or(font.unknown);
                     chars.push((character, pos));
 
-                    char_width = character.size.x as f32 * scale.x;
+                    let char_width = character.size.x as f32 * scale.x;
                     pos.x += char_width + font.tracking * scale.x;
                 }
             }

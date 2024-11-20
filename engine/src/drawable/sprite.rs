@@ -7,7 +7,7 @@ use crate::{
     render::sprite::GpuSprite,
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Sprite {
     texture: SpriteRef,
     uv_offset: Vector2<i32>,

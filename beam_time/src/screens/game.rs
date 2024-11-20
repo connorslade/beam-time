@@ -5,6 +5,7 @@ use engine::{
     graphics_context::GraphicsContext,
     screens::Screen,
 };
+use rand::{thread_rng, Rng};
 
 use crate::{
     consts::BACKGROUND_COLOR,
@@ -14,7 +15,7 @@ use crate::{
         level::LEVELS,
         SharedState,
     },
-    ui::{level_panel::LevelPanel, tile_picker::TilePicker},
+    ui::{confetti::Confetti, level_panel::LevelPanel, tile_picker::TilePicker},
     util::key_events,
     App,
 };
@@ -26,6 +27,7 @@ pub struct GameScreen {
 
     tile_picker: TilePicker,
     level_panel: LevelPanel,
+    confetti: Confetti,
 
     save_file: PathBuf,
     needs_init: bool,
@@ -83,6 +85,14 @@ impl Screen<App> for GameScreen {
             if is_complete == Some(true) {
                 sim.runtime.running = false;
                 sim.beam = None;
+
+                let mut rng = thread_rng();
+                for i in 0..3 {
+                    let center = ctx
+                        .size()
+                        .component_mul(&Vector2::new(rng.gen(), rng.gen_range(0.5..=1.0)));
+                    self.confetti.emit(center, 100, 0.2 * i as f32);
+                }
             } else {
                 beam_state.render(ctx, state, &self.shared);
             }
@@ -105,6 +115,7 @@ impl Screen<App> for GameScreen {
             &mut self.board.transient.holding,
         );
         self.level_panel.render(ctx, state, &self.board);
+        self.confetti.render(ctx);
     }
 
     fn on_destroy(&mut self, _state: &mut App) {
@@ -131,6 +142,7 @@ impl GameScreen {
 
             tile_picker: TilePicker::default(),
             level_panel: LevelPanel::default(),
+            confetti: Confetti::new(),
 
             save_file,
             needs_init: true,
