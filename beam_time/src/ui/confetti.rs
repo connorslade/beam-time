@@ -57,30 +57,26 @@ impl Confetti {
         let viewport = ctx.size();
         let half_size = 1.5 * 4.0 * ctx.scale_factor;
 
+        self.particles.retain(|x| {
+            x.position.x > -half_size
+                && x.position.x < viewport.x + half_size
+                && x.position.y > -half_size
+        });
+
         for particle in self.particles.iter_mut() {
             if particle.timer > 0.0 {
                 particle.timer -= ctx.delta_time;
                 continue;
             }
 
-            if particle.position.x > -half_size
-                && particle.position.x < viewport.x + half_size
-                && particle.position.y > -half_size
-                && particle.position.y < viewport.y + half_size
-            {
-                ctx.draw(
-                    particle
-                        .sprite
-                        .clone()
-                        .position(particle.position, Anchor::Center),
-                );
+            if particle.position.y < viewport.y + half_size {
+                let sprite = particle.sprite.clone();
+                ctx.draw(sprite.position(particle.position, Anchor::Center));
             }
 
             particle.velocity.y -= 200.0 * ctx.delta_time;
             particle.position += particle.velocity * ctx.delta_time;
             particle.velocity.y -= 200.0 * ctx.delta_time;
         }
-
-        self.particles.retain(|x| x.position.y > -half_size);
     }
 }

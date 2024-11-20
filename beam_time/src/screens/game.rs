@@ -90,7 +90,7 @@ impl Screen<App> for GameScreen {
                 for i in 0..3 {
                     let center = ctx
                         .size()
-                        .component_mul(&Vector2::new(rng.gen(), rng.gen_range(0.5..=1.0)));
+                        .component_mul(&Vector2::new(rng.gen(), rng.gen()));
                     self.confetti.emit(center, 100, 0.2 * i as f32);
                 }
             } else {
