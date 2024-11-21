@@ -5,7 +5,7 @@ Level(
 
     size: Some((6, 6)),
     permanent: [ (0, 5), (4, 0), (5, 0) ],
-    lables: {
+    labels: {
         (4, 0): "R",
         (5, 0): "F"
     },

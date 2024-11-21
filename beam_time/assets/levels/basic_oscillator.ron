@@ -5,7 +5,7 @@ Level(
 
     size: Some((6, 6)),
     permanent: [ (5, 0) ],
-    lables: { },
+    labels: { },
     tiles: {
         (5, 0): Detector
     },
