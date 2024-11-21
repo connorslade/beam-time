@@ -205,11 +205,11 @@ impl Board {
                     .position(render_pos, Anchor::Center)
                     .z_index(layer::TILE_BACKGROUND);
 
-                if let Some(lable) = self.transient.level.map(|x| x.lables.get(&pos)).flatten() {
+                if let Some(label) = self.transient.level.and_then(|x| x.labels.get(&pos)) {
                     let offset = shared.scale * ctx.scale_factor;
                     let offset = Vector2::new(6.5 * offset, -7.5 * offset);
                     ctx.draw(
-                        Text::new(UNDEAD_FONT, &lable)
+                        Text::new(UNDEAD_FONT, label)
                             .scale(Vector2::repeat(shared.scale / 2.0))
                             .position(render_pos + offset, Anchor::BottomRight)
                             .z_index(layer::OVERLAY),

@@ -54,6 +54,13 @@ impl<T> Rgb<T> {
         Self { r, g, b }
     }
 
+    pub const fn repeat(v: T) -> Self
+    where
+        T: Copy,
+    {
+        Self::new(v, v, v)
+    }
+
     pub fn map<U, F: Fn(T) -> U>(self, f: F) -> Rgb<U> {
         Rgb {
             r: f(self.r),

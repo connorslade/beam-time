@@ -66,7 +66,7 @@ pub struct Level {
 
     pub size: Option<Vector2<u32>>,
     pub permanent: HashSet<Vector2<i32>>,
-    pub lables: HashMap<Vector2<i32>, String>,
+    pub labels: HashMap<Vector2<i32>, String>,
     pub tiles: Map<Tile>,
 
     pub tests: Tests,

@@ -29,7 +29,6 @@ impl Confetti {
     }
 
     pub fn emit(&mut self, position: Vector2<f32>, particles: u32, timer: f32) {
-        // randomize offset by 3*n (0 <= n <= 2)
         let mut rng = thread_rng();
 
         for _ in 0..particles {

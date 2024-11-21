@@ -33,8 +33,10 @@ define_refs! {
         TILE_PICKER_CENTER,
         TILE_PICKER_RIGHT,
         INFO_PANEL,
-
         CONFETTI_PARTICLES,
+        BIG_RIGHT_ARROW,
+        LEFT_ARROW,
+        RIGHT_ARROW,
 
         EMPTY_TILE_A,
         EMPTY_TILE_B,
@@ -100,6 +102,9 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, TILE_PICKER_RIGHT, (96, 112), (16, 16));
     assets.register_sprite(interface, INFO_PANEL, (80, 80), (16, 16));
     assets.register_sprite(interface, CONFETTI_PARTICLES, (0, 64), (3, 3));
+    assets.register_sprite(interface, BIG_RIGHT_ARROW, (16, 64), (11, 9));
+    assets.register_sprite(interface, LEFT_ARROW, (16, 74), (3, 6));
+    assets.register_sprite(interface, RIGHT_ARROW, (20, 74), (3, 6));
 
     let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
     assets.register_sprite(tiles, EMPTY_TILE_A, (0, 288), (16, 16));
