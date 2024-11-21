@@ -35,7 +35,7 @@ impl Screen<App> for CampaignScreen {
         titled_screen(state, ctx, &mut self.back_button, "Campaign");
 
         const SCALE: f32 = 3.0;
-        let (line_height, line_spacing, total_height) =
+        let (_line_height, line_spacing, total_height) =
             font_scale(ctx, UNDEAD_FONT, SCALE, LEVELS.len());
 
         for (i, level) in LEVELS.iter().enumerate() {
@@ -46,8 +46,7 @@ impl Screen<App> for CampaignScreen {
                 .position(pos, Anchor::Center)
                 .scale(Vector2::repeat(SCALE));
 
-            let width = text.size(ctx).x * SCALE;
-            let half_size = Vector2::new(width / 2.0, line_height / 2.0) * ctx.scale_factor;
+            let half_size = text.size(ctx) / 2.0;
             let hovered = in_bounds(ctx.input.mouse, (pos - half_size, pos + half_size));
             if hovered {
                 text = text.color(Rgb::new(0.5, 0.5, 0.5));

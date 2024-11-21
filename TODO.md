@@ -76,7 +76,7 @@
 - [ ] Allow disabling cycle detection for pluse based solutions
 - [ ] Experiment with animation icon?
 - [x] Allow labeling emitters / outputs / tiles in general?
-- [ ] Splitters take input from all sides to avoid non-determistic behavior when used as or gates
+- [ ] Splitters take input from all sides to avoid non-determistic behavior when used as or-gates
 - [ ] Allow canceling clicks through the graphics context
-- [ ] Show current test case in level panel when simulating in test mode
+- [x] Show current test case in level panel when simulating in test mode
 - [ ] Start testing at currently open level panel test case, looping around at the end
