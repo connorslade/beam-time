@@ -4,6 +4,7 @@ use engine::{
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, GraphicsContext},
 };
+use parking_lot::MutexGuard;
 
 use crate::{
     app::App,
@@ -12,7 +13,7 @@ use crate::{
         UNDEAD_FONT,
     },
     consts::layer,
-    game::{board::Board, level::Level},
+    game::{beam::InnerSimulationState, board::Board, level::Level},
 };
 
 #[derive(Default)]
@@ -30,7 +31,13 @@ struct UIContext<'a> {
 const WIDTH: usize = 6;
 
 impl LevelPanel {
-    pub fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App, board: &Board) {
+    pub fn render(
+        &mut self,
+        ctx: &mut GraphicsContext<App>,
+        state: &App,
+        board: &Board,
+        sim: MutexGuard<InnerSimulationState>,
+    ) {
         let Some(level) = board.transient.level else {
             return;
         };
@@ -65,7 +72,7 @@ impl LevelPanel {
             y: &mut y,
         };
 
-        test_case(self, ctx, state, level, context);
+        test_case(self, ctx, state, level, sim, context);
 
         // Render backgrounds
         let height = ((ctx.size().y - y + margin) / tile_size).ceil() as usize;
@@ -98,9 +105,18 @@ fn test_case(
     ctx: &mut GraphicsContext<App>,
     state: &App,
     level: &Level,
+    sim: MutexGuard<InnerSimulationState>,
     ui: UIContext,
 ) {
-    let case = &level.tests.cases[panel.case];
+    let sim_level = sim.beam.as_ref().and_then(|x| x.level.as_ref());
+    let is_test = sim_level.is_some();
+    let case_idx = if let Some(level) = sim_level {
+        level.test_case
+    } else {
+        panel.case
+    };
+
+    let case = &level.tests.cases[case_idx];
     let case_elements = case.lasers.len() + case.detectors[0].len() + 1;
     let (mut scale, mut tile_size, mut arrow_size) = (
         ui.scale,
@@ -146,7 +162,6 @@ fn test_case(
         i += 1;
     }
 
-    let case_idx = panel.case;
     let mut pos = Vector2::new(
         ui.tile_size * WIDTH as f32 - ui.margin,
         *ui.y - tile_size / 2.0,
@@ -161,7 +176,10 @@ fn test_case(
                 .scale(Vector2::repeat(ui.scale), Anchor::Center)
                 .position(pos, Anchor::CenterRight);
 
-            if (!dir && panel.case == 0) || (dir && panel.case + 1 == level.tests.cases.len()) {
+            if (!dir && panel.case == 0)
+                || (dir && panel.case + 1 == level.tests.cases.len())
+                || is_test
+            {
                 case = case.color(Rgb::repeat(0.25));
             } else if case.is_hovered(ctx) {
                 case = case.color(Rgb::repeat(0.9));

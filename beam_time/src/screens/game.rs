@@ -113,7 +113,7 @@ impl Screen<App> for GameScreen {
             sim.beam.is_some(),
             &mut self.board.transient.holding,
         );
-        self.level_panel.render(ctx, state, &self.board);
+        self.level_panel.render(ctx, state, &self.board, sim);
         self.confetti.render(ctx);
     }
 
