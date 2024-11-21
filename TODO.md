@@ -77,3 +77,4 @@
 - [ ] Experiment with animation icon?
 - [x] Allow labeling emitters / outputs / tiles in general?
 - [ ] Splitters take input from all sides to avoid non-determistic behavior when used as or gates
+- [ ] Allow canceling clicks through the graphics context

@@ -20,6 +20,13 @@ pub struct LevelPanel {
     case: usize,
 }
 
+struct UIContext<'a> {
+    scale: f32,
+    margin: f32,
+    tile_size: f32,
+    y: &'a mut f32,
+}
+
 const WIDTH: usize = 6;
 
 impl LevelPanel {
@@ -51,9 +58,14 @@ impl LevelPanel {
         y -= description.size(ctx).y + padding;
         ctx.draw(description);
 
-        test_case(self, ctx, state, level, scale, margin, tile_size, &mut y);
+        let context = UIContext {
+            scale,
+            margin,
+            tile_size,
+            y: &mut y,
+        };
 
-        y -= tile_size;
+        test_case(self, ctx, state, level, context);
 
         // Render backgrounds
         let height = ((ctx.size().y - y + margin) / tile_size).ceil() as usize;
@@ -86,13 +98,22 @@ fn test_case(
     ctx: &mut GraphicsContext<App>,
     state: &App,
     level: &Level,
-
-    scale: f32,
-    margin: f32,
-    tile_size: f32,
-    y: &mut f32,
+    ui: UIContext,
 ) {
     let case = &level.tests.cases[panel.case];
+    let case_elements = case.lasers.len() + case.detectors[0].len() + 1;
+    let (mut scale, mut tile_size, mut arrow_size) = (
+        ui.scale,
+        ui.tile_size,
+        11.0 * 4.0 * ctx.scale_factor * state.config.ui_scale,
+    );
+
+    if case_elements + 1 > WIDTH {
+        scale /= 2.0;
+        tile_size /= 2.0;
+        arrow_size /= 2.0;
+    }
+
     let case_tile = |texture| {
         Sprite::new(texture)
             .scale(Vector2::repeat(scale), Anchor::Center)
@@ -101,7 +122,7 @@ fn test_case(
 
     let mut i = 0;
     for &input in &case.lasers {
-        let pos = Vector2::new(margin + i as f32 * tile_size, *y);
+        let pos = Vector2::new(ui.margin + i as f32 * tile_size, *ui.y);
         ctx.draw(
             case_tile(TILE_EMITTER_DOWN)
                 .uv_offset(Vector2::new(-16 * input as i32, 0))
@@ -110,14 +131,13 @@ fn test_case(
         i += 1;
     }
 
-    let arrow_size = 11.0 * 4.0 * ctx.scale_factor * state.config.ui_scale;
     ctx.draw(case_tile(BIG_RIGHT_ARROW).position(
-        Vector2::new(margin + i as f32 * tile_size, *y - tile_size / 2.0),
+        Vector2::new(ui.margin + i as f32 * tile_size, *ui.y - tile_size / 2.0),
         Anchor::CenterLeft,
     ));
 
     for &input in &case.detectors[0] {
-        let pos = Vector2::new(margin + i as f32 * tile_size + arrow_size, *y);
+        let pos = Vector2::new(ui.margin + i as f32 * tile_size + arrow_size, *ui.y);
         ctx.draw(
             case_tile(TILE_DETECTOR)
                 .uv_offset(Vector2::new(16 * input as i32, 0))
@@ -127,14 +147,19 @@ fn test_case(
     }
 
     let case_idx = panel.case;
-    let mut pos = Vector2::new(tile_size * WIDTH as f32 - margin, *y - tile_size / 2.0);
+    let mut pos = Vector2::new(
+        ui.tile_size * WIDTH as f32 - ui.margin,
+        *ui.y - tile_size / 2.0,
+    );
     let button_width = 4.0 * 3.0 * ctx.scale_factor * state.config.ui_scale;
     let button_padding = 4.0 * 2.0 * ctx.scale_factor * state.config.ui_scale;
 
     let mut case_button =
         |ctx: &mut GraphicsContext<App>, dir: bool, pos: Vector2<f32>| -> Sprite {
             let texture = if dir { RIGHT_ARROW } else { LEFT_ARROW };
-            let mut case = case_tile(texture).position(pos, Anchor::CenterRight);
+            let mut case = case_tile(texture)
+                .scale(Vector2::repeat(ui.scale), Anchor::Center)
+                .position(pos, Anchor::CenterRight);
 
             if (!dir && panel.case == 0) || (dir && panel.case + 1 == level.tests.cases.len()) {
                 case = case.color(Rgb::repeat(0.25));
@@ -157,7 +182,7 @@ fn test_case(
     let index_text = (case_idx + 1).to_string();
     let index = Text::new(UNDEAD_FONT, &index_text)
         .position(pos, Anchor::CenterRight)
-        .scale(Vector2::repeat(scale))
+        .scale(Vector2::repeat(ui.scale))
         .z_index(layer::UI_ELEMENT);
     pos.x -= index.size(ctx).x + button_padding;
 
@@ -166,4 +191,6 @@ fn test_case(
     ctx.draw(left_button);
     ctx.draw(index);
     ctx.draw(right_button);
+
+    *ui.y -= tile_size;
 }
