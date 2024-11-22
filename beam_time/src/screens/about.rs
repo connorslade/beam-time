@@ -14,9 +14,9 @@ use crate::{
 
 const DESCRIPTION: &str = indoc! {"
     Beam time is a logic puzzle about redirecting and splitting laser beams to create circuits. \
-    It's made with a custom GPU accelerated game engine.
+    It's made with a custom GPU accelerated game engine, just because why not.
 
-    Special thanks to Brandon Li for all the artwork. (aspiringLich on GitHub)
+    Special thanks to Brandon Li for creating the tile graphics. (aspiringLich on GitHub)
 
     Source code is available online at https://github.com/connorslade/beam-time.
 
@@ -39,10 +39,12 @@ impl Screen<App> for AboutScreen {
         let desc = &ctx.assets.get_font(ALAGARD_FONT).desc;
         let height = (desc.height + desc.leading) * 6.0 * ctx.scale_factor;
 
+        let width = (ctx.size().x - 20.0).min(800.0 * ctx.scale_factor * state.config.ui_scale);
+        let pos = Vector2::new(ctx.center().x, pos.y - height - 20.0);
         ctx.draw(
             Text::new(UNDEAD_FONT, DESCRIPTION)
-                .max_width(ctx.size().x - 20.0)
-                .position(Vector2::new(10.0, pos.y - height - 20.0), Anchor::TopLeft)
+                .max_width(width)
+                .position(pos, Anchor::TopCenter)
                 .scale(Vector2::repeat(3.0)),
         );
     }

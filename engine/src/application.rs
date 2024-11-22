@@ -148,7 +148,7 @@ impl<'a, App> ApplicationHandler for Application<'a, App> {
                 let mut ctx = GraphicsContext::new(
                     state.assets.clone(),
                     gcx.window.scale_factor() as f32,
-                    &state.input,
+                    &mut state.input,
                     &state.audio,
                     delta_time,
                     state.frame,

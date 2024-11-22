@@ -11,7 +11,8 @@ use crate::{
     app::App,
     assets::{TILE_PICKER_CENTER, TILE_PICKER_LEFT, TILE_PICKER_RIGHT, UNDEAD_FONT},
     consts::layer,
-    game::{holding::Holding, tile::Tile},
+    game::{beam::tile, holding::Holding, tile::Tile},
+    util::in_bounds,
 };
 
 const TILE_SHORTCUTS: [KeyCode; 7] = [
@@ -89,6 +90,14 @@ impl TilePicker {
             }
 
             ctx.draw(sprite);
+        }
+
+        let bounds = (
+            Vector2::zeros(),
+            Vector2::new(Tile::DEFAULT.len() as f32 * tile_size, tile_size),
+        );
+        if in_bounds(ctx.input.mouse, bounds) {
+            ctx.input.cancel_mouse();
         }
     }
 

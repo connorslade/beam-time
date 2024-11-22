@@ -14,6 +14,7 @@ use crate::{
     },
     consts::layer,
     game::{beam::InnerSimulationState, board::Board, level::Level},
+    util::in_bounds,
 };
 
 #[derive(Default)]
@@ -36,7 +37,7 @@ impl LevelPanel {
         ctx: &mut GraphicsContext<App>,
         state: &App,
         board: &Board,
-        sim: MutexGuard<InnerSimulationState>,
+        sim: &MutexGuard<InnerSimulationState>,
     ) {
         let Some(level) = board.transient.level else {
             return;
@@ -97,6 +98,14 @@ impl LevelPanel {
                 );
             }
         }
+
+        let bounds = (
+            Vector2::new(0.0, y),
+            Vector2::new(WIDTH as f32 * tile_size, ctx.size().y),
+        );
+        if in_bounds(ctx.input.mouse, bounds) {
+            ctx.input.cancel_mouse();
+        }
     }
 }
 
@@ -105,7 +114,7 @@ fn test_case(
     ctx: &mut GraphicsContext<App>,
     state: &App,
     level: &Level,
-    sim: MutexGuard<InnerSimulationState>,
+    sim: &MutexGuard<InnerSimulationState>,
     ui: UIContext,
 ) {
     let sim_level = sim.beam.as_ref().and_then(|x| x.level.as_ref());

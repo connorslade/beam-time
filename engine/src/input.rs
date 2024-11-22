@@ -53,6 +53,11 @@ impl InputManager {
             .any(|(b, s)| b == &button && s == &ElementState::Released)
     }
 
+    pub fn cancel_mouse(&mut self) {
+        self.mouse_actions.clear();
+        self.mouse_down.clear();
+    }
+
     pub fn key_down(&self, key: KeyCode) -> bool {
         self.key_down.contains(&key.into())
     }

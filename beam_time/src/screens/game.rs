@@ -106,14 +106,14 @@ impl Screen<App> for GameScreen {
         }
 
         ctx.background(BACKGROUND_COLOR);
-        self.board.render(ctx, state, &self.shared, &mut sim.beam);
         self.tile_picker.render(
             ctx,
             state,
             sim.beam.is_some(),
             &mut self.board.transient.holding,
         );
-        self.level_panel.render(ctx, state, &self.board, sim);
+        self.level_panel.render(ctx, state, &self.board, &sim);
+        self.board.render(ctx, state, &self.shared, &mut sim.beam);
         self.confetti.render(ctx);
     }
 

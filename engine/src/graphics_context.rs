@@ -29,7 +29,7 @@ pub struct GraphicsContext<'a, App> {
     /// The cursor to use for the next frame
     pub(crate) cursor: Cursor,
 
-    pub input: &'a InputManager,
+    pub input: &'a mut InputManager,
     /// Current window scale_factor
     pub scale_factor: f32,
     /// One over the time since the last frame
@@ -63,7 +63,7 @@ impl<'a, App> GraphicsContext<'a, App> {
     pub fn new(
         assets: Rc<AssetManager>,
         scale_factor: f32,
-        input: &'a InputManager,
+        input: &'a mut InputManager,
         audio: &'a AudioManager,
         delta_time: f32,
         frame: u64,
