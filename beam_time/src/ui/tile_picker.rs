@@ -11,7 +11,7 @@ use crate::{
     app::App,
     assets::{TILE_PICKER_CENTER, TILE_PICKER_LEFT, TILE_PICKER_RIGHT, UNDEAD_FONT},
     consts::layer,
-    game::{beam::tile, holding::Holding, tile::Tile},
+    game::{holding::Holding, tile::Tile},
     util::in_bounds,
 };
 

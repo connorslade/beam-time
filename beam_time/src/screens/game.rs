@@ -5,7 +5,7 @@ use engine::{
     graphics_context::GraphicsContext,
     screens::Screen,
 };
-use rand::{thread_rng, Rng};
+use rand::{seq::SliceRandom, thread_rng, Rng};
 
 use crate::{
     consts::BACKGROUND_COLOR,
@@ -91,7 +91,7 @@ impl Screen<App> for GameScreen {
             if is_complete == Some(true) {
                 sim.runtime.running = false;
                 sim.beam = None;
-                create_fireworks(&mut self.confetti, ctx);
+                create_confetti(&mut self.confetti, ctx);
             } else {
                 beam_state.render(ctx, state, &self.shared);
             }
@@ -154,17 +154,19 @@ impl GameScreen {
     }
 }
 
-fn create_fireworks<App>(confetti: &mut Confetti, ctx: &mut GraphicsContext<App>) {
-    const POINTS: &[Vector2<f32>] = &[
+fn create_confetti<App>(confetti: &mut Confetti, ctx: &mut GraphicsContext<App>) {
+    let mut points = [
         Vector2::new(0.25, 0.3),
         Vector2::new(0.5, 0.75),
         Vector2::new(0.75, 0.3),
     ];
 
     let mut rng = thread_rng();
+    points.shuffle(&mut rng);
+
     let randomness = ctx.size() * 0.25;
 
-    for (i, center) in POINTS.iter().enumerate() {
+    for (i, center) in points.iter().enumerate() {
         let offset_percent = Vector2::new(rng.gen(), rng.gen()) * 2.0 - Vector2::repeat(1.0);
         let pos = center.component_mul(&ctx.size()) + randomness.component_mul(&offset_percent);
         confetti.emit(pos, 100, 0.2 * i as f32);
