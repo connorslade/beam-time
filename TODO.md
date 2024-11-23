@@ -85,4 +85,4 @@
 - [x] Allow disabling tiles in level def
 - [ ] Price system & ranking
 - [ ] Use ron for config file?
-- [ ] Add a solution latency metric
+- [x] Add a solution latency metric

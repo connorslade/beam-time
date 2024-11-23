@@ -17,7 +17,7 @@ use crate::{
         TILE_MIRROR_A, TILE_PICKER_CENTER, TILE_PICKER_LEFT, TILE_PICKER_RIGHT, TILE_SPLITTER_A,
         TILE_WALL, UNDEAD_FONT,
     },
-    consts::{layer, EMITTER, GALVO, MIRROR, SPLITTER},
+    consts::layer,
     game::{board::Board, holding::Holding, tile::Tile},
     util::in_bounds,
 };
@@ -62,6 +62,12 @@ impl TilePicker {
         let scale = state.config.ui_scale * 4.0;
         let tile_size = scale * ctx.scale_factor * 16.0;
         for (i, (tile, key)) in Tile::DEFAULT.iter().zip(TILE_SHORTCUTS).enumerate() {
+            let pos = Vector2::new(tile_size * i as f32, -self.offset);
+            let tile = match tile {
+                Tile::Emitter { .. } | Tile::Galvo { .. } => &tile.rotate(),
+                x => x,
+            };
+
             let disabled = board
                 .transient
                 .level
@@ -71,12 +77,6 @@ impl TilePicker {
             if !disabled && !sim && ctx.input.key_pressed(key) {
                 board.transient.holding = Holding::Tile(*tile);
             }
-
-            let tile = match tile {
-                Tile::Emitter { .. } | Tile::Galvo { .. } => &tile.rotate(),
-                x => x,
-            };
-            let pos = Vector2::new(tile_size * i as f32, -self.offset);
 
             let background_texture = if i == 0 {
                 TILE_PICKER_LEFT

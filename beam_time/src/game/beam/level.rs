@@ -13,6 +13,7 @@ pub struct LevelState {
     pub level: &'static Level,
     pub test_case: usize,
 
+    pub latency: u32,
     pub history: HashMap<u64, usize>,
     // todo: replace with unpacked bitvec
     pub history_states: Vec<Vec<bool>>,
@@ -30,11 +31,14 @@ impl LevelState {
         if let Some(idx) = self.history.insert(hash, idx) {
             let cycle = &self.history_states[idx..self.history_states.len() - 1];
             if equivalent_cycles(cycle, &self.level.tests.cases[self.test_case].detectors) {
-                trace!("Passed case #{}", self.test_case);
+                let latency = self.history_states.len() - cycle.len();
+                self.latency += latency as u32;
+                self.history_states.clear();
+                trace!("Passed case #{} {{ latency: {latency} }}", self.test_case);
                 self.test_case += 1;
 
                 if self.test_case >= self.level.tests.cases.len() {
-                    trace!("Passed all cases!");
+                    trace!("Passed all cases! {{ latency: {} }}", self.latency);
                     return true;
                 }
 
@@ -100,6 +104,7 @@ impl Default for LevelState {
         Self {
             level: &LEVELS[0],
             test_case: Default::default(),
+            latency: 0,
             history: Default::default(),
             history_states: Default::default(),
         }
