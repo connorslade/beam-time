@@ -22,11 +22,11 @@ pub struct LevelPanel {
     case: usize,
 }
 
-struct UIContext<'a> {
+struct UIContext {
     scale: f32,
     margin: f32,
     tile_size: f32,
-    y: &'a mut f32,
+    y: f32,
 }
 
 const WIDTH: usize = 6;
@@ -45,82 +45,47 @@ impl LevelPanel {
 
         let scale = state.config.ui_scale * 4.0;
         let tile_size = scale * ctx.scale_factor * 16.0;
-
-        // Render text
         let margin = tile_size / 4.0;
-        let padding = 10.0 * state.config.ui_scale * ctx.scale_factor;
-        let mut y = ctx.size().y - margin;
 
-        let title = Text::new(UNDEAD_FONT, &level.name)
-            .position(Vector2::new(margin, y), Anchor::TopLeft)
-            .scale(Vector2::repeat(state.config.ui_scale * 3.0))
-            .z_index(layer::UI_ELEMENT);
-        y -= title.size(ctx).y + padding;
-        ctx.draw(title);
-
-        let description = Text::new(UNDEAD_FONT, &level.description)
-            .position(Vector2::new(margin, y), Anchor::TopLeft)
-            .scale(Vector2::repeat(state.config.ui_scale * 2.0))
-            .max_width(WIDTH as f32 * tile_size - margin * 2.0)
-            .z_index(layer::UI_ELEMENT);
-        y -= description.size(ctx).y + padding;
-        ctx.draw(description);
-
-        let context = UIContext {
+        let mut ui = UIContext {
             scale,
             margin,
             tile_size,
-            y: &mut y,
+            y: ctx.size().y - margin,
         };
 
-        test_case(self, ctx, state, level, sim, context);
-
-        y -= (ctx.frame as f32 / 100.0).sin() * tile_size * 2.0 + tile_size * 2.0;
-
-        // Render backgrounds
-        // let height = ((ctx.size().y - y + margin) / tile_size).ceil() as usize;
-        let height = ctx.size().y - y + margin;
-
-        ctx.draw(
-            Sprite::new(INFO_PANEL)
-                .scale(
-                    Vector2::new(scale * WIDTH as f32, height / tile_size),
-                    Anchor::Center,
-                )
-                .position(Vector2::new(0.0, ctx.size().y), Anchor::TopLeft)
-                .z_index(layer::UI_BACKGROUND),
-        );
-
-        // for yi in 0..height {
-        //     for xi in 0..WIDTH {
-        //         let mut pos =
-        //             Vector2::new(xi as f32 * tile_size, ctx.size().y - tile_size * yi as f32);
-
-        //         if yi + 1 == height {
-        //             pos.y = y + tile_size - margin;
-        //         }
-
-        //         let side = (xi == WIDTH - 1) as i32 - (xi == 0) as i32;
-        //         let uv_offset = Vector2::new(side * 16, 16 * (yi == height - 1) as i32);
-
-        //         ctx.draw(
-        //             Sprite::new(INFO_PANEL)
-        //                 .scale(Vector2::repeat(scale), Anchor::Center)
-        //                 .position(pos, Anchor::TopLeft)
-        //                 .uv_offset(uv_offset)
-        //                 .z_index(layer::UI_BACKGROUND),
-        //         );
-        //     }
-        // }
+        level_info(ctx, state, level, &mut ui);
+        test_case(self, ctx, state, level, sim, &mut ui);
+        background(ctx, &mut ui);
 
         let bounds = (
-            Vector2::new(0.0, y),
+            Vector2::new(0.0, ui.y),
             Vector2::new(WIDTH as f32 * tile_size, ctx.size().y),
         );
         if in_bounds(ctx.input.mouse, bounds) {
-            ctx.input.cancel_mouse();
+            ctx.input.cancel_mouse(MouseButton::Left);
+            ctx.input.cancel_mouse(MouseButton::Right);
         }
     }
+}
+
+fn level_info(ctx: &mut GraphicsContext<App>, state: &App, level: &Level, ui: &mut UIContext) {
+    let padding = 10.0 * state.config.ui_scale * ctx.scale_factor;
+
+    let title = Text::new(UNDEAD_FONT, &level.name)
+        .position(Vector2::new(ui.margin, ui.y), Anchor::TopLeft)
+        .scale(Vector2::repeat(state.config.ui_scale * 3.0))
+        .z_index(layer::UI_ELEMENT);
+    ui.y -= title.size(ctx).y + padding;
+    ctx.draw(title);
+
+    let description = Text::new(UNDEAD_FONT, &level.description)
+        .position(Vector2::new(ui.margin, ui.y), Anchor::TopLeft)
+        .scale(Vector2::repeat(state.config.ui_scale * 2.0))
+        .max_width(WIDTH as f32 * ui.tile_size - ui.margin * 2.0)
+        .z_index(layer::UI_ELEMENT);
+    ui.y -= description.size(ctx).y + padding;
+    ctx.draw(description);
 }
 
 fn test_case(
@@ -129,7 +94,7 @@ fn test_case(
     state: &App,
     level: &Level,
     sim: &MutexGuard<InnerSimulationState>,
-    ui: UIContext,
+    ui: &mut UIContext,
 ) {
     let sim_level = sim.beam.as_ref().and_then(|x| x.level.as_ref());
     let is_test = sim_level.is_some();
@@ -161,7 +126,7 @@ fn test_case(
 
     let mut i = 0;
     for &input in &case.lasers {
-        let pos = Vector2::new(ui.margin + i as f32 * tile_size, *ui.y);
+        let pos = Vector2::new(ui.margin + i as f32 * tile_size, ui.y);
         ctx.draw(
             case_tile(TILE_EMITTER_DOWN)
                 .uv_offset(Vector2::new(-16 * input as i32, 0))
@@ -171,12 +136,12 @@ fn test_case(
     }
 
     ctx.draw(case_tile(BIG_RIGHT_ARROW).position(
-        Vector2::new(ui.margin + i as f32 * tile_size, *ui.y - tile_size / 2.0),
+        Vector2::new(ui.margin + i as f32 * tile_size, ui.y - tile_size / 2.0),
         Anchor::CenterLeft,
     ));
 
     for &input in &case.detectors[0] {
-        let pos = Vector2::new(ui.margin + i as f32 * tile_size + arrow_size, *ui.y);
+        let pos = Vector2::new(ui.margin + i as f32 * tile_size + arrow_size, ui.y);
         ctx.draw(
             case_tile(TILE_DETECTOR)
                 .uv_offset(Vector2::new(16 * input as i32, 0))
@@ -187,7 +152,7 @@ fn test_case(
 
     let mut pos = Vector2::new(
         ui.tile_size * WIDTH as f32 - ui.margin,
-        *ui.y - tile_size / 2.0,
+        ui.y - tile_size / 2.0,
     );
     let button_width = 4.0 * 3.0 * ctx.scale_factor * state.config.ui_scale;
     let button_padding = 4.0 * 2.0 * ctx.scale_factor * state.config.ui_scale;
@@ -233,5 +198,58 @@ fn test_case(
     ctx.draw(index);
     ctx.draw(right_button);
 
-    *ui.y -= tile_size;
+    ui.y -= tile_size;
+}
+
+fn background(ctx: &mut GraphicsContext<App>, ui: &mut UIContext) {
+    ui.y -= ui.margin;
+    let height = ctx.size().y - ui.y - ui.tile_size;
+
+    let y_scale = height / 16.0;
+    let x_scale = ui.scale * (WIDTH - 2) as f32;
+    let x_right = ui.tile_size * WIDTH as f32;
+
+    let base = Sprite::new(INFO_PANEL).z_index(layer::UI_BACKGROUND);
+
+    if height > 0.0 {
+        ctx.draw(
+            base.clone()
+                .scale(Vector2::new(ui.scale, y_scale), Anchor::Center)
+                .position(Vector2::new(0.0, ctx.size().y), Anchor::TopLeft)
+                .uv_offset(Vector2::new(-16, 0)),
+        );
+
+        ctx.draw(
+            base.clone()
+                .scale(Vector2::new(ui.scale, y_scale), Anchor::Center)
+                .position(Vector2::new(x_right, ctx.size().y), Anchor::TopRight)
+                .uv_offset(Vector2::new(16, 0)),
+        );
+
+        ctx.draw(
+            base.clone()
+                .scale(Vector2::new(x_scale, y_scale), Anchor::Center)
+                .position(Vector2::new(ui.tile_size, ctx.size().y), Anchor::TopLeft),
+        );
+    }
+
+    ctx.draw(
+        base.clone()
+            .scale(Vector2::repeat(ui.scale), Anchor::Center)
+            .position(Vector2::new(0.0, ui.y), Anchor::BottomLeft)
+            .uv_offset(Vector2::new(-16, 16)),
+    );
+
+    ctx.draw(
+        base.clone()
+            .scale(Vector2::repeat(ui.scale), Anchor::Center)
+            .position(Vector2::new(x_right, ui.y), Anchor::BottomRight)
+            .uv_offset(Vector2::new(16, 16)),
+    );
+
+    ctx.draw(
+        base.scale(Vector2::new(x_scale, ui.scale), Anchor::Center)
+            .position(Vector2::new(ui.tile_size, ui.y), Anchor::BottomLeft)
+            .uv_offset(Vector2::new(0, 16)),
+    );
 }

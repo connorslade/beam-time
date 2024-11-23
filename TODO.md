@@ -80,5 +80,7 @@
 - [x] Allow canceling clicks through the graphics context
 - [x] Show current test case in level panel when simulating in test mode
 - [ ] Start testing at currently open level panel test case, looping around at the end
-- [ ] Make level panel and tile picker rendering more efficient by stretching spritesca
+- [x] Make level panel rendering more efficient by stretching sprites
 - [ ] Cleanup public fields in engine that should be read only
+- [ ] Allow disabling tiles in level def
+- [ ] Price system & ranking

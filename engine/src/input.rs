@@ -53,9 +53,9 @@ impl InputManager {
             .any(|(b, s)| b == &button && s == &ElementState::Released)
     }
 
-    pub fn cancel_mouse(&mut self) {
-        self.mouse_actions.clear();
-        self.mouse_down.clear();
+    pub fn cancel_mouse(&mut self, button: MouseButton) {
+        self.mouse_actions.retain(|x| x.0 != button);
+        self.mouse_down.retain(|&x| x != button);
     }
 
     pub fn key_down(&self, key: KeyCode) -> bool {

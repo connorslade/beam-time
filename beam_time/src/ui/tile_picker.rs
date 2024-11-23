@@ -97,7 +97,8 @@ impl TilePicker {
             Vector2::new(Tile::DEFAULT.len() as f32 * tile_size, tile_size),
         );
         if in_bounds(ctx.input.mouse, bounds) {
-            ctx.input.cancel_mouse();
+            ctx.input.cancel_mouse(MouseButton::Left);
+            ctx.input.cancel_mouse(MouseButton::Right);
         }
     }
 
