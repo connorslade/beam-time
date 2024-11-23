@@ -7,7 +7,7 @@ use engine::{
 
 use crate::{
     app::App,
-    assets::{ALAGARD_FONT, BACK_BUTTON},
+    assets::{ALAGARD_FONT, BACK_BUTTON, UNDEAD_FONT},
     consts::BACKGROUND_COLOR,
 };
 
@@ -60,4 +60,17 @@ pub fn font_scale<App>(
     let total_height = line_spacing * lines as f32;
 
     (line_height, line_spacing, total_height)
+}
+
+pub fn tile_lable<'a, App>(
+    ctx: &mut GraphicsContext<App>,
+    scale: f32,
+    pos: Vector2<f32>,
+    label: &'a str,
+) -> Text<'a> {
+    let offset = scale * ctx.scale_factor;
+    let offset = Vector2::new(6.5 * offset, -7.5 * offset);
+    Text::new(UNDEAD_FONT, label)
+        .scale(Vector2::repeat(scale / 2.0))
+        .position(pos + offset, Anchor::BottomRight)
 }

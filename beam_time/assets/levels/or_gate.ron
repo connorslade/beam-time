@@ -15,8 +15,8 @@ Level(
             rotation: Down,
             active: true
         ),
-        (5, 1): Detector,
-        (5, 0): Wall
+        (5, 0): Detector,
+        (5, 1): Wall
     },
 
     tests: Tests(

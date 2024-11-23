@@ -8,7 +8,7 @@ use anyhow::Result;
 use bincode::Options;
 use chrono::{DateTime, Utc};
 use engine::{
-    drawable::{sprite::Sprite, text::Text},
+    drawable::sprite::Sprite,
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
@@ -21,9 +21,10 @@ use uuid::Uuid;
 
 use crate::{
     app::App,
-    assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B, UNDEAD_FONT},
+    assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B},
     consts::{layer, AUTOSAVE_INTERVAL},
     misc::map::Map,
+    ui::misc::tile_lable,
     util::{in_bounds, key_events},
 };
 
@@ -206,14 +207,8 @@ impl Board {
                     .z_index(layer::TILE_BACKGROUND);
 
                 if let Some(label) = self.transient.level.and_then(|x| x.labels.get(&pos)) {
-                    let offset = shared.scale * ctx.scale_factor;
-                    let offset = Vector2::new(6.5 * offset, -7.5 * offset);
-                    ctx.draw(
-                        Text::new(UNDEAD_FONT, label)
-                            .scale(Vector2::repeat(shared.scale / 2.0))
-                            .position(render_pos + offset, Anchor::BottomRight)
-                            .z_index(layer::OVERLAY),
-                    );
+                    let label = tile_lable(ctx, shared.scale, render_pos, label);
+                    ctx.draw(label.z_index(layer::OVERLAY));
                 }
 
                 if !is_empty {

@@ -75,29 +75,43 @@ impl LevelPanel {
 
         test_case(self, ctx, state, level, sim, context);
 
+        y -= (ctx.frame as f32 / 100.0).sin() * tile_size * 2.0 + tile_size * 2.0;
+
         // Render backgrounds
-        let height = ((ctx.size().y - y + margin) / tile_size).ceil() as usize;
-        for yi in 0..height {
-            for xi in 0..WIDTH {
-                let mut pos =
-                    Vector2::new(xi as f32 * tile_size, ctx.size().y - tile_size * yi as f32);
+        // let height = ((ctx.size().y - y + margin) / tile_size).ceil() as usize;
+        let height = ctx.size().y - y + margin;
 
-                if yi + 1 == height {
-                    pos.y = y + tile_size - margin;
-                }
+        ctx.draw(
+            Sprite::new(INFO_PANEL)
+                .scale(
+                    Vector2::new(scale * WIDTH as f32, height / tile_size),
+                    Anchor::Center,
+                )
+                .position(Vector2::new(0.0, ctx.size().y), Anchor::TopLeft)
+                .z_index(layer::UI_BACKGROUND),
+        );
 
-                let side = (xi == WIDTH - 1) as i32 - (xi == 0) as i32;
-                let uv_offset = Vector2::new(side * 16, 16 * (yi == height - 1) as i32);
+        // for yi in 0..height {
+        //     for xi in 0..WIDTH {
+        //         let mut pos =
+        //             Vector2::new(xi as f32 * tile_size, ctx.size().y - tile_size * yi as f32);
 
-                ctx.draw(
-                    Sprite::new(INFO_PANEL)
-                        .scale(Vector2::repeat(scale), Anchor::Center)
-                        .position(pos, Anchor::TopLeft)
-                        .uv_offset(uv_offset)
-                        .z_index(layer::UI_BACKGROUND),
-                );
-            }
-        }
+        //         if yi + 1 == height {
+        //             pos.y = y + tile_size - margin;
+        //         }
+
+        //         let side = (xi == WIDTH - 1) as i32 - (xi == 0) as i32;
+        //         let uv_offset = Vector2::new(side * 16, 16 * (yi == height - 1) as i32);
+
+        //         ctx.draw(
+        //             Sprite::new(INFO_PANEL)
+        //                 .scale(Vector2::repeat(scale), Anchor::Center)
+        //                 .position(pos, Anchor::TopLeft)
+        //                 .uv_offset(uv_offset)
+        //                 .z_index(layer::UI_BACKGROUND),
+        //         );
+        //     }
+        // }
 
         let bounds = (
             Vector2::new(0.0, y),
@@ -141,7 +155,7 @@ fn test_case(
 
     let case_tile = |texture| {
         Sprite::new(texture)
-            .scale(Vector2::repeat(scale), Anchor::Center)
+            .scale(Vector2::new(scale, scale), Anchor::Center)
             .z_index(layer::UI_ELEMENT)
     };
 
