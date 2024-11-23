@@ -29,6 +29,17 @@ pub enum Tile {
     Wall,
 }
 
+#[derive(Debug, PartialEq, Eq, Hash, Deserialize)]
+pub enum TileType {
+    Detector,
+    Delay,
+    Emitter,
+    Mirror,
+    Splitter,
+    Galvo,
+    Wall,
+}
+
 impl Tile {
     pub const DEFAULT: [Tile; 7] = [
         Tile::Mirror { rotation: false },
@@ -59,6 +70,19 @@ impl Tile {
             Tile::Splitter { .. } => "Splitter",
             Tile::Galvo { .. } => "Galvo",
             Tile::Wall { .. } => "Wall",
+        }
+    }
+
+    pub fn as_type(&self) -> TileType {
+        match self {
+            Tile::Empty => unreachable!(),
+            Tile::Detector => TileType::Detector,
+            Tile::Delay => TileType::Delay,
+            Tile::Emitter { .. } => TileType::Emitter,
+            Tile::Mirror { .. } => TileType::Mirror,
+            Tile::Splitter { .. } => TileType::Splitter,
+            Tile::Galvo { .. } => TileType::Galvo,
+            Tile::Wall => TileType::Wall,
         }
     }
 

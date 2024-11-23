@@ -209,7 +209,9 @@ fn background(ctx: &mut GraphicsContext<App>, ui: &mut UIContext) {
     let x_scale = ui.scale * (WIDTH - 2) as f32;
     let x_right = ui.tile_size * WIDTH as f32;
 
-    let base = Sprite::new(INFO_PANEL).z_index(layer::UI_BACKGROUND);
+    let base = Sprite::new(INFO_PANEL)
+        .z_index(layer::UI_BACKGROUND)
+        .scale(Vector2::repeat(ui.scale), Anchor::Center);
 
     if height > 0.0 {
         ctx.draw(
@@ -235,14 +237,12 @@ fn background(ctx: &mut GraphicsContext<App>, ui: &mut UIContext) {
 
     ctx.draw(
         base.clone()
-            .scale(Vector2::repeat(ui.scale), Anchor::Center)
             .position(Vector2::new(0.0, ui.y), Anchor::BottomLeft)
             .uv_offset(Vector2::new(-16, 16)),
     );
 
     ctx.draw(
         base.clone()
-            .scale(Vector2::repeat(ui.scale), Anchor::Center)
             .position(Vector2::new(x_right, ui.y), Anchor::BottomRight)
             .uv_offset(Vector2::new(16, 16)),
     );

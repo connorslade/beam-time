@@ -6,6 +6,7 @@ Level(
     size: Some((6, 6)),
     permanent: [ (0, 5), (5, 0) ],
     labels: { },
+    disabled: [ Detector, Delay, Emitter, Splitter, Galvo, Wall ],
     tiles: {
         (0, 5): Emitter(
             rotation: Down,

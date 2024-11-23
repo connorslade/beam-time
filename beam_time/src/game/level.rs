@@ -8,12 +8,13 @@ use anyhow::Result;
 use engine::exports::nalgebra::Vector2;
 use log::warn;
 use once_cell::sync::Lazy;
+use ron::{extensions::Extensions, Options};
 use serde::Deserialize;
 use uuid::Uuid;
 
 use crate::misc::map::Map;
 
-use super::tile::Tile;
+use super::tile::{Tile, TileType};
 
 pub macro default_level {
     ($name:expr) => {
@@ -67,6 +68,8 @@ pub struct Level {
     pub size: Option<Vector2<u32>>,
     pub permanent: HashSet<Vector2<i32>>,
     pub labels: HashMap<Vector2<i32>, String>,
+    pub disabled: Option<HashSet<TileType>>,
+
     pub tiles: Map<Tile>,
 
     pub tests: Tests,
@@ -104,12 +107,13 @@ pub enum ElementLocation {
 impl Level {
     pub fn load_file(path: PathBuf) -> Result<Self> {
         let file = File::open(path)?;
-        let level = ron::de::from_reader::<_, Self>(file)?;
-        Ok(level)
+        let ron = Options::default().with_default_extension(Extensions::IMPLICIT_SOME);
+        Ok(ron.from_reader(file)?)
     }
 
     pub fn load_slice(slice: &[u8]) -> Result<Self> {
-        Ok(ron::de::from_bytes(slice)?)
+        let ron = Options::default().with_default_extension(Extensions::IMPLICIT_SOME);
+        Ok(ron.from_bytes(slice)?)
     }
 }
 
