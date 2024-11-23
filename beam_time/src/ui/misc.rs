@@ -62,7 +62,7 @@ pub fn font_scale<App>(
     (line_height, line_spacing, total_height)
 }
 
-pub fn tile_lable<'a, App>(
+pub fn tile_label<'a, App>(
     ctx: &mut GraphicsContext<App>,
     scale: f32,
     pos: Vector2<f32>,

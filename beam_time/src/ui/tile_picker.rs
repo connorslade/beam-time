@@ -1,4 +1,5 @@
 use engine::{
+    assets::SpriteRef,
     color::Rgb,
     drawable::{sprite::Sprite, text::Text},
     exports::{
@@ -7,11 +8,16 @@ use engine::{
     },
     graphics_context::{Anchor, GraphicsContext},
 };
+use thousands::Separable;
 
 use crate::{
     app::App,
-    assets::{TILE_PICKER_CENTER, TILE_PICKER_LEFT, TILE_PICKER_RIGHT, UNDEAD_FONT},
-    consts::layer,
+    assets::{
+        animated_sprite, TILE_DELAY, TILE_DETECTOR, TILE_EMITTER_RIGHT, TILE_GALVO_RIGHT,
+        TILE_MIRROR_A, TILE_PICKER_CENTER, TILE_PICKER_LEFT, TILE_PICKER_RIGHT, TILE_SPLITTER_A,
+        TILE_WALL, UNDEAD_FONT,
+    },
+    consts::{layer, EMITTER, GALVO, MIRROR, SPLITTER},
     game::{board::Board, holding::Holding, tile::Tile},
     util::in_bounds,
 };
@@ -24,6 +30,16 @@ const TILE_SHORTCUTS: [KeyCode; 7] = [
     KeyCode::Digit5,
     KeyCode::Digit6,
     KeyCode::Digit7,
+];
+
+const TILE_ASSETS: [SpriteRef; 7] = [
+    TILE_DETECTOR,
+    TILE_DELAY,
+    TILE_EMITTER_RIGHT,
+    TILE_MIRROR_A,
+    TILE_SPLITTER_A,
+    TILE_GALVO_RIGHT,
+    TILE_WALL,
 ];
 
 #[derive(Default)]
@@ -46,15 +62,20 @@ impl TilePicker {
         let scale = state.config.ui_scale * 4.0;
         let tile_size = scale * ctx.scale_factor * 16.0;
         for (i, (tile, key)) in Tile::DEFAULT.iter().zip(TILE_SHORTCUTS).enumerate() {
-            if !sim && ctx.input.key_pressed(key) {
+            let disabled = board
+                .transient
+                .level
+                .and_then(|x| x.disabled.as_ref())
+                .map_or(false, |disabled| disabled.contains(&tile.as_type()));
+
+            if !disabled && !sim && ctx.input.key_pressed(key) {
                 board.transient.holding = Holding::Tile(*tile);
             }
 
-            let render_tile = match tile {
-                x @ Tile::Emitter { .. } | x @ Tile::Galvo { .. } => &x.rotate(),
+            let tile = match tile {
+                Tile::Emitter { .. } | Tile::Galvo { .. } => &tile.rotate(),
                 x => x,
             };
-            let (asset, name) = (render_tile.asset(), tile.name());
             let pos = Vector2::new(tile_size * i as f32, -self.offset);
 
             let background_texture = if i == 0 {
@@ -69,27 +90,30 @@ impl TilePicker {
                 .position(pos, Anchor::BottomLeft)
                 .scale(Vector2::repeat(scale), Anchor::Center)
                 .z_index(layer::UI_BACKGROUND);
-            ctx.draw(background);
 
-            let mut sprite = asset
+            let mut sprite =
+                if background.is_hovered(ctx) && !matches!(tile, Tile::Wall) && !disabled {
+                    let frame = state.frame();
+                    let texture = TILE_ASSETS[tile.as_type() as usize];
+                    animated_sprite(texture, true, frame)
+                } else {
+                    tile.asset()
+                }
                 .position(pos, Anchor::BottomLeft)
                 .scale(Vector2::repeat(scale), Anchor::Center)
                 .z_index(layer::UI_ELEMENT);
-
-            let disabled = board
-                .transient
-                .level
-                .and_then(|x| x.disabled.as_ref())
-                .map_or(false, |disabled| disabled.contains(&tile.as_type()));
 
             if disabled {
                 sprite = sprite.color(Rgb::repeat(0.7));
             }
 
-            if !disabled && !sim && sprite.is_hovered(ctx) {
+            if !disabled && !sim && background.is_hovered(ctx) {
                 if board.transient.holding.is_none() {
-                    let text = Text::new(UNDEAD_FONT, name)
-                        .position(ctx.input.mouse, Anchor::BottomLeft)
+                    let text = format!("{}\n${}", tile.name(), tile.price().separate_with_commas());
+                    let pos =
+                        Vector2::new(ctx.input.mouse.x, ctx.input.mouse.y.max(tile_size * 1.1));
+                    let text = Text::new(UNDEAD_FONT, &text)
+                        .position(pos, Anchor::BottomCenter)
                         .scale(Vector2::repeat(2.0 * state.config.ui_scale))
                         .z_index(layer::TILE_HOLDING);
                     ctx.draw(text);
@@ -101,6 +125,7 @@ impl TilePicker {
             }
 
             ctx.draw(sprite);
+            ctx.draw(background);
         }
 
         let bounds = (

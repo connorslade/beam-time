@@ -73,6 +73,19 @@ impl Tile {
         }
     }
 
+    pub fn price(&self) -> u32 {
+        match self {
+            Tile::Empty => unreachable!(),
+            Tile::Detector => 5000,
+            Tile::Emitter { .. } => 1000,
+            Tile::Delay => 500,
+            Tile::Mirror { .. } => 200,
+            Tile::Splitter { .. } => 300,
+            Tile::Galvo { .. } => 500,
+            Tile::Wall { .. } => 100,
+        }
+    }
+
     pub fn as_type(&self) -> TileType {
         match self {
             Tile::Empty => unreachable!(),

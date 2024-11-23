@@ -5,6 +5,7 @@ use engine::{
     graphics_context::{Anchor, GraphicsContext},
 };
 use parking_lot::MutexGuard;
+use thousands::Separable;
 
 use crate::{
     app::App,
@@ -54,7 +55,7 @@ impl LevelPanel {
             y: ctx.size().y - margin,
         };
 
-        level_info(ctx, state, level, &mut ui);
+        level_info(ctx, state, board, level, &mut ui);
         test_case(self, ctx, state, level, sim, &mut ui);
         background(ctx, &mut ui);
 
@@ -69,7 +70,13 @@ impl LevelPanel {
     }
 }
 
-fn level_info(ctx: &mut GraphicsContext<App>, state: &App, level: &Level, ui: &mut UIContext) {
+fn level_info(
+    ctx: &mut GraphicsContext<App>,
+    state: &App,
+    board: &Board,
+    level: &Level,
+    ui: &mut UIContext,
+) {
     let padding = 10.0 * state.config.ui_scale * ctx.scale_factor;
 
     let title = Text::new(UNDEAD_FONT, &level.name)
@@ -79,7 +86,14 @@ fn level_info(ctx: &mut GraphicsContext<App>, state: &App, level: &Level, ui: &m
     ui.y -= title.size(ctx).y + padding;
     ctx.draw(title);
 
-    let description = Text::new(UNDEAD_FONT, &level.description)
+    let price = board
+        .tiles
+        .iter()
+        .filter(|(pos, _)| !level.permanent.contains(pos))
+        .map(|(_, tile)| tile.price())
+        .sum::<u32>();
+    let description = format!("${}\n\n{}", price.separate_with_commas(), level.description);
+    let description = Text::new(UNDEAD_FONT, &description)
         .position(Vector2::new(ui.margin, ui.y), Anchor::TopLeft)
         .scale(Vector2::repeat(state.config.ui_scale * 2.0))
         .max_width(WIDTH as f32 * ui.tile_size - ui.margin * 2.0)

@@ -24,7 +24,7 @@ use crate::{
     assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B},
     consts::{layer, AUTOSAVE_INTERVAL},
     misc::map::Map,
-    ui::misc::tile_lable,
+    ui::misc::tile_label,
     util::{in_bounds, key_events},
 };
 
@@ -207,7 +207,7 @@ impl Board {
                     .z_index(layer::TILE_BACKGROUND);
 
                 if let Some(label) = self.transient.level.and_then(|x| x.labels.get(&pos)) {
-                    let label = tile_lable(ctx, shared.scale, render_pos, label);
+                    let label = tile_label(ctx, shared.scale, render_pos, label);
                     ctx.draw(label.z_index(layer::OVERLAY));
                 }
 
