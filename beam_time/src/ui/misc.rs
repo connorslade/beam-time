@@ -56,7 +56,7 @@ pub fn font_scale<App>(
 ) -> (f32, f32, f32) {
     let font_desc = &ctx.assets.get_font(font).desc;
     let line_height = font_desc.height * scale;
-    let line_spacing = (line_height + 2.0 * font_desc.leading * scale) * ctx.scale_factor;
+    let line_spacing = (line_height + font_desc.leading * scale) * ctx.scale_factor;
     let total_height = line_spacing * lines as f32;
 
     (line_height, line_spacing, total_height)

@@ -18,7 +18,7 @@ const DESCRIPTION: &str = indoc! {"
 
     Special thanks to Brandon Li for creating the tile graphics. (aspiringLich on GitHub)
 
-    Source code is available online at https://github.com/connorslade/beam-time.
+    Source code is available online on my Github at https://github.com/connorslade/beam-time.
 
     Assets Used:
 

@@ -25,7 +25,7 @@
 - [ ] Figure out how to apply custom shader effects?
 - [x] Fix galvo input logic
 - [x] Dont overwrite galvo mirror state when rotating
-- [ ] Fix delay gate rendering z order
+- [x] Fix delay gate rendering z order
 - [x] Create z_order consts for layers
 - [x] Actual Infante Boards
   - [x] Use new rendering system
@@ -52,7 +52,6 @@
 - [ ] ~~Persist window size~~
 - [x] Autosave interval
 - [ ] Improve FPS
-  - [ ] Benchmarking system
 - [x] Don't overstep pan/zoom goals during lag spikes
 - [ ] Engine key chord pressed
 - [x] Stop simulation on delete, cut, or copy
@@ -86,5 +85,6 @@
 - [x] Price system
 - [ ] Use ron for config file?
 - [x] Add a solution latency metric
-- [ ] Verify ui scale
+- [ ] Verify ui scaling
 - [ ] Render histograms on level completion screen
+- [ ] Extend engine with support for clipping sprites to some area
