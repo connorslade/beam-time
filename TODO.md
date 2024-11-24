@@ -63,7 +63,7 @@
 - [x] Allow rotating copied selections
 - [ ] Fix simulation bug when two galvos are pointed at the same mirror
 - [x] Render the little light pixel on active emitters
-- [ ] Visual feedback for test cases
+- [x] Visual feedback for test cases
 - [ ] Blueprint system
   - [ ] Allow saving and loading premade-structures in-game
   - [ ] Allow importing and exporting them as base64 encoded strs
@@ -72,7 +72,7 @@
 - [x] Use shift to reverse rotation direction
 - [ ] Cleanup selection renderer with holes
 - [ ] Bias scale to integer zoom levels when at small zooms
-- [ ] Detect failed test cases
+- [ ] Detect and show failed test cases instead of hanging
 - [ ] Allow disabling cycle detection for pluse based solutions
 - [ ] Experiment with animation icon?
 - [x] Allow labeling emitters / outputs / tiles in general?
@@ -83,6 +83,8 @@
 - [x] Make level panel rendering more efficient by stretching sprites
 - [ ] Cleanup public fields in engine that should be read only
 - [x] Allow disabling tiles in level def
-- [ ] Price system & ranking
+- [x] Price system
 - [ ] Use ron for config file?
 - [x] Add a solution latency metric
+- [ ] Verify ui scale
+- [ ] Render histograms on level completion screen

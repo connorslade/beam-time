@@ -11,9 +11,9 @@ use crate::misc::direction::Direction;
 
 use state::BeamState;
 
-mod level;
+pub mod level;
 pub mod state;
-mod tick;
+pub mod tick;
 pub mod tile;
 
 const MIRROR_REFLECTIONS: [Direction; 4] = [

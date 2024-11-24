@@ -86,7 +86,7 @@ FontDescriptor(
     },
     unknown: (uv: (127, 16), size: (8, 10), baseline_shift: -2),
     height: 6,
-    leading: 2,
+    leading: 3,
     space_width: 3,
     tracking: 1.0
 )

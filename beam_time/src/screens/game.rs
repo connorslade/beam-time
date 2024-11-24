@@ -10,7 +10,7 @@ use rand::{seq::SliceRandom, thread_rng, Rng};
 use crate::{
     consts::BACKGROUND_COLOR,
     game::{
-        beam::{state::BeamState, SimulationState},
+        beam::{level::LevelResult, state::BeamState, SimulationState},
         board::Board,
         level::LEVELS,
         SharedState,
@@ -29,6 +29,7 @@ pub struct GameScreen {
     level_panel: LevelPanel,
     confetti: Confetti,
 
+    level_result: Option<LevelResult>,
     save_file: PathBuf,
     needs_init: bool,
     tps: f32,
@@ -87,8 +88,9 @@ impl Screen<App> for GameScreen {
                 beam_state.tick();
             }
 
-            let is_complete = beam_state.level.as_ref().map(|x| x.is_complete());
-            if is_complete == Some(true) {
+            let level_result = beam_state.level.as_ref().and_then(|x| x.complete());
+            if let Some(result) = level_result {
+                self.level_result = Some(result);
                 sim.runtime.running = false;
                 sim.beam = None;
                 create_confetti(&mut self.confetti, ctx);
@@ -99,6 +101,7 @@ impl Screen<App> for GameScreen {
             self.beam.notify_running();
         } else if space_pressed || play_pressed || test_pressed {
             sim.beam = Some(BeamState::new(&self.board, test_pressed));
+            self.level_result = None;
         }
 
         if ctx.input.key_pressed(KeyCode::Escape) {
@@ -108,7 +111,8 @@ impl Screen<App> for GameScreen {
         ctx.background(BACKGROUND_COLOR);
         self.tile_picker
             .render(ctx, state, sim.beam.is_some(), &mut self.board);
-        self.level_panel.render(ctx, state, &self.board, &sim);
+        self.level_panel
+            .render(ctx, state, &self.board, &sim, &self.level_result);
         self.board.render(ctx, state, &self.shared, &mut sim.beam);
         self.confetti.render(ctx);
     }
@@ -139,6 +143,7 @@ impl GameScreen {
             level_panel: LevelPanel::default(),
             confetti: Confetti::new(),
 
+            level_result: None,
             save_file,
             needs_init: true,
             tps: 20.0,

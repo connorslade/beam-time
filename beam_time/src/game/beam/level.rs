@@ -19,9 +19,15 @@ pub struct LevelState {
     pub history_states: Vec<Vec<bool>>,
 }
 
+pub struct LevelResult {
+    pub latency: u32,
+}
+
 impl LevelState {
-    pub fn is_complete(&self) -> bool {
-        self.test_case >= self.level.tests.cases.len()
+    pub fn complete(&self) -> Option<LevelResult> {
+        (self.test_case >= self.level.tests.cases.len()).then_some(LevelResult {
+            latency: self.latency,
+        })
     }
 
     pub fn tick(&mut self, hash: u64, board: &mut Map<BeamTile>) -> bool {

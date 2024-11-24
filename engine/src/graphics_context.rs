@@ -115,6 +115,17 @@ impl<'a, App> GraphicsContext<'a, App> {
         drawable.draw(self);
     }
 
+    pub fn draw_callback(
+        &mut self,
+        drawable: impl Drawable<App>,
+        mut callback: impl FnMut(&mut [GpuSprite]),
+    ) {
+        let sprites = self.sprites.len();
+        drawable.draw(self);
+        let range = &mut self.sprites[sprites..];
+        callback(range);
+    }
+
     pub fn set_cursor(&mut self, cursor: impl Into<Cursor>) {
         self.cursor = cursor.into();
     }

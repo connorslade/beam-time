@@ -1,7 +1,12 @@
+use std::f32::consts::PI;
+
 use engine::{
-    color::Rgb,
+    color::{OkLab, Rgb},
     drawable::{sprite::Sprite, text::Text},
-    exports::{nalgebra::Vector2, winit::event::MouseButton},
+    exports::{
+        nalgebra::{Vector2, Vector3},
+        winit::event::MouseButton,
+    },
     graphics_context::{Anchor, GraphicsContext},
 };
 use parking_lot::MutexGuard;
@@ -10,11 +15,15 @@ use thousands::Separable;
 use crate::{
     app::App,
     assets::{
-        BIG_RIGHT_ARROW, INFO_PANEL, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR, TILE_EMITTER_DOWN,
-        UNDEAD_FONT,
+        BIG_RIGHT_ARROW, HORIZONTAL_RULE, INFO_PANEL, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR,
+        TILE_EMITTER_DOWN, UNDEAD_FONT,
     },
     consts::layer,
-    game::{beam::InnerSimulationState, board::Board, level::Level},
+    game::{
+        beam::{level::LevelResult, InnerSimulationState},
+        board::Board,
+        level::Level,
+    },
     util::in_bounds,
 };
 
@@ -26,6 +35,7 @@ pub struct LevelPanel {
 struct UIContext {
     scale: f32,
     margin: f32,
+    padding: f32,
     tile_size: f32,
     y: f32,
 }
@@ -39,6 +49,7 @@ impl LevelPanel {
         state: &App,
         board: &Board,
         sim: &MutexGuard<InnerSimulationState>,
+        level_result: &Option<LevelResult>,
     ) {
         let Some(level) = board.transient.level else {
             return;
@@ -47,16 +58,33 @@ impl LevelPanel {
         let scale = state.config.ui_scale * 4.0;
         let tile_size = scale * ctx.scale_factor * 16.0;
         let margin = tile_size / 4.0;
+        let padding = 10.0 * state.config.ui_scale * ctx.scale_factor;
 
         let mut ui = UIContext {
             scale,
             margin,
+            padding,
             tile_size,
             y: ctx.size().y - margin,
         };
 
-        level_info(ctx, state, board, level, &mut ui);
+        // todo: Dont re-calc price every frame
+        let price = board
+            .tiles
+            .iter()
+            .filter(|(pos, _)| !level.permanent.contains(pos))
+            .map(|(_, tile)| tile.price())
+            .sum::<u32>();
+
+        level_info(ctx, state, level, price, &mut ui);
+        horizontal_rule(ctx, &mut ui);
         test_case(self, ctx, state, level, sim, &mut ui);
+
+        if let Some(result) = level_result {
+            horizontal_rule(ctx, &mut ui);
+            level_complete(ctx, state, result, price, &mut ui);
+        }
+
         background(ctx, &mut ui);
 
         let bounds = (
@@ -70,36 +98,86 @@ impl LevelPanel {
     }
 }
 
+fn horizontal_rule(ctx: &mut GraphicsContext<App>, ui: &mut UIContext) {
+    ui.y -= ui.margin;
+    for i in 0..WIDTH {
+        ctx.draw(
+            Sprite::new(HORIZONTAL_RULE)
+                .scale(Vector2::repeat(ui.scale), Anchor::Center)
+                .position(Vector2::new(ui.tile_size * i as f32, ui.y), Anchor::TopLeft)
+                .color(Rgb::repeat(0.459))
+                .z_index(layer::UI_ELEMENT),
+        );
+    }
+    ui.y -= ui.scale + ui.margin;
+}
+
 fn level_info(
     ctx: &mut GraphicsContext<App>,
     state: &App,
-    board: &Board,
     level: &Level,
+    price: u32,
     ui: &mut UIContext,
 ) {
-    let padding = 10.0 * state.config.ui_scale * ctx.scale_factor;
-
     let title = Text::new(UNDEAD_FONT, &level.name)
         .position(Vector2::new(ui.margin, ui.y), Anchor::TopLeft)
         .scale(Vector2::repeat(state.config.ui_scale * 3.0))
         .z_index(layer::UI_ELEMENT);
-    ui.y -= title.size(ctx).y + padding;
+    ui.y -= title.size(ctx).y + ui.padding;
     ctx.draw(title);
 
-    let price = board
-        .tiles
-        .iter()
-        .filter(|(pos, _)| !level.permanent.contains(pos))
-        .map(|(_, tile)| tile.price())
-        .sum::<u32>();
     let description = format!("${}\n\n{}", price.separate_with_commas(), level.description);
     let description = Text::new(UNDEAD_FONT, &description)
         .position(Vector2::new(ui.margin, ui.y), Anchor::TopLeft)
         .scale(Vector2::repeat(state.config.ui_scale * 2.0))
         .max_width(WIDTH as f32 * ui.tile_size - ui.margin * 2.0)
         .z_index(layer::UI_ELEMENT);
-    ui.y -= description.size(ctx).y + padding;
+    ui.y -= description.size(ctx).y + ui.padding;
     ctx.draw(description);
+}
+
+fn level_complete(
+    ctx: &mut GraphicsContext<App>,
+    state: &App,
+    result: &LevelResult,
+    price: u32,
+    ui: &mut UIContext,
+) {
+    let center_x = (WIDTH as f32 * ui.tile_size) / 2.0;
+
+    let title = Text::new(UNDEAD_FONT, "Level Complete!")
+        .position(Vector2::new(center_x, ui.y), Anchor::TopCenter)
+        .scale(Vector2::repeat(state.config.ui_scale * 3.0))
+        .z_index(layer::UI_ELEMENT);
+    ui.y -= title.size(ctx).y + ui.scale + ui.padding;
+
+    let now = state.start.elapsed().as_secs_f32();
+    ctx.draw_callback(title, |sprites| {
+        let count = sprites.len();
+        for (idx, sprite) in sprites.iter_mut().enumerate() {
+            let t = idx as f32 / count as f32;
+            let color = OkLab::new(0.80, 0.1893, 0.0)
+                .hue_shift(t * 2.0 * PI - now * 2.0)
+                .to_lrgb();
+            sprite.color = Vector3::new(color.r, color.g, color.b).map(|x| x as f32 / 255.0);
+
+            let offset = (t * 2.0 * PI - now * 6.0).sin() * ui.scale;
+            sprite.points.iter_mut().for_each(|point| point.y += offset);
+        }
+    });
+
+    let text = format!(
+        "Nice work! Your solution costs ${} and has a total latency of {} ticks.",
+        price.separate_with_commas(),
+        result.latency
+    );
+    let text = Text::new(UNDEAD_FONT, &text)
+        .position(Vector2::new(ui.margin, ui.y), Anchor::TopLeft)
+        .scale(Vector2::repeat(state.config.ui_scale * 2.0))
+        .max_width(WIDTH as f32 * ui.tile_size - ui.margin * 2.0)
+        .z_index(layer::UI_ELEMENT);
+    ui.y -= text.size(ctx).y;
+    ctx.draw(text);
 }
 
 fn test_case(

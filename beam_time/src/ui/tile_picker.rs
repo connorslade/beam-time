@@ -90,28 +90,27 @@ impl TilePicker {
                 .position(pos, Anchor::BottomLeft)
                 .scale(Vector2::repeat(scale), Anchor::Center)
                 .z_index(layer::UI_BACKGROUND);
+            let is_hovered = background.is_hovered(ctx);
 
-            let mut sprite =
-                if background.is_hovered(ctx) && !matches!(tile, Tile::Wall) && !disabled {
-                    let frame = state.frame();
-                    let texture = TILE_ASSETS[tile.as_type() as usize];
-                    animated_sprite(texture, true, frame)
-                } else {
-                    tile.asset()
-                }
-                .position(pos, Anchor::BottomLeft)
-                .scale(Vector2::repeat(scale), Anchor::Center)
-                .z_index(layer::UI_ELEMENT);
+            let mut sprite = if !matches!(tile, Tile::Wall) && !disabled {
+                let frame = state.frame();
+                let texture = TILE_ASSETS[tile.as_type() as usize];
+                animated_sprite(texture, is_hovered, frame)
+            } else {
+                tile.asset()
+            }
+            .position(pos, Anchor::BottomLeft)
+            .scale(Vector2::repeat(scale), Anchor::Center)
+            .z_index(layer::UI_ELEMENT);
 
             if disabled {
                 sprite = sprite.color(Rgb::repeat(0.7));
             }
 
-            if !disabled && !sim && background.is_hovered(ctx) {
+            if !disabled && !sim && is_hovered {
                 if board.transient.holding.is_none() {
                     let text = format!("{}\n${}", tile.name(), tile.price().separate_with_commas());
-                    let pos =
-                        Vector2::new(ctx.input.mouse.x, ctx.input.mouse.y.max(tile_size * 1.1));
+                    let pos = Vector2::new(ctx.input.mouse.x, tile_size * 1.1);
                     let text = Text::new(UNDEAD_FONT, &text)
                         .position(pos, Anchor::BottomCenter)
                         .scale(Vector2::repeat(2.0 * state.config.ui_scale))
