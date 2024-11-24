@@ -1,13 +1,16 @@
-<img src="https://github.com/user-attachments/assets/2c3ef6b8-2561-4b2c-b0a3-5ea014868ae9" alt="Beam Time" align="center" />
-
----
+# Beam Time
 
 Beam time is a logic puzzle about redirecting and splitting laser beams to create circuits.
 I'm making a custom GPU accelerated game engine for this, because why not, so this will probably take a while to finish.
 
-Here is an example of an XOR gate implemented in game with some and, or, and nand gates.
+Here is an example solution for the XOR level.
+Note that this project is still very unfinished.
 
-![beam-time](https://github.com/user-attachments/assets/048c6ee1-29c8-436c-85b8-eac9329639c2)
+![beam-time](https://files.connorcode.com/Video/beam_time_gto8PLdFqu.gif)
+
+Below are all the components in the game. From left to right: the emitter, galvo (rotates the mirror it’s facing when powered with a beam), splitter, mirror, delay, wall, and detector.
+
+![Tiles](https://github.com/user-attachments/assets/be140531-560b-491c-be93-ba8bf985dddd)
 
 ## Controls
 
