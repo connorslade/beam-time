@@ -83,7 +83,7 @@ impl<'a, App> Drawable<App> for Button<'a, App> {
         let sprite = Sprite::new(self.asset)
             .color(color)
             .position(self.pos, self.anchor)
-            .scale(scale, Anchor::Center);
+            .scale(scale);
 
         let hover = sprite.is_hovered(ctx);
         self.state.hover_time += ctx.delta_time * if hover { 1.0 } else { -1.0 };

@@ -103,7 +103,7 @@ fn horizontal_rule(ctx: &mut GraphicsContext<App>, ui: &mut UIContext) {
     for i in 0..WIDTH {
         ctx.draw(
             Sprite::new(HORIZONTAL_RULE)
-                .scale(Vector2::repeat(ui.scale), Anchor::Center)
+                .scale(Vector2::repeat(ui.scale))
                 .position(Vector2::new(ui.tile_size * i as f32, ui.y), Anchor::TopLeft)
                 .color(Rgb::repeat(0.459))
                 .z_index(layer::UI_ELEMENT),
@@ -212,7 +212,7 @@ fn test_case(
 
     let case_tile = |texture| {
         Sprite::new(texture)
-            .scale(Vector2::new(scale, scale), Anchor::Center)
+            .scale(Vector2::new(scale, scale))
             .z_index(layer::UI_ELEMENT)
     };
 
@@ -253,7 +253,7 @@ fn test_case(
         |ctx: &mut GraphicsContext<App>, dir: bool, pos: Vector2<f32>| -> Sprite {
             let texture = if dir { RIGHT_ARROW } else { LEFT_ARROW };
             let mut case = case_tile(texture)
-                .scale(Vector2::repeat(ui.scale), Anchor::Center)
+                .scale(Vector2::repeat(ui.scale))
                 .position(pos, Anchor::CenterRight);
 
             if (!dir && panel.case == 0)
@@ -303,26 +303,26 @@ fn background(ctx: &mut GraphicsContext<App>, ui: &mut UIContext) {
 
     let base = Sprite::new(INFO_PANEL)
         .z_index(layer::UI_BACKGROUND)
-        .scale(Vector2::repeat(ui.scale), Anchor::Center);
+        .scale(Vector2::repeat(ui.scale));
 
     if height > 0.0 {
         ctx.draw(
             base.clone()
-                .scale(Vector2::new(ui.scale, y_scale), Anchor::Center)
+                .scale(Vector2::new(ui.scale, y_scale))
                 .position(Vector2::new(0.0, ctx.size().y), Anchor::TopLeft)
                 .uv_offset(Vector2::new(-16, 0)),
         );
 
         ctx.draw(
             base.clone()
-                .scale(Vector2::new(ui.scale, y_scale), Anchor::Center)
+                .scale(Vector2::new(ui.scale, y_scale))
                 .position(Vector2::new(x_right, ctx.size().y), Anchor::TopRight)
                 .uv_offset(Vector2::new(16, 0)),
         );
 
         ctx.draw(
             base.clone()
-                .scale(Vector2::new(x_scale, y_scale), Anchor::Center)
+                .scale(Vector2::new(x_scale, y_scale))
                 .position(Vector2::new(ui.tile_size, ctx.size().y), Anchor::TopLeft),
         );
     }
@@ -340,7 +340,7 @@ fn background(ctx: &mut GraphicsContext<App>, ui: &mut UIContext) {
     );
 
     ctx.draw(
-        base.scale(Vector2::new(x_scale, ui.scale), Anchor::Center)
+        base.scale(Vector2::new(x_scale, ui.scale))
             .position(Vector2::new(ui.tile_size, ui.y), Anchor::BottomLeft)
             .uv_offset(Vector2::new(0, 16)),
     );

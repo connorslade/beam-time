@@ -61,7 +61,7 @@ impl<'a, App> Drawable<App> for Waterfall<'a> {
             ctx.draw(
                 Sprite::new(tile.asset)
                     .position(tile.pos, Anchor::Center)
-                    .scale(Vector2::repeat(4.0), Anchor::Center)
+                    .scale(Vector2::repeat(4.0))
                     .z_index(layer::TILE_BACKGROUND),
             );
 

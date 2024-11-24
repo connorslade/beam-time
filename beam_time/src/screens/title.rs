@@ -39,14 +39,14 @@ impl Screen<App> for TitleScreen {
         ctx.draw(
             Sprite::new(TITLE)
                 .position(pos, Anchor::TopCenter)
-                .scale(Vector2::repeat(6.0), Anchor::Center)
+                .scale(Vector2::repeat(6.0))
                 .rotate(t, Anchor::Center),
         );
 
         ctx.draw(
             Sprite::new(COPYRIGHT)
                 .position(Vector2::new(ctx.size().x - 10.0, 10.0), Anchor::BottomRight)
-                .scale(Vector2::repeat(2.0), Anchor::Center),
+                .scale(Vector2::repeat(2.0)),
         );
 
         // Buttons

@@ -37,7 +37,7 @@ impl Confetti {
 
             let sprite = Sprite::new(CONFETTI_PARTICLES)
                 .uv_offset(3 * Vector2::new(color, style))
-                .scale(Vector2::repeat(4.0), Anchor::Center)
+                .scale(Vector2::repeat(4.0))
                 .z_index(layer::OVERLAY);
 
             let angle = rng.gen_range(0.0..=2.0 * PI);

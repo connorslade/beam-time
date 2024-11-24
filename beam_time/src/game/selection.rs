@@ -147,7 +147,7 @@ impl SelectionState {
 
                 for dir in directions.iter() {
                     let selection_overlay = Sprite::new(OVERLAY_SELECTION)
-                        .scale(Vector2::repeat(shared.scale), Anchor::Center)
+                        .scale(Vector2::repeat(shared.scale))
                         .position(render_pos, Anchor::Center)
                         .rotate(dir.to_angle(), Anchor::Center)
                         .z_index(layer::TILE_BACKGROUND_OVERLAY);
@@ -162,7 +162,7 @@ impl SelectionState {
                 let offset_point = dir.offset(pos);
                 if !self.selection.contains(&offset_point) {
                     let selection_overlay = Sprite::new(OVERLAY_SELECTION)
-                        .scale(Vector2::repeat(shared.scale), Anchor::Center)
+                        .scale(Vector2::repeat(shared.scale))
                         .position(render_pos, Anchor::Center)
                         .rotate(dir.to_angle(), Anchor::Center)
                         .z_index(layer::TILE_BACKGROUND_OVERLAY);

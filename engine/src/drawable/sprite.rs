@@ -15,13 +15,11 @@ pub struct Sprite {
     color: Rgb<f32>,
     z_index: i16,
 
-    position: Vector2<f32>,
-    position_anchor: Anchor,
-
     scale: Vector2<f32>,
-    scale_anchor: Anchor,
-
+    position: Vector2<f32>,
     rotation: f32,
+
+    position_anchor: Anchor,
     rotation_anchor: Anchor,
 }
 
@@ -34,13 +32,11 @@ impl Sprite {
             color: Rgb::new(1.0, 1.0, 1.0),
             z_index: 0,
 
-            position: Vector2::zeros(),
-            position_anchor: Anchor::BottomLeft,
-
             scale: Vector2::repeat(1.0),
-            scale_anchor: Anchor::Center,
-
+            position: Vector2::zeros(),
             rotation: 0.0,
+
+            position_anchor: Anchor::BottomLeft,
             rotation_anchor: Anchor::Center,
         }
     }
@@ -79,9 +75,8 @@ impl Sprite {
         self
     }
 
-    pub fn scale(mut self, scale: Vector2<f32>, anchor: Anchor) -> Self {
+    pub fn scale(mut self, scale: Vector2<f32>) -> Self {
         self.scale = scale;
-        self.scale_anchor = anchor;
         self
     }
 
@@ -102,17 +97,14 @@ impl Sprite {
 
         // Calculate anchor offsets for each transformation
         let rotation_offset = self.rotation_anchor.offset(size);
-        let scale_offset = self.scale_anchor.offset(size);
-        let back_scale_offset = -self.scale_anchor.offset(scaled_size);
         let position_offset = self.position_anchor.offset(scaled_size);
 
         // Combine transformations and offsets
-        let transform =
-            Matrix3::new_translation(&(self.position + back_scale_offset + position_offset))
-                * Matrix3::new_nonuniform_scaling(&self.scale)
-                * Matrix3::new_translation(&(scale_offset - rotation_offset))
-                * Matrix3::new_rotation(self.rotation)
-                * Matrix3::new_translation(&rotation_offset);
+        let transform = Matrix3::new_translation(&(self.position + position_offset))
+            * Matrix3::new_nonuniform_scaling(&self.scale)
+            * Matrix3::new_translation(&(-rotation_offset))
+            * Matrix3::new_rotation(self.rotation)
+            * Matrix3::new_translation(&rotation_offset);
         let transform = |point: Vector2<f32>| (transform * point.push(1.0)).xy();
 
         // Apply to the bounds of the sprite

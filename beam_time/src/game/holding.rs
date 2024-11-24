@@ -44,7 +44,7 @@ impl Holding {
 
                 ctx.draw(
                     tile.asset()
-                        .scale(Vector2::repeat(shared.scale), Anchor::Center)
+                        .scale(Vector2::repeat(shared.scale))
                         .position(ctx.input.mouse, Anchor::Center)
                         .z_index(layer::TILE_HOLDING),
                 );
@@ -79,7 +79,7 @@ impl Holding {
                     let render_pos = ctx.input.mouse + tile_size * pos.map(|x| x as f32);
                     ctx.draw(
                         tile.asset()
-                            .scale(Vector2::repeat(shared.scale), Anchor::Center)
+                            .scale(Vector2::repeat(shared.scale))
                             .position(render_pos, Anchor::Center)
                             .z_index(layer::TILE_HOLDING),
                     );

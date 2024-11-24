@@ -88,7 +88,7 @@ impl TilePicker {
 
             let background = Sprite::new(background_texture)
                 .position(pos, Anchor::BottomLeft)
-                .scale(Vector2::repeat(scale), Anchor::Center)
+                .scale(Vector2::repeat(scale))
                 .z_index(layer::UI_BACKGROUND);
             let is_hovered = background.is_hovered(ctx);
 
@@ -100,7 +100,7 @@ impl TilePicker {
                 tile.asset()
             }
             .position(pos, Anchor::BottomLeft)
-            .scale(Vector2::repeat(scale), Anchor::Center)
+            .scale(Vector2::repeat(scale))
             .z_index(layer::UI_ELEMENT);
 
             if disabled {

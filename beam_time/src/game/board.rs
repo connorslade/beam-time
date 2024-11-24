@@ -202,7 +202,7 @@ impl Board {
                     [PERMANENT_TILE_A, PERMANENT_TILE_B],
                 ][permanent as usize][grid_color];
                 let grid = Sprite::new(grid_tile)
-                    .scale(Vector2::repeat(shared.scale), Anchor::Center)
+                    .scale(Vector2::repeat(shared.scale))
                     .position(render_pos, Anchor::Center)
                     .z_index(layer::TILE_BACKGROUND);
 
@@ -218,7 +218,7 @@ impl Board {
                         .unwrap_or_else(|| tile.asset());
 
                     let sprite = sprite
-                        .scale(Vector2::repeat(shared.scale), Anchor::Center)
+                        .scale(Vector2::repeat(shared.scale))
                         .position(render_pos, Anchor::Center);
 
                     if ctx.input.key_pressed(KeyCode::KeyE) && hovered {
