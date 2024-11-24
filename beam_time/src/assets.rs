@@ -28,7 +28,6 @@ define_refs! {
         CAMPAIGN_BUTTON,
         OPTIONS_BUTTON,
         ABOUT_BUTTON,
-        HORIZONTAL_RULE,
 
         TILE_PICKER_LEFT,
         TILE_PICKER_CENTER,
@@ -38,6 +37,8 @@ define_refs! {
         BIG_RIGHT_ARROW,
         LEFT_ARROW,
         RIGHT_ARROW,
+        HORIZONTAL_RULE,
+        HISTOGRAM_BAR,
 
         EMPTY_TILE_A,
         EMPTY_TILE_B,
@@ -107,6 +108,7 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, LEFT_ARROW, (16, 74), (3, 6));
     assets.register_sprite(interface, RIGHT_ARROW, (20, 74), (3, 6));
     assets.register_sprite(interface, HORIZONTAL_RULE, (32, 64), (16, 1));
+    assets.register_sprite(interface, HISTOGRAM_BAR, (32, 65), (8, 1));
 
     let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
     assets.register_sprite(tiles, EMPTY_TILE_A, (0, 288), (16, 16));

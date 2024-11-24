@@ -39,7 +39,7 @@ pub fn titled_screen(
 
     ctx.draw(
         Button::new(BACK_BUTTON, back)
-            .pos(Vector2::new(ctx.center().x, 10.0), Anchor::BottomCenter)
+            .pos(Vector2::new(ctx.center().x, 10.0 + 28.0), Anchor::Center)
             .scale(Vector2::repeat(4.0))
             .set_back()
             .on_click(|ctx| ctx.pop_screen()),

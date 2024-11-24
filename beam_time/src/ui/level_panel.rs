@@ -15,8 +15,8 @@ use thousands::Separable;
 use crate::{
     app::App,
     assets::{
-        BIG_RIGHT_ARROW, HORIZONTAL_RULE, INFO_PANEL, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR,
-        TILE_EMITTER_DOWN, UNDEAD_FONT,
+        BIG_RIGHT_ARROW, HISTOGRAM_BAR, HORIZONTAL_RULE, INFO_PANEL, LEFT_ARROW, RIGHT_ARROW,
+        TILE_DETECTOR, TILE_EMITTER_DOWN, UNDEAD_FONT,
     },
     consts::layer,
     game::{
@@ -40,7 +40,7 @@ struct UIContext {
     y: f32,
 }
 
-const WIDTH: usize = 6;
+const WIDTH: usize = 7;
 
 impl LevelPanel {
     pub fn render(
@@ -156,7 +156,7 @@ fn level_complete(
         let count = sprites.len();
         for (idx, sprite) in sprites.iter_mut().enumerate() {
             let t = idx as f32 / count as f32;
-            let color = OkLab::new(0.80, 0.1893, 0.0)
+            let color = OkLab::new(0.8, 0.1893, 0.0)
                 .hue_shift(t * 2.0 * PI - now * 2.0)
                 .to_lrgb();
             sprite.color = Vector3::new(color.r, color.g, color.b).map(|x| x as f32 / 255.0);
@@ -176,8 +176,50 @@ fn level_complete(
         .scale(Vector2::repeat(state.config.ui_scale * 2.0))
         .max_width(WIDTH as f32 * ui.tile_size - ui.margin * 2.0)
         .z_index(layer::UI_ELEMENT);
-    ui.y -= text.size(ctx).y;
+    ui.y -= text.size(ctx).y + ui.padding * 2.0;
     ctx.draw(text);
+
+    for (i, text) in ["Cost", "Latency"].iter().enumerate() {
+        let pos = Vector2::new(
+            WIDTH as f32 * ui.tile_size * (1.0 + 2.0 * i as f32) / 4.0,
+            ui.y,
+        );
+        let text = Text::new(UNDEAD_FONT, text)
+            .position(pos, Anchor::TopCenter)
+            .scale(Vector2::repeat(state.config.ui_scale * 2.0))
+            .z_index(layer::UI_ELEMENT);
+        let offset = text.size(ctx).y + ui.padding * 2.0;
+
+        let hist_pos = Vector2::new(ui.tile_size * WIDTH as f32 / 2.0 * i as f32, ui.y - offset);
+        histogram(ctx, state, ui, hist_pos, ui.tile_size * 2.0);
+
+        if i == 1 {
+            ui.y -= offset + ui.tile_size * 2.0;
+        }
+        ctx.draw(text);
+    }
+}
+
+fn histogram(
+    ctx: &mut GraphicsContext<App>,
+    state: &App,
+    ui: &mut UIContext,
+    base: Vector2<f32>,
+    height: f32,
+) {
+    for i in 0..6 {
+        let pos = base
+            + Vector2::new(
+                ui.tile_size / 2.0 * (i as f32 + 0.5),
+                -((i as f32 + ctx.frame as f32 / 20.0).sin() / 2.0 + 0.5) * height,
+            );
+        ctx.draw(
+            Sprite::new(HISTOGRAM_BAR)
+                .position(pos, Anchor::TopLeft)
+                .scale(Vector2::repeat(state.config.ui_scale * 4.0))
+                .z_index(layer::UI_ELEMENT),
+        );
+    }
 }
 
 fn test_case(

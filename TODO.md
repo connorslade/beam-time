@@ -17,7 +17,7 @@
 - [x] Some kinda screen that always runs its handlers
 - [x] Fade to accent color on hover
 - [x] Build out text renderer
-- [ ] Fix scale anchor bug
+- [x] Fix scale anchor bug
 - [x] Figure out how to pass an app struct around
 - [x] Strongly typed asset references
 - [x] Split tile_map and tile_picker into ui/game components
@@ -34,7 +34,7 @@
 - [ ] Cleanup coordinate systems
 - [x] Zoom around the cursor position
 - [x] Sandbox save selection screen
-- [ ] Allow managing (creating, deleting) saves
+- [ ] Allow managing (creating, deleting) sandbox saves
 - [x] Saves should have a header at the start
   - Save name
   - Playtime
@@ -51,7 +51,9 @@
 - [ ] Add sticky notes with text
 - [ ] ~~Persist window size~~
 - [x] Autosave interval
-- [ ] Improve FPS
+- [ ] Improve FPS - Basically optimize sprite pipeline
+  - [ ] Use instancing instead of making huge meshes
+  - [ ] Also avoid re-creating buffers or bind groups every frame
 - [x] Don't overstep pan/zoom goals during lag spikes
 - [ ] Engine key chord pressed
 - [x] Stop simulation on delete, cut, or copy
