@@ -59,6 +59,10 @@ impl<'a> Text<'a> {
         size
     }
 
+    fn invalidate_layout(&self) {
+        *self.layout.borrow_mut() = None;
+    }
+
     pub fn position(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
         self.pos = pos;
         self.anchor = anchor;
@@ -72,11 +76,13 @@ impl<'a> Text<'a> {
 
     pub fn max_width(mut self, max_width: f32) -> Self {
         self.max_width = max_width;
+        self.invalidate_layout();
         self
     }
 
     pub fn scale(mut self, scale: Vector2<f32>) -> Self {
         self.scale = scale;
+        self.invalidate_layout();
         self
     }
 
