@@ -1,4 +1,5 @@
 use core::f32;
+use std::cell::RefCell;
 
 use nalgebra::{Vector2, Vector3};
 
@@ -22,6 +23,8 @@ pub struct Text<'a> {
     z_index: i16,
     anchor: Anchor,
     scale: Vector2<f32>,
+
+    layout: RefCell<Option<TextLayout>>,
 }
 
 impl<'a> Text<'a> {
@@ -36,13 +39,28 @@ impl<'a> Text<'a> {
             anchor: Anchor::BottomLeft,
             color: Rgb::new(1.0, 1.0, 1.0),
             scale: Vector2::repeat(1.0),
+
+            layout: RefCell::new(None),
         }
     }
 
     pub fn size<App>(&self, ctx: &GraphicsContext<App>) -> Vector2<f32> {
+        if let Some(layout) = &*self.layout.borrow() {
+            return layout.size;
+        }
+
         let scale = self.scale * ctx.scale_factor;
         let font = ctx.assets.get_font(self.font);
-        TextLayout::generate(&font.desc, self.max_width, scale, self.text).size
+        let layout = TextLayout::generate(&font.desc, self.max_width, scale, self.text);
+
+        let size = layout.size;
+        *self.layout.borrow_mut() = Some(layout);
+
+        size
+    }
+
+    fn invalidate_layout(&self) {
+        *self.layout.borrow_mut() = None;
     }
 
     pub fn position(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
@@ -58,11 +76,13 @@ impl<'a> Text<'a> {
 
     pub fn max_width(mut self, max_width: f32) -> Self {
         self.max_width = max_width;
+        self.invalidate_layout();
         self
     }
 
     pub fn scale(mut self, scale: Vector2<f32>) -> Self {
         self.scale = scale;
+        self.invalidate_layout();
         self
     }
 
@@ -80,7 +100,10 @@ impl<'a, App> Drawable<App> for Text<'a> {
         let atlas_size = font.texture.size.map(|x| x as f32);
         let process_uv = |uv: Vector2<u32>| uv.map(|x| x as f32).component_div(&atlas_size);
 
-        let layout = TextLayout::generate(&font.desc, self.max_width, scale, self.text);
+        let layout = self
+            .layout
+            .into_inner()
+            .unwrap_or_else(|| TextLayout::generate(&font.desc, self.max_width, scale, self.text));
         for (character, pos) in layout.chars {
             let uv_a = process_uv(character.uv);
             let uv_b = process_uv(character.uv + character.size);
