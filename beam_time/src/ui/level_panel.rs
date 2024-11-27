@@ -339,7 +339,7 @@ fn background(ctx: &mut GraphicsContext<App>, ui: &mut UIContext) {
     ui.y -= ui.margin;
     let height = ctx.size().y - ui.y - ui.tile_size;
 
-    let y_scale = height / 16.0;
+    let y_scale = height / (16.0 * ctx.scale_factor);
     let x_scale = ui.scale * (WIDTH - 2) as f32;
     let x_right = ui.tile_size * WIDTH as f32;
 
