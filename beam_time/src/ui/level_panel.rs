@@ -4,7 +4,7 @@ use engine::{
     color::{OkLab, Rgb},
     drawable::{sprite::Sprite, text::Text},
     exports::{
-        nalgebra::{Vector2, Vector3},
+        nalgebra::{Vector, Vector2, Vector3},
         winit::event::MouseButton,
     },
     graphics_context::{Anchor, GraphicsContext},
@@ -191,7 +191,7 @@ fn level_complete(
         let offset = text.size(ctx).y + ui.padding * 2.0;
 
         let hist_pos = Vector2::new(ui.tile_size * WIDTH as f32 / 2.0 * i as f32, ui.y - offset);
-        let height = histogram(ctx, state, ui, hist_pos, ui.tile_size);
+        let height = histogram(ctx, state, ui, hist_pos, ui.tile_size, 75.0);
         ui.y -= (offset + height) * (i == 1) as u8 as f32;
 
         ctx.draw(text);
@@ -204,9 +204,12 @@ fn histogram(
     ui: &mut UIContext,
     base: Vector2<f32>,
     height: f32,
+
+    actual: f32,
 ) -> f32 {
     const BIN_COUNT: usize = 12;
 
+    // normally distriubted example data
     let data = [
         62, 51, 49, 61, 81, 44, 33, 48, 53, 45, 72, 42, 65, 29, 66, 27, 33, 59, 16, 22, 43, 60, 44,
         61, 71, 47, 31, 21, 45, 33, 45, 41, 70, 66, 52, 66, 58, 40, 69, 41, 76, 100, 44, 40, 78,
@@ -268,7 +271,7 @@ fn histogram(
         ctx.draw(
             Sprite::new(HISTOGRAM_BAR)
                 .position(pos, Anchor::TopCenter)
-                .scale(Vector2::new(1.0, height) * state.config.ui_scale)
+                .scale(Vector2::new(1.0, height / ctx.scale_factor) * state.config.ui_scale)
                 .z_index(layer::UI_ELEMENT),
         );
     }
@@ -293,6 +296,20 @@ fn histogram(
                 Anchor::TopRight,
             )
             .scale(Vector2::repeat(state.config.ui_scale * 2.0))
+            .z_index(layer::UI_ELEMENT),
+    );
+
+    let t = actual / max as f32;
+    ctx.draw(
+        Text::new(UNDEAD_FONT, actual.to_string().as_str())
+            .scale(Vector2::repeat(state.config.ui_scale * 2.0))
+            .position(
+                base + Vector2::new(
+                    ui.tile_size / 4.0 * (1.0 + t * BIN_COUNT as f32),
+                    -height - ui.padding,
+                ),
+                Anchor::TopCenter,
+            )
             .z_index(layer::UI_ELEMENT),
     );
 

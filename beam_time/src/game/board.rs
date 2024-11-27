@@ -11,11 +11,7 @@ use engine::{
     drawable::sprite::Sprite,
     exports::{
         nalgebra::Vector2,
-        winit::{
-            event::MouseButton,
-            keyboard::KeyCode,
-            window::{Cursor, CursorIcon},
-        },
+        winit::{event::MouseButton, keyboard::KeyCode},
     },
     graphics_context::{Anchor, GraphicsContext},
 };
