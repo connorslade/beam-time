@@ -1,12 +1,6 @@
-use engine::drawable::sprite::Sprite;
+use common::direction::{Direction, Directions};
 
-use crate::{
-    assets::{animated_sprite, TILE_DELAY, TILE_DETECTOR, TILE_MIRROR_A, TILE_MIRROR_B},
-    consts::{EMITTER, GALVO, SPLITTER},
-    misc::direction::{Direction, Directions},
-};
-
-use super::{opposite_if, MIRROR_REFLECTIONS};
+use super::MIRROR_REFLECTIONS;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum BeamTile {
@@ -54,34 +48,6 @@ pub enum BeamTile {
 }
 
 impl BeamTile {
-    /// Overwrites the texture of a tile for rendering purposes.
-    pub fn base_sprite(&self, frame: u8) -> Option<Sprite> {
-        Some(match self {
-            BeamTile::Emitter { direction, active } => {
-                animated_sprite(EMITTER[*direction as usize], *active, frame)
-            }
-            BeamTile::Detector { powered } => animated_sprite(TILE_DETECTOR, powered.any(), frame),
-            BeamTile::Delay { powered, .. } => animated_sprite(TILE_DELAY, powered.any(), frame),
-            BeamTile::Mirror {
-                direction,
-                original_direction,
-                ..
-            } => animated_sprite(
-                [TILE_MIRROR_A, TILE_MIRROR_B][*direction as usize],
-                direction != original_direction,
-                frame,
-            ),
-            BeamTile::Galvo { direction, powered } if powered.any_but(direction.opposite()) => {
-                animated_sprite(GALVO[*direction as usize], true, frame)
-            }
-            BeamTile::Splitter {
-                direction,
-                powered: Some(..),
-            } => animated_sprite(SPLITTER[*direction as usize], true, frame),
-            _ => return None,
-        })
-    }
-
     /// Checks if a tile is powered. This should be more efficient than
     /// power_direction, which only needs to be called if the tile is powered.
     pub fn is_powered(&self) -> bool {
@@ -109,16 +75,14 @@ impl BeamTile {
             } => powered
                 .iter()
                 .flatten()
-                .map(|&powered| opposite_if(MIRROR_REFLECTIONS[powered as usize], !direction))
+                .map(|&powered| MIRROR_REFLECTIONS[powered as usize].opposite_if(!direction))
                 .collect(),
             Self::Splitter {
                 direction,
                 powered: Some(powered),
             } => {
-                Directions::from(opposite_if(
-                    MIRROR_REFLECTIONS[*powered as usize],
-                    !*direction,
-                )) | *powered
+                Directions::from(MIRROR_REFLECTIONS[*powered as usize].opposite_if(!*direction))
+                    | *powered
             }
             Self::Delay { last_powered, .. } => *last_powered,
             _ => Directions::empty(),

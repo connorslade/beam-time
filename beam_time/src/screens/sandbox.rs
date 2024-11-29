@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use common::misc::in_bounds;
 use engine::{
     color::Rgb,
     drawable::text::Text,
@@ -16,7 +17,7 @@ use crate::{
         button::ButtonState,
         misc::{font_scale, titled_screen},
     },
-    util::{in_bounds, load_level_dir},
+    util::load_level_dir,
     App,
 };
 

@@ -1,3 +1,4 @@
+use beam_logic::tile::Tile;
 use engine::{
     exports::{
         nalgebra::Vector2,
@@ -6,9 +7,9 @@ use engine::{
     graphics_context::{Anchor, GraphicsContext},
 };
 
-use crate::{consts::layer, util::key_events};
+use crate::{consts::layer, game::render::TileAsset, util::key_events};
 
-use super::{tile::Tile, SharedState};
+use super::SharedState;
 
 #[derive(Default, Clone, PartialEq, Eq)]
 pub enum Holding {

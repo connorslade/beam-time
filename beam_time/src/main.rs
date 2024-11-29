@@ -8,19 +8,18 @@ use engine::{
         window::{Icon, WindowAttributes},
     },
 };
+use env_logger::WriteStyle;
+use log::LevelFilter;
 
 mod app;
 mod assets;
 mod consts;
 mod game;
-mod misc;
 mod screens;
 mod ui;
 mod util;
 
 use app::App;
-use env_logger::WriteStyle;
-use log::LevelFilter;
 use screens::{overlay::debug::DebugOverlay, title::TitleScreen};
 use util::include_atlas;
 

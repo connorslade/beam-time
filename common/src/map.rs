@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use engine::exports::nalgebra::Vector2;
+use nalgebra::Vector2;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Serialize, Deserialize)]

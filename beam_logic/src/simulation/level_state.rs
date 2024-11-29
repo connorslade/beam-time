@@ -1,16 +1,14 @@
-use std::collections::HashMap;
+use std::{borrow::Cow, collections::HashMap};
 
+use common::map::Map;
 use log::trace;
 
-use crate::{
-    game::level::{Level, LEVELS},
-    misc::map::Map,
-};
+use crate::level::{Level, DEFAULT_LEVELS};
 
 use super::tile::BeamTile;
 
 pub struct LevelState {
-    pub level: &'static Level,
+    pub level: Cow<'static, Level>,
     pub test_case: usize,
 
     pub latency: u32,
@@ -108,7 +106,7 @@ fn equivalent_cycles(long: &[Vec<bool>], short: &[Vec<bool>]) -> bool {
 impl Default for LevelState {
     fn default() -> Self {
         Self {
-            level: &LEVELS[0],
+            level: Cow::Borrowed(&DEFAULT_LEVELS[0]),
             test_case: Default::default(),
             latency: 0,
             history: Default::default(),

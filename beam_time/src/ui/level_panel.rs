@@ -1,10 +1,15 @@
 use std::f32::consts::PI;
 
+use beam_logic::{
+    level::Level,
+    simulation::{async_runtime::InnerSimulationState, level_state::LevelResult},
+};
+use common::misc::in_bounds;
 use engine::{
     color::{OkLab, Rgb},
     drawable::{sprite::Sprite, text::Text},
     exports::{
-        nalgebra::{Vector, Vector2, Vector3},
+        nalgebra::{Vector2, Vector3},
         winit::event::MouseButton,
     },
     graphics_context::{Anchor, GraphicsContext},
@@ -19,12 +24,7 @@ use crate::{
         TILE_DETECTOR, TILE_EMITTER_DOWN, UNDEAD_FONT,
     },
     consts::layer,
-    game::{
-        beam::{level::LevelResult, InnerSimulationState},
-        board::Board,
-        level::Level,
-    },
-    util::in_bounds,
+    game::board::Board,
 };
 
 #[derive(Default)]
@@ -232,7 +232,7 @@ fn histogram(
     let max = *data.iter().max().unwrap();
     let bin_width = max as f32 / BIN_COUNT as f32;
 
-    let mut bins = vec![0; BIN_COUNT];
+    let mut bins = [0; BIN_COUNT];
     for point in data {
         let bin = (point as f32 / bin_width) as usize;
         bins[bin.min(BIN_COUNT - 1)] += 1;

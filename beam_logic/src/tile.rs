@@ -1,11 +1,6 @@
-use engine::{drawable::sprite::Sprite, exports::nalgebra::Vector2};
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    assets::{TILE_DELAY, TILE_DETECTOR, TILE_WALL},
-    consts::{EMITTER, GALVO, MIRROR, SPLITTER},
-    misc::direction::Direction,
-};
+use common::direction::Direction;
 
 #[derive(Default, Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Tile {
@@ -29,7 +24,7 @@ pub enum Tile {
     Wall,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize)]
 pub enum TileType {
     Detector,
     Delay,
@@ -97,24 +92,6 @@ impl Tile {
             Tile::Galvo { .. } => TileType::Galvo,
             Tile::Wall => TileType::Wall,
         }
-    }
-
-    pub fn asset(&self) -> Sprite {
-        let asset_ref = match self {
-            Tile::Empty => unreachable!(),
-            Tile::Detector => TILE_DETECTOR,
-            Tile::Delay => TILE_DELAY,
-            Tile::Emitter { rotation, active } => {
-                return Sprite::new(EMITTER[*rotation as usize])
-                    .uv_offset(Vector2::new(-16 * *active as i32, 0));
-            }
-            Tile::Mirror { rotation, .. } => MIRROR[*rotation as usize],
-            Tile::Splitter { rotation, .. } => SPLITTER[*rotation as usize],
-            Tile::Galvo { rotation, .. } => GALVO[*rotation as usize],
-            Tile::Wall { .. } => TILE_WALL,
-        };
-
-        Sprite::new(asset_ref)
     }
 
     pub fn rotate(self) -> Self {

@@ -5,20 +5,19 @@ use std::{
 };
 
 use anyhow::Result;
-use engine::exports::nalgebra::Vector2;
+use common::map::Map;
 use log::warn;
+use nalgebra::Vector2;
 use once_cell::sync::Lazy;
 use ron::{extensions::Extensions, Options};
 use serde::Deserialize;
 use uuid::Uuid;
 
-use crate::misc::map::Map;
-
-use super::tile::{Tile, TileType};
+use crate::tile::{Tile, TileType};
 
 pub macro default_level {
     ($name:expr) => {
-        Level::load_slice(include_bytes!(concat!("../../assets/levels/", $name)))
+        Level::load_slice(include_bytes!(concat!("../../beam_time/assets/levels/", $name)))
     },
     ($($name:expr),* $(,)?) => {{
         let mut out = Vec::new();
@@ -32,7 +31,7 @@ pub macro default_level {
     }}
 }
 
-pub static LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
+pub static DEFAULT_LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
     default_level!(
         "basic_routing.ron",
         "slightly_less_basic_routing.ron",
@@ -57,7 +56,7 @@ pub static LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
     )
 });
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Level {
     /// The ID is stored in the save file, meaning you can share your campaign
     /// levels and other can view correctly them in sandbox mode.
@@ -75,7 +74,7 @@ pub struct Level {
     pub tests: Tests,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Tests {
     pub lasers: Vec<ElementLocation>,
     pub detectors: Vec<ElementLocation>,
@@ -85,14 +84,14 @@ pub struct Tests {
     pub cases: Vec<TestCase>,
 }
 
-#[derive(Default, Debug, Deserialize)]
+#[derive(Default, Clone, Copy, Debug, Deserialize)]
 pub enum Checker {
     Basic,
     #[default]
     Cycle,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct TestCase {
     pub lasers: Vec<bool>,
     pub detectors: Vec<Vec<bool>>,

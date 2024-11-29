@@ -7,21 +7,7 @@ use std::{
 use clone_macro::clone;
 use parking_lot::{Condvar, Mutex, MutexGuard};
 
-use crate::misc::direction::Direction;
-
-use state::BeamState;
-
-pub mod level;
-pub mod state;
-pub mod tick;
-pub mod tile;
-
-const MIRROR_REFLECTIONS: [Direction; 4] = [
-    Direction::Left,
-    Direction::Down,
-    Direction::Right,
-    Direction::Up,
-];
+use super::state::BeamState;
 
 pub struct SimulationState {
     inner: Arc<(Mutex<InnerSimulationState>, Condvar)>,
@@ -94,10 +80,8 @@ impl SimulationState {
     }
 }
 
-fn opposite_if(direction: Direction, condition: bool) -> Direction {
-    if condition {
-        direction.opposite()
-    } else {
-        direction
+impl Default for SimulationState {
+    fn default() -> Self {
+        Self::new()
     }
 }

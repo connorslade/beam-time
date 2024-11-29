@@ -23,18 +23,21 @@ use crate::{
     app::App,
     assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B},
     consts::{layer, AUTOSAVE_INTERVAL},
-    misc::map::Map,
     ui::misc::tile_label,
-    util::{in_bounds, key_events},
+    util::key_events,
 };
+use beam_logic::{
+    level::Level,
+    simulation::{state::BeamState, tile::BeamTile},
+    tile::Tile,
+};
+use common::{map::Map, misc::in_bounds};
 
 use super::{
-    beam::{state::BeamState, tile::BeamTile},
     history::History,
     holding::Holding,
-    level::Level,
+    render::{BeamTileBaseSprite, TileAsset},
     selection::SelectionState,
-    tile::Tile,
     SharedState,
 };
 

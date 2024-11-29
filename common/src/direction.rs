@@ -3,7 +3,7 @@ use std::{
     ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, Mul, Not},
 };
 
-use engine::exports::nalgebra::Vector2;
+use nalgebra::Vector2;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -62,6 +62,14 @@ impl Direction {
             Self::Right => Self::Left,
             Self::Down => Self::Up,
             Self::Left => Self::Right,
+        }
+    }
+
+    pub fn opposite_if(self, condition: bool) -> Direction {
+        if condition {
+            self.opposite()
+        } else {
+            self
         }
     }
 
