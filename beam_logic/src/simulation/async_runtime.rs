@@ -22,6 +22,8 @@ pub struct RuntimeConfig {
 pub struct InnerSimulationState {
     pub beam: Option<BeamState>,
     pub runtime: RuntimeConfig,
+
+    kill: bool,
 }
 
 impl SimulationState {
@@ -33,6 +35,7 @@ impl SimulationState {
                     time_per_tick: Duration::from_secs_f32(1.0 / 20.0),
                     running: false,
                 },
+                kill: false,
             }),
             Condvar::new(),
         ));
@@ -45,8 +48,12 @@ impl SimulationState {
                 let mut state = mutex.lock();
 
                 // wait for running to be true
-                while !state.runtime.running {
+                while !state.runtime.running && !state.kill {
                     cond.wait(&mut state);
+                }
+
+                if state.kill {
+                    break;
                 }
 
                 let timestamp = Instant::now();
@@ -77,6 +84,13 @@ impl SimulationState {
 
     pub fn notify_running(&self) {
         self.inner.1.notify_all();
+    }
+}
+
+impl Drop for SimulationState {
+    fn drop(&mut self) {
+        self.get().kill = true;
+        self.notify_running();
     }
 }
 
