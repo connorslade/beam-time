@@ -101,7 +101,7 @@ impl Screen<App> for GameScreen {
         } else if space_pressed || play_pressed || test_pressed {
             sim.beam = Some(BeamState::new(
                 &self.board.tiles,
-                self.board.transient.level.map(|x| Cow::Borrowed(x)),
+                self.board.transient.level.map(Cow::Borrowed),
                 test_pressed,
             ));
             self.level_result = None;

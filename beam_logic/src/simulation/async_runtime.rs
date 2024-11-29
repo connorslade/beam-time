@@ -79,3 +79,9 @@ impl SimulationState {
         self.inner.1.notify_all();
     }
 }
+
+impl Default for SimulationState {
+    fn default() -> Self {
+        Self::new()
+    }
+}

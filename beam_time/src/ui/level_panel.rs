@@ -232,7 +232,7 @@ fn histogram(
     let max = *data.iter().max().unwrap();
     let bin_width = max as f32 / BIN_COUNT as f32;
 
-    let mut bins = vec![0; BIN_COUNT];
+    let mut bins = [0; BIN_COUNT];
     for point in data {
         let bin = (point as f32 / bin_width) as usize;
         bins[bin.min(BIN_COUNT - 1)] += 1;
