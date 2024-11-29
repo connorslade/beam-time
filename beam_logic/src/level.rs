@@ -5,8 +5,8 @@ use std::{
 };
 
 use anyhow::Result;
-use engine::exports::nalgebra::Vector2;
 use log::warn;
+use nalgebra::Vector2;
 use once_cell::sync::Lazy;
 use ron::{extensions::Extensions, Options};
 use serde::Deserialize;

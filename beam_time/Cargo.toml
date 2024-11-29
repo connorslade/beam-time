@@ -4,22 +4,24 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.88"
-bincode = "1.3.3"
-chrono = { version = "0.4.38", features = ["serde"] }
-clone-macro = "0.1.0"
-dirs = "5.0.1"
-env_logger = "0.11.5"
-image = "0.25.2"
-indoc = "2.0.5"
-log = "0.4.22"
-once_cell = "1.20.2"
-parking_lot = "0.12.3"
-rand = "0.8.5"
-ron = "0.8.1"
-serde = { version = "1.0.210", features = ["derive"] }
-thousands = "0.2.0"
-toml = "0.8.19"
-uuid = { version = "1.11.0", features = ["v4", "serde"] }
-
+beam_logic = { path = "../beam_logic" }
+common = { path = "../common" }
 engine = { path = "../engine" }
+
+anyhow.workspace = true
+bincode.workspace = true
+chrono.workspace = true
+clone-macro.workspace = true
+dirs.workspace = true
+env_logger.workspace = true
+image.workspace = true
+indoc.workspace = true
+log.workspace = true
+once_cell.workspace = true
+parking_lot.workspace = true
+rand.workspace = true
+ron.workspace = true
+serde.workspace = true
+thousands.workspace = true
+toml.workspace = true
+uuid.workspace = true

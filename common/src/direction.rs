@@ -3,7 +3,7 @@ use std::{
     ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, Mul, Not},
 };
 
-use engine::exports::nalgebra::Vector2;
+use nalgebra::Vector2;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

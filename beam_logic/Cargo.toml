@@ -1,0 +1,17 @@
+[package]
+name = "beam_logic"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+common = { path = "../common" }
+
+anyhow.workspace = true
+clone-macro.workspace = true
+log.workspace = true
+nalgebra.workspace = true
+once_cell.workspace = true
+parking_lot.workspace = true
+ron.workspace = true
+serde.workspace = true
+uuid.workspace = true

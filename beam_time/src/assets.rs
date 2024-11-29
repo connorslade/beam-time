@@ -6,7 +6,7 @@ use engine::{
 };
 use image::RgbaImage;
 
-use crate::{include_atlas, util::include_asset};
+use crate::util::{include_asset, include_atlas};
 
 define_refs! {
     FontRef => {

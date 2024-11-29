@@ -4,7 +4,7 @@ use engine::{
     color::{OkLab, Rgb},
     drawable::{sprite::Sprite, text::Text},
     exports::{
-        nalgebra::{Vector, Vector2, Vector3},
+        nalgebra::{Vector2, Vector3},
         winit::event::MouseButton,
     },
     graphics_context::{Anchor, GraphicsContext},
@@ -12,6 +12,7 @@ use engine::{
 use parking_lot::MutexGuard;
 use thousands::Separable;
 
+use beam_logic::{level::LevelResult, InnerSimulationState};
 use crate::{
     app::App,
     assets::{
@@ -20,7 +21,7 @@ use crate::{
     },
     consts::layer,
     game::{
-        beam::{level::LevelResult, InnerSimulationState},
+        ,
         board::Board,
         level::Level,
     },

@@ -1,27 +1,7 @@
-use std::{
-    sync::Arc,
-    thread,
-    time::{Duration, Instant},
-};
+use std::{sync::Arc, thread, time::Duration};
 
 use clone_macro::clone;
 use parking_lot::{Condvar, Mutex, MutexGuard};
-
-use crate::misc::direction::Direction;
-
-use state::BeamState;
-
-pub mod level;
-pub mod state;
-pub mod tick;
-pub mod tile;
-
-const MIRROR_REFLECTIONS: [Direction; 4] = [
-    Direction::Left,
-    Direction::Down,
-    Direction::Right,
-    Direction::Up,
-];
 
 pub struct SimulationState {
     inner: Arc<(Mutex<InnerSimulationState>, Condvar)>,
@@ -91,13 +71,5 @@ impl SimulationState {
 
     pub fn notify_running(&self) {
         self.inner.1.notify_all();
-    }
-}
-
-fn opposite_if(direction: Direction, condition: bool) -> Direction {
-    if condition {
-        direction.opposite()
-    } else {
-        direction
     }
 }
