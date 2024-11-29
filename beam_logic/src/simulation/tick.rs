@@ -1,11 +1,11 @@
-use engine::exports::nalgebra::Vector2;
+use nalgebra::Vector2;
 
-use crate::misc::{
+use common::{
     direction::{Direction, Directions},
     map::Map,
 };
 
-use super::{opposite_if, state::BeamState, tile::BeamTile, MIRROR_REFLECTIONS};
+use super::{state::BeamState, tile::BeamTile, MIRROR_REFLECTIONS};
 
 impl BeamState {
     pub fn tick(&mut self) {
@@ -102,7 +102,7 @@ impl BeamState {
                         let Some(powered) = *powered else { continue };
 
                         let direction =
-                            opposite_if(MIRROR_REFLECTIONS[powered as usize], !direction);
+                            MIRROR_REFLECTIONS[powered as usize].opposite_if(!direction);
                         self.power(&mut working_board, pos, direction);
 
                         if self.source_gone(pos, powered) {
@@ -117,7 +117,7 @@ impl BeamState {
                     direction,
                     powered: Some(powered),
                 } => {
-                    let direction = opposite_if(MIRROR_REFLECTIONS[powered as usize], !direction);
+                    let direction = MIRROR_REFLECTIONS[powered as usize].opposite_if(!direction);
                     self.power(&mut working_board, pos, powered);
                     self.power(&mut working_board, pos, direction);
 

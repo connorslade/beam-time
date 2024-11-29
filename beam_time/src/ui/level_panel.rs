@@ -1,5 +1,10 @@
 use std::f32::consts::PI;
 
+use beam_logic::{
+    level::Level,
+    simulation::{async_runtime::InnerSimulationState, level_state::LevelResult},
+};
+use common::misc::in_bounds;
 use engine::{
     color::{OkLab, Rgb},
     drawable::{sprite::Sprite, text::Text},
@@ -12,7 +17,6 @@ use engine::{
 use parking_lot::MutexGuard;
 use thousands::Separable;
 
-use beam_logic::{level::LevelResult, InnerSimulationState};
 use crate::{
     app::App,
     assets::{
@@ -20,12 +24,7 @@ use crate::{
         TILE_DETECTOR, TILE_EMITTER_DOWN, UNDEAD_FONT,
     },
     consts::layer,
-    game::{
-        ,
-        board::Board,
-        level::Level,
-    },
-    util::in_bounds,
+    game::board::Board,
 };
 
 #[derive(Default)]

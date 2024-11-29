@@ -1,5 +1,7 @@
 use std::{collections::HashMap, path::PathBuf};
 
+use beam_logic::level::DEFAULT_LEVELS;
+use common::misc::in_bounds;
 use engine::{
     color::Rgb,
     drawable::text::Text,
@@ -12,16 +14,13 @@ use uuid::Uuid;
 use crate::{
     app::App,
     assets::UNDEAD_FONT,
-    game::{
-        board::{Board, BoardMeta, LevelMeta},
-        level::LEVELS,
-    },
+    game::board::{Board, BoardMeta, LevelMeta},
     screens::game::GameScreen,
     ui::{
         button::ButtonState,
         misc::{font_scale, titled_screen},
     },
-    util::{in_bounds, load_level_dir},
+    util::load_level_dir,
 };
 
 #[derive(Default)]
@@ -36,9 +35,9 @@ impl Screen<App> for CampaignScreen {
 
         const SCALE: f32 = 3.0;
         let (_line_height, line_spacing, total_height) =
-            font_scale(ctx, UNDEAD_FONT, SCALE, LEVELS.len());
+            font_scale(ctx, UNDEAD_FONT, SCALE, DEFAULT_LEVELS.len());
 
-        for (i, level) in LEVELS.iter().enumerate() {
+        for (i, level) in DEFAULT_LEVELS.iter().enumerate() {
             let pos =
                 ctx.center() + Vector2::new(0.0, total_height / 2.0 - line_spacing * i as f32);
 

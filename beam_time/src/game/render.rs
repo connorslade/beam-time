@@ -1,30 +1,89 @@
-use std::hash::{DefaultHasher, Hash, Hasher};
-
+use beam_logic::{
+    simulation::{state::BeamState, tile::BeamTile},
+    tile::Tile,
+};
+use common::direction::Direction;
 use engine::{
     assets::SpriteRef,
     drawable::sprite::Sprite,
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
 };
-use log::trace;
 
 use crate::{
     app::App,
     assets::{
-        BEAM_FULL_HORIZONTAL, BEAM_FULL_VERTICAL, BEAM_REFLECT_DOWN_LEFT, BEAM_REFLECT_DOWN_RIGHT,
-        BEAM_REFLECT_UP_LEFT, BEAM_REFLECT_UP_RIGHT, BEAM_SPLIT_DOWN, BEAM_SPLIT_LEFT,
-        BEAM_SPLIT_RIGHT, BEAM_SPLIT_UP,
+        animated_sprite, BEAM_FULL_HORIZONTAL, BEAM_FULL_VERTICAL, BEAM_REFLECT_DOWN_LEFT,
+        BEAM_REFLECT_DOWN_RIGHT, BEAM_REFLECT_UP_LEFT, BEAM_REFLECT_UP_RIGHT, BEAM_SPLIT_DOWN,
+        BEAM_SPLIT_LEFT, BEAM_SPLIT_RIGHT, BEAM_SPLIT_UP, TILE_DELAY, TILE_DETECTOR, TILE_MIRROR_A,
+        TILE_MIRROR_B, TILE_WALL,
     },
-    consts::{layer, HALF_BEAM},
-    game::{board::Board, tile::Tile, SharedState},
-    misc::{
-        direction::{Direction, Directions},
-        map::Map,
-    },
-    util::in_bounds,
+    consts::{layer, EMITTER, GALVO, HALF_BEAM, MIRROR, SPLITTER},
 };
 
-use super::{level::LevelState, opposite_if, tile::BeamTile};
+use super::SharedState;
+
+pub trait TileAsset {
+    fn asset(&self) -> Sprite;
+}
+
+pub trait BeamTileBaseSprite {
+    fn base_sprite(&self, frame: u8) -> Option<Sprite>;
+}
+
+pub trait BeamStateRender {
+    fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App, shared: &SharedState);
+}
+
+impl TileAsset for Tile {
+    fn asset(&self) -> Sprite {
+        let asset_ref = match self {
+            Tile::Empty => unreachable!(),
+            Tile::Detector => TILE_DETECTOR,
+            Tile::Delay => TILE_DELAY,
+            Tile::Emitter { rotation, active } => {
+                return Sprite::new(EMITTER[*rotation as usize])
+                    .uv_offset(Vector2::new(-16 * *active as i32, 0));
+            }
+            Tile::Mirror { rotation, .. } => MIRROR[*rotation as usize],
+            Tile::Splitter { rotation, .. } => SPLITTER[*rotation as usize],
+            Tile::Galvo { rotation, .. } => GALVO[*rotation as usize],
+            Tile::Wall { .. } => TILE_WALL,
+        };
+
+        Sprite::new(asset_ref)
+    }
+}
+
+impl BeamTileBaseSprite for BeamTile {
+    /// Overwrites the texture of a tile for rendering purposes.
+    fn base_sprite(&self, frame: u8) -> Option<Sprite> {
+        Some(match self {
+            BeamTile::Emitter { direction, active } => {
+                animated_sprite(EMITTER[*direction as usize], *active, frame)
+            }
+            BeamTile::Detector { powered } => animated_sprite(TILE_DETECTOR, powered.any(), frame),
+            BeamTile::Delay { powered, .. } => animated_sprite(TILE_DELAY, powered.any(), frame),
+            BeamTile::Mirror {
+                direction,
+                original_direction,
+                ..
+            } => animated_sprite(
+                [TILE_MIRROR_A, TILE_MIRROR_B][*direction as usize],
+                direction != original_direction,
+                frame,
+            ),
+            BeamTile::Galvo { direction, powered } if powered.any_but(direction.opposite()) => {
+                animated_sprite(GALVO[*direction as usize], true, frame)
+            }
+            BeamTile::Splitter {
+                direction,
+                powered: Some(..),
+            } => animated_sprite(SPLITTER[*direction as usize], true, frame),
+            _ => return None,
+        })
+    }
+}
 
 const MIRROR_TEXTURES: [SpriteRef; 4] = [
     BEAM_REFLECT_UP_LEFT,
@@ -40,83 +99,9 @@ const SPLITTER_TEXTURES: [SpriteRef; 4] = [
     BEAM_SPLIT_DOWN,
 ];
 
-pub struct BeamState {
-    pub board: Map<BeamTile>,
-    pub level: Option<LevelState>,
-}
-
-impl BeamState {
-    /// Creates a new BeamState from a Board by converting Tiles into their
-    /// BeamTile counterparts.
-    pub fn new(board: &Board, test: bool) -> Self {
-        let level = test
-            .then(|| {
-                board.transient.level.map(|level| LevelState {
-                    level,
-                    ..Default::default()
-                })
-            })
-            .flatten();
-
-        let board = board.tiles.map(|x| match x {
-            Tile::Empty => BeamTile::Empty,
-            Tile::Emitter { rotation, active } => BeamTile::Emitter {
-                direction: rotation,
-                active,
-            },
-            Tile::Detector => BeamTile::Detector {
-                powered: Directions::empty(),
-            },
-            Tile::Delay => BeamTile::Delay {
-                powered: Directions::empty(),
-                last_powered: Directions::empty(),
-            },
-            Tile::Mirror { rotation } => BeamTile::Mirror {
-                direction: rotation,
-                original_direction: rotation,
-                powered: [None; 2],
-            },
-            Tile::Splitter { rotation } => BeamTile::Splitter {
-                direction: rotation,
-                powered: None,
-            },
-            Tile::Galvo { rotation } => BeamTile::Galvo {
-                direction: rotation,
-                powered: Directions::empty(),
-            },
-            Tile::Wall { .. } => BeamTile::Wall {
-                powered: Directions::empty(),
-            },
-        });
-
-        let mut state = Self { board, level };
-
-        if let Some(level) = &mut state.level {
-            trace!("Running with level: {}", level.level.name);
-            level.setup_case(&mut state.board);
-        }
-
-        state
-    }
-
-    pub fn hash(&self) -> u64 {
-        let size = self.level.as_ref().unwrap().level.size.unwrap();
-        let bounds = (Vector2::zeros(), size.map(|x| x as i32));
-
-        let mut tiles = self.board.iter().collect::<Vec<_>>();
-        tiles.sort_by(|(a, _), (b, _)| a.x.cmp(&b.x).then(a.y.cmp(&b.y)));
-
-        let mut hasher = DefaultHasher::new();
-        for (pos, tile) in tiles.iter().filter(|(pos, _)| in_bounds(*pos, bounds)) {
-            pos.hash(&mut hasher);
-            tile.hash(&mut hasher);
-        }
-
-        hasher.finish()
-    }
-
+impl BeamStateRender for BeamState {
     /// Renders the beam over the board.
-    pub fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App, shared: &SharedState) {
+    fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App, shared: &SharedState) {
         let half_tile = Vector2::repeat(ctx.scale_factor * shared.scale * 16.0 / 2.0);
         let size = ctx.size() + half_tile;
 
@@ -176,7 +161,7 @@ impl BeamState {
                 } => {
                     for (idx, set) in [powered, last_powered].into_iter().enumerate() {
                         for dir in set.iter() {
-                            ctx.draw(sprite(HALF_BEAM[opposite_if(dir, idx > 0) as usize]))
+                            ctx.draw(sprite(HALF_BEAM[dir.opposite_if(idx > 0) as usize]))
                         }
                     }
                 }

@@ -1,165 +1,166 @@
-use engine::drawable::sprite::Sprite;
+use serde::{Deserialize, Serialize};
 
-use crate::{
-    assets::{animated_sprite, TILE_DELAY, TILE_DETECTOR, TILE_MIRROR_A, TILE_MIRROR_B},
-    consts::{EMITTER, GALVO, SPLITTER},
-    misc::direction::{Direction, Directions},
-};
+use common::direction::Direction;
 
-use super::{opposite_if, MIRROR_REFLECTIONS};
-
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum BeamTile {
+#[derive(Default, Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum Tile {
     #[default]
     Empty,
-    Wall {
-        powered: Directions,
-    },
-    Beam {
-        direction: Direction,
-        distance: u8,
-    },
-    CrossBeam {
-        /// Directions of the two incoming beams.
-        directions: [Direction; 2],
-    },
+    Detector,
+    Delay,
     Emitter {
-        direction: Direction,
+        rotation: Direction,
         active: bool,
     },
-    Detector {
-        powered: Directions,
-    },
-    Delay {
-        powered: Directions,
-        last_powered: Directions,
-    },
     Mirror {
-        /// The direction the mirror is facing.
-        /// `0 => /`, `1 => \`
-        direction: bool,
-        /// The direction the mirror was placed in.
-        original_direction: bool,
-        /// Which direction the beam is coming from for each side.
-        powered: [Option<Direction>; 2],
+        rotation: bool,
     },
     Splitter {
-        direction: bool,
-        powered: Option<Direction>,
+        rotation: bool,
     },
     Galvo {
-        direction: Direction,
-        powered: Directions,
+        rotation: Direction,
     },
+    Wall,
 }
 
-impl BeamTile {
-    /// Overwrites the texture of a tile for rendering purposes.
-    pub fn base_sprite(&self, frame: u8) -> Option<Sprite> {
-        Some(match self {
-            BeamTile::Emitter { direction, active } => {
-                animated_sprite(EMITTER[*direction as usize], *active, frame)
-            }
-            BeamTile::Detector { powered } => animated_sprite(TILE_DETECTOR, powered.any(), frame),
-            BeamTile::Delay { powered, .. } => animated_sprite(TILE_DELAY, powered.any(), frame),
-            BeamTile::Mirror {
-                direction,
-                original_direction,
-                ..
-            } => animated_sprite(
-                [TILE_MIRROR_A, TILE_MIRROR_B][*direction as usize],
-                direction != original_direction,
-                frame,
-            ),
-            BeamTile::Galvo { direction, powered } if powered.any_but(direction.opposite()) => {
-                animated_sprite(GALVO[*direction as usize], true, frame)
-            }
-            BeamTile::Splitter {
-                direction,
-                powered: Some(..),
-            } => animated_sprite(SPLITTER[*direction as usize], true, frame),
-            _ => return None,
-        })
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize)]
+pub enum TileType {
+    Detector,
+    Delay,
+    Emitter,
+    Mirror,
+    Splitter,
+    Galvo,
+    Wall,
+}
+
+impl Tile {
+    pub const DEFAULT: [Tile; 7] = [
+        Tile::Mirror { rotation: false },
+        Tile::Splitter { rotation: false },
+        Tile::Galvo {
+            rotation: Direction::Up,
+        },
+        Tile::Emitter {
+            rotation: Direction::Up,
+            active: true,
+        },
+        Tile::Delay,
+        Tile::Wall,
+        Tile::Detector,
+    ];
+
+    pub fn is_empty(&self) -> bool {
+        matches!(self, Tile::Empty)
     }
 
-    /// Checks if a tile is powered. This should be more efficient than
-    /// power_direction, which only needs to be called if the tile is powered.
-    pub fn is_powered(&self) -> bool {
+    pub fn name(&self) -> &str {
         match self {
-            Self::Emitter { active: true, .. } | Self::Beam { .. } | Self::CrossBeam { .. } => true,
-            Self::Mirror { powered, .. } => powered[0].is_some() || powered[1].is_some(),
-            Self::Splitter { powered, .. } => powered.is_some(),
-            Self::Delay { last_powered, .. } => last_powered.any(),
-            _ => false,
+            Tile::Empty => unreachable!(),
+            Tile::Detector => "Detector",
+            Tile::Emitter { .. } => "Emitter",
+            Tile::Delay => "Delay",
+            Tile::Mirror { .. } => "Mirror",
+            Tile::Splitter { .. } => "Splitter",
+            Tile::Galvo { .. } => "Galvo",
+            Tile::Wall { .. } => "Wall",
         }
     }
 
-    /// Returns the directions of power output from a tile.
-    pub fn power_direction(&self) -> Directions {
+    pub fn price(&self) -> u32 {
         match self {
-            Self::Beam { direction, .. }
-            | Self::Emitter {
-                direction,
-                active: true,
-                ..
-            } => direction.into(),
-            Self::CrossBeam { directions } => directions.iter().copied().collect(),
-            Self::Mirror {
-                direction, powered, ..
-            } => powered
-                .iter()
-                .flatten()
-                .map(|&powered| opposite_if(MIRROR_REFLECTIONS[powered as usize], !direction))
-                .collect(),
-            Self::Splitter {
-                direction,
-                powered: Some(powered),
-            } => {
-                Directions::from(opposite_if(
-                    MIRROR_REFLECTIONS[*powered as usize],
-                    !*direction,
-                )) | *powered
-            }
-            Self::Delay { last_powered, .. } => *last_powered,
-            _ => Directions::empty(),
+            Tile::Empty => unreachable!(),
+            Tile::Detector => 5000,
+            Tile::Emitter { .. } => 1000,
+            Tile::Delay => 500,
+            Tile::Mirror { .. } => 200,
+            Tile::Splitter { .. } => 300,
+            Tile::Galvo { .. } => 500,
+            Tile::Wall { .. } => 100,
         }
     }
 
-    pub fn mirror_mut(&mut self) -> (bool, &mut bool, &mut [Option<Direction>; 2]) {
+    pub fn as_type(&self) -> TileType {
         match self {
-            Self::Mirror {
-                direction,
-                original_direction,
-                powered,
-                ..
-            } => (*original_direction, direction, powered),
-            _ => panic!(),
+            Tile::Empty => unreachable!(),
+            Tile::Detector => TileType::Detector,
+            Tile::Delay => TileType::Delay,
+            Tile::Emitter { .. } => TileType::Emitter,
+            Tile::Mirror { .. } => TileType::Mirror,
+            Tile::Splitter { .. } => TileType::Splitter,
+            Tile::Galvo { .. } => TileType::Galvo,
+            Tile::Wall => TileType::Wall,
         }
     }
 
-    pub fn splitter_mut(&mut self) -> &mut Option<Direction> {
+    pub fn rotate(self) -> Self {
         match self {
-            Self::Splitter { powered, .. } => powered,
-            _ => panic!(),
+            Tile::Emitter { rotation, active } => Tile::Emitter {
+                rotation: rotation.rotate(),
+                active,
+            },
+            Tile::Mirror { rotation } => Tile::Mirror {
+                rotation: !rotation,
+            },
+            Tile::Splitter { rotation } => Tile::Splitter {
+                rotation: !rotation,
+            },
+            Tile::Galvo { rotation } => Tile::Galvo {
+                rotation: rotation.rotate(),
+            },
+            x => x,
         }
     }
 
-    pub fn delay_mut(&mut self) -> (&mut Directions, &mut Directions) {
+    pub fn rotate_reverse(self) -> Self {
         match self {
-            Self::Delay {
-                powered,
-                last_powered,
-            } => (powered, last_powered),
-            _ => panic!(),
+            Tile::Emitter { rotation, active } => Tile::Emitter {
+                rotation: rotation.rotate_reverse(),
+                active,
+            },
+            Tile::Galvo { rotation } => Tile::Galvo {
+                rotation: rotation.rotate_reverse(),
+            },
+            x => x.rotate(),
         }
     }
 
-    pub fn directions_mut(&mut self) -> &mut Directions {
+    pub fn flip_horizontal(self) -> Self {
         match self {
-            Self::Galvo { powered, .. } | Self::Wall { powered } | Self::Detector { powered } => {
-                powered
-            }
-            _ => panic!(),
+            Tile::Emitter { rotation, active } => Tile::Emitter {
+                rotation: rotation.flip_horizontal(),
+                active,
+            },
+            Tile::Galvo { rotation } => Tile::Galvo {
+                rotation: rotation.flip_horizontal(),
+            },
+            Tile::Mirror { .. } | Tile::Splitter { .. } => self.rotate(),
+            x => x,
+        }
+    }
+
+    pub fn flip_vertical(self) -> Self {
+        match self {
+            Tile::Emitter { rotation, active } => Tile::Emitter {
+                rotation: rotation.flip_vertical(),
+                active,
+            },
+            Tile::Galvo { rotation } => Tile::Galvo {
+                rotation: rotation.flip_vertical(),
+            },
+            Tile::Mirror { .. } | Tile::Splitter { .. } => self.rotate(),
+            x => x,
+        }
+    }
+
+    pub fn activate(self) -> Self {
+        match self {
+            Self::Emitter { rotation, active } => Self::Emitter {
+                rotation,
+                active: !active,
+            },
+            x => x,
         }
     }
 }

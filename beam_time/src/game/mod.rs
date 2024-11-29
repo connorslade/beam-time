@@ -1,3 +1,4 @@
+use common::misc::exp_decay;
 use engine::{
     exports::{
         nalgebra::Vector2,
@@ -6,13 +7,13 @@ use engine::{
     graphics_context::GraphicsContext,
 };
 
-use crate::{app::App, util::exp_decay};
+use crate::app::App;
 
 pub mod board;
 pub mod history;
 pub mod holding;
+pub mod render;
 mod selection;
-pub mod tile;
 
 pub struct SharedState {
     pub pan: Vector2<f32>,

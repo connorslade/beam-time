@@ -1,23 +1,22 @@
-use std::{mem, path::PathBuf, time::Duration};
+use std::{borrow::Cow, mem, path::PathBuf, time::Duration};
 
-use engine::{
-    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
-    graphics_context::GraphicsContext,
-    screens::Screen,
-};
 use rand::{seq::SliceRandom, thread_rng, Rng};
 
 use crate::{
     consts::BACKGROUND_COLOR,
-    game::{
-        beam::{level::LevelResult, state::BeamState, SimulationState},
-        board::Board,
-        level::LEVELS,
-        SharedState,
-    },
+    game::{board::Board, render::BeamStateRender, SharedState},
     ui::{confetti::Confetti, level_panel::LevelPanel, tile_picker::TilePicker},
     util::key_events,
     App,
+};
+use beam_logic::{
+    level::DEFAULT_LEVELS,
+    simulation::{async_runtime::SimulationState, level_state::LevelResult, state::BeamState},
+};
+use engine::{
+    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
+    graphics_context::GraphicsContext,
+    screens::Screen,
 };
 
 pub struct GameScreen {
@@ -100,7 +99,11 @@ impl Screen<App> for GameScreen {
 
             self.beam.notify_running();
         } else if space_pressed || play_pressed || test_pressed {
-            sim.beam = Some(BeamState::new(&self.board, test_pressed));
+            sim.beam = Some(BeamState::new(
+                &self.board.tiles,
+                self.board.transient.level.map(|x| Cow::Borrowed(x)),
+                test_pressed,
+            ));
             self.level_result = None;
         }
 
@@ -132,7 +135,7 @@ impl GameScreen {
         board.transient.level = board
             .meta
             .level
-            .map(|x| LEVELS.iter().find(|y| y.id == x.id).unwrap());
+            .map(|x| DEFAULT_LEVELS.iter().find(|y| y.id == x.id).unwrap());
 
         Self {
             shared: SharedState::default(),

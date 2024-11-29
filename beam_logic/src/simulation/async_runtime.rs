@@ -1,7 +1,13 @@
-use std::{sync::Arc, thread, time::Duration};
+use std::{
+    sync::Arc,
+    thread,
+    time::{Duration, Instant},
+};
 
 use clone_macro::clone;
 use parking_lot::{Condvar, Mutex, MutexGuard};
+
+use super::state::BeamState;
 
 pub struct SimulationState {
     inner: Arc<(Mutex<InnerSimulationState>, Condvar)>,

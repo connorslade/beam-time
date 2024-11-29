@@ -65,6 +65,14 @@ impl Direction {
         }
     }
 
+    pub fn opposite_if(self, condition: bool) -> Direction {
+        if condition {
+            self.opposite()
+        } else {
+            self
+        }
+    }
+
     pub fn flip_vertical(self) -> Self {
         match self {
             Direction::Left | Direction::Right => self,

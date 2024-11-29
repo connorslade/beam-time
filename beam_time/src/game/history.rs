@@ -1,10 +1,10 @@
 use std::collections::VecDeque;
 
+use beam_logic::tile::Tile;
+use common::map::Map;
 use engine::exports::nalgebra::Vector2;
 
-use crate::{consts::MAX_HISTORY, misc::map::Map};
-
-use super::tile::Tile;
+use crate::consts::MAX_HISTORY;
 
 pub struct History {
     actions: VecDeque<Action>,

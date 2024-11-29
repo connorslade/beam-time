@@ -1,13 +1,4 @@
-use engine::{
-    assets::SpriteRef,
-    color::Rgb,
-    drawable::{sprite::Sprite, text::Text},
-    exports::{
-        nalgebra::Vector2,
-        winit::{event::MouseButton, keyboard::KeyCode},
-    },
-    graphics_context::{Anchor, GraphicsContext},
-};
+use common::misc::in_bounds;
 use thousands::Separable;
 
 use crate::{
@@ -18,8 +9,18 @@ use crate::{
         TILE_WALL, UNDEAD_FONT,
     },
     consts::layer,
-    game::{board::Board, holding::Holding, tile::Tile},
-    util::in_bounds,
+    game::{board::Board, holding::Holding, render::TileAsset},
+};
+use beam_logic::tile::Tile;
+use engine::{
+    assets::SpriteRef,
+    color::Rgb,
+    drawable::{sprite::Sprite, text::Text},
+    exports::{
+        nalgebra::Vector2,
+        winit::{event::MouseButton, keyboard::KeyCode},
+    },
+    graphics_context::{Anchor, GraphicsContext},
 };
 
 const TILE_SHORTCUTS: [KeyCode; 7] = [
