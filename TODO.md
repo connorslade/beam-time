@@ -82,11 +82,15 @@
 - [x] Show current test case in level panel when simulating in test mode
 - [ ] Start testing at currently open level panel test case, looping around at the end
 - [x] Make level panel rendering more efficient by stretching sprites
-- [ ] Cleanup public fields in engine that should be read only
+- [ ] ~~Cleanup public fields in engine that should be read only~~
+  - Its not that big of a deal
 - [x] Allow disabling tiles in level def
 - [x] Price system
 - [ ] Use ron for config file?
+  - Just to remove toml dep if its only used once
 - [x] Add a solution latency metric
 - [ ] Verify ui scaling
-- [ ] Render histograms on level completion screen
-- [ ] Extend engine with support for clipping sprites to some area
+- [x] Render histograms on level completion screen
+- [ ] Extend engine with support for clipping sprites to some area  
+  - Use instancing of a quad mesh with a uniform containing position, color, depth, clip bounds, etc.
+- [ ] Split beam logic into its own crate (so solutions can be verified on the server)
