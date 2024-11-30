@@ -2,13 +2,13 @@ use std::{collections::HashMap, time::Duration};
 
 use anyhow::Result;
 use clone_macro::clone;
-use common::api::results::GetResultsResponse;
 use log::{trace, warn};
 use poll_promise::Promise;
 use ureq::{Agent, AgentBuilder};
 use uuid::Uuid;
 
 use crate::consts::LEADERBOARD_SERVER;
+use leaderboard::api::results::GetResultsResponse;
 
 type PendingResult<T> = Promise<Result<T>>;
 

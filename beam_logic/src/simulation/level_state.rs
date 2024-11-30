@@ -1,9 +1,10 @@
 use std::{borrow::Cow, collections::HashMap};
 
-use common::map::Map;
 use log::trace;
+use serde::{Deserialize, Serialize};
 
 use crate::level::{Level, DEFAULT_LEVELS};
+use common::map::Map;
 
 use super::tile::BeamTile;
 
@@ -19,7 +20,7 @@ pub struct LevelState {
     pub result: Option<LevelResult>,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Serialize, Deserialize, Clone, Copy)]
 pub enum LevelResult {
     Success { latency: u32 },
     Failed { case: usize },

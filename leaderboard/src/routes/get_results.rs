@@ -2,7 +2,7 @@ use afire::{extensions::RouteShorthands, Content, Server};
 use serde_json::json;
 use uuid::Uuid;
 
-use common::api::results::{Histogram, GetResultsResponse};
+use leaderboard::api::results::{GetResultsResponse, Histogram};
 
 pub fn attach(server: &mut Server) {
     server.get("/api/{level}/results", |ctx| {

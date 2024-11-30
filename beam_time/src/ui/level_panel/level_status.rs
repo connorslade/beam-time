@@ -1,7 +1,6 @@
 use std::f32::consts::PI;
 
 use beam_logic::level::Level;
-use common::api::results::Histogram;
 use thousands::Separable;
 
 use crate::{
@@ -15,6 +14,7 @@ use engine::{
     exports::nalgebra::{Vector2, Vector3},
     graphics_context::{Anchor, GraphicsContext},
 };
+use leaderboard::api::results::Histogram;
 
 use super::{UIContext, WIDTH};
 

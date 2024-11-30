@@ -4,9 +4,13 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+beam_logic = { path = "../beam_logic" }
 common = { path = "../common" }
 
 afire.workspace = true
+hex.workspace = true
+hmac.workspace = true
 serde_json.workspace = true
 serde.workspace = true
+sha2.workspace = true
 uuid.workspace = true
