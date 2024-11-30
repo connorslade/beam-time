@@ -93,4 +93,6 @@
 - [x] Render histograms on level completion screen
 - [ ] Extend engine with support for clipping sprites to some area  
   - Use instancing of a quad mesh with a uniform containing position, color, depth, clip bounds, etc.
-- [ ] Split beam logic into its own crate (so solutions can be verified on the server)
+- [x] Split beam logic into its own crate (so solutions can be verified on the server)
+- [ ] Cleanup how level results are handled
+  - This also includes fixing the bug where the simulation thread can crash if the tick speed is too high
