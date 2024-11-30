@@ -53,14 +53,11 @@ impl TestingSimulationState {
                 };
             }
 
-            let Some(result) = level.complete() else {
-                continue;
-            };
+            // let Some(result) = level.complete() else {
+            //     continue;
+            // };
 
-            return TestResults {
-                tests,
-                latency: Some(result.latency),
-            };
+            todo!()
         }
     }
 }

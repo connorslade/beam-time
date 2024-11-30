@@ -12,9 +12,7 @@ impl BeamState {
         if self.level.is_some() {
             let hash = self.hash();
             let level = self.level.as_mut().unwrap();
-            if level.tick(hash, &mut self.board) {
-                return;
-            }
+            level.tick(hash, &mut self.board);
         }
 
         // To avoid issues that would arise from modifying the board in place, a

@@ -71,6 +71,13 @@ impl<T> Rgb<T> {
 }
 
 impl Rgb<f32> {
+    pub fn hex(hex: u32) -> Self {
+        let r = hex >> 16 & 0xFF;
+        let g = hex >> 8 & 0xFF;
+        let b = hex & 0xFF;
+        Self::new(r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0)
+    }
+
     pub fn lerp(&self, other: Self, t: f32) -> Self {
         Self::new(
             lerp(self.r, other.r, t),

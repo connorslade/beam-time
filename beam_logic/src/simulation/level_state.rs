@@ -8,27 +8,36 @@ use crate::level::{Level, DEFAULT_LEVELS};
 use super::tile::BeamTile;
 
 pub struct LevelState {
-    pub level: Cow<'static, Level>,
+    pub(super) level: Cow<'static, Level>,
     pub test_case: usize,
 
-    pub latency: u32,
-    pub history: HashMap<u64, usize>,
+    latency: u32,
+    history: HashMap<u64, usize>,
     // todo: replace with unpacked bitvec
-    pub history_states: Vec<Vec<bool>>,
+    history_states: Vec<Vec<bool>>,
+
+    pub result: Option<LevelResult>,
 }
 
-pub struct LevelResult {
-    pub latency: u32,
+#[derive(Clone, Copy)]
+pub enum LevelResult {
+    Success { latency: u32 },
+    Failed { case: usize },
 }
 
 impl LevelState {
-    pub fn complete(&self) -> Option<LevelResult> {
-        (self.test_case >= self.level.tests.cases.len()).then_some(LevelResult {
-            latency: self.latency,
-        })
+    pub fn new(level: Cow<'static, Level>) -> Self {
+        Self {
+            level,
+            ..Default::default()
+        }
     }
 
-    pub fn tick(&mut self, hash: u64, board: &mut Map<BeamTile>) -> bool {
+    pub fn tick(&mut self, hash: u64, board: &mut Map<BeamTile>) {
+        if self.result.is_some() {
+            return;
+        }
+
         let idx = self.history_states.len();
         self.history_states.push(self.outputs(board));
 
@@ -43,14 +52,20 @@ impl LevelState {
 
                 if self.test_case >= self.level.tests.cases.len() {
                     trace!("Passed all cases! {{ latency: {} }}", self.latency);
-                    return true;
+                    self.result = Some(LevelResult::Success {
+                        latency: self.latency,
+                    });
+                    return;
                 }
 
                 self.setup_case(board);
+            } else {
+                trace!("Failed case #{}", self.test_case);
+                self.result = Some(LevelResult::Failed {
+                    case: self.test_case,
+                });
             }
         }
-
-        false
     }
 
     pub fn setup_case(&mut self, board: &mut Map<BeamTile>) {
@@ -111,6 +126,7 @@ impl Default for LevelState {
             latency: 0,
             history: Default::default(),
             history_states: Default::default(),
+            result: None,
         }
     }
 }

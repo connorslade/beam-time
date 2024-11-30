@@ -20,14 +20,7 @@ impl BeamState {
     /// Creates a new BeamState from a Board by converting Tiles into their
     /// BeamTile counterparts.
     pub fn new(tiles: &Map<Tile>, level: Option<Cow<'static, Level>>, test: bool) -> Self {
-        let level = test
-            .then(|| {
-                level.map(|level| LevelState {
-                    level,
-                    ..Default::default()
-                })
-            })
-            .flatten();
+        let level = test.then(|| level.map(LevelState::new)).flatten();
 
         let board = tiles.map(|x| match x {
             Tile::Empty => BeamTile::Empty,

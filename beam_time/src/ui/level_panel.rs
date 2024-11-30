@@ -82,7 +82,13 @@ impl LevelPanel {
 
         if let Some(result) = level_result {
             horizontal_rule(ctx, &mut ui);
-            level_complete(ctx, state, result, price, &mut ui);
+
+            match result {
+                LevelResult::Success { latency } => {
+                    level_complete(ctx, state, *latency, price, &mut ui)
+                }
+                LevelResult::Failed { case } => level_failed(ctx, state, case + 1, &mut ui),
+            }
         }
 
         background(ctx, &mut ui);
@@ -139,7 +145,7 @@ fn level_info(
 fn level_complete(
     ctx: &mut GraphicsContext<App>,
     state: &App,
-    result: &LevelResult,
+    latency: u32,
     price: u32,
     ui: &mut UIContext,
 ) {
@@ -167,9 +173,8 @@ fn level_complete(
     });
 
     let text = format!(
-        "Nice work! Your solution costs ${} and has a total latency of {} ticks.",
+        "Nice work! Your solution costs ${} and has a total latency of {latency} ticks.",
         price.separate_with_commas(),
-        result.latency
     );
     let text = Text::new(UNDEAD_FONT, &text)
         .position(Vector2::new(ui.margin, ui.y), Anchor::TopLeft)
@@ -196,6 +201,26 @@ fn level_complete(
 
         ctx.draw(text);
     }
+}
+
+fn level_failed(ctx: &mut GraphicsContext<App>, state: &App, case: usize, ui: &mut UIContext) {
+    let center_x = (WIDTH as f32 * ui.tile_size) / 2.0;
+    let title = Text::new(UNDEAD_FONT, "Level Failed...")
+        .position(Vector2::new(center_x, ui.y), Anchor::TopCenter)
+        .scale(Vector2::repeat(state.config.ui_scale * 3.0))
+        .color(Rgb::hex(0xe43636))
+        .z_index(layer::UI_ELEMENT);
+    ui.y -= title.size(ctx).y + ui.scale + ui.padding;
+    ctx.draw(title);
+
+    let text = format!("Looks like you failed test case {case}. Check the board to see what went wrong then press ESC to exit the current simulation, make your fixes and re-run the tests.");
+    let text = Text::new(UNDEAD_FONT, &text)
+        .position(Vector2::new(ui.margin, ui.y), Anchor::TopLeft)
+        .scale(Vector2::repeat(state.config.ui_scale * 2.0))
+        .max_width(WIDTH as f32 * ui.tile_size - ui.margin * 2.0)
+        .z_index(layer::UI_ELEMENT);
+    ui.y -= text.size(ctx).y + ui.padding;
+    ctx.draw(text);
 }
 
 fn histogram(

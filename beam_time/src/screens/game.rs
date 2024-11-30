@@ -89,14 +89,17 @@ impl Screen<App> for GameScreen {
                 beam_state.tick();
             }
 
-            let level_result = beam_state.level.as_ref().and_then(|x| x.complete());
+            beam_state.render(ctx, state, &self.shared);
+
+            let level_result = beam_state.level.as_ref().and_then(|x| x.result);
             if let Some(result) = level_result {
                 self.level_result = Some(result);
                 sim.runtime.running = false;
-                sim.beam = None;
-                create_confetti(&mut self.confetti, ctx);
-            } else {
-                beam_state.render(ctx, state, &self.shared);
+
+                if matches!(result, LevelResult::Success { .. }) {
+                    create_confetti(&mut self.confetti, ctx);
+                    sim.beam = None;
+                }
             }
 
             self.beam.notify_running();
@@ -111,6 +114,7 @@ impl Screen<App> for GameScreen {
 
         if ctx.input.key_pressed(KeyCode::Escape) {
             sim.beam = None;
+            self.level_result = None;
         }
 
         ctx.background(BACKGROUND_COLOR);
