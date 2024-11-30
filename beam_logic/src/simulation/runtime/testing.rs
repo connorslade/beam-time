@@ -1,23 +1,15 @@
 use std::borrow::Cow;
 
+use crate::{
+    level::Level,
+    simulation::{level_state::LevelResult, state::BeamState},
+    tile::Tile,
+};
 use common::map::Map;
-
-use crate::{level::Level, simulation::state::BeamState, tile::Tile};
 
 pub struct TestingSimulationState {
     beam: BeamState,
     max_ticks: u32,
-}
-
-pub struct TestResults {
-    tests: Vec<TestResult>,
-    latency: Option<u32>,
-}
-
-pub enum TestResult {
-    Success,
-    Failed,
-    OutOfTime,
 }
 
 impl TestingSimulationState {
@@ -28,8 +20,7 @@ impl TestingSimulationState {
         }
     }
 
-    pub fn run(&mut self) -> TestResults {
-        let mut tests = Vec::new();
+    pub fn run(&mut self) -> LevelResult {
         let (mut case, mut timer) = (0, 0);
 
         loop {
@@ -38,7 +29,6 @@ impl TestingSimulationState {
             let level = self.beam.level.as_ref().unwrap();
 
             if level.test_case != case {
-                tests.push(TestResult::Success);
                 timer = 0;
                 case = level.test_case;
             }
@@ -46,18 +36,12 @@ impl TestingSimulationState {
             timer += 1;
 
             if timer > self.max_ticks {
-                tests.push(TestResult::OutOfTime);
-                return TestResults {
-                    tests,
-                    latency: None,
-                };
+                return LevelResult::OutOfTime;
             }
 
-            // let Some(result) = level.complete() else {
-            //     continue;
-            // };
-
-            todo!()
+            if let Some(result) = level.result {
+                return result;
+            }
         }
     }
 }

@@ -23,6 +23,7 @@ pub struct LevelState {
 pub enum LevelResult {
     Success { latency: u32 },
     Failed { case: usize },
+    OutOfTime,
 }
 
 impl LevelState {

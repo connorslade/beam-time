@@ -82,6 +82,7 @@ impl LevelPanel {
                     level_complete(ctx, state, *latency, price, &mut ui)
                 }
                 LevelResult::Failed { case } => level_failed(ctx, state, case + 1, &mut ui),
+                LevelResult::OutOfTime => unreachable!(),
             }
         }
 
