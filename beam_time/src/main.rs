@@ -15,12 +15,16 @@ mod app;
 mod assets;
 mod consts;
 mod game;
+mod leaderboard;
 mod screens;
 mod ui;
 mod util;
 
 use app::App;
-use screens::{overlay::debug::DebugOverlay, title::TitleScreen};
+use screens::{
+    overlay::{debug::DebugOverlay, ticker::Ticker},
+    title::TitleScreen,
+};
 use util::include_atlas;
 
 fn main() -> Result<()> {
@@ -38,6 +42,7 @@ fn main() -> Result<()> {
         app_constructor: Box::new(App::new),
         screen_constructor: Box::new(|| {
             vec![
+                Box::new(Ticker),
                 Box::new(DebugOverlay::default()),
                 Box::new(TitleScreen::default()),
             ]

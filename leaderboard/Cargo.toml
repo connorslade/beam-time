@@ -4,8 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-afire = { version = "3.0.0-alpha.3", features = [
-    "tracing",
-    "extensions",
-], default-features = false }
-uuid = { version = "1.11.0", features = ["v4"] }
+common = { path = "../common" }
+
+afire.workspace = true
+serde_json.workspace = true
+serde.workspace = true
+uuid.workspace = true

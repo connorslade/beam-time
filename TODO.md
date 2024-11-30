@@ -77,7 +77,7 @@
 - [ ] Allow disabling cycle detection for pluse based solutions
 - [ ] Experiment with animation icon?
 - [x] Allow labeling emitters / outputs / tiles in general?
-- [ ] Splitters take input from all sides to avoid non-determistic behavior when used as or-gates
+- [ ] Splitters take input from all sides to avoid non-deterministic behavior when used as or-gates
 - [x] Allow canceling clicks through the graphics context
 - [x] Show current test case in level panel when simulating in test mode
 - [ ] Start testing at currently open level panel test case, looping around at the end
@@ -96,3 +96,4 @@
 - [x] Split beam logic into its own crate (so solutions can be verified on the server)
 - [x] Cleanup how level results are handled
   - This also includes fixing the bug where the simulation thread can crash if the tick speed is too high
+- [ ] Figure out what to use as user IDs to prevent multiple score uploads for one player

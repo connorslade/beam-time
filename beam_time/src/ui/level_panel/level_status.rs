@@ -147,6 +147,8 @@ fn histogram(
 
     let max_count = *bins.iter().max().unwrap();
 
+    dbg!(bins, max);
+
     // ^ Generate histogram
 
     let bars = bins

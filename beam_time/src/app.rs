@@ -3,9 +3,11 @@ use std::{fs, path::PathBuf, time::Instant};
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
-use crate::{consts::CONFIG_FILE, ui::waterfall::WaterfallState};
+use crate::{consts::CONFIG_FILE, leaderboard::LeaderboardManager, ui::waterfall::WaterfallState};
 
 pub struct App {
+    pub leaderboard: LeaderboardManager,
+
     pub start: Instant,
     pub waterfall: WaterfallState,
 
@@ -34,6 +36,8 @@ impl App {
             .unwrap_or_default();
 
         Self {
+            leaderboard: LeaderboardManager::default(),
+
             start: Instant::now(),
             waterfall: WaterfallState::default(),
 
@@ -48,6 +52,10 @@ impl App {
             toml::to_string(&self.config).unwrap(),
         )?;
         Ok(())
+    }
+
+    pub fn on_tick(&mut self) {
+        self.leaderboard.tick();
     }
 
     pub fn frame(&self) -> u8 {

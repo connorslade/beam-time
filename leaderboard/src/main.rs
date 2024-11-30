@@ -1,24 +1,20 @@
-use afire::{extensions::RouteShorthands, trace, trace::Level, Server};
-use uuid::Uuid;
+use afire::{
+    extensions::Logger,
+    trace::{self, Level},
+    Middleware, Server,
+};
+
+mod routes;
 
 fn main() {
     trace::set_log_level(Level::Trace);
 
-    let mut server = Server::<()>::new("localhost", 8080);
+    let mut server = Server::<()>::new("localhost", 8080)
+        .keep_alive(false)
+        .workers(16);
 
-    server.get("/api/{level}/results", |ctx| {
-        let level = ctx.param_idx(0).parse::<Uuid>()?;
-        ctx.text(format!("Returning results for level {level:?}."))
-            .send()?;
-        Ok(())
-    });
-
-    server.put("/api/{level}/results", |ctx| {
-        let level = ctx.param_idx(0).parse::<Uuid>()?;
-        ctx.text(format!("Updating results for level {level:?}."))
-            .send()?;
-        Ok(())
-    });
+    Logger::new().attach(&mut server);
+    routes::attach(&mut server);
 
     server.run().unwrap();
 }
