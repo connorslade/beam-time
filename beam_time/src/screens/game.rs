@@ -11,7 +11,9 @@ use crate::{
 };
 use beam_logic::{
     level::DEFAULT_LEVELS,
-    simulation::{async_runtime::SimulationState, level_state::LevelResult, state::BeamState},
+    simulation::{
+        level_state::LevelResult, runtime::asynchronous::AsyncSimulationState, state::BeamState,
+    },
 };
 use engine::{
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
@@ -22,7 +24,7 @@ use engine::{
 pub struct GameScreen {
     shared: SharedState,
     board: Board,
-    beam: SimulationState,
+    beam: AsyncSimulationState,
 
     tile_picker: TilePicker,
     level_panel: LevelPanel,
@@ -140,7 +142,7 @@ impl GameScreen {
         Self {
             shared: SharedState::default(),
             board,
-            beam: SimulationState::new(),
+            beam: AsyncSimulationState::new(),
 
             tile_picker: TilePicker::default(),
             level_panel: LevelPanel::default(),

@@ -2,7 +2,7 @@ use std::f32::consts::PI;
 
 use beam_logic::{
     level::Level,
-    simulation::{async_runtime::InnerSimulationState, level_state::LevelResult},
+    simulation::{level_state::LevelResult, runtime::asynchronous::InnerAsyncSimulationState},
 };
 use common::misc::in_bounds;
 use engine::{
@@ -48,7 +48,7 @@ impl LevelPanel {
         ctx: &mut GraphicsContext<App>,
         state: &App,
         board: &Board,
-        sim: &MutexGuard<InnerSimulationState>,
+        sim: &MutexGuard<InnerAsyncSimulationState>,
         level_result: &Option<LevelResult>,
     ) {
         let Some(level) = board.transient.level else {
@@ -321,7 +321,7 @@ fn test_case(
     ctx: &mut GraphicsContext<App>,
     state: &App,
     level: &Level,
-    sim: &MutexGuard<InnerSimulationState>,
+    sim: &MutexGuard<InnerAsyncSimulationState>,
     ui: &mut UIContext,
 ) {
     let sim_level = sim.beam.as_ref().and_then(|x| x.level.as_ref());

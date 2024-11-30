@@ -7,10 +7,10 @@ use std::{
 use clone_macro::clone;
 use parking_lot::{Condvar, Mutex, MutexGuard};
 
-use super::state::BeamState;
+use crate::simulation::state::BeamState;
 
-pub struct SimulationState {
-    inner: Arc<(Mutex<InnerSimulationState>, Condvar)>,
+pub struct AsyncSimulationState {
+    inner: Arc<(Mutex<InnerAsyncSimulationState>, Condvar)>,
 }
 
 #[derive(Clone, Copy)]
@@ -19,17 +19,17 @@ pub struct RuntimeConfig {
     pub running: bool,
 }
 
-pub struct InnerSimulationState {
+pub struct InnerAsyncSimulationState {
     pub beam: Option<BeamState>,
     pub runtime: RuntimeConfig,
 
     kill: bool,
 }
 
-impl SimulationState {
+impl AsyncSimulationState {
     pub fn new() -> Self {
         let inner = Arc::new((
-            Mutex::new(InnerSimulationState {
+            Mutex::new(InnerAsyncSimulationState {
                 beam: None,
                 runtime: RuntimeConfig {
                     time_per_tick: Duration::from_secs_f32(1.0 / 20.0),
@@ -40,14 +40,12 @@ impl SimulationState {
             Condvar::new(),
         ));
 
-        // todo: shutdown logic somehow?
         thread::spawn(clone!([inner], move || {
             let (mutex, cond) = &*inner;
 
             loop {
                 let mut state = mutex.lock();
 
-                // wait for running to be true
                 while !state.runtime.running && !state.kill {
                     cond.wait(&mut state);
                 }
@@ -78,7 +76,7 @@ impl SimulationState {
         Self { inner }
     }
 
-    pub fn get(&self) -> MutexGuard<InnerSimulationState> {
+    pub fn get(&self) -> MutexGuard<InnerAsyncSimulationState> {
         self.inner.0.lock()
     }
 
@@ -87,14 +85,14 @@ impl SimulationState {
     }
 }
 
-impl Drop for SimulationState {
+impl Drop for AsyncSimulationState {
     fn drop(&mut self) {
         self.get().kill = true;
         self.notify_running();
     }
 }
 
-impl Default for SimulationState {
+impl Default for AsyncSimulationState {
     fn default() -> Self {
         Self::new()
     }

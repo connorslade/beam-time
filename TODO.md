@@ -90,3 +90,5 @@
 - [ ] Verify ui scaling
 - [ ] Render histograms on level completion screen
 - [ ] Extend engine with support for clipping sprites to some area
+- [ ] Cleanup how level results are handled
+  - This also includes fixing the bug where the simulation thread can crash if the tick speed is too high
