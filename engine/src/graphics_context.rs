@@ -161,3 +161,9 @@ impl Anchor {
         }
     }
 }
+
+impl<App, T: Drawable<App>, const N: usize> Drawable<App> for [T; N] {
+    fn draw(self, ctx: &mut GraphicsContext<App>) {
+        self.into_iter().for_each(|x| ctx.draw(x));
+    }
+}
