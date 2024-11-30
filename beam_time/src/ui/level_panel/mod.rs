@@ -79,7 +79,7 @@ impl LevelPanel {
             ui.horizontal_rule(ctx);
             match result {
                 LevelResult::Success { latency } => {
-                    level_complete(ctx, state, *latency, price, &mut ui)
+                    level_complete(ctx, state, level, *latency, price, &mut ui)
                 }
                 LevelResult::Failed { case } => level_failed(ctx, state, case + 1, &mut ui),
                 LevelResult::OutOfTime => unreachable!(),

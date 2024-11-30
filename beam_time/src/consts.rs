@@ -15,8 +15,8 @@ pub const CONFIG_FILE: &str = "config.toml";
 pub const MAX_HISTORY: usize = 100;
 pub const AUTOSAVE_INTERVAL: Duration = Duration::from_secs(60 * 5);
 
-pub const LEADERBOARD_SERVER: Lazy<Url> =
-    Lazy::new(|| Url::parse("http://localhost:8080/api").unwrap());
+pub static LEADERBOARD_SERVER: Lazy<Url> =
+    Lazy::new(|| Url::parse("http://localhost:8080/api/").unwrap());
 
 pub const BACKGROUND_COLOR: Rgb<f32> = Rgb::new(0.235, 0.235, 0.235);
 pub const ACCENT_COLOR: Rgb<f32> = Rgb::new(0.812, 0.306, 0.306);

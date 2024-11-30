@@ -126,6 +126,12 @@ impl Screen<App> for GameScreen {
         self.confetti.render(ctx);
     }
 
+    fn on_init(&mut self, state: &mut App) {
+        if let Some(level) = self.board.transient.level {
+            state.leaderboard.fetch_results(level.id);
+        }
+    }
+
     fn on_destroy(&mut self, _state: &mut App) {
         let board = mem::take(&mut self.board);
         board.save(&self.save_file).unwrap();

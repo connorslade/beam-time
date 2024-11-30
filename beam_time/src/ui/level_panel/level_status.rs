@@ -1,6 +1,7 @@
 use std::f32::consts::PI;
 
 use beam_logic::level::Level;
+use common::api::results::Histogram;
 use thousands::Separable;
 
 use crate::{
@@ -38,6 +39,7 @@ pub fn level_info(
 pub fn level_complete(
     ctx: &mut GraphicsContext<App>,
     state: &App,
+    board: &Level,
     latency: u32,
     price: u32,
     ui: &mut UIContext,
@@ -72,6 +74,11 @@ pub fn level_complete(
     ui.text_block(ctx, state, &text);
     ui.y -= ui.padding;
 
+    let Some(hist_data) = state.leaderboard.get_results(board.id) else {
+        ui.text_block(ctx, state, "Failed to load global data.");
+        return;
+    };
+
     for (i, text) in ["Cost", "Latency"].iter().enumerate() {
         let pos = Vector2::new(
             WIDTH as f32 * ui.tile_size * (1.0 + 2.0 * i as f32) / 4.0,
@@ -83,8 +90,10 @@ pub fn level_complete(
             .z_index(layer::UI_ELEMENT);
         let offset = text.size(ctx).y + ui.padding * 2.0;
 
+        let data = [&hist_data.cost, &hist_data.latency][i];
+
         let hist_pos = Vector2::new(ui.tile_size * WIDTH as f32 / 2.0 * i as f32, ui.y - offset);
-        let height = histogram(ctx, state, ui, hist_pos, ui.tile_size, 75.0);
+        let height = histogram(ctx, state, ui, hist_pos, ui.tile_size, data, 75.0);
         ui.y -= (offset + height) * (i == 1) as u8 as f32;
 
         ctx.draw(text);
@@ -112,46 +121,14 @@ fn histogram(
     base: Vector2<f32>,
     height: f32,
 
+    data: &Histogram,
     actual: f32,
 ) -> f32 {
     const BIN_COUNT: usize = 12;
 
-    // normally distriubted example data
-    let data = [
-        62, 51, 49, 61, 81, 44, 33, 48, 53, 45, 72, 42, 65, 29, 66, 27, 33, 59, 16, 22, 43, 60, 44,
-        61, 71, 47, 31, 21, 45, 33, 45, 41, 70, 66, 52, 66, 58, 40, 69, 41, 76, 100, 44, 40, 78,
-        53, 15, 57, 34, 70, 43, 94, 22, 21, 44, 23, 47, 61, 59, 17, 25, 45, 14, 61, 57, 75, 17, 10,
-        41, 41, 33, 51, 58, 46, 48, 58, 54, 49, 23, 57, 59, 41, 48, 18, 59, 46, 91, 21, 33, 40, 62,
-        47, 41, 51, 83, 58, 46, 53, 73, 63, 43, 44, 58, 35, 39, 29, 55, 94, 45, 81, 44, 34, 61, 73,
-        70, 14, 37, 44, 50, 55, 56, 48, 17, 47, 73, 90, 24, 68, 39, 44, 88, 83, 62, 76, 58, 21, 65,
-        26, 36, 43, 72, 43, 51, 39, 63, 58, 43, 41, 65, 73, 77, 53, 65, 91, 86, 60, 86, 1, 62, 33,
-        49, 74, 59, 78, 34, 51, 36, 74, 78, 25, 55, 72, 67, 63, 73, 23, 55, 50, 30, 58, 47, 45, 57,
-        16, 58, 63, 57, 77, 18, 83, 26, 45, 42, 75, 78, 30, 34, 52, 59, 20, 71, 64, 86, 23, 66, 69,
-        27, 27, 30, 37, 37, 63, 35, 24, 30, 54, 30, 38, 30, 29, 77, 77, 55, 4, 67, 25, 38, 25, 28,
-        40, 51, 30, 51, 78, 37, 43, 72, 64, 49, 56, 53, 79, 32, 65, 19, 53, 13, 67, 46, 53, 75, 30,
-        39, 57, 72, 47, 50, 33, 61, 74, 6, 49, 54, 31, 80, 44, 13, 64, 62, 11, 68, 61, 85, 49, 38,
-        43, 48, 52, 50, 19, 33, 46, 35, 41, 55, 74, 10, 43, 43, 36, 56, 42, 91, 31, 18, 61, 55, 35,
-        21, 41,
-    ];
-
-    // todo: remove outliers?
-
-    let max = *data.iter().max().unwrap();
-    let bin_width = max as f32 / BIN_COUNT as f32;
-
-    let mut bins = [0; BIN_COUNT];
-    for point in data {
-        let bin = (point as f32 / bin_width) as usize;
-        bins[bin.min(BIN_COUNT - 1)] += 1;
-    }
-
-    let max_count = *bins.iter().max().unwrap();
-
-    dbg!(bins, max);
-
-    // ^ Generate histogram
-
-    let bars = bins
+    let max_count = data.bins.iter().max().copied().unwrap_or_default();
+    let bars = data
+        .bins
         .iter()
         .enumerate()
         .map(|(idx, &count)| {
@@ -196,7 +173,7 @@ fn histogram(
     ctx.draw(text);
 
     ctx.draw(
-        Text::new(UNDEAD_FONT, max.to_string().as_str())
+        Text::new(UNDEAD_FONT, data.max.to_string().as_str())
             .position(
                 base + Vector2::new(
                     ui.tile_size / 4.0 * (1.0 + BIN_COUNT as f32),
@@ -208,7 +185,7 @@ fn histogram(
             .z_index(layer::UI_ELEMENT),
     );
 
-    let t = actual / max as f32;
+    let t = actual / data.max as f32;
     ctx.draw(
         Text::new(UNDEAD_FONT, actual.to_string().as_str())
             .scale(Vector2::repeat(state.config.ui_scale * 2.0))

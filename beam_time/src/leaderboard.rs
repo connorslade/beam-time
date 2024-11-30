@@ -5,7 +5,7 @@ use clone_macro::clone;
 use common::api::results::GetResultsResponse;
 use log::{trace, warn};
 use poll_promise::Promise;
-use reqwest::Client;
+use ureq::{Agent, AgentBuilder};
 use uuid::Uuid;
 
 use crate::consts::LEADERBOARD_SERVER;
@@ -13,7 +13,7 @@ use crate::consts::LEADERBOARD_SERVER;
 type PendingResult<T> = Promise<Result<T>>;
 
 pub struct LeaderboardManager {
-    client: Client,
+    client: Agent,
 
     requests: Vec<(Uuid, PendingResult<GetResultsResponse>)>,
     cache: HashMap<Uuid, GetResultsResponse>,
@@ -29,16 +29,15 @@ impl LeaderboardManager {
 
         trace!("Fetching histogram data for {level}");
         let path = LEADERBOARD_SERVER
-            .join(level.to_string().as_str())
-            .unwrap()
-            .join("results")
+            .join(&format!("{level}/results"))
             .unwrap();
 
-        let promise = Promise::spawn_local(clone!([{ self.client } as client], async move {
-            let request = client.get(path).send();
-            let response = request.await?.json::<GetResultsResponse>().await?;
-            Ok(response)
-        }));
+        let promise = Promise::spawn_thread(
+            "histogram_fetch",
+            clone!([{ self.client } as client], move || {
+                Ok(client.get(path.as_str()).call()?.into_json()?)
+            }),
+        );
 
         self.requests.push((level, promise));
     }
@@ -72,12 +71,10 @@ impl LeaderboardManager {
 impl Default for LeaderboardManager {
     fn default() -> Self {
         Self {
-            client: Client::builder()
+            client: AgentBuilder::new()
                 .timeout(Duration::from_secs(15))
                 .user_agent(concat!("beam-time/", env!("CARGO_PKG_VERSION")))
-                .build()
-                .unwrap(),
-
+                .build(),
             requests: Vec::new(),
             cache: HashMap::new(),
         }
