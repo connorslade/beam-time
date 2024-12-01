@@ -1,0 +1,8 @@
+[server]
+host = "localhost"
+port = 8080
+threads = 16
+database_path = "leaderboard/data/data.db"
+
+[simulation]
+max_ticks = 500

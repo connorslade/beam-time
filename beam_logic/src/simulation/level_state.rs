@@ -49,6 +49,7 @@ impl LevelState {
                 let latency = self.history_states.len() - cycle.len();
                 self.latency += latency as u32;
                 self.history_states.clear();
+                self.history.clear();
                 trace!("Passed case #{} {{ latency: {latency} }}", self.test_case);
                 self.test_case += 1;
 

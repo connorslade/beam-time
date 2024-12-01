@@ -8,9 +8,15 @@ beam_logic = { path = "../beam_logic" }
 common = { path = "../common" }
 
 afire.workspace = true
+anyhow.workspace = true
+ctrlc.workspace = true
 hex.workspace = true
 hmac.workspace = true
+log.workspace = true
+parking_lot.workspace = true
+rusqlite.workspace = true
 serde_json.workspace = true
 serde.workspace = true
 sha2.workspace = true
+toml.workspace = true
 uuid.workspace = true

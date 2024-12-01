@@ -4,7 +4,9 @@ use uuid::Uuid;
 
 use leaderboard::api::results::{GetResultsResponse, Histogram};
 
-pub fn attach(server: &mut Server) {
+use crate::app::App;
+
+pub fn attach(server: &mut Server<App>) {
     server.get("/api/{level}/results", |ctx| {
         let _level = ctx.param_idx(0).parse::<Uuid>()?;
 
