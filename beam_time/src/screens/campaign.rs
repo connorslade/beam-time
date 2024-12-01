@@ -38,20 +38,28 @@ impl Screen<App> for CampaignScreen {
             font_scale(ctx, UNDEAD_FONT, SCALE, DEFAULT_LEVELS.len());
 
         for (i, level) in DEFAULT_LEVELS.iter().enumerate() {
+            let world = self.worlds.get(&level.id);
+            let color = if world.map(|(_, meta)| meta.is_solved()) == Some(true) {
+                Rgb::hex(0x8fd032)
+            } else {
+                Rgb::new(1.0, 1.0, 1.0)
+            };
+
             let pos =
                 ctx.center() + Vector2::new(0.0, total_height / 2.0 - line_spacing * i as f32);
 
             let mut text = Text::new(UNDEAD_FONT, &level.name)
                 .position(pos, Anchor::Center)
-                .scale(Vector2::repeat(SCALE));
+                .scale(Vector2::repeat(SCALE))
+                .color(color);
 
             let half_size = text.size(ctx) / 2.0;
             let hovered = in_bounds(ctx.input.mouse, (pos - half_size, pos + half_size));
             if hovered {
-                text = text.color(Rgb::new(0.5, 0.5, 0.5));
+                text = text.color(color.lerp(Rgb::hex(0), 0.25));
 
                 if ctx.input.mouse_pressed(MouseButton::Left) {
-                    if let Some((path, _meta)) = self.worlds.get(&level.id) {
+                    if let Some((path, _meta)) = world {
                         ctx.push_screen(GameScreen::load(path.to_path_buf()));
                     } else {
                         let board = Board {

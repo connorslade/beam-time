@@ -73,9 +73,10 @@
 - [x] Use shift to reverse rotation direction
 - [ ] Cleanup selection renderer with holes
 - [ ] Bias scale to integer zoom levels when at small zooms
-- [ ] Detect and show failed test cases instead of hanging
+- [x] Detect and show failed test cases instead of hanging
 - [ ] Allow disabling cycle detection for pluse based solutions
 - [ ] Experiment with animation icon?
+  - This is completely unnecessary, but might be kinda cool, maybe an option in settings
 - [x] Allow labeling emitters / outputs / tiles in general?
 - [ ] Splitters take input from all sides to avoid non-deterministic behavior when used as or-gates
 - [x] Allow canceling clicks through the graphics context
@@ -97,3 +98,7 @@
 - [x] Cleanup how level results are handled
   - This also includes fixing the bug where the simulation thread can crash if the tick speed is too high
 - [ ] Figure out what to use as user IDs to prevent multiple score uploads for one player
+- [x] Set LevelMeta::solved to true when level is solved and unset it on board modification
+  - [x] Fire event on board edit
+- [ ] Split beam_time::game::board into some sub modules
+- [ ] Take a look at test case viewer for Double It level

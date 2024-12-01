@@ -8,6 +8,7 @@ use crate::consts::MAX_HISTORY;
 
 pub struct History {
     actions: VecDeque<Action>,
+    dirty: bool,
 }
 
 enum Action {
@@ -19,7 +20,16 @@ impl History {
     pub fn new() -> Self {
         Self {
             actions: VecDeque::new(),
+            dirty: false,
         }
+    }
+
+    pub fn mark_clean(&mut self) {
+        self.dirty = false;
+    }
+
+    pub fn is_dirty(&self) -> bool {
+        self.dirty
     }
 
     pub fn track_one(&mut self, pos: Vector2<i32>, old: Tile) {
@@ -32,6 +42,7 @@ impl History {
 
     fn track(&mut self, action: Action) {
         self.actions.push_back(action);
+        self.dirty = true;
 
         while self.actions.len() > MAX_HISTORY {
             self.actions.pop_front();
@@ -40,6 +51,7 @@ impl History {
 
     pub fn pop(&mut self, map: &mut Map<Tile>) {
         if let Some(action) = self.actions.pop_back() {
+            self.dirty = true;
             action.undo(map);
         }
     }

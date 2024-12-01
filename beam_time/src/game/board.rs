@@ -310,6 +310,12 @@ impl Board {
     }
 }
 
+impl BoardMeta {
+    pub fn is_solved(&self) -> bool {
+        self.level.map(|x| x.solved) == Some(true)
+    }
+}
+
 impl Default for TransientBoardState {
     fn default() -> Self {
         Self {

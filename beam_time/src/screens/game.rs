@@ -98,6 +98,7 @@ impl Screen<App> for GameScreen {
 
                 if matches!(result, LevelResult::Success { .. }) {
                     create_confetti(&mut self.confetti, ctx);
+                    self.board.meta.level.as_mut().unwrap().solved = true;
                     sim.beam = None;
                 }
             }
@@ -122,8 +123,17 @@ impl Screen<App> for GameScreen {
             .render(ctx, state, sim.beam.is_some(), &mut self.board);
         self.level_panel
             .render(ctx, state, &self.board, &sim, &self.level_result);
-        self.board.render(ctx, state, &self.shared, &mut sim.beam);
         self.confetti.render(ctx);
+
+        self.board.transient.history.mark_clean();
+        self.board.render(ctx, state, &self.shared, &mut sim.beam);
+
+        if self.board.transient.history.is_dirty() {
+            self.level_result = None;
+            if let Some(level) = &mut self.board.meta.level {
+                level.solved = false;
+            }
+        }
     }
 
     fn on_init(&mut self, state: &mut App) {
