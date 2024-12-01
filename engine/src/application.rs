@@ -65,13 +65,13 @@ pub struct RenderContext<'a> {
     pub queue: Queue,
 }
 
-impl<'a, App> Application<'a, App> {
+impl<App> Application<'_, App> {
     pub fn new(args: ApplicationArgs<App>) -> Self {
         Self { args, state: None }
     }
 }
 
-impl<'a, App> ApplicationHandler for Application<'a, App> {
+impl<App> ApplicationHandler for Application<'_, App> {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
         let window = Arc::new(
             event_loop
@@ -223,7 +223,7 @@ impl<'a, App> ApplicationHandler for Application<'a, App> {
     }
 }
 
-impl<'a, App> Drop for Application<'a, App> {
+impl<App> Drop for Application<'_, App> {
     fn drop(&mut self) {
         let Some(state) = self.state.as_mut() else {
             return;

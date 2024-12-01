@@ -92,7 +92,7 @@ impl<'a> Text<'a> {
     }
 }
 
-impl<'a, App> Drawable<App> for Text<'a> {
+impl<App> Drawable<App> for Text<'_> {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
         let font = ctx.assets.get_font(self.font);
         let scale = self.scale * ctx.scale_factor;

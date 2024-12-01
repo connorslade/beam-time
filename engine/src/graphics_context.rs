@@ -131,7 +131,7 @@ impl<'a, App> GraphicsContext<'a, App> {
     }
 }
 
-impl<'a, App> GraphicsContext<'a, App> {
+impl<App> GraphicsContext<'_, App> {
     pub(crate) fn background_color(&self) -> Color {
         Color {
             r: self.background.r as f64,

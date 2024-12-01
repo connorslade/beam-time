@@ -43,7 +43,7 @@ impl AudioManager {
     }
 }
 
-impl<'a> AudioBuilder<'a> {
+impl AudioBuilder<'_> {
     pub fn with_gain(&mut self, gain: f32) -> &mut Self {
         self.gain = gain;
         self

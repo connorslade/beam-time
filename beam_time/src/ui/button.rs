@@ -74,7 +74,7 @@ impl ButtonState {
     }
 }
 
-impl<'a, App> Drawable<App> for Button<'a, App> {
+impl<App> Drawable<App> for Button<'_, App> {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
         let color = self.color.lerp(ACCENT_COLOR, self.state.hover_time / 0.1);
         let scale =

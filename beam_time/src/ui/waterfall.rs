@@ -35,7 +35,7 @@ impl WaterfallState {
     }
 }
 
-impl<'a, App> Drawable<App> for Waterfall<'a> {
+impl<App> Drawable<App> for Waterfall<'_> {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
         let tiles = &mut self.state.tiles;
 

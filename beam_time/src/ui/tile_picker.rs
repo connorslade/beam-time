@@ -73,7 +73,7 @@ impl TilePicker {
                 .transient
                 .level
                 .and_then(|x| x.disabled.as_ref())
-                .map_or(false, |disabled| disabled.contains(&tile.as_type()));
+                .is_some_and(|disabled| disabled.contains(&tile.as_type()));
 
             if !disabled && !sim && ctx.input.key_pressed(key) {
                 board.transient.holding = Holding::Tile(*tile);
