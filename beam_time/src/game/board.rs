@@ -257,7 +257,11 @@ impl Board {
                             Holding::Tile(tile) => {
                                 self.transient.history.track_one(pos, old);
                                 self.tiles.set(pos, *tile);
-                                *holding = Holding::None;
+                                *holding = if old.is_empty() {
+                                    Holding::None
+                                } else {
+                                    Holding::Tile(old)
+                                };
                             }
                             Holding::Paste(vec) => {
                                 let mut old = Vec::new();
