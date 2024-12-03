@@ -1,16 +1,17 @@
 use std::collections::HashMap;
 
+use encase::{ShaderType, StorageBuffer};
 use nalgebra::{Matrix4, Vector2, Vector3};
 use wgpu::{
     util::{BufferInitDescriptor, DeviceExt},
     AddressMode, BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
     BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingResource, BindingType, BlendComponent,
-    BlendState, Buffer, BufferUsages, ColorTargetState, ColorWrites, CompareFunction,
-    DepthBiasState, DepthStencilState, Device, FilterMode, FragmentState, IndexFormat,
-    MultisampleState, PipelineCompilationOptions, PipelineLayoutDescriptor, PrimitiveState, Queue,
-    RenderPass, RenderPipeline, RenderPipelineDescriptor, Sampler, SamplerBindingType,
-    SamplerDescriptor, ShaderStages, StencilState, TextureSampleType, TextureViewDescriptor,
-    TextureViewDimension, VertexState,
+    BlendState, Buffer, BufferBinding, BufferBindingType, BufferUsages, ColorTargetState,
+    ColorWrites, CompareFunction, DepthBiasState, DepthStencilState, Device, FilterMode,
+    FragmentState, IndexFormat, MultisampleState, PipelineCompilationOptions,
+    PipelineLayoutDescriptor, PrimitiveState, Queue, RenderPass, RenderPipeline,
+    RenderPipelineDescriptor, Sampler, SamplerBindingType, SamplerDescriptor, ShaderStages,
+    StencilState, TextureSampleType, TextureViewDescriptor, TextureViewDimension, VertexState,
 };
 
 use crate::{
@@ -27,28 +28,31 @@ pub struct SpriteRenderPipeline {
 
     vertex: Buffer,
     index: Buffer,
-}
 
-struct RenderOperation {
-    bind_group: BindGroup,
-    vertex_buffer: Buffer,
-    index_buffer: Buffer,
-    index_count: u32,
-}
-
-struct Instance {
-    transform: Matrix4<f32>,
-    color: Vector3<f32>,
-    clip: [Vector2<f32>; 2],
+    operations: Vec<RenderOperation>,
 }
 
 #[derive(Debug)]
 pub struct GpuSprite {
     pub texture: TextureRef,
-    pub uv: (Vector2<f32>, Vector2<f32>),
+    pub uv: [Vector2<f32>; 2],
     pub points: [Vector2<f32>; 4],
     pub color: Vector3<f32>,
     pub z_index: i16,
+}
+
+#[derive(ShaderType)]
+struct Instance {
+    transform: Matrix4<f32>,
+    uv: [Vector2<f32>; 2],
+    color: Vector3<f32>,
+    clip: [Vector2<f32>; 2],
+}
+
+struct RenderOperation {
+    instances: Buffer,
+    bind_group: BindGroup,
+    instance_count: u32,
 }
 
 impl SpriteRenderPipeline {
@@ -60,6 +64,16 @@ impl SpriteRenderPipeline {
             entries: &[
                 BindGroupLayoutEntry {
                     binding: 0,
+                    visibility: ShaderStages::VERTEX_FRAGMENT,
+                    ty: BindingType::Buffer {
+                        ty: BufferBindingType::Uniform,
+                        has_dynamic_offset: false,
+                        min_binding_size: None,
+                    },
+                    count: None,
+                },
+                BindGroupLayoutEntry {
+                    binding: 1,
                     visibility: ShaderStages::FRAGMENT,
                     ty: BindingType::Texture {
                         sample_type: TextureSampleType::Float { filterable: false },
@@ -69,7 +83,7 @@ impl SpriteRenderPipeline {
                     count: None,
                 },
                 BindGroupLayoutEntry {
-                    binding: 1,
+                    binding: 2,
                     visibility: ShaderStages::FRAGMENT,
                     ty: BindingType::Sampler(SamplerBindingType::NonFiltering),
                     count: None,
@@ -159,6 +173,8 @@ impl SpriteRenderPipeline {
 
             vertex,
             index,
+
+            operations: Vec::new(),
         }
     }
 
@@ -169,82 +185,79 @@ impl SpriteRenderPipeline {
             atlases.entry(sprite.texture).or_default().push(sprite);
         }
 
-        // for (atlas, sprites) in atlases.iter() {
-        //     let (mut vert, mut index) = (Vec::new(), Vec::new());
+        let size = ctx.size();
 
-        //     for sprite in sprites {
-        //         let color = [sprite.color.x, sprite.color.y, sprite.color.z];
-        //         let (uv_a, uv_b) = sprite.uv;
+        self.operations.clear();
+        for (atlas, sprites) in atlases.iter() {
+            let mut instances = Vec::new(); // todo don't realloc every frame
+            for sprite in sprites {
+                // let z = (i16::MAX as f32 - sprite.z_index as f32) / (i16::MAX as f32 * 2.0);
+                instances.push(Instance {
+                    transform: Matrix4::new_nonuniform_scaling(&Vector3::new(
+                        size.x.recip(),
+                        size.y.recip(),
+                        1.0,
+                    )),
+                    uv: sprite.uv,
+                    color: sprite.color,
+                    clip: [Vector2::new(-1.0, -1.0), Vector2::new(1.0, 1.0)],
+                });
+            }
 
-        //         let pos_a = sprite.points[0].component_div(&ctx.size());
-        //         let pos_b = sprite.points[1].component_div(&ctx.size());
-        //         let pos_c = sprite.points[2].component_div(&ctx.size());
-        //         let pos_d = sprite.points[3].component_div(&ctx.size());
+            let mut buffer = StorageBuffer::new(Vec::<u8>::new());
+            buffer.write(&instances).unwrap();
 
-        //         let z = (i16::MAX as f32 - sprite.z_index as f32) / (i16::MAX as f32 * 2.0);
+            let instance = device.create_buffer_init(&BufferInitDescriptor {
+                label: None,
+                contents: &buffer.into_inner(),
+                usage: BufferUsages::UNIFORM | BufferUsages::VERTEX,
+            });
 
-        //         let base = vert.len() as u32;
-        //         vert.extend_from_slice(&[
-        //             Vertex::new([pos_a.x, pos_a.y, z], [uv_a.x, uv_b.y], color),
-        //             Vertex::new([pos_b.x, pos_b.y, z], [uv_a.x, uv_a.y], color),
-        //             Vertex::new([pos_c.x, pos_c.y, z], [uv_b.x, uv_a.y], color),
-        //             Vertex::new([pos_d.x, pos_d.y, z], [uv_b.x, uv_b.y], color),
-        //         ]);
-        //         index.extend_from_slice(&[base, base + 1, base + 2, base + 2, base + 3, base]);
-        //     }
+            let texture = ctx.assets.get_texture(*atlas);
+            let view = texture
+                .texture
+                .create_view(&TextureViewDescriptor::default());
 
-        //     let vertex_buffer = device.create_buffer_init(&BufferInitDescriptor {
-        //         label: None,
-        //         usage: BufferUsages::VERTEX,
-        //         contents: bytemuck::cast_slice(&vert),
-        //     });
+            let bind_group = device.create_bind_group(&BindGroupDescriptor {
+                label: None,
+                layout: &self.bind_group_layout,
+                entries: &[
+                    BindGroupEntry {
+                        binding: 0,
+                        resource: BindingResource::Buffer(BufferBinding {
+                            buffer: &instance,
+                            offset: 0,
+                            size: None,
+                        }),
+                    },
+                    BindGroupEntry {
+                        binding: 1,
+                        resource: BindingResource::TextureView(&view),
+                    },
+                    BindGroupEntry {
+                        binding: 2,
+                        resource: BindingResource::Sampler(&self.sampler),
+                    },
+                ],
+            });
 
-        //     let index_buffer = device.create_buffer_init(&BufferInitDescriptor {
-        //         label: None,
-        //         usage: BufferUsages::INDEX,
-        //         contents: bytemuck::cast_slice(&index),
-        //     });
-
-        //     let texture = ctx.assets.get_texture(*atlas);
-        //     let view = texture
-        //         .texture
-        //         .create_view(&TextureViewDescriptor::default());
-
-        //     let bind_group = device.create_bind_group(&BindGroupDescriptor {
-        //         label: None,
-        //         layout: &self.bind_group_layout,
-        //         entries: &[
-        //             BindGroupEntry {
-        //                 binding: 0,
-        //                 resource: BindingResource::TextureView(&view),
-        //             },
-        //             BindGroupEntry {
-        //                 binding: 1,
-        //                 resource: BindingResource::Sampler(&self.sampler),
-        //             },
-        //         ],
-        //     });
-
-        //     self.operations.push(RenderOperation {
-        //         bind_group,
-        //         vertex_buffer,
-        //         index_buffer,
-        //         index_count: index.len() as u32,
-        //     });
-        // }
+            self.operations.push(RenderOperation {
+                instances: instance,
+                bind_group,
+                instance_count: instances.len() as u32,
+            });
+        }
     }
 
     pub fn paint<'a>(&'a self, render_pass: &mut RenderPass<'a>) {
         render_pass.set_pipeline(&self.render_pipeline);
 
-        // for operation in self.operations.iter() {
-        //     render_pass.set_bind_group(0, &operation.bind_group, &[]);
-        //     render_pass.set_vertex_buffer(0, operation.vertex_buffer.slice(..));
-        //     render_pass.set_index_buffer(operation.index_buffer.slice(..), IndexFormat::Uint32);
-        //     render_pass.draw_indexed(0..operation.index_count, 0, 0..1);
-        // }
-
-        render_pass.set_vertex_buffer(0, self.vertex.slice(..));
-        render_pass.set_index_buffer(self.index.slice(..), IndexFormat::Uint32);
+        for operation in self.operations.iter() {
+            render_pass.set_bind_group(0, &operation.bind_group, &[]);
+            render_pass.set_vertex_buffer(0, self.vertex.slice(..));
+            render_pass.set_vertex_buffer(1, operation.instances.slice(..));
+            render_pass.set_index_buffer(self.index.slice(..), IndexFormat::Uint32);
+            render_pass.draw_indexed(0..6, 0, 0..operation.instance_count);
+        }
     }
 }

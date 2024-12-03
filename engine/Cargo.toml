@@ -7,6 +7,7 @@ edition = "2021"
 anyhow.workspace = true
 bytemuck.workspace = true
 const-fnv1a-hash.workspace = true
+encase.workspace = true
 image.workspace = true
 nalgebra.workspace = true
 pollster.workspace = true

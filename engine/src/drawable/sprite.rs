@@ -124,7 +124,7 @@ impl<App> Drawable<App> for Sprite {
         let points = self.points(ctx, asset);
         ctx.sprites.push(GpuSprite {
             texture: asset.texture,
-            uv: asset.uv(self.uv_offset),
+            uv: asset.uv(self.uv_offset).into(),
             points,
             color: Vector3::new(self.color.r, self.color.g, self.color.b),
             z_index: self.z_index,

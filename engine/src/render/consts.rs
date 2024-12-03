@@ -9,7 +9,7 @@ pub const VERTEX_BUFFER_LAYOUT: VertexBufferLayout = VertexBufferLayout {
     step_mode: VertexStepMode::Vertex,
     attributes: &[
         VertexAttribute {
-            format: VertexFormat::Float32x3,
+            format: VertexFormat::Float32x4,
             offset: 0,
             shader_location: 0,
         },
@@ -17,11 +17,6 @@ pub const VERTEX_BUFFER_LAYOUT: VertexBufferLayout = VertexBufferLayout {
             format: VertexFormat::Float32x2,
             offset: 4 * 3,
             shader_location: 1,
-        },
-        VertexAttribute {
-            format: VertexFormat::Float32x3,
-            offset: 4 * (3 + 2),
-            shader_location: 2,
         },
     ],
 };

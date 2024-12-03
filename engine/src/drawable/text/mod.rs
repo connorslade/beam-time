@@ -115,7 +115,7 @@ impl<App> Drawable<App> for Text<'_> {
 
             ctx.sprites.push(GpuSprite {
                 texture: font.texture,
-                uv: (uv_a, uv_b),
+                uv: [uv_a, uv_b],
                 points: [
                     pos,
                     pos + Vector2::new(0.0, size.y),
