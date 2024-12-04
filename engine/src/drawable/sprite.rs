@@ -1,4 +1,4 @@
-use nalgebra::{Matrix3, Vector2, Vector3};
+use nalgebra::{Matrix3, Matrix4, Vector2, Vector3};
 
 use crate::{
     assets::{SpriteAsset, SpriteRef},
@@ -115,17 +115,34 @@ impl Sprite {
             transform(Vector2::new(size.x, 0.0)),
         ]
     }
+
+    fn transform<App>(&self, ctx: &GraphicsContext<App>, sprite: &SpriteAsset) -> Matrix4<f32> {
+        let size = sprite.size.map(|x| x as f32) * ctx.scale_factor;
+        let scaled_size = size.component_mul(&self.scale);
+
+        // Calculate anchor offsets for each transformation
+        let rotation_offset = self.rotation_anchor.offset(size);
+        let position_offset = self.position_anchor.offset(scaled_size);
+
+        // Combine transformations and offsets
+        // Matrix4::new_translation(&(self.position.push(1.0) + position_offset.push(1.0)))
+        //     * Matrix4::new_nonuniform_scaling(&self.scale.push(1.0))
+        //     * Matrix4::new_translation(&(-rotation_offset.push(1.0)))
+        //     * Matrix4::new_rotation(Vector3::x() * self.rotation)
+        //     * Matrix4::new_translation(&rotation_offset.push(1.0))
+
+        Matrix4::identity()
+    }
 }
 
 impl<App> Drawable<App> for Sprite {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
         let asset = ctx.assets.get_sprite(self.texture);
 
-        let points = self.points(ctx, asset);
         ctx.sprites.push(GpuSprite {
             texture: asset.texture,
             uv: asset.uv(self.uv_offset).into(),
-            points,
+            transform: self.transform(ctx, asset),
             color: Vector3::new(self.color.r, self.color.g, self.color.b),
             z_index: self.z_index,
         });

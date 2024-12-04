@@ -36,7 +36,8 @@ pub struct SpriteRenderPipeline {
 pub struct GpuSprite {
     pub texture: TextureRef,
     pub uv: [Vector2<f32>; 2],
-    pub points: [Vector2<f32>; 4],
+    // pub points: [Vector2<f32>; 4],
+    pub transform: Matrix4<f32>,
     pub color: Vector3<f32>,
     pub z_index: i16,
 }
@@ -44,7 +45,10 @@ pub struct GpuSprite {
 #[derive(ShaderType)]
 struct Instance {
     transform: Matrix4<f32>,
-    uv: [Vector2<f32>; 2],
+
+    uv: Vector2<f32>,
+    uv_size: Vector2<f32>,
+
     color: Vector3<f32>,
     clip: [Vector2<f32>; 2],
 }
@@ -148,10 +152,10 @@ impl SpriteRenderPipeline {
         });
 
         let vertex = [
-            Vertex::new([-1.0, -1.0, 1.0, 1.0], [0.0, 0.0]),
-            Vertex::new([1.0, -1.0, 1.0, 1.0], [1.0, 0.0]),
-            Vertex::new([1.0, 1.0, 1.0, 1.0], [1.0, 1.0]),
-            Vertex::new([-1.0, 1.0, 1.0, 1.0], [0.0, 1.0]),
+            Vertex::new([-1.0, -1.0, 1.0, 1.0], [0.0, 1.0]),
+            Vertex::new([1.0, -1.0, 1.0, 1.0], [1.0, 1.0]),
+            Vertex::new([1.0, 1.0, 1.0, 1.0], [1.0, 0.0]),
+            Vertex::new([-1.0, 1.0, 1.0, 1.0], [1.0, 1.0]),
         ];
         let vertex = device.create_buffer_init(&BufferInitDescriptor {
             label: None,
@@ -185,20 +189,27 @@ impl SpriteRenderPipeline {
             atlases.entry(sprite.texture).or_default().push(sprite);
         }
 
-        let size = ctx.size();
+        let window = ctx.size();
 
         self.operations.clear();
         for (atlas, sprites) in atlases.iter() {
             let mut instances = Vec::new(); // todo don't realloc every frame
             for sprite in sprites {
+                let size = sprite.texture.size;
                 // let z = (i16::MAX as f32 - sprite.z_index as f32) / (i16::MAX as f32 * 2.0);
                 instances.push(Instance {
                     transform: Matrix4::new_nonuniform_scaling(&Vector3::new(
-                        size.x.recip(),
-                        size.y.recip(),
+                        size.x as f32 / window.x,
+                        size.y as f32 / window.y,
                         1.0,
                     )),
-                    uv: sprite.uv,
+
+                    // uv: sprite.uv[0],
+                    // uv_size: sprite.uv[1] - sprite.uv[0],
+
+                    uv: Vector2::zeros(),
+                    uv_size: Vector2::new(1.0, 1.0),
+
                     color: sprite.color,
                     clip: [Vector2::new(-1.0, -1.0), Vector2::new(1.0, 1.0)],
                 });
