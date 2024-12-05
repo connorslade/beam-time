@@ -9,6 +9,7 @@ use engine::{
 
 use crate::app::App;
 
+pub mod achievements;
 pub mod board;
 pub mod history;
 pub mod holding;

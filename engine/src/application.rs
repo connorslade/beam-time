@@ -73,6 +73,7 @@ impl<App> Application<'_, App> {
 
 impl<App> ApplicationHandler for Application<'_, App> {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+        let app = (self.args.app_constructor)();
         let window = Arc::new(
             event_loop
                 .create_window(self.args.window_attributes.clone())
@@ -118,7 +119,7 @@ impl<App> ApplicationHandler for Application<'_, App> {
             frame: 0,
             last_frame: Instant::now(),
             last_cursor: Cursor::default(),
-            app: (self.args.app_constructor)(),
+            app,
         });
     }
 

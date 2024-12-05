@@ -1,11 +1,20 @@
 use std::{fs, path::PathBuf, time::Instant};
 
 use anyhow::Result;
+use log::{trace, warn};
 use serde::{Deserialize, Serialize};
+use steamworks::{Client, ClientManager, SingleClient};
 
-use crate::{consts::CONFIG_FILE, leaderboard::LeaderboardManager, ui::waterfall::WaterfallState};
+use crate::{
+    consts::{CONFIG_FILE, STEAM_ID},
+    leaderboard::LeaderboardManager,
+    ui::waterfall::WaterfallState,
+};
 
 pub struct App {
+    pub steam: Client<ClientManager>,
+    pub steam_sync: SingleClient<ClientManager>,
+
     pub leaderboard: LeaderboardManager,
 
     pub start: Instant,
@@ -35,7 +44,12 @@ impl App {
             .and_then(|s| toml::from_str(&s).ok())
             .unwrap_or_default();
 
+        // todo: handle this case without unwrap
+        let (steam, steam_sync) = steamworks::Client::init_app(STEAM_ID).unwrap();
+
         Self {
+            steam,
+            steam_sync,
             leaderboard: LeaderboardManager::default(),
 
             start: Instant::now(),
@@ -43,6 +57,14 @@ impl App {
 
             config,
             data_dir,
+        }
+    }
+
+    pub fn award_achievement(&self, achievement: &str) {
+        trace!("Awarding achievement `{achievement}`");
+        let result = self.steam.user_stats().achievement(achievement).set();
+        if result.is_err() {
+            warn!("Error granting achievement `{achievement}`");
         }
     }
 
@@ -55,6 +77,7 @@ impl App {
     }
 
     pub fn on_tick(&mut self) {
+        self.steam_sync.run_callbacks();
         self.leaderboard.tick();
     }
 
