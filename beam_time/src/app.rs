@@ -62,9 +62,16 @@ impl App {
 
     pub fn award_achievement(&self, achievement: &str) {
         trace!("Awarding achievement `{achievement}`");
-        let result = self.steam.user_stats().achievement(achievement).set();
+        let stats = self.steam.user_stats();
+
+        let result = stats.achievement(achievement).set();
         if result.is_err() {
             warn!("Error granting achievement `{achievement}`");
+            return;
+        }
+
+        if stats.store_stats().is_err() {
+            warn!("Error pushing achievements to server");
         }
     }
 
