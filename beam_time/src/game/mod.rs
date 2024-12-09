@@ -9,6 +9,7 @@ use engine::{
 
 use crate::app::App;
 
+#[cfg(feature = "steam")]
 pub mod achievements;
 pub mod board;
 pub mod history;

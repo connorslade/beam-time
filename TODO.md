@@ -103,5 +103,5 @@
 - [ ] Split beam_time::game::board into some sub modules
 - [ ] Take a look at test case viewer for Double It level
 - [ ] Fix non-deterministic beam logic
-- [ ] Put steam features under a feature flag
+- [x] Put steam features under a feature flag
 - [x] Fix rpath on linux

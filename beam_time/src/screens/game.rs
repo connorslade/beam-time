@@ -2,12 +2,11 @@ use std::{borrow::Cow, mem, path::PathBuf, time::Duration};
 
 use rand::{seq::SliceRandom, thread_rng, Rng};
 
+#[cfg(feature = "steam")]
+use crate::game::achievements::award_campaign_achievements;
 use crate::{
     consts::BACKGROUND_COLOR,
-    game::{
-        achievements::award_campaign_achievements, board::Board, render::BeamStateRender,
-        SharedState,
-    },
+    game::{board::Board, render::BeamStateRender, SharedState},
     ui::{confetti::Confetti, level_panel::LevelPanel, tile_picker::TilePicker},
     util::key_events,
     App,
@@ -100,8 +99,11 @@ impl Screen<App> for GameScreen {
                 sim.runtime.running = false;
 
                 if matches!(result, LevelResult::Success { .. }) {
-                    let level = self.board.transient.level.as_ref().unwrap();
-                    award_campaign_achievements(state, level);
+                    #[cfg(feature = "steam")]
+                    {
+                        let level = self.board.transient.level.as_ref().unwrap();
+                        award_campaign_achievements(state, level);
+                    }
 
                     create_confetti(&mut self.confetti, ctx);
                     self.board.meta.level.as_mut().unwrap().solved = true;
