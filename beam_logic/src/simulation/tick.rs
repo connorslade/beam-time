@@ -7,6 +7,12 @@ use common::{
 
 use super::{state::BeamState, tile::BeamTile, MIRROR_REFLECTIONS};
 
+// TODO: Update board in stages to avoid issues due to undefined update order?
+// - Delay
+// - Mirror / Splitter
+// - Beam / Cross Beam
+// - Galvo / Emitter Detector
+
 impl BeamState {
     pub fn tick(&mut self) {
         if self.level.is_some() {
