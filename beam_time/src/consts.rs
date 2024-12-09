@@ -11,6 +11,7 @@ use crate::assets::{
     TILE_SPLITTER_A, TILE_SPLITTER_B, TILE_WALL,
 };
 
+#[cfg(feature = "steam")]
 pub const STEAM_ID: u32 = 3385920;
 pub const CONFIG_FILE: &str = "config.toml";
 pub const MAX_HISTORY: usize = 100;

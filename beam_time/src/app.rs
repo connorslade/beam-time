@@ -1,23 +1,15 @@
 use std::{fs, path::PathBuf, time::Instant};
 
 use anyhow::Result;
-use log::{trace, warn};
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "steam")]
-use steamworks::{Client, ClientManager, SingleClient};
 
-use crate::{
-    consts::{CONFIG_FILE, STEAM_ID},
-    leaderboard::LeaderboardManager,
-    ui::waterfall::WaterfallState,
-};
+#[cfg(feature = "steam")]
+use crate::steam::Steam;
+use crate::{consts::CONFIG_FILE, leaderboard::LeaderboardManager, ui::waterfall::WaterfallState};
 
 pub struct App {
     #[cfg(feature = "steam")]
-    pub steam: Client<ClientManager>,
-    #[cfg(feature = "steam")]
-    pub steam_sync: SingleClient<ClientManager>,
-
+    pub steam: Steam,
     pub leaderboard: LeaderboardManager,
 
     pub start: Instant,
@@ -47,16 +39,9 @@ impl App {
             .and_then(|s| toml::from_str(&s).ok())
             .unwrap_or_default();
 
-        // todo: handle this case without unwrap
-        #[cfg(feature = "steam")]
-        let (steam, steam_sync) = steamworks::Client::init_app(STEAM_ID).unwrap();
-
         Self {
             #[cfg(feature = "steam")]
-            steam,
-            #[cfg(feature = "steam")]
-            steam_sync,
-
+            steam: Steam::init().unwrap(),
             leaderboard: LeaderboardManager::default(),
 
             start: Instant::now(),
@@ -64,22 +49,6 @@ impl App {
 
             config,
             data_dir,
-        }
-    }
-
-    #[cfg(feature = "steam")]
-    pub fn award_achievement(&self, achievement: &str) {
-        trace!("Awarding achievement `{achievement}`");
-        let stats = self.steam.user_stats();
-
-        let result = stats.achievement(achievement).set();
-        if result.is_err() {
-            warn!("Error granting achievement `{achievement}`");
-            return;
-        }
-
-        if stats.store_stats().is_err() {
-            warn!("Error pushing achievements to server");
         }
     }
 
@@ -93,7 +62,7 @@ impl App {
 
     pub fn on_tick(&mut self) {
         #[cfg(feature = "steam")]
-        self.steam_sync.run_callbacks();
+        self.steam.on_tick();
         self.leaderboard.tick();
     }
 

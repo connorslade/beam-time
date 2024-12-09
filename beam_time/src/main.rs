@@ -17,6 +17,8 @@ mod consts;
 mod game;
 mod leaderboard;
 mod screens;
+#[cfg(feature = "steam")]
+mod steam;
 mod ui;
 mod util;
 
