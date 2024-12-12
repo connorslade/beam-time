@@ -96,7 +96,8 @@ impl TilePicker {
             let mut sprite = if !matches!(tile, Tile::Wall) && !disabled {
                 let frame = state.frame();
                 let texture = TILE_ASSETS[tile.as_type() as usize];
-                animated_sprite(texture, is_hovered, frame)
+                let animate = is_hovered && board.transient.holding.is_none();
+                animated_sprite(texture, animate, frame)
             } else {
                 tile.asset()
             }

@@ -1,7 +1,10 @@
 Level(
     id: "3d01432a-228c-4cfd-9be3-407a796b49c8",
     name: "Slightly Less Basic Routing",
-    description: "Connect the laser to all detectors. You will need to make use of both mirrors and splitters, which act like mirrors that also pass the beam straight through.",
+    description: "
+        Connect the laser to all detectors. You will need to make use of both mirrors and the newly unlocked splitters, which act like mirrors that also pass the beam straight through.
+        
+        This level contains many walls that you will need to route the beam around.",
 
     size: Some((6, 6)),
     permanent: [

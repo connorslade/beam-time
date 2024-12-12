@@ -1,11 +1,15 @@
 Level(
     id: "d46980e0-b2d0-4102-ab95-8bdc16d00ca9",
     name: "Or Gate",
-    description: "Enable the output when either of the inputs are active. There are two main ways to solve this level.\n\nThe wall is there to keep you from just routing each input into a diffrent side of the output.",
+    description: "
+        Enable the output when either of the inputs are active. There are two main ways to solve this level.
+        
+        The wall is there to keep you from just routing each input into a different side of the output.",
 
     size: Some((6, 6)),
     permanent: [ (0, 5), (1, 5), (5, 0), (5, 1) ],
     labels: { },
+    disabled: [ Detector, Delay ],
     tiles: {
         (0, 5): Emitter(
             rotation: Down,

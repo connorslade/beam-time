@@ -1,7 +1,12 @@
 Level(
     id: "aa28086a-564e-46d3-9233-894c157d92fe",
     name: "Basic Oscillator",
-    description: "The output should osciliate between on and off states every four ticks, for a total cycle peroid of eight ticks.",
+    description: "
+        In addition to logic gates (AND, OR, NOT) there is another category of circuits you can make: oscillators! These are just circuits that periodically emit a pulse.
+
+        For this level, make the output alternate between the on and off states every four ticks, for a total cycle period of eight ticks.
+        
+        Instead of using P to start the simulation, use SPACE to step through each simulation tick one at a time.",
 
     size: Some((6, 6)),
     permanent: [ (5, 0) ],
