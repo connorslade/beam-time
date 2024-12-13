@@ -105,3 +105,4 @@
 - [ ] Fix non-deterministic beam logic
 - [x] Put steam features under a feature flag
 - [x] Fix rpath on linux
+- [ ] Implement custom hardware id

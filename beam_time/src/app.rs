@@ -1,6 +1,7 @@
 use std::{fs, path::PathBuf, time::Instant};
 
 use anyhow::Result;
+use common::user::UserID;
 use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "steam")]
@@ -69,6 +70,13 @@ impl App {
     pub fn frame(&self) -> u8 {
         self.start.elapsed().as_millis() as u8 / 100 % 3
     }
+
+    pub fn user_id(&self) -> UserID {
+        #[cfg(feature = "steam")]
+        return UserID::Steam(self.steam.user_id());
+        #[cfg(not(feature = "steam"))]
+        return unimplemented!("Hardware ID not implemented yet");
+    }   
 }
 
 impl Default for Config {

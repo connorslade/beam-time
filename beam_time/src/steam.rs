@@ -19,6 +19,10 @@ impl Steam {
         self.sync.run_callbacks();
     }
 
+    pub fn user_id(&self) -> u64 {
+        self.client.user().steam_id().raw()
+    }
+
     pub fn award_achievement(&self, achievement: &str) {
         trace!("Awarding achievement `{achievement}`");
         let stats = self.client.user_stats();
