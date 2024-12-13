@@ -4,6 +4,8 @@ use log::warn;
 
 use crate::game::board::{Board, BoardMeta};
 
+pub mod hwid;
+
 pub macro include_asset($name:expr) {
     include_bytes!(concat!("../assets/", $name))
 }

@@ -22,6 +22,7 @@ env_logger.workspace = true
 image.workspace = true
 indoc.workspace = true
 log.workspace = true
+md5.workspace = true
 once_cell.workspace = true
 parking_lot.workspace = true
 poll-promise.workspace = true
@@ -34,3 +35,7 @@ toml.workspace = true
 ureq.workspace = true
 url.workspace = true
 uuid.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+winreg.workspace = true
+windows.workspace = true
