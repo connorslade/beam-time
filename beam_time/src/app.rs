@@ -6,9 +6,10 @@ use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "steam")]
 use crate::steam::Steam;
-use crate::{consts::CONFIG_FILE, leaderboard::LeaderboardManager, ui::waterfall::WaterfallState};
+use crate::{consts::CONFIG_FILE, leaderboard::LeaderboardManager, ui::waterfall::WaterfallState, util::hwid};
 
 pub struct App {
+    pub id: UserID,
     #[cfg(feature = "steam")]
     pub steam: Steam,
     pub leaderboard: LeaderboardManager,
@@ -40,9 +41,18 @@ impl App {
             .and_then(|s| toml::from_str(&s).ok())
             .unwrap_or_default();
 
+        #[cfg(feature = "steam")]
+        let steam = Steam::init().unwrap();
+
         Self {
+            // todo: this kinda ugly
             #[cfg(feature = "steam")]
-            steam: Steam::init().unwrap(),
+            id: UserID::Steam(steam.user_id()),
+            #[cfg(not(feature = "steam"))]
+            id: UserID::Hardware(hwid::get()),
+
+            #[cfg(feature = "steam")]
+            steam,
             leaderboard: LeaderboardManager::default(),
 
             start: Instant::now(),
@@ -70,13 +80,6 @@ impl App {
     pub fn frame(&self) -> u8 {
         self.start.elapsed().as_millis() as u8 / 100 % 3
     }
-
-    pub fn user_id(&self) -> UserID {
-        #[cfg(feature = "steam")]
-        return UserID::Steam(self.steam.user_id());
-        #[cfg(not(feature = "steam"))]
-        return unimplemented!("Hardware ID not implemented yet");
-    }   
 }
 
 impl Default for Config {

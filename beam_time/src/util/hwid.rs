@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use md5::Digest;
 
 #[cfg(windows)]
@@ -42,13 +44,45 @@ pub fn get() -> u64 {
     digest_as_u64(hash.compute())
 }
 
-#[cfg(linux)]
+// See http://0pointer.de/blog/projects/ids.html for info on linux hardware and
+// software IDs. I am using both a hardware id and a user ID to each user on
+// each machine should have different IDs.
+#[cfg(target_os = "linux")]
 pub fn get() -> u64 {
-    // see http://0pointer.de/blog/projects/ids.html
-    0
+    use std::{ffi::c_long, fs};
+
+    use uuid::Uuid;
+
+    fn get_machine_id() -> Option<Uuid> {
+        ["/var/lib/dbus/machine-id", "/etc/dbus/machine-id"]
+            .iter()
+            .filter_map(|path| {
+                fs::read_to_string(path)
+                    .map(|x| x.parse::<Uuid>().ok())
+                    .ok()
+            })
+            .next()
+            .flatten()
+    }
+
+    extern "C" {
+        /// Returns the real user ID of the calling process.
+        fn getuid() -> u32;
+    }
+
+    let mut hash = md5::Context::new();
+
+    hash.consume(unsafe { getuid() }.to_be_bytes());
+    if let Some(id) = get_machine_id() {
+        hash.consume(id)
+    };
+
+    digest_as_u64(hash.compute())
 }
 
 fn digest_as_u64(digest: Digest) -> u64 {
+    // Assuming the entropy is evenly distributed throughout the hash digest,
+    // just picking the first 8 bits should be fiiine.
     u64::from_be_bytes([
         digest[0], digest[1], digest[2], digest[3], digest[4], digest[5], digest[6], digest[7],
     ])
