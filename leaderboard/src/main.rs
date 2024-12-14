@@ -20,14 +20,6 @@ fn main() -> Result<()> {
     Logger::new().attach(&mut server);
     routes::attach(&mut server);
 
-    let app = server.app();
-    ctrlc::set_handler(move || {
-        trace!("Exiting");
-        app.db.cleanup().unwrap();
-        process::exit(0);
-    })
-    .unwrap();
-
     server.run()?;
     Ok(())
 }
