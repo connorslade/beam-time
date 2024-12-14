@@ -4,10 +4,20 @@ use md5::Digest;
 
 #[cfg(windows)]
 pub fn get() -> u64 {
+    use std::{
+        ffi::{c_void, CString},
+        mem,
+        ptr::null_mut,
+        time::Instant,
+    };
+
     use uuid::Uuid;
     use windows::Win32::{
-        Foundation::HANDLE,
-        Security::TOKEN_QUERY,
+        Foundation::{LocalFree, HANDLE},
+        Security::{
+            Authorization::ConvertSidToStringSidA, GetLengthSid, GetSidSubAuthority,
+            GetSidSubAuthorityCount, GetTokenInformation, TokenUser, SID, TOKEN_QUERY, TOKEN_USER,
+        },
         System::Threading::{GetCurrentProcess, OpenProcessToken},
     };
     use winreg::{enums::HKEY_LOCAL_MACHINE, RegKey};
@@ -30,15 +40,29 @@ pub fn get() -> u64 {
         let mut handle = HANDLE::default();
         OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut handle).unwrap();
 
-        // see https://github.com/Whitecat18/Rust-for-Malware-Development/blob/bcf8bafbffb5f6edbfdbc6aa0e524f3d3a4e8ff4/Enumeration/get_token_info.rs#L22
-        // let mut out = TOKEN_USER::default();
-        // GetTokenInformation(
-        //     tokenhandle,
-        //     TokenUser,
-        //     Some(&mut out as *mut _),
-        //     tokeninformationlength,
-        //     returnlength,
-        // );
+        let mut token_size = 0;
+        GetTokenInformation(handle, TokenUser, None, 0, &mut token_size);
+
+        let mut token_user = vec![0u8; token_size as usize];
+        let mut size = 0;
+        GetTokenInformation(
+            handle,
+            TokenUser,
+            Some(token_user.as_mut_ptr() as *mut _),
+            token_size,
+            &mut size,
+        )
+        .unwrap();
+
+        let user = token_user.as_ptr() as *const TOKEN_USER;
+        let psid = (*user).User.Sid;
+        let sid = *(psid.0 as *const SID);
+
+        hash.consume(sid.IdentifierAuthority.Value);
+        for i in 0..sid.SubAuthorityCount as u32 {
+            let sub_auth = *GetSidSubAuthority(psid, i);
+            hash.consume(sub_auth.to_be_bytes());
+        }
     }
 
     digest_as_u64(hash.compute())

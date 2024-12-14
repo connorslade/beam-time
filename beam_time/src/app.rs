@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "steam")]
 use crate::steam::Steam;
-use crate::{consts::CONFIG_FILE, leaderboard::LeaderboardManager, ui::waterfall::WaterfallState, util::hwid};
+use crate::{consts::CONFIG_FILE, leaderboard::LeaderboardManager, ui::waterfall::WaterfallState};
 
 pub struct App {
     pub id: UserID,
@@ -45,11 +45,10 @@ impl App {
         let steam = Steam::init().unwrap();
 
         Self {
-            // todo: this kinda ugly
             #[cfg(feature = "steam")]
             id: UserID::Steam(steam.user_id()),
             #[cfg(not(feature = "steam"))]
-            id: UserID::Hardware(hwid::get()),
+            id: UserID::Hardware(crate::util::hwid::get()),
 
             #[cfg(feature = "steam")]
             steam,
