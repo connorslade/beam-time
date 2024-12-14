@@ -1,5 +1,3 @@
-use std::process;
-
 use afire::{extensions::Logger, trace, trace::Level, Middleware, Server};
 use anyhow::Result;
 

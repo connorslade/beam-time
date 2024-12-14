@@ -1,13 +1,12 @@
-use std::{env::args, fs, net::IpAddr};
+use std::{env::args, fs};
 
 use anyhow::{Context, Result};
 
-
-use crate::config::Config;
+use crate::{config::Config, database::Db};
 
 pub struct App {
     pub config: Config,
-    pub db: (),
+    pub db: Db,
 }
 
 impl App {
@@ -17,7 +16,8 @@ impl App {
         let config = toml::from_str::<Config>(&raw_config).context("While parsing config")?;
 
         fs::create_dir_all(config.server.database_path.parent().unwrap())?;
+        let db = Db::open(&config.server.database_path)?;
 
-        Ok(Self { config, db: () })
+        Ok(Self { config, db })
     }
 }

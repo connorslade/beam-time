@@ -1,21 +1,27 @@
-use std::path::PathBuf;
+use std::{ops::Deref, path::Path};
 
 use anyhow::Result;
-use native_db::{Database, Models};
-use once_cell::sync::Lazy;
+use native_db::Database;
+use schema::SCHEMA;
 
 pub mod id_key;
 pub mod schema;
-
-static SCHEMA: Lazy<Models> = Lazy::new(|| schema::get());
 
 pub struct Db {
     inner: Database<'static>,
 }
 
 impl Db {
-    pub fn open(path: PathBuf) -> Result<Self> {
-        let  inner = native_db::Builder::new().create(&SCHEMA, &path)?;
+    pub fn open(path: impl AsRef<Path>) -> Result<Self> {
+        let inner = native_db::Builder::new().create(&SCHEMA, &path)?;
         Ok(Self { inner })
+    }
+}
+
+impl Deref for Db {
+    type Target = Database<'static>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
     }
 }

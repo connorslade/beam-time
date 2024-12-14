@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(transparent)]
 pub struct Map<T> {
-    tiles: HashMap<Vector2<i32>, T>,
+    pub tiles: HashMap<Vector2<i32>, T>,
 }
 
 impl<T: Default + Copy + PartialEq> Map<T> {

@@ -107,3 +107,4 @@
 - [x] Fix rpath on linux
 - [x] Implement custom hardware id
 - [ ] Figure out whats causing startup delay
+- [ ] Cache get_results stuff

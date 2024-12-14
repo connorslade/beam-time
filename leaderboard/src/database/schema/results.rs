@@ -1,9 +1,8 @@
 use std::net::IpAddr;
 
-use native_db::{native_db,  ToKey};
+use native_db::{native_db, ToKey};
 use native_model::{native_model, Model};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 use beam_logic::tile::Tile;
 use common::{map::Map, user::UserID};
@@ -15,15 +14,16 @@ use crate::database::id_key::IdKey;
 #[native_db]
 pub struct Results {
     #[primary_key]
-    id: IdKey,
+    pub id: IdKey,
 
-    user_id: UserID,
-    ip_address: IpAddr,
-    timestamp: u64,
+    pub user_id: UserID,
+    pub ip_address: IpAddr,
+    pub timestamp: u64,
 
-    level_id: Uuid,
-    cost: u32,
-    latency: u32,
+    #[secondary_key]
+    pub level_id: IdKey,
+    pub cost: u32,
+    pub latency: u32,
 
-    solution: Map<Tile>,
+    pub solution: Map<Tile>,
 }

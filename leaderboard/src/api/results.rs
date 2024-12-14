@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use beam_logic::tile::Tile;
-use common::map::Map;
+use common::{map::Map, user::UserID};
 
 #[derive(Serialize, Deserialize)]
 pub struct GetResultsResponse {
@@ -11,7 +11,7 @@ pub struct GetResultsResponse {
 
 #[derive(Serialize, Deserialize)]
 pub struct PutResults {
-    pub user: (),
+    pub user: UserID,
     pub board: Map<Tile>,
 }
 

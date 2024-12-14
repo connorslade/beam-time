@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use native_db::{Key, ToKey};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -14,6 +16,20 @@ impl ToKey for IdKey {
 
     fn key_names() -> Vec<String> {
         vec!["Uuid".into()]
+    }
+}
+
+impl Deref for IdKey {
+    type Target = Uuid;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl From<Uuid> for IdKey {
+    fn from(inner: Uuid) -> Self {
+        Self { inner }
     }
 }
 
