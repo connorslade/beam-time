@@ -20,7 +20,8 @@ pub struct LevelState {
     pub result: Option<LevelResult>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
+#[serde(tag = "status")]
 pub enum LevelResult {
     Success { latency: u32 },
     Failed { case: usize },

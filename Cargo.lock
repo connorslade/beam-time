@@ -319,6 +319,7 @@ dependencies = [
  "dirs",
  "engine",
  "env_logger",
+ "hex",
  "image",
  "indoc",
  "leaderboard",
@@ -330,6 +331,7 @@ dependencies = [
  "rand",
  "ron",
  "serde",
+ "serde_json",
  "steamworks",
  "thousands",
  "toml",
@@ -705,7 +707,9 @@ dependencies = [
 name = "common"
 version = "0.1.0"
 dependencies = [
+ "bincode",
  "nalgebra",
+ "once_cell",
  "serde",
 ]
 
@@ -1679,6 +1683,7 @@ dependencies = [
  "afire",
  "anyhow",
  "beam_logic",
+ "bincode",
  "common",
  "ctrlc",
  "hex",

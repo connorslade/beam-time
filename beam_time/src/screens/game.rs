@@ -99,11 +99,16 @@ impl Screen<App> for GameScreen {
                 sim.runtime.running = false;
 
                 if matches!(result, LevelResult::Success { .. }) {
+                    let level = self.board.transient.level.as_ref().unwrap();
+
+                    // Award potential steam achievements
                     #[cfg(feature = "steam")]
-                    {
-                        let level = self.board.transient.level.as_ref().unwrap();
-                        award_campaign_achievements(state, level);
-                    }
+                    award_campaign_achievements(state, level);
+
+                    // Upload solution to leaderboard server
+                    state
+                        .leaderboard
+                        .publish_solution(&state.id, level.id, &self.board.tiles);
 
                     create_confetti(&mut self.confetti, ctx);
                     self.board.meta.level.as_mut().unwrap().solved = true;

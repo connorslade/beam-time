@@ -13,6 +13,8 @@ use beam_logic::{
     misc::price,
     simulation::{level_state::LevelResult, runtime::testing::TestingSimulationState},
 };
+use bincode::Options;
+use common::consts::BINCODE_OPTIONS;
 use leaderboard::api::{hmac::verify, results::PutResults};
 use serde_json::json;
 use uuid::Uuid;
@@ -33,8 +35,7 @@ pub fn attach(server: &mut Server<App>) {
         verify(&ctx.req.body, &hash).context("Invalid authorization")?;
 
         let app = ctx.app();
-
-        let body = serde_json::from_slice::<PutResults>(&ctx.req.body)?;
+        let body = BINCODE_OPTIONS.deserialize::<PutResults>(&ctx.req.body)?;
 
         let level = &DEFAULT_LEVELS[0];
         let results = TestingSimulationState::new(
@@ -44,8 +45,6 @@ pub fn attach(server: &mut Server<App>) {
         )
         .run();
 
-        ctx.text(json!(results)).send()?;
-
         if let LevelResult::Success { latency } = results {
             let cost = price(&body.board, Some(level));
             let timestamp = SystemTime::now()
@@ -54,8 +53,17 @@ pub fn attach(server: &mut Server<App>) {
                 .as_secs();
 
             let transaction = app.db.rw_transaction()?;
-            transaction.insert(Results {
-                id: Uuid::new_v4().into(),
+            let old = transaction
+                .scan()
+                .primary::<Results>()?
+                .all()?
+                .filter_map(Result::ok)
+                .filter(|x| x.user_id == body.user && *x.level_id == level_id)
+                .next();
+
+            let id = old.map(|x| x.id).unwrap_or_else(|| Uuid::new_v4().into());
+            transaction.upsert(Results {
+                id,
 
                 user_id: body.user,
                 ip_address: ctx.req.real_ip(),
@@ -70,6 +78,7 @@ pub fn attach(server: &mut Server<App>) {
             transaction.commit()?;
         }
 
+        ctx.text(json!(results)).send()?;
         Ok(())
     });
 }

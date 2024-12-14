@@ -5,7 +5,7 @@ use native_model::{native_model, Model};
 use serde::{Deserialize, Serialize};
 
 use beam_logic::tile::Tile;
-use common::{map::Map, user::UserID};
+use common::{map::Map, user::UserId};
 
 use crate::database::id_key::IdKey;
 
@@ -16,7 +16,7 @@ pub struct Results {
     #[primary_key]
     pub id: IdKey,
 
-    pub user_id: UserID,
+    pub user_id: UserId,
     pub ip_address: IpAddr,
     pub timestamp: u64,
 

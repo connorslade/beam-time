@@ -9,13 +9,14 @@ common = { path = "../common" }
 
 afire.workspace = true
 anyhow.workspace = true
+bincode.workspace = true
 ctrlc.workspace = true
 hex.workspace = true
 hmac.workspace = true
 log.workspace = true
 native_db.workspace = true
 native_model.workspace = true
-once_cell.workspace =true
+once_cell.workspace = true
 parking_lot.workspace = true
 serde_json.workspace = true
 serde.workspace = true

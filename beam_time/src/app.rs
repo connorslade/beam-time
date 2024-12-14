@@ -1,7 +1,7 @@
 use std::{fs, path::PathBuf, time::Instant};
 
 use anyhow::Result;
-use common::user::UserID;
+use common::user::UserId;
 use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "steam")]
@@ -9,7 +9,7 @@ use crate::steam::Steam;
 use crate::{consts::CONFIG_FILE, leaderboard::LeaderboardManager, ui::waterfall::WaterfallState};
 
 pub struct App {
-    pub id: UserID,
+    pub id: UserId,
     #[cfg(feature = "steam")]
     pub steam: Steam,
     pub leaderboard: LeaderboardManager,
@@ -46,9 +46,9 @@ impl App {
 
         Self {
             #[cfg(feature = "steam")]
-            id: UserID::Steam(steam.user_id()),
+            id: UserId::Steam(steam.user_id()),
             #[cfg(not(feature = "steam"))]
-            id: UserID::Hardware(crate::util::hwid::get()),
+            id: UserId::Hardware(crate::util::hwid::get()),
 
             #[cfg(feature = "steam")]
             steam,
