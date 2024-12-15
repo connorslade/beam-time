@@ -1,5 +1,6 @@
 use std::{
     borrow::Cow,
+    net::{IpAddr, Ipv4Addr},
     time::{SystemTime, UNIX_EPOCH},
 };
 
@@ -19,7 +20,7 @@ use leaderboard::api::{hmac::verify, results::PutResults};
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::{app::App, database::schema::results::Results};
+use crate::{app::App, database::results::Results};
 
 pub fn attach(server: &mut Server<App>) {
     server.put("/api/{level}/results", |ctx| {
@@ -45,6 +46,8 @@ pub fn attach(server: &mut Server<App>) {
         )
         .run();
 
+        ctx.text(json!(results)).send()?;
+
         if let LevelResult::Success { latency } = results {
             let cost = price(&body.board, Some(level));
             let timestamp = SystemTime::now()
@@ -52,21 +55,14 @@ pub fn attach(server: &mut Server<App>) {
                 .unwrap()
                 .as_secs();
 
-            let transaction = app.db.rw_transaction()?;
-            let old = transaction
-                .scan()
-                .primary::<Results>()?
-                .all()?
-                .filter_map(Result::ok)
-                .filter(|x| x.user_id == body.user && *x.level_id == level_id)
-                .next();
+            let ip_address = match ctx.req.real_ip() {
+                IpAddr::V4(ipv4_addr) => ipv4_addr,
+                IpAddr::V6(_) => Ipv4Addr::UNSPECIFIED,
+            };
 
-            let id = old.map(|x| x.id).unwrap_or_else(|| Uuid::new_v4().into());
-            transaction.upsert(Results {
-                id,
-
+            app.db.insert_result(Results {
                 user_id: body.user,
-                ip_address: ctx.req.real_ip(),
+                ip_address,
                 timestamp,
 
                 level_id: level_id.into(),
@@ -75,10 +71,9 @@ pub fn attach(server: &mut Server<App>) {
 
                 solution: body.board,
             })?;
-            transaction.commit()?;
+            app.db.update_histograms(level_id)?;
         }
 
-        ctx.text(json!(results)).send()?;
         Ok(())
     });
 }

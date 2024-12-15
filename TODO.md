@@ -108,3 +108,7 @@
 - [x] Implement custom hardware id
 - [ ] Figure out whats causing startup delay
 - [ ] Cache get_results stuff
+- [ ] Fix up histograms
+  - [ ] Render correctly if all bins are the same / zero
+  - [ ] Render where you fall more correctly
+  - [ ] Whats with the delay on sending requests?

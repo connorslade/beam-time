@@ -3,6 +3,10 @@ name = "leaderboard"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+tracing = []
+default = ["tracing"]
+
 [dependencies]
 beam_logic = { path = "../beam_logic" }
 common = { path = "../common" }
@@ -14,10 +18,9 @@ ctrlc.workspace = true
 hex.workspace = true
 hmac.workspace = true
 log.workspace = true
-native_db.workspace = true
-native_model.workspace = true
 once_cell.workspace = true
 parking_lot.workspace = true
+rusqlite.workspace = true
 serde_json.workspace = true
 serde.workspace = true
 sha2.workspace = true

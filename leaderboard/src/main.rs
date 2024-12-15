@@ -1,3 +1,5 @@
+use std::process;
+
 use afire::{extensions::Logger, trace, trace::Level, Middleware, Server};
 use anyhow::Result;
 
@@ -17,6 +19,14 @@ fn main() -> Result<()> {
 
     Logger::new().attach(&mut server);
     routes::attach(&mut server);
+
+    let app = server.app();
+    ctrlc::set_handler(move || {
+        trace!("Exiting");
+        app.db.cleanup().unwrap();
+        process::exit(0);
+    })
+    .unwrap();
 
     server.run()?;
     Ok(())
