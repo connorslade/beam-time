@@ -38,7 +38,11 @@ pub fn attach(server: &mut Server<App>) {
         let app = ctx.app();
         let body = BINCODE_OPTIONS.deserialize::<PutResults>(&ctx.req.body)?;
 
-        let level = &DEFAULT_LEVELS[0];
+        let level = DEFAULT_LEVELS
+            .iter()
+            .filter(|x| x.id == level_id)
+            .next()
+            .context("Level not found")?;
         let results = TestingSimulationState::new(
             &body.board,
             Cow::Borrowed(level),

@@ -110,4 +110,14 @@
 - [ ] Cache get_results stuff
 - [ ] Fix up histograms
   - [ ] Render correctly if all bins are the same / zero
-  - [ ] Render where you fall more correctly
+  - [ ] Render where you fall more correctly  
+  - [ ] Emulate a smaller number of bins by repeating
+- [ ] Figure out how to support user levels on leaderboard server (steam workshop)
+- [ ] Fix input/output label rendering for test cases
+  - [ ] Add output label support
+  - [ ] Add labels to half adder level
+- [ ] Fix edge detector levels
+
+## Level Ideas
+
+To give an into to binary numbers, make a level where you have to make a rom for like three or four 8 bit numbers.

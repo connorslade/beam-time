@@ -3,9 +3,9 @@ Level(
     name: "Basic Routing",
     description: "
         Connect the laser (input) to the detector (output) with a mirror.
-
+        
         Click the mirror icon in the bottom left of the screen to pick one up, press R to rotate it, and place it down in the bottom left corner of the board.
-
+        
         Press P to play the simulation, ESCAPE to go back to edit mode, then press T to run this levels test cases.",
 
     size: Some((6, 6)),
