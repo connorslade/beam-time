@@ -28,17 +28,19 @@ define_refs! {
         CAMPAIGN_BUTTON,
         OPTIONS_BUTTON,
         ABOUT_BUTTON,
+        CREATE_BUTTON,
 
         TILE_PICKER_LEFT,
         TILE_PICKER_CENTER,
         TILE_PICKER_RIGHT,
-        INFO_PANEL,
+        PANEL,
         CONFETTI_PARTICLES,
         BIG_RIGHT_ARROW,
         LEFT_ARROW,
         RIGHT_ARROW,
         HORIZONTAL_RULE,
         HISTOGRAM_BAR,
+        HISTOGRAM_MARKER,
 
         EMPTY_TILE_A,
         EMPTY_TILE_B,
@@ -98,17 +100,19 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, CAMPAIGN_BUTTON, (72, 48), (49, 14));
     assets.register_sprite(interface, OPTIONS_BUTTON, (0, 48), (39, 14));
     assets.register_sprite(interface, ABOUT_BUTTON, (40, 48), (31, 14));
+    assets.register_sprite(interface, CREATE_BUTTON, (70, 32), (35, 14));
 
-    assets.register_sprite(interface, TILE_PICKER_LEFT, (64, 112), (16, 16));
-    assets.register_sprite(interface, TILE_PICKER_CENTER, (80, 112), (16, 16));
-    assets.register_sprite(interface, TILE_PICKER_RIGHT, (96, 112), (16, 16));
-    assets.register_sprite(interface, INFO_PANEL, (80, 80), (16, 16));
+    assets.register_sprite(interface, TILE_PICKER_LEFT, (64, 80), (16, 16));
+    assets.register_sprite(interface, TILE_PICKER_CENTER, (80, 80), (16, 16));
+    assets.register_sprite(interface, TILE_PICKER_RIGHT, (96, 80), (16, 16));
+    assets.register_sprite(interface, PANEL, (80, 96), (16, 16));
     assets.register_sprite(interface, CONFETTI_PARTICLES, (0, 64), (3, 3));
     assets.register_sprite(interface, BIG_RIGHT_ARROW, (16, 64), (11, 9));
     assets.register_sprite(interface, LEFT_ARROW, (16, 74), (3, 6));
     assets.register_sprite(interface, RIGHT_ARROW, (20, 74), (3, 6));
     assets.register_sprite(interface, HORIZONTAL_RULE, (32, 64), (16, 1));
     assets.register_sprite(interface, HISTOGRAM_BAR, (32, 65), (4, 1));
+    assets.register_sprite(interface, HISTOGRAM_MARKER, (24, 76), (5, 4));
 
     let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
     assets.register_sprite(tiles, EMPTY_TILE_A, (0, 288), (16, 16));

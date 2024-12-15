@@ -3,7 +3,7 @@ Level(
     name: "Basic Oscillator",
     description: "
         In addition to logic gates (AND, OR, NOT) there is another category of circuits you can make: oscillators! These are just circuits that periodically emit a pulse.
-
+        
         For this level, make the output alternate between the on and off states every four ticks, for a total cycle period of eight ticks.
         
         Instead of using P to start the simulation, use SPACE to step through each simulation tick one at a time.",

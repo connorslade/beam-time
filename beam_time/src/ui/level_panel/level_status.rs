@@ -5,7 +5,7 @@ use thousands::Separable;
 
 use crate::{
     app::App,
-    assets::{HISTOGRAM_BAR, UNDEAD_FONT},
+    assets::{HISTOGRAM_BAR, HISTOGRAM_MARKER, UNDEAD_FONT},
     consts::layer,
 };
 use engine::{
@@ -41,7 +41,7 @@ pub fn level_complete(
     state: &App,
     board: &Level,
     latency: u32,
-    price: u32,
+    cost: u32,
     ui: &mut UIContext,
 ) {
     let center_x = (WIDTH as f32 * ui.tile_size) / 2.0;
@@ -69,7 +69,7 @@ pub fn level_complete(
 
     let text = format!(
         "Nice work! Your solution costs ${} and has a total latency of {latency} ticks.",
-        price.separate_with_commas(),
+        cost.separate_with_commas(),
     );
     ui.text_block(ctx, state, &text);
     ui.y -= ui.padding;
@@ -79,7 +79,7 @@ pub fn level_complete(
         return;
     };
 
-    for (i, text) in ["Cost", "Latency"].iter().enumerate() {
+    for (i, (text, value)) in [("Cost", cost), ("Latency", latency)].iter().enumerate() {
         let pos = Vector2::new(
             WIDTH as f32 * ui.tile_size * (1.0 + 2.0 * i as f32) / 4.0,
             ui.y,
@@ -93,7 +93,7 @@ pub fn level_complete(
         let data = [&hist_data.cost, &hist_data.latency][i];
 
         let hist_pos = Vector2::new(ui.tile_size * WIDTH as f32 / 2.0 * i as f32, ui.y - offset);
-        let height = histogram(ctx, state, ui, hist_pos, ui.tile_size, data, 75.0);
+        let height = histogram(ctx, state, ui, hist_pos, ui.tile_size, data, *value as f32);
         ui.y -= (offset + height) * (i == 1) as u8 as f32;
 
         ctx.draw(text);
@@ -126,6 +126,7 @@ fn histogram(
 ) -> f32 {
     const BIN_COUNT: usize = 12;
 
+    let actual_space = 8.0 * ctx.scale_factor;
     let max_count = data.bins.iter().max().copied().unwrap_or_default();
     let bars = data
         .bins
@@ -134,7 +135,7 @@ fn histogram(
         .map(|(idx, &count)| {
             base + Vector2::new(
                 ui.tile_size / 4.0 * (idx as f32 + 1.0),
-                ((count as f32 / max_count as f32) - 1.0) * height,
+                ((count as f32 / max_count as f32) - 1.0) * height - actual_space,
             )
         })
         .collect::<Vec<_>>();
@@ -164,7 +165,7 @@ fn histogram(
 
     let text = Text::new(UNDEAD_FONT, "0")
         .position(
-            base + Vector2::new(ui.tile_size / 4.0, -height - ui.padding),
+            base + Vector2::new(ui.tile_size / 4.0, -height - ui.padding - actual_space),
             Anchor::TopLeft,
         )
         .scale(Vector2::repeat(state.config.ui_scale * 2.0))
@@ -177,7 +178,7 @@ fn histogram(
             .position(
                 base + Vector2::new(
                     ui.tile_size / 4.0 * (1.0 + BIN_COUNT as f32),
-                    -height - ui.padding,
+                    -height - ui.padding - actual_space,
                 ),
                 Anchor::TopRight,
             )
@@ -186,16 +187,23 @@ fn histogram(
     );
 
     let t = actual / data.max as f32;
+    let actual_pos = base
+        + Vector2::new(
+            ui.tile_size / 4.0 * (1.0 + t * BIN_COUNT as f32),
+            ui.padding - actual_space,
+        );
+
     ctx.draw(
         Text::new(UNDEAD_FONT, actual.to_string().as_str())
             .scale(Vector2::repeat(state.config.ui_scale * 2.0))
-            .position(
-                base + Vector2::new(
-                    ui.tile_size / 4.0 * (1.0 + t * BIN_COUNT as f32),
-                    -height - ui.padding,
-                ),
-                Anchor::TopCenter,
-            )
+            .position(actual_pos, Anchor::BottomCenter)
+            .z_index(layer::UI_ELEMENT),
+    );
+
+    ctx.draw(
+        Sprite::new(HISTOGRAM_MARKER)
+            .scale(Vector2::repeat(state.config.ui_scale * 2.0))
+            .position(actual_pos, Anchor::TopCenter) // - (1/2 * bar_width, 0)
             .z_index(layer::UI_ELEMENT),
     );
 

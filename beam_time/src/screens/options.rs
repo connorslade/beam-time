@@ -12,6 +12,6 @@ pub struct OptionsScreen {
 
 impl Screen<App> for OptionsScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
-        titled_screen(state, ctx, &mut self.back_button, "Options");
+        titled_screen(state, ctx, Some(&mut self.back_button), "Options");
     }
 }

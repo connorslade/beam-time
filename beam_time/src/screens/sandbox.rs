@@ -10,11 +10,11 @@ use engine::{
 };
 
 use crate::{
-    assets::UNDEAD_FONT,
+    assets::{BACK_BUTTON, CREATE_BUTTON, UNDEAD_FONT},
     game::board::BoardMeta,
     screens::game::GameScreen,
     ui::{
-        button::ButtonState,
+        button::{Button, ButtonState},
         misc::{font_scale, titled_screen},
     },
     util::load_level_dir,
@@ -24,12 +24,14 @@ use crate::{
 #[derive(Default)]
 pub struct SandboxScreen {
     worlds: Vec<(PathBuf, BoardMeta)>,
+
     back_button: ButtonState,
+    create_button: ButtonState,
 }
 
 impl Screen<App> for SandboxScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
-        titled_screen(state, ctx, &mut self.back_button, "Sandbox");
+        titled_screen(state, ctx, None, "Sandbox");
 
         if self.worlds.is_empty() {
             ctx.draw(
@@ -64,6 +66,29 @@ impl Screen<App> for SandboxScreen {
                 ctx.draw(text);
             }
         }
+
+        let half_width = (35 + 26 + 10) as f32 * ctx.scale_factor;
+        let height = (10 + 28) as f32 * ctx.scale_factor;
+
+        ctx.draw(
+            Button::new(BACK_BUTTON, &mut self.back_button)
+                .pos(
+                    Vector2::new(ctx.center().x + half_width, height),
+                    Anchor::Center,
+                )
+                .scale(Vector2::repeat(4.0))
+                .set_back()
+                .on_click(|ctx| ctx.pop_screen()),
+        );
+
+        ctx.draw(
+            Button::new(CREATE_BUTTON, &mut self.create_button)
+                .pos(
+                    Vector2::new(ctx.center().x - half_width, height),
+                    Anchor::Center,
+                )
+                .scale(Vector2::repeat(4.0)),
+        );
     }
 
     fn on_init(&mut self, state: &mut App) {

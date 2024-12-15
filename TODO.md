@@ -116,6 +116,7 @@
   - [ ] Add labels to half adder level
 - [ ] Fix edge detector levels
 - [ ] Load custom levels at runtime (on server too :sob:)
+- [ ] Fix synchronization level checker
 
 ## Level Ideas
 

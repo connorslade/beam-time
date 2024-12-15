@@ -34,7 +34,7 @@ pub struct CampaignScreen {
 
 impl Screen<App> for CampaignScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
-        titled_screen(state, ctx, &mut self.back_button, "Campaign");
+        titled_screen(state, ctx, Some(&mut self.back_button), "Campaign");
 
         const SCALE: f32 = 3.0;
         let (_line_height, line_spacing, total_height) =

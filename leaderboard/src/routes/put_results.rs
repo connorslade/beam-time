@@ -40,8 +40,7 @@ pub fn attach(server: &mut Server<App>) {
 
         let level = DEFAULT_LEVELS
             .iter()
-            .filter(|x| x.id == level_id)
-            .next()
+            .find(|x| x.id == level_id)
             .context("Level not found")?;
         let results = TestingSimulationState::new(
             &body.board,
