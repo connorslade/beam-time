@@ -36,6 +36,8 @@ impl App {
             fs::create_dir_all(&data_dir).unwrap();
         }
 
+        let _ = fs::create_dir(data_dir.join("levels"));
+
         let config = fs::read_to_string(data_dir.join(CONFIG_FILE))
             .ok()
             .and_then(|s| toml::from_str(&s).ok())

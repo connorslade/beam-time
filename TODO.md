@@ -68,13 +68,12 @@
 - [ ] Blueprint system
   - [ ] Allow saving and loading premade-structures in-game
   - [ ] Allow importing and exporting them as base64 encoded strs
-- [ ] Dont overwrite when placing tile normally
+- [x] Dont overwrite when placing tile normally
 - [ ] Dont allow interacting with protected tiles through selections
 - [x] Use shift to reverse rotation direction
 - [ ] Cleanup selection renderer with holes
 - [ ] Bias scale to integer zoom levels when at small zooms
 - [x] Detect and show failed test cases instead of hanging
-- [ ] Allow disabling cycle detection for pluse based solutions
 - [ ] Experiment with animation icon?
   - This is completely unnecessary, but might be kinda cool, maybe an option in settings
 - [x] Allow labeling emitters / outputs / tiles in general?
@@ -97,7 +96,7 @@
 - [x] Split beam logic into its own crate (so solutions can be verified on the server)
 - [x] Cleanup how level results are handled
   - This also includes fixing the bug where the simulation thread can crash if the tick speed is too high
-- [ ] Figure out what to use as user IDs to prevent multiple score uploads for one player
+- [x] Figure out what to use as user IDs to prevent multiple score uploads for one player
 - [x] Set LevelMeta::solved to true when level is solved and unset it on board modification
   - [x] Fire event on board edit
 - [ ] Split beam_time::game::board into some sub modules
@@ -106,8 +105,7 @@
 - [x] Put steam features under a feature flag
 - [x] Fix rpath on linux
 - [x] Implement custom hardware id
-- [ ] Figure out whats causing startup delay
-- [ ] Cache get_results stuff
+- [x] Cache get_results stuff
 - [ ] Fix up histograms
   - [ ] Render correctly if all bins are the same / zero
   - [ ] Render where you fall more correctly  
@@ -117,6 +115,7 @@
   - [ ] Add output label support
   - [ ] Add labels to half adder level
 - [ ] Fix edge detector levels
+- [ ] Load custom levels at runtime (on server too :sob:)
 
 ## Level Ideas
 
