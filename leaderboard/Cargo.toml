@@ -15,6 +15,7 @@ afire.workspace = true
 anyhow.workspace = true
 bincode.workspace = true
 ctrlc.workspace = true
+env_logger.workspace = true
 hex.workspace = true
 hmac.workspace = true
 log.workspace = true

@@ -1,5 +1,5 @@
-use afire::trace;
 use anyhow::Result;
+use log::{error, info};
 use parking_lot::{MappedMutexGuard, Mutex, MutexGuard};
 use rusqlite::Connection;
 
@@ -47,18 +47,16 @@ impl Database {
         let db_version =
             this.pragma_query_value(None, "user_version", |row| row.get::<_, u64>(0))?;
         match db_version {
-            DATABASE_VERSION => trace!("Loaded database at `{}`", this.path().unwrap()),
+            DATABASE_VERSION => info!("Loaded database at `{}`", this.path().unwrap()),
             0 => {
-                trace!("Creating database at `{}`", this.path().unwrap());
+                info!("Creating database at `{}`", this.path().unwrap());
                 this.pragma_update(None, "user_version", DATABASE_VERSION)?;
             }
             i => {
-                trace!(
-                    Level::Error,
+                error!(
                     "Database version mismatch. Expected {}, got {}. Please run migrations, or \
                      just like delete the database and start over.",
-                    DATABASE_VERSION,
-                    i
+                    DATABASE_VERSION, i
                 );
                 std::process::exit(1);
             }

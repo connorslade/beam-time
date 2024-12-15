@@ -111,4 +111,3 @@
 - [ ] Fix up histograms
   - [ ] Render correctly if all bins are the same / zero
   - [ ] Render where you fall more correctly
-  - [ ] Whats with the delay on sending requests?

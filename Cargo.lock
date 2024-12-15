@@ -1655,6 +1655,7 @@ dependencies = [
  "bincode",
  "common",
  "ctrlc",
+ "env_logger",
  "hex",
  "hmac",
  "log",
