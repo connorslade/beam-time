@@ -1,16 +1,16 @@
-use std::path::PathBuf;
+use std::{f32::consts::PI, path::PathBuf};
 
 use common::misc::in_bounds;
 use engine::{
     color::Rgb,
-    drawable::text::Text,
+    drawable::{sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
 };
 
 use crate::{
-    assets::{BACK_BUTTON, CREATE_BUTTON, UNDEAD_FONT},
+    assets::{BACK_BUTTON, CREATE_BUTTON, LEVEL_DROPDOWN_ARROW, UNDEAD_FONT},
     game::board::BoardMeta,
     screens::game::GameScreen,
     ui::{
@@ -27,6 +27,7 @@ pub struct SandboxScreen {
 
     back_button: ButtonState,
     create_button: ButtonState,
+    dropdown_angle: f32,
 }
 
 impl Screen<App> for SandboxScreen {
@@ -48,12 +49,13 @@ impl Screen<App> for SandboxScreen {
                 let pos =
                     ctx.center() + Vector2::new(0.0, total_height / 2.0 - line_spacing * i as f32);
 
-                let mut text = Text::new(UNDEAD_FONT, &meta.name)
+                let text = format!("{} . . . . . . . . . . .", meta.name);
+                let mut text = Text::new(UNDEAD_FONT, &text)
                     .position(pos, Anchor::Center)
                     .scale(Vector2::repeat(SCALE));
 
-                let width = text.size(ctx).x;
-                let half_size = Vector2::new(width / 2.0, line_height / 2.0) * ctx.scale_factor;
+                let size = text.size(ctx);
+                let half_size = Vector2::new(size.x / 2.0, line_height / 2.0) * ctx.scale_factor;
                 let hovered = in_bounds(ctx.input.mouse, (pos - half_size, pos + half_size));
                 if hovered {
                     text = text.color(Rgb::new(0.5, 0.5, 0.5));
@@ -64,6 +66,28 @@ impl Screen<App> for SandboxScreen {
                 }
 
                 ctx.draw(text);
+
+                let dropdown = Sprite::new(LEVEL_DROPDOWN_ARROW)
+                    .scale(Vector2::repeat(4.0))
+                    .position(
+                        pos + Vector2::new(
+                            size.x / 2.0 + 16.0 * ctx.scale_factor,
+                            -4.0 * ctx.scale_factor,
+                        ),
+                        Anchor::CenterLeft,
+                    )
+                    .rotate(-self.dropdown_angle, Anchor::Center);
+
+                self.dropdown_angle =
+                    if in_bounds(ctx.input.mouse, (pos - size / 2.0, pos + size / 2.0)) {
+                        self.dropdown_angle + (PI / 2.0) * ctx.delta_time * 4.0
+                    } else {
+                        self.dropdown_angle - (PI / 2.0) * ctx.delta_time * 4.0
+                    }
+                    .max(0.0)
+                    .min(PI / 2.0);
+
+                ctx.draw(dropdown);
             }
         }
 
