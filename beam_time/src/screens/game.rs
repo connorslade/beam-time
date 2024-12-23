@@ -2,6 +2,8 @@ use std::{borrow::Cow, mem, path::PathBuf, time::Duration};
 
 use rand::{seq::SliceRandom, thread_rng, Rng};
 
+#[cfg(feature = "steam")]
+use crate::game::achievements::award_campaign_achievements;
 use crate::{
     consts::BACKGROUND_COLOR,
     game::{board::Board, render::BeamStateRender, SharedState},
@@ -97,6 +99,17 @@ impl Screen<App> for GameScreen {
                 sim.runtime.running = false;
 
                 if matches!(result, LevelResult::Success { .. }) {
+                    let level = self.board.transient.level.as_ref().unwrap();
+
+                    // Award potential steam achievements
+                    #[cfg(feature = "steam")]
+                    award_campaign_achievements(state, level);
+
+                    // Upload solution to leaderboard server
+                    state
+                        .leaderboard
+                        .publish_solution(&state.id, level.id, &self.board.tiles);
+
                     create_confetti(&mut self.confetti, ctx);
                     self.board.meta.level.as_mut().unwrap().solved = true;
                     sim.beam = None;

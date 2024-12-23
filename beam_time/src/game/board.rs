@@ -31,7 +31,7 @@ use beam_logic::{
     simulation::{state::BeamState, tile::BeamTile},
     tile::Tile,
 };
-use common::{map::Map, misc::in_bounds};
+use common::{consts::BINCODE_OPTIONS, map::Map, misc::in_bounds};
 
 use super::{
     history::History,
@@ -96,10 +96,7 @@ impl Board {
 
     pub fn load_meta(path: &PathBuf) -> Result<BoardMeta> {
         let file = File::open(path)?;
-        let meta = bincode::DefaultOptions::new()
-            .with_varint_encoding()
-            .allow_trailing_bytes()
-            .deserialize_from::<_, BoardMeta>(file)?;
+        let meta = BINCODE_OPTIONS.deserialize_from::<_, BoardMeta>(file)?;
         Ok(meta)
     }
 
@@ -115,9 +112,7 @@ impl Board {
         }
 
         let file = File::create(path)?;
-        bincode::DefaultOptions::new()
-            .with_varint_encoding()
-            .serialize_into(file, &self)?;
+        BINCODE_OPTIONS.serialize_into(file, &self)?;
 
         info!("Save took {:?}", start.elapsed());
         Ok(())

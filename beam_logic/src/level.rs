@@ -10,7 +10,7 @@ use log::warn;
 use nalgebra::Vector2;
 use once_cell::sync::Lazy;
 use ron::{extensions::Extensions, Options};
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 use uuid::Uuid;
 
 use crate::tile::{Tile, TileType};
@@ -62,6 +62,7 @@ pub struct Level {
     /// levels and other can view correctly them in sandbox mode.
     pub id: Uuid,
     pub name: String,
+    #[serde(deserialize_with = "unindent_string")]
     pub description: String,
 
     pub size: Option<Vector2<u32>>,
@@ -123,4 +124,12 @@ impl ElementLocation {
             ElementLocation::Dynamic(_) => todo!(),
         }
     }
+}
+
+fn unindent_string<'de, D>(deserializer: D) -> Result<String, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let string = String::deserialize(deserializer)?;
+    Ok(unindent::unindent(&string))
 }

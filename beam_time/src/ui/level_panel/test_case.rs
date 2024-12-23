@@ -6,6 +6,7 @@ use crate::{
         BIG_RIGHT_ARROW, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR, TILE_EMITTER_DOWN, UNDEAD_FONT,
     },
     consts::layer,
+    ui::misc::tile_label,
 };
 use beam_logic::{level::Level, simulation::runtime::asynchronous::InnerAsyncSimulationState};
 use engine::{
@@ -54,13 +55,19 @@ pub fn test_case(
     };
 
     let mut i = 0;
-    for &input in &case.lasers {
+    for (&input, laser) in case.lasers.iter().zip(level.tests.lasers.iter()) {
         let pos = Vector2::new(ui.margin + i as f32 * tile_size, ui.y);
         ctx.draw(
             case_tile(TILE_EMITTER_DOWN)
-                .uv_offset(Vector2::new(-16 * input as i32, 0))
+                .uv_offset(Vector2::new(16 * input as i32, 0))
                 .position(pos, Anchor::TopLeft),
         );
+
+        if let Some(label) = level.labels.get(&laser.into_pos()) {
+            let label = tile_label(ctx, scale, pos + Vector2::repeat(scale / 2.0), label);
+            ctx.draw(label.z_index(layer::UI_OVERLAY));
+        }
+
         i += 1;
     }
 

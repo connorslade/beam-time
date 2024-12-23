@@ -1,11 +1,17 @@
 use std::{fs, path::PathBuf, time::Instant};
 
 use anyhow::Result;
+use common::user::UserId;
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "steam")]
+use crate::steam::Steam;
 use crate::{consts::CONFIG_FILE, leaderboard::LeaderboardManager, ui::waterfall::WaterfallState};
 
 pub struct App {
+    pub id: UserId,
+    #[cfg(feature = "steam")]
+    pub steam: Steam,
     pub leaderboard: LeaderboardManager,
 
     pub start: Instant,
@@ -30,12 +36,24 @@ impl App {
             fs::create_dir_all(&data_dir).unwrap();
         }
 
+        let _ = fs::create_dir(data_dir.join("levels"));
+
         let config = fs::read_to_string(data_dir.join(CONFIG_FILE))
             .ok()
             .and_then(|s| toml::from_str(&s).ok())
             .unwrap_or_default();
 
+        #[cfg(feature = "steam")]
+        let steam = Steam::init().unwrap();
+
         Self {
+            #[cfg(feature = "steam")]
+            id: UserId::Steam(steam.user_id()),
+            #[cfg(not(feature = "steam"))]
+            id: UserId::Hardware(crate::util::hwid::get()),
+
+            #[cfg(feature = "steam")]
+            steam,
             leaderboard: LeaderboardManager::default(),
 
             start: Instant::now(),
@@ -55,6 +73,8 @@ impl App {
     }
 
     pub fn on_tick(&mut self) {
+        #[cfg(feature = "steam")]
+        self.steam.on_tick();
         self.leaderboard.tick();
     }
 

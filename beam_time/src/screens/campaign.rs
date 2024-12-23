@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::PathBuf};
 
-use beam_logic::level::DEFAULT_LEVELS;
+use beam_logic::level::{Level, DEFAULT_LEVELS};
 use common::misc::in_bounds;
 use engine::{
     color::Rgb,
@@ -9,6 +9,7 @@ use engine::{
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
 };
+use log::warn;
 use uuid::Uuid;
 
 use crate::{
@@ -26,18 +27,24 @@ use crate::{
 #[derive(Default)]
 pub struct CampaignScreen {
     back_button: ButtonState,
+
+    runtime_levels: Vec<Level>,
     worlds: HashMap<Uuid, (PathBuf, BoardMeta)>,
 }
 
 impl Screen<App> for CampaignScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
-        titled_screen(state, ctx, &mut self.back_button, "Campaign");
+        titled_screen(state, ctx, Some(&mut self.back_button), "Campaign");
 
         const SCALE: f32 = 3.0;
         let (_line_height, line_spacing, total_height) =
             font_scale(ctx, UNDEAD_FONT, SCALE, DEFAULT_LEVELS.len());
 
-        for (i, level) in DEFAULT_LEVELS.iter().enumerate() {
+        for (i, level) in DEFAULT_LEVELS
+            .iter()
+            .chain(self.runtime_levels.iter())
+            .enumerate()
+        {
             let world = self.worlds.get(&level.id);
             let color = if world.map(|(_, meta)| meta.is_solved()) == Some(true) {
                 Rgb::hex(0x8fd032)
@@ -90,11 +97,29 @@ impl Screen<App> for CampaignScreen {
     }
 
     fn on_init(&mut self, state: &mut App) {
-        let dir = state.data_dir.join("campaign");
-        if dir.exists() {
-            for (path, meta) in load_level_dir(dir) {
+        self.worlds.clear();
+        self.runtime_levels.clear();
+
+        let campaign = state.data_dir.join("campaign");
+        if campaign.exists() {
+            for (path, meta) in load_level_dir(campaign) {
                 let Some(level) = meta.level else { continue };
                 self.worlds.insert(level.id, (path, meta));
+            }
+        }
+
+        let levels = state.data_dir.join("levels");
+        if levels.exists() {
+            for path in levels.read_dir().unwrap().filter_map(|x| x.ok()) {
+                let level = match Level::load_file(path.path()) {
+                    Ok(x) => x,
+                    Err(e) => {
+                        warn!("Error loading custom level: {e}");
+                        continue;
+                    }
+                };
+
+                self.runtime_levels.push(level);
             }
         }
     }

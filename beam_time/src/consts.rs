@@ -11,6 +11,8 @@ use crate::assets::{
     TILE_SPLITTER_A, TILE_SPLITTER_B, TILE_WALL,
 };
 
+#[cfg(feature = "steam")]
+pub const STEAM_ID: u32 = 3385920;
 pub const CONFIG_FILE: &str = "config.toml";
 pub const MAX_HISTORY: usize = 100;
 pub const AUTOSAVE_INTERVAL: Duration = Duration::from_secs(60 * 5);
@@ -22,8 +24,9 @@ pub const BACKGROUND_COLOR: Rgb<f32> = Rgb::new(0.235, 0.235, 0.235);
 pub const ACCENT_COLOR: Rgb<f32> = Rgb::new(0.812, 0.306, 0.306);
 
 pub mod layer {
-    pub const TILE_HOLDING: i16 = 5;
+    pub const TILE_HOLDING: i16 = 6;
 
+    pub const UI_OVERLAY: i16 = 5;
     pub const UI_ELEMENT: i16 = 4;
     pub const UI_BACKGROUND: i16 = 3;
 

@@ -34,7 +34,7 @@ pub struct AboutScreen {
 
 impl Screen<App> for AboutScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
-        let pos = titled_screen(state, ctx, &mut self.back_button, "About");
+        let pos = titled_screen(state, ctx, Some(&mut self.back_button), "About");
 
         let desc = &ctx.assets.get_font(ALAGARD_FONT).desc;
         let height = (desc.height + desc.leading) * 6.0 * ctx.scale_factor;

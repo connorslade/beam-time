@@ -4,5 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+bincode.workspace = true
 nalgebra.workspace = true
+once_cell.workspace = true
 serde.workspace = true

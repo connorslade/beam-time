@@ -1,7 +1,12 @@
 Level(
     id: "58fc60ca-3831-4f27-a29a-b4878a5dd68a",
     name: "Basic Routing",
-    description: "Connect the laser (input) to the detector (output) with a mirror.\n\nClick the mirror icon in the bottom left to pick one up, press R to rotate it, and place it down in the bottom left corner of the board.\n\nPress P to play the simulation, SPACE to step through it, and T to run this levels test cases. Use escape to exit the current simulation.",
+    description: "
+        Connect the laser (input) to the detector (output) with a mirror.
+        
+        Click the mirror icon in the bottom left of the screen to pick one up, press R to rotate it, and place it down in the bottom left corner of the board.
+        
+        Press P to play the simulation, ESCAPE to go back to edit mode, then press T to run this levels test cases.",
 
     size: Some((6, 6)),
     permanent: [ (0, 5), (5, 0) ],

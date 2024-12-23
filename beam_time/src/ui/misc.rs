@@ -19,7 +19,7 @@ use super::{
 pub fn titled_screen(
     state: &mut App,
     ctx: &mut GraphicsContext<App>,
-    back: &mut ButtonState,
+    back: Option<&mut ButtonState>,
     title: &str,
 ) -> Vector2<f32> {
     ctx.input.resized.then(|| state.waterfall.reset());
@@ -37,13 +37,17 @@ pub fn titled_screen(
             .scale(Vector2::repeat(6.0)),
     );
 
-    ctx.draw(
-        Button::new(BACK_BUTTON, back)
-            .pos(Vector2::new(ctx.center().x, 10.0 + 28.0), Anchor::Center)
+    if let Some(back) = back {
+        let back_pos = Vector2::new(ctx.center().x, 10.0 + 28.0 * ctx.scale_factor);
+        let button = Button::new(BACK_BUTTON, back)
+            .pos(back_pos, Anchor::Center)
             .scale(Vector2::repeat(4.0))
-            .set_back()
-            .on_click(|ctx| ctx.pop_screen()),
-    );
+            .set_back();
+        if button.is_clicked(ctx) {
+            ctx.pop_screen();
+        }
+        ctx.draw(button);
+    }
 
     pos
 }

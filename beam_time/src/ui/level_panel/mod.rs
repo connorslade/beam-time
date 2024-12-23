@@ -2,7 +2,7 @@ use parking_lot::MutexGuard;
 
 use crate::{
     app::App,
-    assets::{HORIZONTAL_RULE, INFO_PANEL, UNDEAD_FONT},
+    assets::{HORIZONTAL_RULE, PANEL, UNDEAD_FONT},
     consts::layer,
     game::board::Board,
 };
@@ -136,7 +136,7 @@ fn background(ctx: &mut GraphicsContext<App>, ui: &mut UIContext) {
     let x_scale = ui.scale * (WIDTH - 2) as f32;
     let x_right = ui.tile_size * WIDTH as f32;
 
-    let base = Sprite::new(INFO_PANEL)
+    let base = Sprite::new(PANEL)
         .z_index(layer::UI_BACKGROUND)
         .scale(Vector2::repeat(ui.scale));
 

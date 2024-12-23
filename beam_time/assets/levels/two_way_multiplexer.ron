@@ -1,11 +1,15 @@
 Level(
     id: "321e6dc9-4be6-4624-9f37-3b84f799f6a0",
     name: "Two Way Multiplexer",
-    description: "Lets call the two left inputs A and B. The rightmost input will be E. When E is disabled pass the value at A to the output, when E is enabled pass the value at B to the output.",
+    description: "This level has three inputs: A, B, and E (for enable). When E is disabled pass the value at A to the output, when E is enabled pass the value at B to the output.",
 
     size: Some((6, 6)),
     permanent: [ (1, 5), (2, 5), (5, 5), (5, 0) ],
-    labels: { },
+    labels: {
+        (1, 5): "A",
+        (2, 5): "B",
+        (5, 5): "E",
+    },
     tiles: {
         (1, 5): Emitter(
             rotation: Down,
@@ -24,7 +28,7 @@ Level(
 
     tests: Tests(
         lasers: [
-            // Inptus
+            // Inputs
             Static((1, 5)),
             Static((2, 5)),
 

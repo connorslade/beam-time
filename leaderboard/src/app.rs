@@ -3,11 +3,11 @@ use std::{env::args, fs};
 use anyhow::{Context, Result};
 use rusqlite::Connection;
 
-use crate::{config::Config, database::Db};
+use crate::{config::Config, database::Database};
 
 pub struct App {
     pub config: Config,
-    pub db: Db,
+    pub db: Database,
 }
 
 impl App {
@@ -17,10 +17,8 @@ impl App {
         let config = toml::from_str::<Config>(&raw_config).context("While parsing config")?;
 
         fs::create_dir_all(config.server.database_path.parent().unwrap())?;
-        let connection = Connection::open(&config.server.database_path)
-            .context("While opening connection to Database")?;
-        let db = Db::new(connection);
-        db.init().context("While initializing Database")?;
+        let db = Database::new(Connection::open(&config.server.database_path)?);
+        db.init()?;
 
         Ok(Self { config, db })
     }
