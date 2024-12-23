@@ -10,21 +10,19 @@ struct Instance {
     @location(3) transform_1: vec4<f32>,
     @location(4) transform_2: vec4<f32>,
     @location(5) transform_3: vec4<f32>,
-    // // uv: vec4<f32>, // (ax, ay, bx, by)
-    // uv: vec2<f32>,
-    // uv_size: vec2<f32>,
 
-    // color: vec3<f32>,
-    // clip: vec4<f32>, // (ax, ay, bx, by)
+    @location(6) uv: vec2<f32>,
+    @location(7) uv_size: vec2<f32>,
+
+    @location(8) color: vec3<f32>,
+    @location(9) clip: vec4<f32>, // (ax, ay, bx, by)
 }
 
 struct VertexOutput {
-    @builtin(position)
-    pos: vec4<f32>,
-    @location(0)
-    uv: vec2<f32>
+    @builtin(position) pos: vec4<f32>,
+    @location(0) uv: vec2<f32>,
+    @location(1) color: vec3<f32>
 };
-
 
 @vertex
 fn vert(
@@ -39,9 +37,15 @@ fn vert(
     );
 
     var out: VertexOutput;
+
+    out.color = instance.color;
     out.pos = vertex.pos * transform;
-    // out.uv = ctx.uv + vec2(uv.x * ctx.uv_size.x, uv.y * ctx.uv_size.y);// uv * ctx.uv_size;
-    out.uv = vertex.uv;
+    
+    out.uv = instance.uv + vec2(
+        vertex.uv.x * instance.uv_size.x,
+        vertex.uv.y * instance.uv_size.y
+    );
+
     return out;
 }
 
@@ -57,5 +61,5 @@ fn frag(in: VertexOutput) -> @location(0) vec4<f32> {
     let sample = textureSample(texture, texture_sampler, in.uv);
     if sample.w == 0.0 { discard; }
 
-    return sample * vec4(1.0);
+    return sample * vec4(in.color, 1.0);
 }

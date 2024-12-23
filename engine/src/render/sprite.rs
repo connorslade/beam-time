@@ -1,24 +1,26 @@
 use std::{collections::HashMap, mem};
 
 use bytemuck::NoUninit;
-use encase::{ShaderType, StorageBuffer};
-use nalgebra::{Matrix4, Vector2, Vector3, Vector4};
+use nalgebra::{Matrix4, Vector2, Vector3};
 use wgpu::{
     util::{BufferInitDescriptor, DeviceExt},
     AddressMode, BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
     BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingResource, BindingType, BlendComponent,
-    BlendState, Buffer, BufferAddress, BufferBinding, BufferBindingType, BufferUsages,
-    ColorTargetState, ColorWrites, CompareFunction, DepthBiasState, DepthStencilState, Device,
-    FilterMode, FragmentState, IndexFormat, MultisampleState, PipelineCompilationOptions,
-    PipelineLayoutDescriptor, PrimitiveState, Queue, RenderPass, RenderPipeline,
-    RenderPipelineDescriptor, Sampler, SamplerBindingType, SamplerDescriptor, ShaderStages,
-    StencilState, TextureSampleType, TextureViewDescriptor, TextureViewDimension, VertexAttribute,
-    VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
+    BlendState, Buffer, BufferAddress, BufferUsages, ColorTargetState, ColorWrites,
+    CompareFunction, DepthBiasState, DepthStencilState, Device, FilterMode, FragmentState,
+    IndexFormat, MultisampleState, PipelineCompilationOptions, PipelineLayoutDescriptor,
+    PrimitiveState, Queue, RenderPass, RenderPipeline, RenderPipelineDescriptor, Sampler,
+    SamplerBindingType, SamplerDescriptor, ShaderStages, StencilState, TextureSampleType,
+    TextureViewDescriptor, TextureViewDimension, VertexAttribute, VertexBufferLayout, VertexFormat,
+    VertexState, VertexStepMode,
 };
 
 use crate::{
-    assets::TextureRef, graphics_context::GraphicsContext, include_shader,
-    render::consts::VERTEX_BUFFER_LAYOUT, DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
+    assets::{SpriteAsset, TextureRef},
+    graphics_context::GraphicsContext,
+    include_shader,
+    render::consts::VERTEX_BUFFER_LAYOUT,
+    DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
 };
 
 use super::Vertex;
@@ -47,6 +49,26 @@ const SPRITE_INSTANCE_BUFFER_LAYOUT: VertexBufferLayout = VertexBufferLayout {
             offset: 4 * 12,
             shader_location: 5,
         },
+        VertexAttribute {
+            format: VertexFormat::Float32x2,
+            offset: 4 * 16,
+            shader_location: 6,
+        },
+        VertexAttribute {
+            format: VertexFormat::Float32x2,
+            offset: 4 * 18,
+            shader_location: 7,
+        },
+        VertexAttribute {
+            format: VertexFormat::Float32x2,
+            offset: 4 * 20,
+            shader_location: 8,
+        },
+        VertexAttribute {
+            format: VertexFormat::Float32x2,
+            offset: 4 * 23,
+            shader_location: 9,
+        },
     ],
 };
 
@@ -63,7 +85,7 @@ pub struct SpriteRenderPipeline {
 
 #[derive(Debug)]
 pub struct GpuSprite {
-    pub texture: TextureRef,
+    pub texture: SpriteAsset,
     pub uv: [Vector2<f32>; 2],
     // pub points: [Vector2<f32>; 4],
     pub transform: Matrix4<f32>,
@@ -75,11 +97,10 @@ pub struct GpuSprite {
 #[repr(C)]
 struct Instance {
     transform: [[f32; 4]; 4],
-    // uv: Vector2<f32>,
-    // uv_size: Vector2<f32>,
-
-    // color: Vector3<f32>,
-    // clip: Vector4<f32>,
+    uv: [f32; 2],
+    uv_size: [f32; 2],
+    color: [f32; 3],
+    clip: [f32; 4],
 }
 
 struct RenderOperation {
@@ -205,7 +226,10 @@ impl SpriteRenderPipeline {
         let mut atlases = HashMap::<TextureRef, Vec<&GpuSprite>>::new();
 
         for sprite in ctx.sprites.iter() {
-            atlases.entry(sprite.texture).or_default().push(sprite);
+            atlases
+                .entry(sprite.texture.texture)
+                .or_default()
+                .push(sprite);
         }
 
         let window = ctx.size();
@@ -217,19 +241,17 @@ impl SpriteRenderPipeline {
                 let size = sprite.texture.size;
                 // let z = (i16::MAX as f32 - sprite.z_index as f32) / (i16::MAX as f32 * 2.0);
                 instances.push(Instance {
-                    transform: (Matrix4::new_nonuniform_scaling(&Vector3::new(
-                        size.x as f32 / window.x,
-                        size.y as f32 / window.y,
-                        1.0,
-                    )) * sprite.transform)
-                        .into(),
-                    // uv: sprite.uv[0],
-                    // uv_size: sprite.uv[1] - sprite.uv[0],
-                    // uv: Vector2::zeros(),
-                    // uv_size: Vector2::new(1.0, 1.0),
-
-                    // color: sprite.color,
-                    // clip: Vector4::new(-1.0, -1.0, 1.0, 1.0),
+                    transform: (sprite.transform
+                        * Matrix4::new_nonuniform_scaling(&Vector3::new(
+                            size.x as f32 / window.x,
+                            size.y as f32 / window.y,
+                            1.0,
+                        )))
+                    .into(),
+                    uv: sprite.uv[0].into(),
+                    uv_size: (sprite.uv[1] - sprite.uv[0]).into(),
+                    color: sprite.color.into(),
+                    clip: [-1.0, -1.0, 1.0, 1.0],
                 });
             }
 

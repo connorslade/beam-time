@@ -31,14 +31,15 @@ pub struct TitleScreen {
 
 impl Screen<App> for TitleScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
-        // ctx.background(BACKGROUND_COLOR);
+        ctx.background(BACKGROUND_COLOR);
 
         ctx.draw(
             Sprite::new(TITLE)
                 .position(
-                    ctx.center() + Vector2::x() * (ctx.frame as f32 / 60.0).sin() * 50.0,
+                    Vector2::x() * (ctx.frame as f32 / 60.0).sin(),
                     Anchor::Center,
                 )
+                .rotate((ctx.frame as f32 / 60.0).sin(), Anchor::Center)
                 .scale(Vector2::repeat(4.0))
                 .color(Rgb::hex(0xff0000)),
         );

@@ -124,8 +124,11 @@ impl Sprite {
         let rotation_offset = self.rotation_anchor.offset(size);
         let position_offset = self.position_anchor.offset(scaled_size);
 
-        let t = (ctx.frame as f32 / 60.0).sin();
-        Matrix4::new_translation(&Vector3::new(t, 0.0, 0.0)).transpose()
+        // (Matrix4::new_nonuniform_scaling(&Vector3::new(1.0 / 1920.0, 1.0 / 1080.0, 1.0))*
+        (Matrix4::new_translation(&(self.position.to_homogeneous()))
+            * Matrix4::new_nonuniform_scaling(&self.scale.push(1.0))
+            * Matrix4::new_rotation(Vector3::new(0.0, 0.0, self.rotation)))
+        .transpose()
 
         // Combine transformations and offsets
         // Matrix4::new_translation(&(self.position.push(0.0) + position_offset.push(0.0)))
@@ -141,7 +144,7 @@ impl<App> Drawable<App> for Sprite {
         let asset = ctx.assets.get_sprite(self.texture);
 
         ctx.sprites.push(GpuSprite {
-            texture: asset.texture,
+            texture: *asset,
             uv: asset.uv(self.uv_offset).into(),
             transform: self.transform(ctx, asset),
             color: Vector3::new(self.color.r, self.color.g, self.color.b),
