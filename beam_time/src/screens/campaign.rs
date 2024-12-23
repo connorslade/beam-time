@@ -97,6 +97,9 @@ impl Screen<App> for CampaignScreen {
     }
 
     fn on_init(&mut self, state: &mut App) {
+        self.worlds.clear();
+        self.runtime_levels.clear();
+
         let campaign = state.data_dir.join("campaign");
         if campaign.exists() {
             for (path, meta) in load_level_dir(campaign) {

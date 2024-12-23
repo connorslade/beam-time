@@ -7,7 +7,7 @@
 - [x] Should scale be automatically multiplied by scale_factor if position cant?
 - [x] Supply all four points in GpuSprite
 - [x] Allow rotating sprites
-- [ ] Look into anti aliasing
+- [ ] ~~Look into anti aliasing~~
 - [ ] ~~Matrix stacks?~~
 - [x] Color struct with mixing and lab
 - [x] Sprite Z-ordering
@@ -22,7 +22,7 @@
 - [x] Strongly typed asset references
 - [x] Split tile_map and tile_picker into ui/game components
 - [x] Implement beam logic
-- [ ] Figure out how to apply custom shader effects?
+- [ ] ~~Figure out how to apply custom shader effects?~~
 - [x] Fix galvo input logic
 - [x] Dont overwrite galvo mirror state when rotating
 - [x] Fix delay gate rendering z order

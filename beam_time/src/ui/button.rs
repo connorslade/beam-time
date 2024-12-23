@@ -1,3 +1,5 @@
+use std::{cell::RefCell, mem};
+
 use engine::{
     assets::SpriteRef,
     color::Rgb,
@@ -11,18 +13,17 @@ use crate::{
     consts::ACCENT_COLOR,
 };
 
-type ClickHandler<App> = Box<dyn FnOnce(&mut GraphicsContext<App>)>;
-
-pub struct Button<'a, App> {
+pub struct Button<'a> {
     asset: SpriteRef,
     state: &'a mut ButtonState,
-    on_click: ClickHandler<App>,
     is_back: bool,
 
     color: Rgb<f32>,
     pos: Vector2<f32>,
     anchor: Anchor,
     scale: Vector2<f32>,
+
+    sprite: RefCell<Option<Sprite>>,
 }
 
 #[derive(Default)]
@@ -31,18 +32,19 @@ pub struct ButtonState {
     last_hovered: bool,
 }
 
-impl<'a, App> Button<'a, App> {
+impl<'a> Button<'a> {
     pub fn new(asset: SpriteRef, state: &'a mut ButtonState) -> Self {
         Self {
             asset,
             state,
-            on_click: Box::new(|_| {}),
             is_back: false,
 
             color: Rgb::new(1.0, 1.0, 1.0),
             pos: Vector2::zeros(),
             anchor: Anchor::BottomLeft,
             scale: Vector2::repeat(1.0),
+
+            sprite: RefCell::new(None),
         }
     }
 
@@ -57,14 +59,32 @@ impl<'a, App> Button<'a, App> {
         self
     }
 
-    pub fn on_click(mut self, on_click: impl FnOnce(&mut GraphicsContext<App>) + 'static) -> Self {
-        self.on_click = Box::new(on_click);
-        self
-    }
-
     pub fn set_back(mut self) -> Self {
         self.is_back = true;
         self
+    }
+
+    fn get_sprite(&self) -> Sprite {
+        if let Some(sprite) = &*self.sprite.borrow() {
+            return sprite.clone();
+        }
+
+        let color = self.color.lerp(ACCENT_COLOR, self.state.hover_time / 0.1);
+        let scale =
+            self.scale + Vector2::repeat(self.state.hover_time / 2.0).component_mul(&self.scale);
+
+        let sprite = Sprite::new(self.asset)
+            .color(color)
+            .position(self.pos, self.anchor)
+            .scale(scale);
+
+        *self.sprite.borrow_mut() = Some(sprite.clone());
+        sprite
+    }
+
+    pub fn is_clicked<App>(&self, ctx: &mut GraphicsContext<App>) -> bool {
+        let sprite = self.get_sprite();
+        sprite.is_hovered(ctx) && ctx.input.mouse_pressed(MouseButton::Left)
     }
 }
 
@@ -74,16 +94,9 @@ impl ButtonState {
     }
 }
 
-impl<App> Drawable<App> for Button<'_, App> {
+impl<App> Drawable<App> for Button<'_> {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
-        let color = self.color.lerp(ACCENT_COLOR, self.state.hover_time / 0.1);
-        let scale =
-            self.scale + Vector2::repeat(self.state.hover_time / 2.0).component_mul(&self.scale);
-
-        let sprite = Sprite::new(self.asset)
-            .color(color)
-            .position(self.pos, self.anchor)
-            .scale(scale);
+        let sprite = self.get_sprite();
 
         let hover = sprite.is_hovered(ctx);
         self.state.hover_time += ctx.delta_time * if hover { 1.0 } else { -1.0 };
@@ -101,7 +114,6 @@ impl<App> Drawable<App> for Button<'_, App> {
                     BUTTON_SUCCESS
                 })
                 .play_now();
-            (self.on_click)(ctx);
         }
 
         self.state.last_hovered = hover;

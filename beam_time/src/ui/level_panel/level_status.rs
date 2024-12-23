@@ -186,7 +186,7 @@ fn histogram(
             .z_index(layer::UI_ELEMENT),
     );
 
-    let t = actual / data.max as f32;
+    let t = (actual / data.max as f32).min(1.0);
     let actual_pos = base
         + Vector2::new(
             ui.tile_size / 4.0 * (1.0 + t * BIN_COUNT as f32),

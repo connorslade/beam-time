@@ -10,15 +10,10 @@ use engine::{
 };
 
 use crate::{
-    assets::{BACK_BUTTON, CREATE_BUTTON, LEVEL_DROPDOWN_ARROW, UNDEAD_FONT},
-    game::board::BoardMeta,
-    screens::game::GameScreen,
-    ui::{
+    assets::{BACK_BUTTON, CREATE_BUTTON, LEVEL_DROPDOWN_ARROW, UNDEAD_FONT}, consts::layer, game::board::BoardMeta, screens::game::GameScreen, ui::{
         button::{Button, ButtonState},
-        misc::{font_scale, titled_screen},
-    },
-    util::load_level_dir,
-    App,
+        misc::{font_scale, titled_screen}, model::Modal,
+    }, util::load_level_dir, App
 };
 
 #[derive(Default)]
@@ -28,6 +23,8 @@ pub struct SandboxScreen {
     back_button: ButtonState,
     create_button: ButtonState,
     dropdown_angle: f32,
+
+    create: Option<()>,
 }
 
 impl Screen<App> for SandboxScreen {
@@ -94,25 +91,35 @@ impl Screen<App> for SandboxScreen {
         let half_width = (35 + 26 + 10) as f32 * ctx.scale_factor;
         let height = (10 + 28) as f32 * ctx.scale_factor;
 
-        ctx.draw(
-            Button::new(BACK_BUTTON, &mut self.back_button)
-                .pos(
-                    Vector2::new(ctx.center().x + half_width, height),
-                    Anchor::Center,
-                )
-                .scale(Vector2::repeat(4.0))
-                .set_back()
-                .on_click(|ctx| ctx.pop_screen()),
-        );
+        let back_button = Button::new(BACK_BUTTON, &mut self.back_button)
+            .pos(
+                Vector2::new(ctx.center().x + half_width, height),
+                Anchor::Center,
+            )
+            .scale(Vector2::repeat(4.0))
+            .set_back();
+        if back_button.is_clicked(ctx) {
+            ctx.pop_screen();
+        }
+        ctx.draw(back_button);
 
-        ctx.draw(
-            Button::new(CREATE_BUTTON, &mut self.create_button)
-                .pos(
-                    Vector2::new(ctx.center().x - half_width, height),
-                    Anchor::Center,
-                )
-                .scale(Vector2::repeat(4.0)),
-        );
+        let create_button = Button::new(CREATE_BUTTON, &mut self.create_button)
+            .pos(
+                Vector2::new(ctx.center().x - half_width, height),
+                Anchor::Center,
+            )
+            .scale(Vector2::repeat(4.0));
+        if create_button.is_clicked(ctx) {
+            self.create = Some(());
+        }
+        ctx.draw(create_button);
+
+        if let Some(()) = self.create {
+            ctx.draw(Modal::new(Vector2::new(500.0, 500.0), layer::OVERLAY, |ctx| {
+                
+            }));
+        }
+
     }
 
     fn on_init(&mut self, state: &mut App) {
