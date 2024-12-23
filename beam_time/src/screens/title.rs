@@ -1,6 +1,7 @@
 use std::time::Instant;
 
 use engine::{
+    color::Rgb,
     drawable::sprite::Sprite,
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
@@ -30,54 +31,65 @@ pub struct TitleScreen {
 
 impl Screen<App> for TitleScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
-        ctx.background(BACKGROUND_COLOR);
-        ctx.draw(Waterfall::new(&mut state.waterfall));
+        // ctx.background(BACKGROUND_COLOR);
 
-        // Title & copyright
-        let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
-        let t = self.start_time.elapsed().as_secs_f32().sin() / 20.0;
         ctx.draw(
             Sprite::new(TITLE)
-                .position(pos, Anchor::TopCenter)
-                .scale(Vector2::repeat(6.0))
-                .rotate(t, Anchor::Center),
+                .position(
+                    ctx.center() + Vector2::x() * (ctx.frame as f32 / 60.0).sin() * 50.0,
+                    Anchor::Center,
+                )
+                .scale(Vector2::repeat(4.0))
+                .color(Rgb::hex(0xff0000)),
         );
 
-        ctx.draw(
-            Sprite::new(COPYRIGHT)
-                .position(Vector2::new(ctx.size().x - 10.0, 10.0), Anchor::BottomRight)
-                .scale(Vector2::repeat(2.0)),
-        );
+        // ctx.draw(Waterfall::new(&mut state.waterfall));
 
-        // Buttons
-        let campaign_button = Button::new(CAMPAIGN_BUTTON, &mut self.campaign_button)
-            .pos(ctx.center(), Anchor::Center)
-            .scale(Vector2::repeat(4.0));
-        if campaign_button.is_clicked(ctx) {
-            ctx.push_screen(CampaignScreen::default())
-        }
+        // // Title & copyright
+        // let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
+        // let t = self.start_time.elapsed().as_secs_f32().sin() / 20.0;
+        // ctx.draw(
+        //     Sprite::new(TITLE)
+        //         .position(pos, Anchor::TopCenter)
+        //         .scale(Vector2::repeat(6.0))
+        //         .rotate(t, Anchor::Center),
+        // );
 
-        let sandbox_button = Button::new(SANDBOX_BUTTON, &mut self.sandbox_button)
-            .pos(
-                ctx.center() - Vector2::new(0.0, 14.0 * 5.0 * ctx.scale_factor),
-                Anchor::Center,
-            )
-            .scale(Vector2::repeat(4.0));
-        if sandbox_button.is_clicked(ctx) {
-            ctx.push_screen(SandboxScreen::default());
-        }
+        // ctx.draw(
+        //     Sprite::new(COPYRIGHT)
+        //         .position(Vector2::new(ctx.size().x - 10.0, 10.0), Anchor::BottomRight)
+        //         .scale(Vector2::repeat(2.0)),
+        // );
 
-        let about_button = Button::new(ABOUT_BUTTON, &mut self.about_button)
-            .pos(
-                ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0 * ctx.scale_factor),
-                Anchor::Center,
-            )
-            .scale(Vector2::repeat(4.0));
-        if about_button.is_clicked(ctx) {
-            ctx.push_screen(AboutScreen::default())
-        }
+        // // Buttons
+        // let campaign_button = Button::new(CAMPAIGN_BUTTON, &mut self.campaign_button)
+        //     .pos(ctx.center(), Anchor::Center)
+        //     .scale(Vector2::repeat(4.0));
+        // if campaign_button.is_clicked(ctx) {
+        //     ctx.push_screen(CampaignScreen::default())
+        // }
 
-        ctx.draw([campaign_button, sandbox_button, about_button]);
+        // let sandbox_button = Button::new(SANDBOX_BUTTON, &mut self.sandbox_button)
+        //     .pos(
+        //         ctx.center() - Vector2::new(0.0, 14.0 * 5.0 * ctx.scale_factor),
+        //         Anchor::Center,
+        //     )
+        //     .scale(Vector2::repeat(4.0));
+        // if sandbox_button.is_clicked(ctx) {
+        //     ctx.push_screen(SandboxScreen::default());
+        // }
+
+        // let about_button = Button::new(ABOUT_BUTTON, &mut self.about_button)
+        //     .pos(
+        //         ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0 * ctx.scale_factor),
+        //         Anchor::Center,
+        //     )
+        //     .scale(Vector2::repeat(4.0));
+        // if about_button.is_clicked(ctx) {
+        //     ctx.push_screen(AboutScreen::default())
+        // }
+
+        // ctx.draw([campaign_button, sandbox_button, about_button]);
     }
 
     fn on_init(&mut self, _state: &mut App) {

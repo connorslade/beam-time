@@ -1,17 +1,19 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, mem};
 
+use bytemuck::NoUninit;
 use encase::{ShaderType, StorageBuffer};
-use nalgebra::{Matrix4, Vector2, Vector3};
+use nalgebra::{Matrix4, Vector2, Vector3, Vector4};
 use wgpu::{
     util::{BufferInitDescriptor, DeviceExt},
     AddressMode, BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
     BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingResource, BindingType, BlendComponent,
-    BlendState, Buffer, BufferBinding, BufferBindingType, BufferUsages, ColorTargetState,
-    ColorWrites, CompareFunction, DepthBiasState, DepthStencilState, Device, FilterMode,
-    FragmentState, IndexFormat, MultisampleState, PipelineCompilationOptions,
+    BlendState, Buffer, BufferAddress, BufferBinding, BufferBindingType, BufferUsages,
+    ColorTargetState, ColorWrites, CompareFunction, DepthBiasState, DepthStencilState, Device,
+    FilterMode, FragmentState, IndexFormat, MultisampleState, PipelineCompilationOptions,
     PipelineLayoutDescriptor, PrimitiveState, Queue, RenderPass, RenderPipeline,
     RenderPipelineDescriptor, Sampler, SamplerBindingType, SamplerDescriptor, ShaderStages,
-    StencilState, TextureSampleType, TextureViewDescriptor, TextureViewDimension, VertexState,
+    StencilState, TextureSampleType, TextureViewDescriptor, TextureViewDimension, VertexAttribute,
+    VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
 };
 
 use crate::{
@@ -20,6 +22,33 @@ use crate::{
 };
 
 use super::Vertex;
+
+const SPRITE_INSTANCE_BUFFER_LAYOUT: VertexBufferLayout = VertexBufferLayout {
+    array_stride: mem::size_of::<Instance>() as BufferAddress,
+    step_mode: VertexStepMode::Instance,
+    attributes: &[
+        VertexAttribute {
+            format: VertexFormat::Float32x4,
+            offset: 0,
+            shader_location: 2,
+        },
+        VertexAttribute {
+            format: VertexFormat::Float32x4,
+            offset: 4 * 4,
+            shader_location: 3,
+        },
+        VertexAttribute {
+            format: VertexFormat::Float32x4,
+            offset: 4 * 8,
+            shader_location: 4,
+        },
+        VertexAttribute {
+            format: VertexFormat::Float32x4,
+            offset: 4 * 12,
+            shader_location: 5,
+        },
+    ],
+};
 
 pub struct SpriteRenderPipeline {
     render_pipeline: RenderPipeline,
@@ -42,15 +71,15 @@ pub struct GpuSprite {
     pub z_index: i16,
 }
 
-#[derive(ShaderType)]
+#[derive(NoUninit, Clone, Copy)]
+#[repr(C)]
 struct Instance {
-    transform: Matrix4<f32>,
+    transform: [[f32; 4]; 4],
+    // uv: Vector2<f32>,
+    // uv_size: Vector2<f32>,
 
-    uv: Vector2<f32>,
-    uv_size: Vector2<f32>,
-
-    color: Vector3<f32>,
-    clip: [Vector2<f32>; 2],
+    // color: Vector3<f32>,
+    // clip: Vector4<f32>,
 }
 
 struct RenderOperation {
@@ -68,16 +97,6 @@ impl SpriteRenderPipeline {
             entries: &[
                 BindGroupLayoutEntry {
                     binding: 0,
-                    visibility: ShaderStages::VERTEX_FRAGMENT,
-                    ty: BindingType::Buffer {
-                        ty: BufferBindingType::Uniform,
-                        has_dynamic_offset: false,
-                        min_binding_size: None,
-                    },
-                    count: None,
-                },
-                BindGroupLayoutEntry {
-                    binding: 1,
                     visibility: ShaderStages::FRAGMENT,
                     ty: BindingType::Texture {
                         sample_type: TextureSampleType::Float { filterable: false },
@@ -87,7 +106,7 @@ impl SpriteRenderPipeline {
                     count: None,
                 },
                 BindGroupLayoutEntry {
-                    binding: 2,
+                    binding: 1,
                     visibility: ShaderStages::FRAGMENT,
                     ty: BindingType::Sampler(SamplerBindingType::NonFiltering),
                     count: None,
@@ -107,7 +126,7 @@ impl SpriteRenderPipeline {
             vertex: VertexState {
                 module: &shader,
                 entry_point: "vert",
-                buffers: &[VERTEX_BUFFER_LAYOUT],
+                buffers: &[VERTEX_BUFFER_LAYOUT, SPRITE_INSTANCE_BUFFER_LAYOUT],
                 compilation_options: PipelineCompilationOptions::default(),
             },
             fragment: Some(FragmentState {
@@ -155,7 +174,7 @@ impl SpriteRenderPipeline {
             Vertex::new([-1.0, -1.0, 1.0, 1.0], [0.0, 1.0]),
             Vertex::new([1.0, -1.0, 1.0, 1.0], [1.0, 1.0]),
             Vertex::new([1.0, 1.0, 1.0, 1.0], [1.0, 0.0]),
-            Vertex::new([-1.0, 1.0, 1.0, 1.0], [1.0, 1.0]),
+            Vertex::new([-1.0, 1.0, 1.0, 1.0], [0.0, 0.0]),
         ];
         let vertex = device.create_buffer_init(&BufferInitDescriptor {
             label: None,
@@ -194,34 +213,31 @@ impl SpriteRenderPipeline {
         self.operations.clear();
         for (atlas, sprites) in atlases.iter() {
             let mut instances = Vec::new(); // todo don't realloc every frame
-            for sprite in sprites {
+            for sprite in sprites.iter() {
                 let size = sprite.texture.size;
                 // let z = (i16::MAX as f32 - sprite.z_index as f32) / (i16::MAX as f32 * 2.0);
                 instances.push(Instance {
-                    transform: Matrix4::new_nonuniform_scaling(&Vector3::new(
+                    transform: (Matrix4::new_nonuniform_scaling(&Vector3::new(
                         size.x as f32 / window.x,
                         size.y as f32 / window.y,
                         1.0,
-                    )),
-
+                    )) * sprite.transform)
+                        .into(),
                     // uv: sprite.uv[0],
                     // uv_size: sprite.uv[1] - sprite.uv[0],
+                    // uv: Vector2::zeros(),
+                    // uv_size: Vector2::new(1.0, 1.0),
 
-                    uv: Vector2::zeros(),
-                    uv_size: Vector2::new(1.0, 1.0),
-
-                    color: sprite.color,
-                    clip: [Vector2::new(-1.0, -1.0), Vector2::new(1.0, 1.0)],
+                    // color: sprite.color,
+                    // clip: Vector4::new(-1.0, -1.0, 1.0, 1.0),
                 });
             }
 
-            let mut buffer = StorageBuffer::new(Vec::<u8>::new());
-            buffer.write(&instances).unwrap();
-
+            // todo: dont recreate buffer each frame
             let instance = device.create_buffer_init(&BufferInitDescriptor {
                 label: None,
-                contents: &buffer.into_inner(),
-                usage: BufferUsages::UNIFORM | BufferUsages::VERTEX,
+                contents: bytemuck::cast_slice(&instances),
+                usage: BufferUsages::VERTEX,
             });
 
             let texture = ctx.assets.get_texture(*atlas);
@@ -235,18 +251,10 @@ impl SpriteRenderPipeline {
                 entries: &[
                     BindGroupEntry {
                         binding: 0,
-                        resource: BindingResource::Buffer(BufferBinding {
-                            buffer: &instance,
-                            offset: 0,
-                            size: None,
-                        }),
-                    },
-                    BindGroupEntry {
-                        binding: 1,
                         resource: BindingResource::TextureView(&view),
                     },
                     BindGroupEntry {
-                        binding: 2,
+                        binding: 1,
                         resource: BindingResource::Sampler(&self.sampler),
                     },
                 ],

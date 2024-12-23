@@ -124,14 +124,15 @@ impl Sprite {
         let rotation_offset = self.rotation_anchor.offset(size);
         let position_offset = self.position_anchor.offset(scaled_size);
 
-        // Combine transformations and offsets
-        // Matrix4::new_translation(&(self.position.push(1.0) + position_offset.push(1.0)))
-        //     * Matrix4::new_nonuniform_scaling(&self.scale.push(1.0))
-        //     * Matrix4::new_translation(&(-rotation_offset.push(1.0)))
-        //     * Matrix4::new_rotation(Vector3::x() * self.rotation)
-        //     * Matrix4::new_translation(&rotation_offset.push(1.0))
+        let t = (ctx.frame as f32 / 60.0).sin();
+        Matrix4::new_translation(&Vector3::new(t, 0.0, 0.0)).transpose()
 
-        Matrix4::identity()
+        // Combine transformations and offsets
+        // Matrix4::new_translation(&(self.position.push(0.0) + position_offset.push(0.0)))
+        // * Matrix4::new_nonuniform_scaling(&self.scale.push(1.0))
+        // * Matrix4::new_translation(&(-rotation_offset.push(0.0)))
+        // * Matrix4::new_rotation(Vector3::x() * self.rotation)
+        // * Matrix4::new_translation(&rotation_offset.push(0.0))
     }
 }
 

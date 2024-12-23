@@ -15,7 +15,7 @@ pub const VERTEX_BUFFER_LAYOUT: VertexBufferLayout = VertexBufferLayout {
         },
         VertexAttribute {
             format: VertexFormat::Float32x2,
-            offset: 4 * 3,
+            offset: 4 * 4,
             shader_location: 1,
         },
     ],
