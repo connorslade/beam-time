@@ -6,11 +6,13 @@ use engine::{
 
 use crate::assets::PANEL;
 
+type Callback<App> = Box<dyn FnOnce(&mut GraphicsContext<App>)>;
+
 pub struct Modal<App> {
     size: Vector2<f32>,
     layer: i16,
 
-    body: Box<dyn FnOnce(&mut GraphicsContext<App>)>,
+    body: Callback<App>,
 }
 
 impl<App> Drawable<App> for Modal<App> {
@@ -18,7 +20,11 @@ impl<App> Drawable<App> for Modal<App> {
         let pos = ctx.center() + Vector2::new(-self.size.x, self.size.y) / 2.0;
 
         self.background(ctx, pos);
-        (self.body)(ctx);
+
+        let sprites = ctx.draw_callback(|ctx| (self.body)(ctx));
+        for sprite in sprites {
+            sprite.points.iter_mut().for_each(|x| *x += pos);
+        }
     }
 }
 

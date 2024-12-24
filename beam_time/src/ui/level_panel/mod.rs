@@ -2,7 +2,7 @@ use parking_lot::MutexGuard;
 
 use crate::{
     app::App,
-    assets::{HORIZONTAL_RULE, PANEL, TILE_GALVO_DOWN, UNDEAD_FONT},
+    assets::{HORIZONTAL_RULE, PANEL, UNDEAD_FONT},
     consts::layer,
     game::board::Board,
 };

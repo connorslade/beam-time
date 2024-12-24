@@ -10,10 +10,17 @@ use engine::{
 };
 
 use crate::{
-    assets::{BACK_BUTTON, CREATE_BUTTON, LEVEL_DROPDOWN_ARROW, UNDEAD_FONT}, consts::layer, game::board::BoardMeta, screens::game::GameScreen, ui::{
+    assets::{BACK_BUTTON, CREATE_BUTTON, LEVEL_DROPDOWN_ARROW, UNDEAD_FONT},
+    consts::layer,
+    game::board::BoardMeta,
+    screens::game::GameScreen,
+    ui::{
         button::{Button, ButtonState},
-        misc::{font_scale, titled_screen}, model::Modal,
-    }, util::load_level_dir, App
+        misc::{font_scale, titled_screen},
+        model::Modal,
+    },
+    util::load_level_dir,
+    App,
 };
 
 #[derive(Default)]
@@ -81,8 +88,7 @@ impl Screen<App> for SandboxScreen {
                     } else {
                         self.dropdown_angle - (PI / 2.0) * ctx.delta_time * 4.0
                     }
-                    .max(0.0)
-                    .min(PI / 2.0);
+                    .clamp(0.0, PI / 2.0);
 
                 ctx.draw(dropdown);
             }
@@ -115,11 +121,12 @@ impl Screen<App> for SandboxScreen {
         ctx.draw(create_button);
 
         if let Some(()) = self.create {
-            ctx.draw(Modal::new(Vector2::new(500.0, 500.0), layer::OVERLAY, |ctx| {
-                
-            }));
+            ctx.draw(Modal::new(
+                Vector2::new(500.0, 500.0),
+                layer::OVERLAY,
+                |ctx| {},
+            ));
         }
-
     }
 
     fn on_init(&mut self, state: &mut App) {
