@@ -4,15 +4,14 @@ use bytemuck::NoUninit;
 use nalgebra::{Vector2, Vector3};
 use wgpu::{
     util::{BufferInitDescriptor, DeviceExt},
-    AddressMode, BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
-    BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingResource, BindingType, BlendComponent,
-    BlendState, Buffer, BufferAddress, BufferDescriptor, BufferUsages, ColorTargetState,
-    ColorWrites, CompareFunction, DepthBiasState, DepthStencilState, Device, FilterMode,
-    FragmentState, IndexFormat, MultisampleState, PipelineCompilationOptions,
-    PipelineLayoutDescriptor, PrimitiveState, Queue, RenderPass, RenderPipeline,
-    RenderPipelineDescriptor, Sampler, SamplerBindingType, SamplerDescriptor, ShaderStages,
-    StencilState, TextureSampleType, TextureViewDescriptor, TextureViewDimension, VertexAttribute,
-    VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
+    AddressMode, BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayoutDescriptor,
+    BindGroupLayoutEntry, BindingResource, BindingType, BlendComponent, BlendState, Buffer,
+    BufferAddress, BufferDescriptor, BufferUsages, ColorTargetState, ColorWrites, CompareFunction,
+    DepthBiasState, DepthStencilState, Device, FilterMode, FragmentState, IndexFormat,
+    MultisampleState, PipelineCompilationOptions, PipelineLayoutDescriptor, PrimitiveState, Queue,
+    RenderPass, RenderPipeline, RenderPipelineDescriptor, SamplerBindingType, SamplerDescriptor,
+    ShaderStages, StencilState, TextureSampleType, TextureViewDescriptor, TextureViewDimension,
+    VertexAttribute, VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
 };
 
 use crate::{
@@ -58,10 +57,10 @@ const SPRITE_INSTANCE_BUFFER_LAYOUT: VertexBufferLayout = VertexBufferLayout {
     ],
 };
 
+const INITIAL_BUFFER_SIZE: u64 = 2 << 11;
+
 pub struct SpriteRenderPipeline {
     render_pipeline: RenderPipeline,
-    bind_group_layout: BindGroupLayout,
-    sampler: Sampler,
     index: Buffer,
 
     atlases: HashMap<TextureRef, RenderOperation>,
@@ -202,8 +201,8 @@ impl SpriteRenderPipeline {
 
             let instances = device.create_buffer(&BufferDescriptor {
                 label: None,
-                usage: BufferUsages::VERTEX,
-                size: 0,
+                usage: BufferUsages::VERTEX | BufferUsages::COPY_DST,
+                size: INITIAL_BUFFER_SIZE,
                 mapped_at_creation: false,
             });
 
@@ -219,14 +218,12 @@ impl SpriteRenderPipeline {
 
         Self {
             render_pipeline,
-            bind_group_layout,
-            sampler,
             index,
             atlases,
         }
     }
 
-    pub fn prepare<App>(&mut self, device: &Device, _queue: &Queue, ctx: &GraphicsContext<App>) {
+    pub fn prepare<App>(&mut self, device: &Device, queue: &Queue, ctx: &GraphicsContext<App>) {
         let mut atlases = HashMap::<TextureRef, Vec<&GpuSprite>>::new();
 
         for sprite in ctx.sprites.iter() {
@@ -256,15 +253,22 @@ impl SpriteRenderPipeline {
                 });
             }
 
-            // todo: dont recreate buffer each frame
-            let instance = device.create_buffer_init(&BufferInitDescriptor {
-                label: None,
-                contents: bytemuck::cast_slice(&instances),
-                usage: BufferUsages::VERTEX,
-            });
+            let contents = bytemuck::cast_slice(&instances);
+            let content_len = contents.len() as u64;
 
             let operation = self.atlases.get_mut(atlas).unwrap();
-            operation.instances = instance;
+
+            if content_len > operation.instances.size() {
+                let size = content_len.next_power_of_two();
+                operation.instances = device.create_buffer(&BufferDescriptor {
+                    label: None,
+                    usage: BufferUsages::VERTEX | BufferUsages::COPY_DST,
+                    mapped_at_creation: false,
+                    size,
+                });
+            }
+
+            queue.write_buffer(&operation.instances, 0, contents);
             operation.instance_count = instances.len() as u32;
         }
     }
