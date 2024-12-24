@@ -5,7 +5,7 @@ macro_rules! include_shader {
     ($shader:literal) => {
         wgpu::ShaderModuleDescriptor {
             label: None,
-            source: wgpu::ShaderSource::Wgsl(include_str!(concat!("shaders/", $shader)).into()),
+            source: wgpu::ShaderSource::Wgsl(include_str!($shader).into()),
         }
     };
 }

@@ -22,7 +22,7 @@ use crate::{
     audio::AudioManager,
     graphics_context::GraphicsContext,
     input::InputManager,
-    render::sprite::SpriteRenderPipeline,
+    render::sprite::pipeline::SpriteRenderPipeline,
     screens::{Screen, Screens},
     DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
 };
