@@ -1,21 +1,13 @@
 // Vertex Shader //
 
-struct Vertex {
-    @location(0) pos: vec4<f32>,
-    @location(1) uv: vec2<f32>,
-}
-
 struct Instance {
-    @location(2) transform_0: vec4<f32>,
-    @location(3) transform_1: vec4<f32>,
-    @location(4) transform_2: vec4<f32>,
-    @location(5) transform_3: vec4<f32>,
+    @location(1) point_0: vec4<f32>,
+    @location(2) point_1: vec4<f32>,
+    @location(3) uv: vec4<f32>,
 
-    @location(6) uv: vec2<f32>,
-    @location(7) uv_size: vec2<f32>,
-
-    @location(8) color: vec3<f32>,
-    @location(9) clip: vec4<f32>, // (ax, ay, bx, by)
+    @location(4) layer: f32,
+    @location(5) color: vec3<f32>,
+    @location(6) clip: vec4<f32>, // (ax, ay, bx, by)
 }
 
 struct VertexOutput {
@@ -24,26 +16,33 @@ struct VertexOutput {
     @location(1) color: vec3<f32>
 };
 
+
 @vertex
 fn vert(
-    vertex: Vertex,
+    @builtin(vertex_index) index: u32,
     instance: Instance
 ) -> VertexOutput {
-    var transform = mat4x4<f32>(
-        instance.transform_0,
-        instance.transform_1,
-        instance.transform_2,
-        instance.transform_3,
+    var uvs = array(
+        vec2(0.0, 1.0), vec2(0.0, 0.0),
+        vec2(1.0, 0.0), vec2(1.0, 1.0)
+    );
+    var points = array(
+        instance.point_0.xy,
+        instance.point_0.zw,
+        instance.point_1.xy,
+        instance.point_1.zw
     );
 
     var out: VertexOutput;
 
+    var pos = points[index] * 2.0 - vec2(1.0);
+    out.pos = vec4(pos, instance.layer, 1.0) ;
     out.color = instance.color;
-    out.pos = vertex.pos * transform;
     
-    out.uv = instance.uv + vec2(
-        vertex.uv.x * instance.uv_size.x,
-        vertex.uv.y * instance.uv_size.y
+    var uv = uvs[index];
+    out.uv = instance.uv.xy + vec2(
+        uv.x * instance.uv.z,
+        uv.y * instance.uv.w
     );
 
     return out;

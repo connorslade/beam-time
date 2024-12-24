@@ -1,7 +1,7 @@
 use std::{collections::HashMap, mem};
 
 use bytemuck::NoUninit;
-use nalgebra::{Matrix4, Vector2, Vector3};
+use nalgebra::{Vector2, Vector3};
 use wgpu::{
     util::{BufferInitDescriptor, DeviceExt},
     AddressMode, BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
@@ -18,12 +18,20 @@ use wgpu::{
 use crate::{
     assets::{SpriteAsset, TextureRef},
     graphics_context::GraphicsContext,
-    include_shader,
-    render::consts::VERTEX_BUFFER_LAYOUT,
-    DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
+    include_shader, DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
 };
 
-use super::Vertex;
+#[repr(C)]
+#[derive(Default, Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
+pub struct Vertex {
+    pub point: u32,
+}
+
+impl Vertex {
+    pub const fn new(point: u32) -> Self {
+        Vertex { point }
+    }
+}
 
 const SPRITE_INSTANCE_BUFFER_LAYOUT: VertexBufferLayout = VertexBufferLayout {
     array_stride: mem::size_of::<Instance>() as BufferAddress,
@@ -32,42 +40,32 @@ const SPRITE_INSTANCE_BUFFER_LAYOUT: VertexBufferLayout = VertexBufferLayout {
         VertexAttribute {
             format: VertexFormat::Float32x4,
             offset: 0,
-            shader_location: 2,
+            shader_location: 1,
         },
         VertexAttribute {
             format: VertexFormat::Float32x4,
             offset: 4 * 4,
-            shader_location: 3,
+            shader_location: 2,
         },
         VertexAttribute {
             format: VertexFormat::Float32x4,
             offset: 4 * 8,
+            shader_location: 3,
+        },
+        VertexAttribute {
+            format: VertexFormat::Float32,
+            offset: 4 * 12,
             shader_location: 4,
         },
         VertexAttribute {
-            format: VertexFormat::Float32x4,
-            offset: 4 * 12,
+            format: VertexFormat::Float32x3,
+            offset: 4 * 13,
             shader_location: 5,
         },
         VertexAttribute {
-            format: VertexFormat::Float32x2,
+            format: VertexFormat::Float32x4,
             offset: 4 * 16,
             shader_location: 6,
-        },
-        VertexAttribute {
-            format: VertexFormat::Float32x2,
-            offset: 4 * 18,
-            shader_location: 7,
-        },
-        VertexAttribute {
-            format: VertexFormat::Float32x2,
-            offset: 4 * 20,
-            shader_location: 8,
-        },
-        VertexAttribute {
-            format: VertexFormat::Float32x2,
-            offset: 4 * 23,
-            shader_location: 9,
         },
     ],
 };
@@ -76,8 +74,6 @@ pub struct SpriteRenderPipeline {
     render_pipeline: RenderPipeline,
     bind_group_layout: BindGroupLayout,
     sampler: Sampler,
-
-    vertex: Buffer,
     index: Buffer,
 
     operations: Vec<RenderOperation>,
@@ -85,10 +81,9 @@ pub struct SpriteRenderPipeline {
 
 #[derive(Debug)]
 pub struct GpuSprite {
-    pub texture: SpriteAsset,
+    pub texture: TextureRef,
     pub uv: [Vector2<f32>; 2],
-    // pub points: [Vector2<f32>; 4],
-    pub transform: Matrix4<f32>,
+    pub points: [Vector2<f32>; 4],
     pub color: Vector3<f32>,
     pub z_index: i16,
 }
@@ -96,9 +91,9 @@ pub struct GpuSprite {
 #[derive(NoUninit, Clone, Copy)]
 #[repr(C)]
 struct Instance {
-    transform: [[f32; 4]; 4],
-    uv: [f32; 2],
-    uv_size: [f32; 2],
+    points: [[f32; 2]; 4],
+    uv: [[f32; 2]; 2],
+    layer: f32,
     color: [f32; 3],
     clip: [f32; 4],
 }
@@ -147,7 +142,7 @@ impl SpriteRenderPipeline {
             vertex: VertexState {
                 module: &shader,
                 entry_point: "vert",
-                buffers: &[VERTEX_BUFFER_LAYOUT, SPRITE_INSTANCE_BUFFER_LAYOUT],
+                buffers: &[SPRITE_INSTANCE_BUFFER_LAYOUT],
                 compilation_options: PipelineCompilationOptions::default(),
             },
             fragment: Some(FragmentState {
@@ -191,18 +186,6 @@ impl SpriteRenderPipeline {
             border_color: None,
         });
 
-        let vertex = [
-            Vertex::new([-1.0, -1.0, 1.0, 1.0], [0.0, 1.0]),
-            Vertex::new([1.0, -1.0, 1.0, 1.0], [1.0, 1.0]),
-            Vertex::new([1.0, 1.0, 1.0, 1.0], [1.0, 0.0]),
-            Vertex::new([-1.0, 1.0, 1.0, 1.0], [0.0, 0.0]),
-        ];
-        let vertex = device.create_buffer_init(&BufferInitDescriptor {
-            label: None,
-            contents: bytemuck::cast_slice(&vertex),
-            usage: BufferUsages::VERTEX,
-        });
-
         let index: [u32; 6] = [0, 1, 2, 2, 3, 0];
         let index = device.create_buffer_init(&BufferInitDescriptor {
             label: None,
@@ -214,8 +197,6 @@ impl SpriteRenderPipeline {
             render_pipeline,
             bind_group_layout,
             sampler,
-
-            vertex,
             index,
 
             operations: Vec::new(),
@@ -226,30 +207,23 @@ impl SpriteRenderPipeline {
         let mut atlases = HashMap::<TextureRef, Vec<&GpuSprite>>::new();
 
         for sprite in ctx.sprites.iter() {
-            atlases
-                .entry(sprite.texture.texture)
-                .or_default()
-                .push(sprite);
+            atlases.entry(sprite.texture).or_default().push(sprite);
         }
-
-        let window = ctx.size();
 
         self.operations.clear();
         for (atlas, sprites) in atlases.iter() {
             let mut instances = Vec::new(); // todo don't realloc every frame
             for sprite in sprites.iter() {
-                let size = sprite.texture.size;
-                // let z = (i16::MAX as f32 - sprite.z_index as f32) / (i16::MAX as f32 * 2.0);
+                let layer = (i16::MAX as f32 - sprite.z_index as f32) / (i16::MAX as f32 * 2.0);
                 instances.push(Instance {
-                    transform: (sprite.transform
-                        * Matrix4::new_nonuniform_scaling(&Vector3::new(
-                            size.x as f32 / window.x,
-                            size.y as f32 / window.y,
-                            1.0,
-                        )))
-                    .into(),
-                    uv: sprite.uv[0].into(),
-                    uv_size: (sprite.uv[1] - sprite.uv[0]).into(),
+                    points: [
+                        sprite.points[0].component_div(&ctx.size()).into(),
+                        sprite.points[1].component_div(&ctx.size()).into(),
+                        sprite.points[2].component_div(&ctx.size()).into(),
+                        sprite.points[3].component_div(&ctx.size()).into(),
+                    ],
+                    layer,
+                    uv: [sprite.uv[0].into(), (sprite.uv[1] - sprite.uv[0]).into()],
                     color: sprite.color.into(),
                     clip: [-1.0, -1.0, 1.0, 1.0],
                 });
@@ -295,8 +269,7 @@ impl SpriteRenderPipeline {
 
         for operation in self.operations.iter() {
             render_pass.set_bind_group(0, &operation.bind_group, &[]);
-            render_pass.set_vertex_buffer(0, self.vertex.slice(..));
-            render_pass.set_vertex_buffer(1, operation.instances.slice(..));
+            render_pass.set_vertex_buffer(0, operation.instances.slice(..));
             render_pass.set_index_buffer(self.index.slice(..), IndexFormat::Uint32);
             render_pass.draw_indexed(0..6, 0, 0..operation.instance_count);
         }

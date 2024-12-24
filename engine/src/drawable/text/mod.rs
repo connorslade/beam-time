@@ -113,18 +113,18 @@ impl<App> Drawable<App> for Text<'_> {
             let pos = (pos + self.pos + baseline_shift + self.anchor.offset(layout.size))
                 .map(|x| x.round());
 
-            // ctx.sprites.push(GpuSprite {
-            //     texture: font.texture,
-            //     uv: [uv_a, uv_b],
-            //     points: [
-            //         pos,
-            //         pos + Vector2::new(0.0, size.y),
-            //         pos + size,
-            //         pos + Vector2::new(size.x, 0.0),
-            //     ],
-            //     color: Vector3::new(self.color.r, self.color.g, self.color.b),
-            //     z_index: self.z_index,
-            // });
+            ctx.sprites.push(GpuSprite {
+                texture: font.texture,
+                uv: [uv_a, uv_b],
+                points: [
+                    pos,
+                    pos + Vector2::new(0.0, size.y),
+                    pos + size,
+                    pos + Vector2::new(size.x, 0.0),
+                ],
+                color: Vector3::new(self.color.r, self.color.g, self.color.b),
+                z_index: self.z_index,
+            });
         }
     }
 }
