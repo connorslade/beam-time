@@ -104,7 +104,7 @@ impl<App> ApplicationHandler for Application<'_, App> {
 
         let assets = Rc::new(asset_constructor.into_manager(&device, &queue));
         self.state = Some(State {
-            sprite_renderer: SpriteRenderPipeline::new(&device),
+            sprite_renderer: SpriteRenderPipeline::new(&device, assets.clone()),
             depth_buffer: create_depth_buffer(&device, window_size),
             audio: AudioManager::new_default_output(assets.clone()).unwrap(),
             assets,
@@ -255,7 +255,7 @@ impl<'a, App> Application<'a, App> {
                 format: TEXTURE_FORMAT,
                 width: size.width,
                 height: size.height,
-                present_mode: PresentMode::AutoVsync,
+                present_mode: PresentMode::Immediate,
                 desired_maximum_frame_latency: 1,
                 alpha_mode: CompositeAlphaMode::Opaque,
                 view_formats: vec![],

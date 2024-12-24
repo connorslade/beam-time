@@ -1,4 +1,4 @@
-use std::{collections::HashMap, mem};
+use std::{collections::HashMap, mem, rc::Rc};
 
 use bytemuck::NoUninit;
 use nalgebra::{Vector2, Vector3};
@@ -6,32 +6,20 @@ use wgpu::{
     util::{BufferInitDescriptor, DeviceExt},
     AddressMode, BindGroup, BindGroupDescriptor, BindGroupEntry, BindGroupLayout,
     BindGroupLayoutDescriptor, BindGroupLayoutEntry, BindingResource, BindingType, BlendComponent,
-    BlendState, Buffer, BufferAddress, BufferUsages, ColorTargetState, ColorWrites,
-    CompareFunction, DepthBiasState, DepthStencilState, Device, FilterMode, FragmentState,
-    IndexFormat, MultisampleState, PipelineCompilationOptions, PipelineLayoutDescriptor,
-    PrimitiveState, Queue, RenderPass, RenderPipeline, RenderPipelineDescriptor, Sampler,
-    SamplerBindingType, SamplerDescriptor, ShaderStages, StencilState, TextureSampleType,
-    TextureViewDescriptor, TextureViewDimension, VertexAttribute, VertexBufferLayout, VertexFormat,
-    VertexState, VertexStepMode,
+    BlendState, Buffer, BufferAddress, BufferDescriptor, BufferUsages, ColorTargetState,
+    ColorWrites, CompareFunction, DepthBiasState, DepthStencilState, Device, FilterMode,
+    FragmentState, IndexFormat, MultisampleState, PipelineCompilationOptions,
+    PipelineLayoutDescriptor, PrimitiveState, Queue, RenderPass, RenderPipeline,
+    RenderPipelineDescriptor, Sampler, SamplerBindingType, SamplerDescriptor, ShaderStages,
+    StencilState, TextureSampleType, TextureViewDescriptor, TextureViewDimension, VertexAttribute,
+    VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
 };
 
 use crate::{
-    assets::{SpriteAsset, TextureRef},
+    assets::{manager::AssetManager, TextureRef},
     graphics_context::GraphicsContext,
     include_shader, DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
 };
-
-#[repr(C)]
-#[derive(Default, Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
-pub struct Vertex {
-    pub point: u32,
-}
-
-impl Vertex {
-    pub const fn new(point: u32) -> Self {
-        Vertex { point }
-    }
-}
 
 const SPRITE_INSTANCE_BUFFER_LAYOUT: VertexBufferLayout = VertexBufferLayout {
     array_stride: mem::size_of::<Instance>() as BufferAddress,
@@ -76,7 +64,7 @@ pub struct SpriteRenderPipeline {
     sampler: Sampler,
     index: Buffer,
 
-    operations: Vec<RenderOperation>,
+    atlases: HashMap<TextureRef, RenderOperation>,
 }
 
 #[derive(Debug)]
@@ -99,13 +87,13 @@ struct Instance {
 }
 
 struct RenderOperation {
-    instances: Buffer,
     bind_group: BindGroup,
+    instances: Buffer,
     instance_count: u32,
 }
 
 impl SpriteRenderPipeline {
-    pub fn new(device: &Device) -> Self {
+    pub fn new(device: &Device, assets: Rc<AssetManager>) -> Self {
         let shader = device.create_shader_module(include_shader!("sprite.wgsl"));
 
         let bind_group_layout = device.create_bind_group_layout(&BindGroupLayoutDescriptor {
@@ -193,13 +181,48 @@ impl SpriteRenderPipeline {
             usage: BufferUsages::INDEX,
         });
 
+        let mut atlases = HashMap::new();
+        for (key, value) in assets.textures.iter() {
+            let view = value.texture.create_view(&TextureViewDescriptor::default());
+
+            let bind_group = device.create_bind_group(&BindGroupDescriptor {
+                label: None,
+                layout: &bind_group_layout,
+                entries: &[
+                    BindGroupEntry {
+                        binding: 0,
+                        resource: BindingResource::TextureView(&view),
+                    },
+                    BindGroupEntry {
+                        binding: 1,
+                        resource: BindingResource::Sampler(&sampler),
+                    },
+                ],
+            });
+
+            let instances = device.create_buffer(&BufferDescriptor {
+                label: None,
+                usage: BufferUsages::VERTEX,
+                size: 0,
+                mapped_at_creation: false,
+            });
+
+            atlases.insert(
+                *key,
+                RenderOperation {
+                    bind_group,
+                    instances,
+                    instance_count: 0,
+                },
+            );
+        }
+
         Self {
             render_pipeline,
             bind_group_layout,
             sampler,
             index,
-
-            operations: Vec::new(),
+            atlases,
         }
     }
 
@@ -210,7 +233,11 @@ impl SpriteRenderPipeline {
             atlases.entry(sprite.texture).or_default().push(sprite);
         }
 
-        self.operations.clear();
+        // clear atlas lists
+        for val in self.atlases.values_mut() {
+            val.instance_count = 0;
+        }
+
         for (atlas, sprites) in atlases.iter() {
             let mut instances = Vec::new(); // todo don't realloc every frame
             for sprite in sprites.iter() {
@@ -236,38 +263,16 @@ impl SpriteRenderPipeline {
                 usage: BufferUsages::VERTEX,
             });
 
-            let texture = ctx.assets.get_texture(*atlas);
-            let view = texture
-                .texture
-                .create_view(&TextureViewDescriptor::default());
-
-            let bind_group = device.create_bind_group(&BindGroupDescriptor {
-                label: None,
-                layout: &self.bind_group_layout,
-                entries: &[
-                    BindGroupEntry {
-                        binding: 0,
-                        resource: BindingResource::TextureView(&view),
-                    },
-                    BindGroupEntry {
-                        binding: 1,
-                        resource: BindingResource::Sampler(&self.sampler),
-                    },
-                ],
-            });
-
-            self.operations.push(RenderOperation {
-                instances: instance,
-                bind_group,
-                instance_count: instances.len() as u32,
-            });
+            let operation = self.atlases.get_mut(atlas).unwrap();
+            operation.instances = instance;
+            operation.instance_count = instances.len() as u32;
         }
     }
 
     pub fn paint<'a>(&'a self, render_pass: &mut RenderPass<'a>) {
         render_pass.set_pipeline(&self.render_pipeline);
 
-        for operation in self.operations.iter() {
+        for operation in self.atlases.values() {
             render_pass.set_bind_group(0, &operation.bind_group, &[]);
             render_pass.set_vertex_buffer(0, operation.instances.slice(..));
             render_pass.set_index_buffer(self.index.slice(..), IndexFormat::Uint32);

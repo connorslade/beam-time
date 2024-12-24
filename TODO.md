@@ -51,8 +51,8 @@
 - [ ] Add sticky notes with text
 - [ ] ~~Persist window size~~
 - [x] Autosave interval
-- [ ] Improve FPS - Basically optimize sprite pipeline
-  - [ ] Use instancing instead of making huge meshes
+- [x] Improve FPS - Basically optimize sprite pipeline
+  - [x] Use instancing instead of making huge meshes
   - [ ] Also avoid re-creating buffers or bind groups every frame
 - [x] Don't overstep pan/zoom goals during lag spikes
 - [ ] Engine key chord pressed

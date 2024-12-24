@@ -1,4 +1,4 @@
-use nalgebra::{Matrix3, Matrix4, Vector2, Vector3};
+use nalgebra::{Matrix3, Vector2, Vector3};
 
 use crate::{
     assets::{SpriteAsset, SpriteRef},
