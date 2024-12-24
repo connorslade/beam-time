@@ -26,7 +26,7 @@ pub struct LevelPanel {
     case: usize,
 
     offset: f32,
-    previous_result: Option<LevelResult>,
+    previous_result: Option<(LevelResult, u32)>,
 }
 
 struct UIContext {
@@ -81,8 +81,9 @@ impl LevelPanel {
 
         let dt = ctx.delta_time;
         let gpu = ctx.draw_callback(|ctx| {
-            if let Some(result) = level_result.or(self.previous_result) {
-                self.previous_result = Some(result);
+            if let Some((result, price)) = level_result.map(|x| (x, price)).or(self.previous_result)
+            {
+                self.previous_result = Some((result, price));
 
                 ui.horizontal_rule(ctx);
                 match result {
@@ -102,12 +103,11 @@ impl LevelPanel {
         self.offset = self.offset.min(height);
         self.offset = exp_decay(self.offset, ui.y, 10.0, dt);
 
-        for sprite in gpu.iter_mut() {
-            sprite.clip = [
-                Vector2::new(0.0, self.offset),
-                Vector2::new(f32::MAX, f32::MAX),
-            ];
-        }
+        let clip = [
+            Vector2::new(0.0, self.offset),
+            Vector2::new(f32::MAX, f32::MAX),
+        ];
+        gpu.iter_mut().for_each(|x| x.clip = clip);
 
         ui.y = self.offset;
         background(ctx, &mut ui);

@@ -207,5 +207,5 @@ fn histogram(
             .z_index(layer::UI_ELEMENT),
     );
 
-    height + text_height
+    height + text_height + ui.padding
 }

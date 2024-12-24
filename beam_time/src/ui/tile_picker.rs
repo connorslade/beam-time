@@ -1,4 +1,4 @@
-use common::misc::in_bounds;
+use common::misc::{exp_decay, in_bounds};
 use thousands::Separable;
 
 use crate::{
@@ -140,10 +140,12 @@ impl TilePicker {
     }
 
     fn update_offset<App>(&mut self, ctx: &GraphicsContext<App>, sim: bool) -> bool {
-        self.offset += ctx.delta_time * 750.0 * if sim { 1.0 } else { -1.0 };
-
         let max_offset = 16.0 * 4.0 * ctx.scale_factor;
+        let end = max_offset * sim as u8 as f32;
+
+        self.offset = exp_decay(self.offset, end, 10.0, ctx.delta_time);
         self.offset = self.offset.clamp(0.0, max_offset);
+
         self.offset <= max_offset
     }
 }
