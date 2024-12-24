@@ -53,19 +53,19 @@ pub fn level_complete(
     ui.y -= title.size(ctx).y + ui.scale + ui.padding;
 
     let now = state.start.elapsed().as_secs_f32();
-    ctx.draw_callback(title, |sprites| {
-        let count = sprites.len();
-        for (idx, sprite) in sprites.iter_mut().enumerate() {
-            let t = idx as f32 / count as f32;
-            let color = OkLab::new(0.8, 0.1893, 0.0)
-                .hue_shift(t * 2.0 * PI - now * 2.0)
-                .to_lrgb();
-            sprite.color = Vector3::new(color.r, color.g, color.b).map(|x| x as f32 / 255.0);
+    let sprites = ctx.draw_callback(|ctx| ctx.draw(title));
 
-            let offset = (t * 2.0 * PI - now * 6.0).sin() * ui.scale;
-            // sprite.points.iter_mut().for_each(|point| point.y += offset);
-        }
-    });
+    let count = sprites.len();
+    for (idx, sprite) in sprites.iter_mut().enumerate() {
+        let t = idx as f32 / count as f32;
+        let color = OkLab::new(0.8, 0.1893, 0.0)
+            .hue_shift(t * 2.0 * PI - now * 2.0)
+            .to_lrgb();
+        sprite.color = Vector3::new(color.r, color.g, color.b).map(|x| x as f32 / 255.0);
+
+        let offset = (t * 2.0 * PI - now * 6.0).sin() * ui.scale;
+        sprite.points.iter_mut().for_each(|point| point.y += offset);
+    }
 
     let text = format!(
         "Nice work! Your solution costs ${} and has a total latency of {latency} ticks.",

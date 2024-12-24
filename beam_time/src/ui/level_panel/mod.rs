@@ -2,14 +2,14 @@ use parking_lot::MutexGuard;
 
 use crate::{
     app::App,
-    assets::{HORIZONTAL_RULE, PANEL, UNDEAD_FONT},
+    assets::{HORIZONTAL_RULE, PANEL, TILE_GALVO_DOWN, UNDEAD_FONT},
     consts::layer,
     game::board::Board,
 };
 use beam_logic::simulation::{
     level_state::LevelResult, runtime::asynchronous::InnerAsyncSimulationState,
 };
-use common::misc::in_bounds;
+use common::misc::{exp_decay, in_bounds};
 use engine::{
     color::Rgb,
     drawable::{sprite::Sprite, text::Text},
@@ -22,9 +22,11 @@ mod test_case;
 use level_status::{level_complete, level_failed, level_info};
 use test_case::test_case;
 
-#[derive(Default)]
 pub struct LevelPanel {
     case: usize,
+
+    offset: f32,
+    previous_result: Option<LevelResult>,
 }
 
 struct UIContext {
@@ -75,17 +77,39 @@ impl LevelPanel {
         ui.horizontal_rule(ctx);
         test_case(self, ctx, state, level, sim, &mut ui);
 
-        if let Some(result) = level_result {
-            ui.horizontal_rule(ctx);
-            match result {
-                LevelResult::Success { latency } => {
-                    level_complete(ctx, state, level, *latency, price, &mut ui)
+        let height = ui.y;
+
+        let dt = ctx.delta_time;
+        let gpu = ctx.draw_callback(|ctx| {
+            if let Some(result) = level_result.or(self.previous_result) {
+                self.previous_result = Some(result);
+
+                ui.horizontal_rule(ctx);
+                match result {
+                    LevelResult::Success { latency } => {
+                        level_complete(ctx, state, level, latency, price, &mut ui)
+                    }
+                    LevelResult::Failed { case } => level_failed(ctx, state, case + 1, &mut ui),
+                    LevelResult::OutOfTime => unreachable!(),
                 }
-                LevelResult::Failed { case } => level_failed(ctx, state, case + 1, &mut ui),
-                LevelResult::OutOfTime => unreachable!(),
+
+                if level_result.is_none() {
+                    ui.y = height;
+                }
             }
+        });
+
+        self.offset = self.offset.min(height);
+        self.offset = exp_decay(self.offset, ui.y, 10.0, dt);
+
+        for sprite in gpu.iter_mut() {
+            sprite.clip = [
+                Vector2::new(0.0, self.offset),
+                Vector2::new(f32::MAX, f32::MAX),
+            ];
         }
 
+        ui.y = self.offset;
         background(ctx, &mut ui);
 
         let bounds = (
@@ -167,4 +191,15 @@ fn background(ctx: &mut GraphicsContext<App>, ui: &mut UIContext) {
             .position(Vector2::new(ui.tile_size, ui.y), Anchor::BottomLeft)
             .uv_offset(Vector2::new(0, 16)),
     ]);
+}
+
+impl Default for LevelPanel {
+    fn default() -> Self {
+        Self {
+            case: 0,
+
+            offset: f32::MAX,
+            previous_result: None,
+        }
+    }
 }

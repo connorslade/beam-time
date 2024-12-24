@@ -117,13 +117,11 @@ impl<'a, App> GraphicsContext<'a, App> {
 
     pub fn draw_callback(
         &mut self,
-        drawable: impl Drawable<App>,
-        mut callback: impl FnMut(&mut [GpuSprite]),
-    ) {
+        drawable: impl FnOnce(&mut GraphicsContext<App>),
+    ) -> &mut [GpuSprite] {
         let sprites = self.sprites.len();
-        drawable.draw(self);
-        let range = &mut self.sprites[sprites..];
-        callback(range);
+        drawable(self);
+        &mut self.sprites[sprites..]
     }
 
     pub fn set_cursor(&mut self, cursor: impl Into<Cursor>) {

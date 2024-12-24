@@ -5,7 +5,6 @@ edition = "2021"
 
 [features]
 steam = ["steamworks"]
-default = ["steam"]
 
 [dependencies]
 beam_logic = { path = "../beam_logic" }
