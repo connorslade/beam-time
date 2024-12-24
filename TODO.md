@@ -86,12 +86,12 @@
   - Its not that big of a deal
 - [x] Allow disabling tiles in level def
 - [x] Price system
-- [ ] Use ron for config file?
+- [ ] ~~Use ron for config file?~
   - Just to remove toml dep if its only used once
 - [x] Add a solution latency metric
 - [ ] Verify ui scaling
 - [x] Render histograms on level completion screen
-- [ ] Extend engine with support for clipping sprites to some area  
+- [x] Extend engine with support for clipping sprites to some area
   - Use instancing of a quad mesh with a uniform containing position, color, depth, clip bounds, etc.
 - [x] Split beam logic into its own crate (so solutions can be verified on the server)
 - [x] Cleanup how level results are handled

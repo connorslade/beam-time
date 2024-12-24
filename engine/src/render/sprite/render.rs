@@ -14,7 +14,7 @@ pub struct Instance {
     uv: [[f32; 2]; 2],
     layer: f32,
     color: [f32; 3],
-    clip: [f32; 4],
+    clip: [[f32; 2]; 2],
 }
 
 impl SpriteRenderPipeline {
@@ -30,21 +30,25 @@ impl SpriteRenderPipeline {
             val.instance_count = 0;
         }
 
+        let window = ctx.size();
         for (atlas, sprites) in atlases.iter() {
             let mut instances = Vec::new(); // todo don't realloc every frame
             for sprite in sprites.iter() {
                 let layer = (i16::MAX as f32 - sprite.z_index as f32) / (i16::MAX as f32 * 2.0);
                 instances.push(Instance {
                     points: [
-                        sprite.points[0].component_div(&ctx.size()).into(),
-                        sprite.points[1].component_div(&ctx.size()).into(),
-                        sprite.points[2].component_div(&ctx.size()).into(),
-                        sprite.points[3].component_div(&ctx.size()).into(),
+                        sprite.points[0].component_div(&window).into(),
+                        sprite.points[1].component_div(&window).into(),
+                        sprite.points[2].component_div(&window).into(),
+                        sprite.points[3].component_div(&window).into(),
                     ],
                     layer,
                     uv: [sprite.uv[0].into(), (sprite.uv[1] - sprite.uv[0]).into()],
                     color: sprite.color.into(),
-                    clip: [-1.0, -1.0, 1.0, 1.0],
+                    clip: [
+                        sprite.clip[0].component_div(&window).into(),
+                        sprite.clip[1].component_div(&window).into(),
+                    ],
                 });
             }
 

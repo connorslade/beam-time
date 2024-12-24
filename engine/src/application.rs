@@ -255,7 +255,7 @@ impl<'a, App> Application<'a, App> {
                 format: TEXTURE_FORMAT,
                 width: size.width,
                 height: size.height,
-                present_mode: PresentMode::Immediate,
+                present_mode: PresentMode::AutoVsync,
                 desired_maximum_frame_latency: 1,
                 alpha_mode: CompositeAlphaMode::Opaque,
                 view_formats: vec![],
