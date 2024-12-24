@@ -63,7 +63,7 @@ pub fn level_complete(
             sprite.color = Vector3::new(color.r, color.g, color.b).map(|x| x as f32 / 255.0);
 
             let offset = (t * 2.0 * PI - now * 6.0).sin() * ui.scale;
-            sprite.points.iter_mut().for_each(|point| point.y += offset);
+            // sprite.points.iter_mut().for_each(|point| point.y += offset);
         }
     });
 

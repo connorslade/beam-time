@@ -34,6 +34,7 @@ pub struct TextureRef {
     pub size: Vector2<u32>,
 }
 
+#[derive(Debug, Clone, Copy)]
 pub struct SpriteAsset {
     pub texture: TextureRef,
     pub uv: Vector2<u32>,
@@ -53,8 +54,7 @@ impl SpriteAsset {
         let start = (uv + offset).map(|x| x as f32).component_div(&size);
         let end = start + self.size.map(|x| x as f32).component_div(&size);
 
-        let offset = Vector2::repeat(f32::EPSILON);
-        (start + offset, end - offset)
+        (start, end)
     }
 }
 

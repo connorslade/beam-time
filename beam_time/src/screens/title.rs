@@ -31,6 +31,7 @@ pub struct TitleScreen {
 impl Screen<App> for TitleScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
         ctx.background(BACKGROUND_COLOR);
+
         ctx.draw(Waterfall::new(&mut state.waterfall));
 
         // Title & copyright

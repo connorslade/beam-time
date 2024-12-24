@@ -15,6 +15,7 @@ clone-macro = "0.1.0"
 const-fnv1a-hash = "1.1.0"
 ctrlc = "3.4.5"
 dirs = "5.0.1"
+encase = { version = "0.10.0", features = ["nalgebra"] }
 env_logger = "0.11.5"
 hex = "0.4.3"
 hmac = "0.12.1"

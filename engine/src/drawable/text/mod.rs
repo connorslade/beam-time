@@ -20,6 +20,7 @@ pub struct Text<'a> {
     max_width: f32,
 
     pos: Vector2<f32>,
+    clip: [Vector2<f32>; 2],
     z_index: i16,
     anchor: Anchor,
     scale: Vector2<f32>,
@@ -35,6 +36,7 @@ impl<'a> Text<'a> {
             max_width: f32::MAX,
 
             pos: Vector2::repeat(0.0),
+            clip: [Vector2::zeros(), Vector2::repeat(f32::MAX)],
             z_index: 0,
             anchor: Anchor::BottomLeft,
             color: Rgb::new(1.0, 1.0, 1.0),
@@ -90,6 +92,13 @@ impl<'a> Text<'a> {
         self.color = color.into();
         self
     }
+
+    pub fn clip(mut self, a: Vector2<f32>, b: Vector2<f32>) -> Self {
+        let (x1, x2) = (a.x.min(b.x), a.x.max(b.x));
+        let (y1, y2) = (a.y.min(b.y), a.y.max(b.y));
+        self.clip = [Vector2::new(x1, y1), Vector2::new(x2, y2)];
+        self
+    }
 }
 
 impl<App> Drawable<App> for Text<'_> {
@@ -115,7 +124,7 @@ impl<App> Drawable<App> for Text<'_> {
 
             ctx.sprites.push(GpuSprite {
                 texture: font.texture,
-                uv: (uv_a, uv_b),
+                uv: [uv_a, uv_b],
                 points: [
                     pos,
                     pos + Vector2::new(0.0, size.y),
@@ -124,6 +133,7 @@ impl<App> Drawable<App> for Text<'_> {
                 ],
                 color: Vector3::new(self.color.r, self.color.g, self.color.b),
                 z_index: self.z_index,
+                clip: self.clip,
             });
         }
     }

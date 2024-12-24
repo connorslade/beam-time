@@ -11,6 +11,7 @@ use crate::{
 pub struct Sprite {
     texture: SpriteRef,
     uv_offset: Vector2<i32>,
+    clip: [Vector2<f32>; 2],
 
     color: Rgb<f32>,
     z_index: i16,
@@ -28,6 +29,7 @@ impl Sprite {
         Self {
             texture,
             uv_offset: Vector2::zeros(),
+            clip: [Vector2::zeros(), Vector2::repeat(f32::MAX)],
 
             color: Rgb::new(1.0, 1.0, 1.0),
             z_index: 0,
@@ -91,6 +93,13 @@ impl Sprite {
         self
     }
 
+    pub fn clip(mut self, a: Vector2<f32>, b: Vector2<f32>) -> Self {
+        let (x1, x2) = (a.x.min(b.x), a.x.max(b.x));
+        let (y1, y2) = (a.y.min(b.y), a.y.max(b.y));
+        self.clip = [Vector2::new(x1, y1), Vector2::new(x2, y2)];
+        self
+    }
+
     fn points<App>(&self, ctx: &GraphicsContext<App>, sprite: &SpriteAsset) -> [Vector2<f32>; 4] {
         let size = sprite.size.map(|x| x as f32) * ctx.scale_factor;
         let scaled_size = size.component_mul(&self.scale);
@@ -121,13 +130,13 @@ impl<App> Drawable<App> for Sprite {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
         let asset = ctx.assets.get_sprite(self.texture);
 
-        let points = self.points(ctx, asset);
         ctx.sprites.push(GpuSprite {
             texture: asset.texture,
-            uv: asset.uv(self.uv_offset),
-            points,
+            uv: asset.uv(self.uv_offset).into(),
+            points: self.points(ctx, asset),
             color: Vector3::new(self.color.r, self.color.g, self.color.b),
             z_index: self.z_index,
+            clip: self.clip,
         });
     }
 }
