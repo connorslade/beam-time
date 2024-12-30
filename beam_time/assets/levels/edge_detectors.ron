@@ -18,33 +18,44 @@ Level(
         (5, 0): Detector
     },
 
-    // todo: dont use cycle detection
     tests: Tests(
         lasers: [ Static((0, 5)) ],
         detectors: [ Static((4, 0)), Static((5, 0)) ], // RF
 
         checker: Basic,
         cases: [
-            Cycle(
-                lasers: [ false ],
-                detectors: [ [ false, false ] ],
-            ),
-            Cycle(
+            Event(
                 lasers: [ true ],
-                detectors: [ [ true, false ] ],
+
+                default: Fail,
+                pass:    [ [ true,  false ] ],
+                neutral: [ [ false, false ] ],
+                fail:    [ ]
             ),
-            Cycle(
+            Event(
                 lasers: [ true ],
-                detectors: [ [ false, false ] ],
+
+                default: Fail,
+                pass:    [ [ false, false ] ],
+                neutral: [ [ true,  false ] ],
+                fail:    [ ]
             ),
-            Cycle(
+            Event(
                 lasers: [ false ],
-                detectors: [ [ true, true ] ],
+
+                default: Fail,
+                pass:    [ [ false, true  ] ],
+                neutral: [ [ false, false ] ],
+                fail:    [ ]
             ),
-            Cycle(
+            Event(
                 lasers: [ false ],
-                detectors: [ [ false, false ] ],
-            ),
+
+                default: Fail,
+                pass:    [ [ false, false ] ],
+                neutral: [ [ false, true  ] ],
+                fail:    [ ]
+            )
         ]
     )
 )

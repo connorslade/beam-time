@@ -44,7 +44,7 @@ Level(
                 default: Fail,
                 pass:    [ [ true,  true,  true,  true,  true  ] ],
                 neutral: [ [ false, false, false, false, false ] ],
-                fail:    [ [ ] ]
+                fail:    [ ]
             )
         ]
     )

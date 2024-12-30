@@ -1,12 +1,4 @@
-use engine::{
-    drawable::sprite::Sprite,
-    exports::{
-        nalgebra::Vector2,
-        winit::{event::MouseButton, keyboard::KeyCode},
-    },
-    graphics_context::{Anchor, GraphicsContext},
-};
-
+use crate::game::board::Board;
 use crate::{
     app::App,
     assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B},
@@ -17,8 +9,14 @@ use crate::{
 };
 use beam_logic::simulation::{state::BeamState, tile::BeamTile};
 use common::misc::in_bounds;
-
-use crate::game::board::Board;
+use engine::{
+    drawable::sprite::Sprite,
+    exports::{
+        nalgebra::Vector2,
+        winit::{event::MouseButton, keyboard::KeyCode},
+    },
+    graphics_context::{Anchor, GraphicsContext},
+};
 
 use super::tile::{BeamTileBaseSprite, TileAsset};
 
