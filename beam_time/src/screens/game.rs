@@ -70,6 +70,7 @@ impl Screen<App> for GameScreen {
         self.tps = self.tps.max(0.0);
 
         let mut sim = self.beam.get();
+        state.debug(|| format!("Tick: {:.2?}", sim.tick_length));
         sim.runtime.time_per_tick = Duration::from_secs_f32(self.tps.max(1.0).recip());
 
         if sim.beam.is_none() && ctx.input.key_pressed(KeyCode::Escape) {

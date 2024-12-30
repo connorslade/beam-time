@@ -34,6 +34,9 @@ impl TextLayout {
                 }
                 c => {
                     let character = font.characters.get(&c).copied();
+                    if character.is_none() {
+                        println!("{c:?}");
+                    }
                     let character = character.unwrap_or(font.unknown);
                     chars.push((character, pos));
 

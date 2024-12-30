@@ -22,6 +22,7 @@ pub struct RuntimeConfig {
 pub struct InnerAsyncSimulationState {
     pub beam: Option<BeamState>,
     pub runtime: RuntimeConfig,
+    pub tick_length: Duration,
 
     kill: bool,
 }
@@ -35,6 +36,7 @@ impl AsyncSimulationState {
                     time_per_tick: Duration::from_secs_f32(1.0 / 20.0),
                     running: false,
                 },
+                tick_length: Duration::default(),
                 kill: false,
             }),
             Condvar::new(),
@@ -59,13 +61,15 @@ impl AsyncSimulationState {
                     beam.tick();
 
                     let runtime = state.runtime;
-                    drop(state);
 
                     if !runtime.running {
                         continue;
                     }
 
                     let elapsed = timestamp.elapsed();
+                    state.tick_length = elapsed;
+                    drop(state);
+                    
                     if elapsed < runtime.time_per_tick {
                         thread::sleep(runtime.time_per_tick - elapsed);
                     }

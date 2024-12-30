@@ -17,7 +17,7 @@ pub struct App {
     pub start: Instant,
     pub waterfall: WaterfallState,
     #[cfg(feature = "debug")]
-    debug: Vec<String>,
+    pub debug: Vec<String>,
 
     pub config: Config,
     pub data_dir: PathBuf,
@@ -68,9 +68,9 @@ impl App {
         }
     }
 
-    pub fn debug(&mut self, msg: impl Display) {
-        #[cfg(feature = "steam")]
-        self.debug.push(msg.to_string());
+    pub fn debug(&mut self, msg: impl Fn() -> String) {
+        #[cfg(feature = "debug")]
+        self.debug.push(msg());
     }
 
     pub fn save_config(&self) -> Result<()> {
@@ -84,8 +84,6 @@ impl App {
     pub fn on_tick(&mut self) {
         #[cfg(feature = "steam")]
         self.steam.on_tick();
-        #[cfg(feature = "debug")]
-        self.debug.clear();
         self.leaderboard.tick();
     }
 
