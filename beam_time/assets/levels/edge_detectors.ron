@@ -25,23 +25,23 @@ Level(
 
         checker: Basic,
         cases: [
-            TestCase(
+            Cycle(
                 lasers: [ false ],
                 detectors: [ [ false, false ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ true ],
                 detectors: [ [ true, false ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ true ],
                 detectors: [ [ false, false ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ false ],
                 detectors: [ [ true, true ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ false ],
                 detectors: [ [ false, false ] ],
             ),

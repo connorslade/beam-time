@@ -37,67 +37,67 @@ Level(
         detectors: [ Static((4, 0)), Static((5, 0)), Static((6, 0)), Static((7, 0)) ],
 
         cases: [
-            TestCase(
+            Cycle(
                 lasers: [ false, false, false, false ],
                 detectors: [ [ true, true, true, true ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ false, false, false, true ],
                 detectors: [ [ true, true, true, false ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ false, false, true, false ],
                 detectors: [ [ true, true, false, true ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ false, false, true, true ],
                 detectors: [ [ true, true, false, false ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ false, true, false, false ],
                 detectors: [ [ true, false, true, true ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ false, true, false, true ],
                 detectors: [ [ true, false, true, false ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ false, true, true, false ],
                 detectors: [ [ true, false, false, true ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ false, true, true, true ],
                 detectors: [ [ true, false, false, false ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ true, false, false, false ],
                 detectors: [ [ false, true, true, true ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ true, false, false, true ],
                 detectors: [ [ false, true, true, false ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ true, false, true, false ],
                 detectors: [ [ false, true, false, true ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ true, false, true, true ],
                 detectors: [ [ false, true, false, false ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ true, true, false, false ],
                 detectors: [ [ false, false, true, true ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ true, true, false, true ],
                 detectors: [ [ false, false, true, false ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ true, true, true, false ],
                 detectors: [ [ false, false, false, true ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ true, true, true, true ],
                 detectors: [ [ false, false, false, false ] ],
             )

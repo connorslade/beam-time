@@ -38,35 +38,35 @@ Level(
         detectors: [ Static((5, 0)) ],
 
         cases: [
-            TestCase(
+            Cycle(
                 lasers: [ false, false, false ],
                 detectors: [ [ false ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ false, false, true ],
                 detectors: [ [ false ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ false, true, false ],
                 detectors: [ [ false ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ false, true, true ],
                 detectors: [ [ true ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ true, false, false ],
                 detectors: [ [ true ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ true, false, true ],
                 detectors: [ [ false ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ true, true, false ],
                 detectors: [ [ true ] ],
             ),
-            TestCase(
+            Cycle(
                 lasers: [ true, true, true ],
                 detectors: [ [ true ] ],
             ),

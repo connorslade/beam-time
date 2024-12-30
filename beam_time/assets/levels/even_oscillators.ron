@@ -21,7 +21,7 @@ Level(
         detectors: [ Static((3, 0)), Static((4, 0)), Static((5, 0)) ],
 
         cases: [
-            TestCase(
+            Cycle(
                 lasers: [ ],
                 detectors: [
                     [true,  true,  true ],
