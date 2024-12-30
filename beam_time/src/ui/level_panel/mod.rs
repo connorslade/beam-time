@@ -18,9 +18,9 @@ use engine::{
 };
 
 mod level_status;
-// mod test_case;
+mod test_case;
 use level_status::{level_complete, level_failed, level_info};
-// use test_case::test_case;
+use test_case::test_case;
 
 pub struct LevelPanel {
     case: usize,
@@ -74,8 +74,7 @@ impl LevelPanel {
             .sum::<u32>();
 
         level_info(ctx, state, level, price, &mut ui);
-        ui.horizontal_rule(ctx);
-        // test_case(self, ctx, state, level, sim, &mut ui);
+        test_case(self, ctx, state, level, sim, &mut ui);
 
         let height = ui.y;
 

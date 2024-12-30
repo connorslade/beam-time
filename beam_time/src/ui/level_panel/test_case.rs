@@ -35,7 +35,13 @@ pub fn test_case(
     };
 
     let case = &level.tests.cases[case_idx];
-    let case_elements = case.lasers.len() + case.detectors[0].len() + 1;
+    let Some(preview) = case.preview(level) else {
+        return;
+    };
+
+    ui.horizontal_rule(ctx);
+
+    let case_elements = preview.elements() + 1;
     let (mut scale, mut tile_size, mut arrow_size) = (
         ui.scale,
         ui.tile_size,
@@ -55,7 +61,7 @@ pub fn test_case(
     };
 
     let mut i = 0;
-    for (&input, laser) in case.lasers.iter().zip(level.tests.lasers.iter()) {
+    for (&input, laser) in preview.laser() {
         let pos = Vector2::new(ui.margin + i as f32 * tile_size, ui.y);
         ctx.draw(
             case_tile(TILE_EMITTER_DOWN)
@@ -76,7 +82,7 @@ pub fn test_case(
         Anchor::CenterLeft,
     ));
 
-    for &input in &case.detectors[0] {
+    for &input in preview.detector() {
         let pos = Vector2::new(ui.margin + i as f32 * tile_size + arrow_size, ui.y);
         ctx.draw(
             case_tile(TILE_DETECTOR)

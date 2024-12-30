@@ -1,5 +1,7 @@
 use serde::Deserialize;
 
+use super::{ElementLocation, Level};
+
 type Bits = Vec<bool>;
 
 #[derive(Clone, Debug, Deserialize)]
@@ -22,6 +24,11 @@ pub enum TestCase {
     },
 }
 
+pub struct CasePreview<'a, 'b> {
+    laser: (&'a [bool], &'b [ElementLocation]),
+    detector: &'a [bool],
+}
+
 #[derive(Default, Clone, Copy, Debug, PartialEq, Eq, Deserialize)]
 pub enum EventType {
     Pass,
@@ -35,6 +42,30 @@ impl TestCase {
         match self {
             TestCase::Cycle { lasers, .. } | TestCase::Event { lasers, .. } => lasers,
         }
+    }
+
+    pub fn preview<'a, 'b>(&'a self, level: &'b Level) -> Option<CasePreview<'a, 'b>> {
+        match self {
+            TestCase::Cycle { lasers, detectors } if detectors.len() == 1 => Some(CasePreview {
+                laser: (lasers, &level.tests.lasers),
+                detector: &detectors[0],
+            }),
+            _ => None,
+        }
+    }
+}
+
+impl<'a, 'b> CasePreview<'a, 'b> {
+    pub fn elements(&self) -> usize {
+        self.detector.len() + self.laser.0.len()
+    }
+
+    pub fn detector(&self) -> impl Iterator<Item = &bool> {
+        self.detector.iter()
+    }
+
+    pub fn laser(&self) -> impl Iterator<Item = (&bool, &ElementLocation)> {
+        self.laser.0.iter().zip(self.laser.1.iter())
     }
 }
 
