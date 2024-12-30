@@ -17,7 +17,6 @@ pub struct LevelState {
 
     latency: u32,
     history: HashMap<u64, usize>,
-    // todo: replace with unpacked bitvec
     history_states: Vec<Vec<bool>>,
 
     pub result: Option<LevelResult>,
@@ -39,7 +38,6 @@ impl LevelState {
         }
     }
 
-    // todo: clean this mess up
     pub fn tick(&mut self, hash: u64, board: &mut Map<BeamTile>) {
         if self.result.is_some() {
             return;
@@ -54,27 +52,9 @@ impl LevelState {
                 if let Some(idx) = self.history.insert(hash, idx) {
                     let cycle = &self.history_states[idx..self.history_states.len() - 1];
                     if equivalent_cycles(cycle, detectors) {
-                        let latency = self.history_states.len() - cycle.len();
-                        self.latency += latency as u32;
-                        self.history_states.clear();
-                        self.history.clear();
-                        trace!("Passed case #{} {{ latency: {latency} }}", self.test_case);
-                        self.test_case += 1;
-
-                        if self.test_case >= self.level.tests.cases.len() {
-                            trace!("Passed all cases! {{ latency: {} }}", self.latency);
-                            self.result = Some(LevelResult::Success {
-                                latency: self.latency,
-                            });
-                            return;
-                        }
-
-                        self.setup_case(board);
+                        self.passed_case(self.history_states.len() - cycle.len(), board);
                     } else {
-                        trace!("Failed case #{}", self.test_case);
-                        self.result = Some(LevelResult::Failed {
-                            case: self.test_case,
-                        });
+                        self.failed_case();
                     }
                 }
             }
@@ -85,42 +65,41 @@ impl LevelState {
                 fail,
                 ..
             } => {
-                let outputs = self.outputs(&board);
-                let classification = if pass.contains(&outputs) {
-                    EventType::Pass
-                } else if neutral.contains(&outputs) {
-                    EventType::Neutral
-                } else if fail.contains(&outputs) {
-                    EventType::Fail
-                } else {
-                    *default
-                };
+                let outputs = self.outputs(board);
+                let classification = EventType::classify(pass, neutral, fail, *default, &outputs);
 
-                if classification == EventType::Pass {
-                    let latency = self.history_states.len();
-                    self.latency += latency as u32;
-                    self.history_states.clear();
-                    self.history.clear();
-                    trace!("Passed case #{} {{ latency: {latency} }}", self.test_case);
-                    self.test_case += 1;
-
-                    if self.test_case >= self.level.tests.cases.len() {
-                        trace!("Passed all cases! {{ latency: {} }}", self.latency);
-                        self.result = Some(LevelResult::Success {
-                            latency: self.latency,
-                        });
-                        return;
-                    }
-
-                    self.setup_case(board);
-                } else if classification == EventType::Fail {
-                    trace!("Failed case #{}", self.test_case);
-                    self.result = Some(LevelResult::Failed {
-                        case: self.test_case,
-                    });
+                match classification {
+                    EventType::Pass => self.passed_case(self.history_states.len(), board),
+                    EventType::Fail => self.failed_case(),
+                    EventType::Neutral => {}
                 }
             }
         }
+    }
+
+    fn passed_case(&mut self, latency: usize, board: &mut Map<BeamTile>) {
+        self.latency += latency as u32;
+        self.history_states.clear();
+        self.history.clear();
+        trace!("Passed case #{} {{ latency: {latency} }}", self.test_case);
+        self.test_case += 1;
+
+        if self.test_case >= self.level.tests.cases.len() {
+            trace!("Passed all cases! {{ latency: {} }}", self.latency);
+            self.result = Some(LevelResult::Success {
+                latency: self.latency,
+            });
+            return;
+        }
+
+        self.setup_case(board);
+    }
+
+    fn failed_case(&mut self) {
+        trace!("Failed case #{}", self.test_case);
+        self.result = Some(LevelResult::Failed {
+            case: self.test_case,
+        });
     }
 
     pub fn setup_case(&mut self, board: &mut Map<BeamTile>) {

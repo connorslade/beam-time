@@ -37,3 +37,23 @@ impl TestCase {
         }
     }
 }
+
+impl EventType {
+    pub fn classify(
+        pass: &[Vec<bool>],
+        neutral: &[Vec<bool>],
+        fail: &[Vec<bool>],
+        default: Self,
+        outputs: &Vec<bool>,
+    ) -> Self {
+        if pass.contains(outputs) {
+            EventType::Pass
+        } else if neutral.contains(outputs) {
+            EventType::Neutral
+        } else if fail.contains(outputs) {
+            EventType::Fail
+        } else {
+            default
+        }
+    }
+}
