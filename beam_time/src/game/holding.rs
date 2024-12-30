@@ -7,9 +7,9 @@ use engine::{
     graphics_context::{Anchor, GraphicsContext},
 };
 
-use crate::{consts::layer, game::render::TileAsset, util::key_events};
+use crate::{consts::layer, game::render::tile::TileAsset, util::key_events};
 
-use super::SharedState;
+use super::shared_state::SharedState;
 
 #[derive(Default, Clone, PartialEq, Eq)]
 pub enum Holding {

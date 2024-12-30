@@ -6,7 +6,7 @@ use rand::{seq::SliceRandom, thread_rng, Rng};
 use crate::game::achievements::award_campaign_achievements;
 use crate::{
     consts::BACKGROUND_COLOR,
-    game::{board::Board, render::BeamStateRender, SharedState},
+    game::{board::Board, render::beam::BeamStateRender, shared_state::SharedState},
     ui::{confetti::Confetti, level_panel::LevelPanel, tile_picker::TilePicker},
     util::key_events,
     App,

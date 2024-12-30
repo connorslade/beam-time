@@ -9,7 +9,7 @@ use crate::{
         TILE_WALL, UNDEAD_FONT,
     },
     consts::layer,
-    game::{board::Board, holding::Holding, render::TileAsset},
+    game::{board::Board, holding::Holding, render::tile::TileAsset},
 };
 use beam_logic::tile::Tile;
 use engine::{

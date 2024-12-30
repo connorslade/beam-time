@@ -16,7 +16,7 @@ use engine::{
     graphics_context::{Anchor, GraphicsContext},
 };
 
-use super::{history::History, holding::Holding, SharedState};
+use super::{history::History, holding::Holding, shared_state::SharedState};
 
 #[derive(Default)]
 pub struct SelectionState {

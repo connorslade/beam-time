@@ -99,7 +99,7 @@
 - [x] Figure out what to use as user IDs to prevent multiple score uploads for one player
 - [x] Set LevelMeta::solved to true when level is solved and unset it on board modification
   - [x] Fire event on board edit
-- [ ] Split beam_time::game::board into some sub modules
+- [x] Split beam_time::game::board into some sub modules
 - [ ] Take a look at test case viewer for Double It level
 - [ ] Fix non-deterministic beam logic
 - [x] Put steam features under a feature flag

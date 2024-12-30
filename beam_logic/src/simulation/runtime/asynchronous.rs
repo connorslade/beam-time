@@ -69,7 +69,7 @@ impl AsyncSimulationState {
                     let elapsed = timestamp.elapsed();
                     state.tick_length = elapsed;
                     drop(state);
-                    
+
                     if elapsed < runtime.time_per_tick {
                         thread::sleep(runtime.time_per_tick - elapsed);
                     }

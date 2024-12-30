@@ -1,4 +1,4 @@
-use std::{fmt::Display, fs, path::PathBuf, time::Instant};
+use std::{fs, path::PathBuf, time::Instant};
 
 use anyhow::Result;
 use common::user::UserId;
@@ -68,9 +68,9 @@ impl App {
         }
     }
 
-    pub fn debug(&mut self, msg: impl Fn() -> String) {
+    pub fn debug(&mut self, _msg: impl Fn() -> String) {
         #[cfg(feature = "debug")]
-        self.debug.push(msg());
+        self.debug.push(_msg());
     }
 
     pub fn save_config(&self) -> Result<()> {
