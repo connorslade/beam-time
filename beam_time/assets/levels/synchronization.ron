@@ -38,9 +38,13 @@ Level(
         ],
 
         cases: [
-            Cycle(
+            Event(
                 lasers: [ true ],
-                detectors: [ [ true, true, true, true, true ] ],
+
+                default: Fail,
+                pass:    [ [ true,  true,  true,  true,  true  ] ],
+                neutral: [ [ false, false, false, false, false ] ],
+                fail:    [ [ ] ]
             )
         ]
     )

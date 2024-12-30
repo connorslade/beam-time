@@ -116,7 +116,7 @@
   - [ ] Add labels to half adder level
 - [ ] Fix edge detector levels
 - [ ] Load custom levels at runtime (on server too :sob:)
-- [ ] Fix synchronization level checker
+- [x] Fix synchronization level checker
 - [x] On level result animation, use previous price instead of current
 - [ ] Decide if decay or linier interpolation looks better for tile picker
 

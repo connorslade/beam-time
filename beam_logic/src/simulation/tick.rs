@@ -19,6 +19,12 @@ impl BeamState {
             let hash = self.hash();
             let level = self.level.as_mut().unwrap();
             level.tick(hash, &mut self.board);
+
+            // If the level has been completed or failed, don't continue
+            // updating the board
+            if level.result.is_some() {
+                return;
+            }
         }
 
         // To avoid issues that would arise from modifying the board in place, a

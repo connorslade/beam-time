@@ -39,16 +39,12 @@ impl LevelState {
     }
 
     pub fn tick(&mut self, hash: u64, board: &mut Map<BeamTile>) {
-        if self.result.is_some() {
-            return;
-        }
-
         let case = &self.level.tests.cases[self.test_case];
+        let idx = self.history_states.len();
+        self.history_states.push(self.outputs(board));
+
         match case {
             TestCase::Cycle { detectors, .. } => {
-                let idx = self.history_states.len();
-                self.history_states.push(self.outputs(board));
-
                 if let Some(idx) = self.history.insert(hash, idx) {
                     let cycle = &self.history_states[idx..self.history_states.len() - 1];
                     if equivalent_cycles(cycle, detectors) {
