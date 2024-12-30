@@ -15,9 +15,12 @@ use uuid::Uuid;
 
 use crate::tile::{Tile, TileType};
 
+pub mod case;
+use case::TestCase;
+
 pub macro default_level {
     ($name:expr) => {
-        Level::load_slice(include_bytes!(concat!("../../beam_time/assets/levels/", $name)))
+        Level::load_slice(include_bytes!(concat!("../../../beam_time/assets/levels/", $name)))
     },
     ($($name:expr),* $(,)?) => {{
         let mut out = Vec::new();
@@ -80,22 +83,7 @@ pub struct Tests {
     pub lasers: Vec<ElementLocation>,
     pub detectors: Vec<ElementLocation>,
 
-    #[serde(default)]
-    pub checker: Checker,
     pub cases: Vec<TestCase>,
-}
-
-#[derive(Default, Clone, Copy, Debug, Deserialize)]
-pub enum Checker {
-    Basic,
-    #[default]
-    Cycle,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct TestCase {
-    pub lasers: Vec<bool>,
-    pub detectors: Vec<Vec<bool>>,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize)]
