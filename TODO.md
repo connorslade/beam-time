@@ -31,7 +31,7 @@
   - [x] Use new rendering system
   - [x] Use hash map for tile storage
   - [x] Destroy beams after traveling too far
-- [ ] Cleanup coordinate systems
+- [ ] ~~Cleanup coordinate systems~~
 - [x] Zoom around the cursor position
 - [x] Sandbox save selection screen
 - [ ] Allow managing (creating, deleting) sandbox saves
@@ -74,7 +74,7 @@
 - [ ] Cleanup selection renderer with holes
 - [ ] Bias scale to integer zoom levels when at small zooms
 - [x] Detect and show failed test cases instead of hanging
-- [ ] Experiment with animation icon?
+- [ ] ~~Experiment with animation icon?~~
   - This is completely unnecessary, but might be kinda cool, maybe an option in settings
 - [x] Allow labeling emitters / outputs / tiles in general?
 - [ ] Splitters take input from all sides to avoid non-deterministic behavior when used as or-gates
@@ -86,7 +86,7 @@
   - Its not that big of a deal
 - [x] Allow disabling tiles in level def
 - [x] Price system
-- [ ] ~~Use ron for config file?~
+- [ ] ~~Use ron for config file?~~
   - Just to remove toml dep if its only used once
 - [x] Add a solution latency metric
 - [ ] Verify ui scaling

@@ -1,4 +1,4 @@
-use std::{fs, path::PathBuf, time::Instant};
+use std::{fmt::Display, fs, path::PathBuf, time::Instant};
 
 use anyhow::Result;
 use common::user::UserId;
@@ -16,6 +16,8 @@ pub struct App {
 
     pub start: Instant,
     pub waterfall: WaterfallState,
+    #[cfg(feature = "debug")]
+    debug: Vec<String>,
 
     pub config: Config,
     pub data_dir: PathBuf,
@@ -58,10 +60,17 @@ impl App {
 
             start: Instant::now(),
             waterfall: WaterfallState::default(),
+            #[cfg(feature = "debug")]
+            debug: Vec::new(),
 
             config,
             data_dir,
         }
+    }
+
+    pub fn debug(&mut self, msg: impl Display) {
+        #[cfg(feature = "steam")]
+        self.debug.push(msg.to_string());
     }
 
     pub fn save_config(&self) -> Result<()> {
@@ -75,6 +84,8 @@ impl App {
     pub fn on_tick(&mut self) {
         #[cfg(feature = "steam")]
         self.steam.on_tick();
+        #[cfg(feature = "debug")]
+        self.debug.clear();
         self.leaderboard.tick();
     }
 

@@ -23,10 +23,9 @@ mod ui;
 mod util;
 
 use app::App;
-use screens::{
-    overlay::{debug::DebugOverlay, ticker::Ticker},
-    title::TitleScreen,
-};
+#[cfg(feature = "debug")]
+use screens::overlay::debug::DebugOverlay;
+use screens::{overlay::ticker::Ticker, title::TitleScreen};
 use util::include_atlas;
 
 fn main() -> Result<()> {
@@ -45,6 +44,7 @@ fn main() -> Result<()> {
         screen_constructor: Box::new(|| {
             vec![
                 Box::new(Ticker),
+                #[cfg(feature = "debug")]
                 Box::new(DebugOverlay::default()),
                 Box::new(TitleScreen::default()),
             ]
