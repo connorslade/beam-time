@@ -119,6 +119,8 @@
 - [x] Fix synchronization level checker
 - [x] On level result animation, use previous price instead of current
 - [ ] Decide if decay or linier interpolation looks better for tile picker
+- [ ] When making a selection show its size and price
+- [x] Scroll faster at lower zoom levels
 
 ## Level Ideas
 

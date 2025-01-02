@@ -38,8 +38,7 @@ impl SharedState {
             .map(|(_, dir)| *dir)
             .sum::<Vector2<_>>();
         if direction.magnitude_squared() != 0.0 {
-            self.pan_goal +=
-                direction.normalize() * self.scale * state.config.movement_speed * ctx.delta_time;
+            self.pan_goal += direction.normalize() * state.config.movement_speed * ctx.delta_time;
         }
 
         // TODO: Dont allow scale goal to be non integer values when close to 1.0

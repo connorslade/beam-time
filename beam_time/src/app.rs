@@ -95,8 +95,8 @@ impl App {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            zoom_sensitivity: 1.0,
-            movement_speed: 500.0,
+            zoom_sensitivity: 0.08,
+            movement_speed: 2000.0,
             ui_scale: 1.0,
         }
     }
