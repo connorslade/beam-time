@@ -54,6 +54,14 @@ pub fn test_case(
         arrow_size /= 2.0;
     }
 
+    let tile_label_offset = Vector2::new(ui.tile_size, -ui.tile_size) / 2.0;
+    let tile_label = |ctx: &mut _, pos, render| {
+        if let Some(label) = level.labels.get(&pos) {
+            let label = tile_label(ctx, scale, render + tile_label_offset, label);
+            ctx.draw(label.z_index(layer::UI_OVERLAY));
+        }
+    };
+
     let case_tile = |texture| {
         Sprite::new(texture)
             .scale(Vector2::new(scale, scale))
@@ -63,17 +71,12 @@ pub fn test_case(
     let mut i = 0;
     for (&input, laser) in preview.laser() {
         let pos = Vector2::new(ui.margin + i as f32 * tile_size, ui.y);
+        tile_label(ctx, laser.into_pos(), pos);
         ctx.draw(
             case_tile(TILE_EMITTER_DOWN)
                 .uv_offset(Vector2::new(16 * input as i32, 0))
                 .position(pos, Anchor::TopLeft),
         );
-
-        if let Some(label) = level.labels.get(&laser.into_pos()) {
-            let label = tile_label(ctx, scale, pos + Vector2::repeat(scale / 2.0), label);
-            ctx.draw(label.z_index(layer::UI_OVERLAY));
-        }
-
         i += 1;
     }
 
@@ -82,8 +85,9 @@ pub fn test_case(
         Anchor::CenterLeft,
     ));
 
-    for &input in preview.detector() {
+    for (&input, detector) in preview.detector() {
         let pos = Vector2::new(ui.margin + i as f32 * tile_size + arrow_size, ui.y);
+        tile_label(ctx, detector.into_pos(), pos);
         ctx.draw(
             case_tile(TILE_DETECTOR)
                 .uv_offset(Vector2::new(16 * input as i32, 0))

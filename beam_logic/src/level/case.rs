@@ -26,7 +26,7 @@ pub enum TestCase {
 
 pub struct CasePreview<'a, 'b> {
     laser: (&'a [bool], &'b [ElementLocation]),
-    detector: &'a [bool],
+    detector: (&'a [bool], &'b [ElementLocation]),
 }
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Eq, Deserialize)]
@@ -48,7 +48,7 @@ impl TestCase {
         match self {
             TestCase::Cycle { lasers, detectors } if detectors.len() == 1 => Some(CasePreview {
                 laser: (lasers, &level.tests.lasers),
-                detector: &detectors[0],
+                detector: (&detectors[0], &level.tests.detectors),
             }),
             _ => None,
         }
@@ -57,11 +57,11 @@ impl TestCase {
 
 impl<'a, 'b> CasePreview<'a, 'b> {
     pub fn elements(&self) -> usize {
-        self.detector.len() + self.laser.0.len()
+        self.detector.0.len() + self.laser.0.len()
     }
 
-    pub fn detector(&self) -> impl Iterator<Item = &bool> {
-        self.detector.iter()
+    pub fn detector(&self) -> impl Iterator<Item = (&bool, &ElementLocation)> {
+        self.detector.0.iter().zip(self.detector.1.iter())
     }
 
     pub fn laser(&self) -> impl Iterator<Item = (&bool, &ElementLocation)> {

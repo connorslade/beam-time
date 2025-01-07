@@ -89,7 +89,7 @@
 - [ ] ~~Use ron for config file?~~
   - Just to remove toml dep if its only used once
 - [x] Add a solution latency metric
-- [ ] Verify ui scaling
+- [x] Verify ui scaling
 - [x] Render histograms on level completion screen
 - [x] Extend engine with support for clipping sprites to some area
   - Use instancing of a quad mesh with a uniform containing position, color, depth, clip bounds, etc.
@@ -102,6 +102,7 @@
 - [x] Split beam_time::game::board into some sub modules
 - [ ] Take a look at test case viewer for Double It level
 - [ ] Fix non-deterministic beam logic
+  - [ ] Create test cases to verify simulation
 - [x] Put steam features under a feature flag
 - [x] Fix rpath on linux
 - [x] Implement custom hardware id
@@ -111,14 +112,14 @@
   - [ ] Render where you fall more correctly  
   - [ ] Emulate a smaller number of bins by repeating
 - [ ] Figure out how to support user levels on leaderboard server (steam workshop)
-- [ ] Fix input/output label rendering for test cases
-  - [ ] Add output label support
-  - [ ] Add labels to half adder level
-- [ ] Fix edge detector levels
+- [x] Fix input/output label rendering for test cases
+  - [x] Add output label support
+  - [x] Add labels to half adder level
+- [x] Fix edge detector levels
 - [ ] Load custom levels at runtime (on server too :sob:)
 - [x] Fix synchronization level checker
 - [x] On level result animation, use previous price instead of current
-- [ ] Decide if decay or linier interpolation looks better for tile picker
+- [x] Decide if decay or linier interpolation looks better for tile picker
 - [ ] When making a selection show its size and price
 - [x] Scroll faster at lower zoom levels
 
