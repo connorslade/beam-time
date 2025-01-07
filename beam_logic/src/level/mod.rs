@@ -48,6 +48,7 @@ pub static DEFAULT_LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
         "half_adder.ron",
         "even_oscillators.ron",
         "two_tick_clock.ron",
+        "bit_reverse.ron",
         "double_it.ron",
         "four_bit_not.ron",
         "edge_detectors.ron",
@@ -55,6 +56,7 @@ pub static DEFAULT_LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
         "gated_d_latch.ron",
         "t_flip_flop.ron",
         "counter.ron",
+        "full_adder.ron",
         "count_ones.ron",
     )
 });

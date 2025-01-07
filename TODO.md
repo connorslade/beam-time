@@ -122,6 +122,7 @@
 - [x] Decide if decay or linier interpolation looks better for tile picker
 - [ ] When making a selection show its size and price
 - [x] Scroll faster at lower zoom levels
+- [ ] Make emitters default off in levels?
 
 ## Level Ideas
 

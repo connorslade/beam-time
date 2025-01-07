@@ -1,0 +1,113 @@
+Level(
+    id: "2f854277-df80-4ee8-b5ab-69f7d6587ff4",
+    name: "Bit Reverse",
+    description: "
+        There are two main ways to represent a binary number, with the most significant bit (MSb) on the left or right of the number. In all remaining levels, you can assume number's least significant bit (LSb) will be on the right.
+        
+        For this level, take the input number with a MSb on the left and convert it to a number with the MSb on the right.",
+
+    size: Some((15, 9)),
+    permanent: [ 
+        (0, 8), (1, 8), (2, 8), (3, 8), (4, 8), (5, 8), (6, 8), (7, 8),
+        (7, 0), (8, 0), (9, 0), (10, 0), (11, 0), (12, 0), (13, 0), (14, 0)
+    ],
+    labels: {
+        (0, 8): "MSb",
+        (7, 8): "LSb",
+
+        (7, 0): "LSb",
+        (14, 0): "MSb"
+    },
+    disabled: [ ],
+    tiles: {
+        (0, 8): Emitter( rotation: Down, active: false ),
+        (1, 8): Emitter( rotation: Down, active: false ),
+        (2, 8): Emitter( rotation: Down, active: false ),
+        (3, 8): Emitter( rotation: Down, active: false ),
+        (4, 8): Emitter( rotation: Down, active: false ),
+        (5, 8): Emitter( rotation: Down, active: false ),
+        (6, 8): Emitter( rotation: Down, active: false ),
+        (7, 8): Emitter( rotation: Down, active: false ),
+
+        (7, 0): Detector,
+        (8, 0): Detector,
+        (9, 0): Detector,
+        (10, 0): Detector,
+        (11, 0): Detector,
+        (12, 0): Detector,
+        (13, 0): Detector,
+        (14, 0): Detector,
+    },
+
+    tests: Tests(
+        lasers: [ Static((0, 8)), Static((1, 8)), Static((2, 8)), Static((3, 8)), Static((4, 8)), Static((5, 8)), Static((6, 8)), Static((7, 8)) ],
+        detectors: [ Static((7, 0)), Static((8, 0)), Static((9, 0)), Static((10, 0)), Static((11, 0)), Static((12, 0)), Static((13, 0)), Static((14, 0)) ],
+
+        cases: [
+            Cycle(
+                lasers: [ false, false, false, true, true, true, false, true ],
+                detectors: [ [ true, false, true, true, true, false, false, false ] ]
+            ),
+            Cycle(
+                lasers: [ false, false, true, true, false, true, true, true ],
+                detectors: [ [ true, true, true, false, true, true, false, false ] ]
+            ),
+            Cycle(
+                lasers: [ true, false, true, true, false, true, false, false ],
+                detectors: [ [ false, false, true, false, true, true, false, true ] ]
+            ),
+            Cycle(
+                lasers: [ true, true, false, true, false, true, true, true ],
+                detectors: [ [ true, true, true, false, true, false, true, true ] ]
+            ),
+            Cycle(
+                lasers: [ false, true, true, false, true, true, false, true ],
+                detectors: [ [ true, false, true, true, false, true, true, false ] ]
+            ),
+            Cycle(
+                lasers: [ true, false, false, true, false, false, false, true ],
+                detectors: [ [ true, false, false, false, true, false, false, true ] ]
+            ),
+            Cycle(
+                lasers: [ false, true, false, false, false, true, true, false ],
+                detectors: [ [ false, true, true, false, false, false, true, false ] ]
+            ),
+            Cycle(
+                lasers: [ false, true, true, true, false, true, false, true ],
+                detectors: [ [ true, false, true, false, true, true, true, false ] ]
+            ),
+            Cycle(
+                lasers: [ false, true, true, false, true, true, false, true ],
+                detectors: [ [ true, false, true, true, false, true, true, false ] ]
+            ),
+            Cycle(
+                lasers: [ true, false, true, false, false, false, false, true ],
+                detectors: [ [ true, false, false, false, false, true, false, true ] ]
+            ),
+            Cycle(
+                lasers: [ true, true, false, false, true, true, true, true ],
+                detectors: [ [ true, true, true, true, false, false, true, true ] ]
+            ),
+            Cycle(
+                lasers: [ true, true, true, true, false, true, true, false ],
+                detectors: [ [ false, true, true, false, true, true, true, true ] ]
+            ),
+            Cycle(
+                lasers: [ false, true, false, true, true, false, true, false ],
+                detectors: [ [ false, true, false, true, true, false, true, false ] ]
+            ),
+            Cycle(
+                lasers: [ false, true, true, true, false, true, true, false ],
+                detectors: [ [ false, true, true, false, true, true, true, false ] ]
+            ),
+            Cycle(
+                lasers: [ true, false, false, true, false, true, true, false ],
+                detectors: [ [ false, true, true, false, true, false, false, true ] ]
+            ),
+            Cycle(
+                lasers: [ false, true, false, false, true, false, true, false ],
+                detectors: [ [ false, true, false, true, false, false, true, false ] ]
+            ),
+        ]
+    )
+)
