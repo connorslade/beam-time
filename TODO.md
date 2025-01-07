@@ -72,7 +72,7 @@
 - [ ] Dont allow interacting with protected tiles through selections
 - [x] Use shift to reverse rotation direction
 - [ ] Cleanup selection renderer with holes
-- [ ] Bias scale to integer zoom levels when at small zooms
+- [ ] ~~Bias scale to integer zoom levels when at small zooms~~
 - [x] Detect and show failed test cases instead of hanging
 - [ ] ~~Experiment with animation icon?~~
   - This is completely unnecessary, but might be kinda cool, maybe an option in settings

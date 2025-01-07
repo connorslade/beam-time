@@ -6,8 +6,8 @@ Level(
     size: Some((6, 6)),
     permanent: [ (0, 5), (1, 5), (4, 0), (5, 0) ],
     labels: {
-        (4, 0): "And",
-        (5, 0): "Xor"
+        (4, 0): "AND",
+        (5, 0): "XOR"
     },
     tiles: {
         (0, 5): Emitter(

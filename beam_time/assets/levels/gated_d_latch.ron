@@ -6,8 +6,8 @@ Level(
     size: Some((6, 6)),
     permanent: [ (0, 5), (1, 5), (5, 0) ],
     labels: {
-        (0, 5): "D",
-        (1, 5): "E",
+        (0, 5): "Data",
+        (1, 5): "Latch",
     },
     tiles: {
         (0, 5): Emitter(
