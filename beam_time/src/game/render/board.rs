@@ -1,3 +1,4 @@
+use crate::assets::{HISTOGRAM_MARKER, UNDEAD_FONT};
 use crate::game::board::Board;
 use crate::{
     app::App,
@@ -9,6 +10,7 @@ use crate::{
 };
 use beam_logic::simulation::{state::BeamState, tile::BeamTile};
 use common::misc::in_bounds;
+use engine::drawable::text::Text;
 use engine::{
     drawable::sprite::Sprite,
     exports::{
@@ -52,6 +54,36 @@ impl Board {
             && ctx.input.key_pressed(KeyCode::KeyZ)
         {
             self.transient.history.pop(&mut self.tiles);
+        }
+
+        const MESSAGE: &str = "This is a test of the new label system I am considering adding to Beam time to improve the user experance of sandbox worlds.";
+        for (pos, title, note) in [(Vector2::new(10.0, 10.0), "Little Note", MESSAGE)] {
+            let mut pos = shared.world_to_screen_space(ctx, pos);
+            let marker_pos = pos - Vector2::y() * 4.0 * 2.0 * ctx.scale_factor;
+
+            ctx.draw(
+                Sprite::new(HISTOGRAM_MARKER)
+                    .scale(Vector2::repeat(2.0))
+                    .position(marker_pos, Anchor::TopCenter)
+                    .z_index(layer::OVERLAY),
+            );
+
+            if shared.scale >= 6.0 {
+                let text = Text::new(UNDEAD_FONT, &note)
+                    .max_width(16.0 * 20.0 * ctx.scale_factor)
+                    .scale(Vector2::repeat(2.0))
+                    .position(pos, Anchor::BottomCenter)
+                    .z_index(layer::OVERLAY);
+                pos.y += text.size(ctx).y + 8.0 * ctx.scale_factor;
+                ctx.draw(text);
+            }
+
+            ctx.draw(
+                Text::new(UNDEAD_FONT, title)
+                    .scale(Vector2::repeat(2.0))
+                    .position(pos, Anchor::BottomCenter)
+                    .z_index(layer::OVERLAY),
+            );
         }
 
         for x in 0..tile_counts.x {

@@ -125,3 +125,5 @@
 - [ ] Make emitters default off in levels?
 - [ ] Fix weird animation in level info panel when making screen much larger than the previous frame
 - [ ] Allow changing default values of level emitters
+- [ ] Fix screen_to_world_space and world_to_screen_space
+- [ ] Use screen_to_world_space to handle tile interactions because calling .is_hovered 50k times per frame is kinda slow

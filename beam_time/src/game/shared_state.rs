@@ -91,7 +91,7 @@ impl SharedState {
     }
 
     pub fn tile_counts(&self, size: Vector2<f32>) -> Vector2<usize> {
-        (size / (16.0 * self.scale)).map(|x| 1 + x.ceil() as usize)
+        (size / (16.0 * self.scale)).map(|x| x.ceil() as usize)
     }
 
     pub fn tile_pos<App>(
