@@ -70,7 +70,7 @@ impl Tile {
 
     pub fn price(&self) -> u32 {
         match self {
-            Tile::Empty => unreachable!(),
+            Tile::Empty => 0,
             Tile::Detector => 5000,
             Tile::Emitter { .. } => 1000,
             Tile::Delay => 500,

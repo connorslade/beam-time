@@ -109,6 +109,14 @@ impl SharedState {
     ) -> Vector2<f32> {
         (pos - self.pan) / (16.0 * self.scale * ctx.scale_factor)
     }
+
+    pub fn world_to_screen_space<App>(
+        &self,
+        ctx: &GraphicsContext<App>,
+        pos: Vector2<f32>,
+    ) -> Vector2<f32> {
+        pos * (16.0 * self.scale * ctx.scale_factor) + self.pan
+    }
 }
 
 impl Default for SharedState {

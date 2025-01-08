@@ -1,6 +1,11 @@
 use std::collections::HashSet;
 
-use crate::{app::App, assets::OVERLAY_SELECTION, consts::layer, util::key_events};
+use crate::{
+    app::App,
+    assets::{OVERLAY_SELECTION, UNDEAD_FONT},
+    consts::layer,
+    util::key_events,
+};
 use beam_logic::{simulation::state::BeamState, tile::Tile};
 use common::{
     direction::{Direction, Directions},
@@ -8,13 +13,15 @@ use common::{
     misc::in_bounds,
 };
 use engine::{
-    drawable::sprite::Sprite,
+    color::Rgb,
+    drawable::{sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
     graphics_context::{Anchor, GraphicsContext},
 };
+use thousands::Separable;
 
 use super::{history::History, holding::Holding, shared_state::SharedState};
 
@@ -47,6 +54,25 @@ impl SelectionState {
                 Vector2::new(start.x.max(end.x), start.y.max(end.y)),
             )
         });
+
+        if let Some((min, max)) = self.working_selection {
+            let middle = ((min + max).map(|x| x as f32) - Vector2::repeat(1.0)) / 2.0;
+            let screen = shared.world_to_screen_space(ctx, middle);
+            // todo clip to screen
+
+            let size = max - min + Vector2::repeat(1);
+            let price = (min.x..=max.x)
+                .flat_map(|x| (min.y..=max.y).map(move |y| Vector2::new(x, y)))
+                .map(|pos| tiles.get(pos).price())
+                .sum::<u32>();
+            let text = format!("{}x{} • ${}", size.x, size.y, price.separate_with_commas());
+            ctx.draw(
+                Text::new(UNDEAD_FONT, &text)
+                    .position(screen, Anchor::Center)
+                    .scale(Vector2::repeat(2.0))
+                    .color(Rgb::hex(0xe27285)),
+            );
+        }
 
         if let (Some(selection), false) = (
             self.working_selection,
