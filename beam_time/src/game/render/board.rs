@@ -69,7 +69,7 @@ impl Board {
             );
 
             if shared.scale >= 6.0 {
-                let text = Text::new(UNDEAD_FONT, &note)
+                let text = Text::new(UNDEAD_FONT, note)
                     .max_width(16.0 * 20.0 * ctx.scale_factor)
                     .scale(Vector2::repeat(2.0))
                     .position(pos, Anchor::BottomCenter)

@@ -1,11 +1,10 @@
-use std::collections::HashSet;
-
 use crate::{
     app::App,
     assets::{OVERLAY_SELECTION, UNDEAD_FONT},
     consts::layer,
     util::key_events,
 };
+use ahash::HashSet;
 use beam_logic::{simulation::state::BeamState, tile::Tile};
 use common::{
     direction::{Direction, Directions},

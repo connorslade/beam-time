@@ -1,9 +1,6 @@
-use std::{
-    collections::{HashMap, HashSet},
-    fs::File,
-    path::PathBuf,
-};
+use std::{fs::File, path::PathBuf};
 
+use ahash::{HashMap, HashSet};
 use anyhow::Result;
 use common::map::Map;
 use log::warn;

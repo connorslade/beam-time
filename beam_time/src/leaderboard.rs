@@ -1,5 +1,6 @@
-use std::{collections::HashMap, io::Cursor, thread, time::Duration};
+use std::{io::Cursor, thread, time::Duration};
 
+use ahash::{HashMap, HashMapExt};
 use anyhow::{Context, Result};
 use bincode::Options;
 use clone_macro::clone;

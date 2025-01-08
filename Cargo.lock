@@ -293,6 +293,7 @@ checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 name = "beam_logic"
 version = "0.1.0"
 dependencies = [
+ "ahash",
  "anyhow",
  "clone-macro",
  "common",
@@ -310,6 +311,7 @@ dependencies = [
 name = "beam_time"
 version = "0.1.0"
 dependencies = [
+ "ahash",
  "anyhow",
  "beam_logic",
  "bincode",
@@ -670,6 +672,7 @@ dependencies = [
 name = "common"
 version = "0.1.0"
 dependencies = [
+ "ahash",
  "bincode",
  "nalgebra",
  "once_cell",

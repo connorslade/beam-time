@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-
+use ahash::HashMap;
 use nalgebra::Vector2;
 use serde::{Deserialize, Serialize};
 

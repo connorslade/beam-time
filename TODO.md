@@ -127,3 +127,4 @@
 - [ ] Allow changing default values of level emitters
 - [ ] Fix screen_to_world_space and world_to_screen_space
 - [ ] Use screen_to_world_space to handle tile interactions because calling .is_hovered 50k times per frame is kinda slow
+- [x] Use ahash HashMap and HashSet

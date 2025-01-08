@@ -7,6 +7,7 @@ afire = { version = "3.0.0-alpha.3", features = [
     "tracing",
     "extensions",
 ], default-features = false }
+ahash = "0.8.11"
 anyhow = "1.0.88"
 bincode = "1.3.3"
 bytemuck = { version = "1.18.0", features = ["derive"] }

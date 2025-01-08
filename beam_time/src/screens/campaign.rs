@@ -1,5 +1,6 @@
-use std::{collections::HashMap, path::PathBuf};
+use std::path::PathBuf;
 
+use ahash::HashMap;
 use beam_logic::level::{Level, DEFAULT_LEVELS};
 use common::misc::in_bounds;
 use engine::{

@@ -1,5 +1,6 @@
-use std::{borrow::Cow, collections::HashMap};
+use std::borrow::Cow;
 
+use ahash::HashMap;
 use log::trace;
 use serde::{Deserialize, Serialize};
 

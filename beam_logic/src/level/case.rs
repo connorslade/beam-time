@@ -55,7 +55,7 @@ impl TestCase {
     }
 }
 
-impl<'a, 'b> CasePreview<'a, 'b> {
+impl CasePreview<'_, '_> {
     pub fn elements(&self) -> usize {
         self.detector.0.len() + self.laser.0.len()
     }
