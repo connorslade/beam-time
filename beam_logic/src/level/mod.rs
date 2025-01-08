@@ -55,6 +55,7 @@ pub static DEFAULT_LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
         "rs_latch.ron",
         "gated_d_latch.ron",
         "t_flip_flop.ron",
+        "read_only_memory.ron",
         "counter.ron",
         "full_adder.ron",
         "count_ones.ron",

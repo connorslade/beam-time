@@ -123,7 +123,5 @@
 - [ ] When making a selection show its size and price
 - [x] Scroll faster at lower zoom levels
 - [ ] Make emitters default off in levels?
-
-## Level Ideas
-
-To give an into to binary numbers, make a level where you have to make a rom for like three or four 8 bit numbers.
+- [ ] Fix weird animation in level info panel when making screen much larger than the previous frame
+- [ ] Allow changing default values of level emitters

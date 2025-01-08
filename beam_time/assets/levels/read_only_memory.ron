@@ -1,0 +1,63 @@
+Level(
+    id: "f36846af-910b-4aec-8ed0-7e3deca17251",
+    name: "Read Only Memory",
+    description: "
+        Often times in simple computers, we need a way to refer to constant values that could define a program or some other data. When this data is static and never needs to change, a read only memory or ROM can be used.
+        
+        For this level, you will need to output a constant 8-bit number for each of the four possible inputs. The binary representations of each number have also been provided.
+        
+        • 0 (0b00) ⇒ 20 (0b00010100)
+        • 1 (0b01) ⇒ 238 (0b11101110)
+        • 2 (0b10) ⇒ 143 (0b10001111)
+        • 3 (0b11) ⇒ 79 (0b01001111)",
+
+    size: Some((24, 16)),
+    permanent: [
+        (0, 15), (1, 15),
+        (16, 0), (17, 0), (18, 0), (19, 0), (20, 0), (21, 0), (22, 0), (23, 0)
+    ],
+    labels: { },
+    disabled: [ ],
+    tiles: {
+        (0, 15): Emitter( rotation: Down, active: false ),
+        (1, 15): Emitter( rotation: Down, active: false ),
+
+        (16, 0): Detector,
+        (17, 0): Detector,
+        (18, 0): Detector,
+        (19, 0): Detector,
+        (20, 0): Detector,
+        (21, 0): Detector,
+        (22, 0): Detector,
+        (23, 0): Detector,
+    },
+
+    tests: Tests(
+        lasers: [ Static((0, 15)), Static((1, 15)) ],
+        detectors: [ Static((16, 0)), Static((17, 0)), Static((18, 0)), Static((19, 0)), Static((20, 0)), Static((21, 0)), Static((22, 0)), Static((23, 0)) ],
+
+        cases: [
+            Cycle(
+                lasers: [ false, false ],
+                detectors: [ [ false, false, false, true, false, true, false, false ] ],
+            ),
+            Cycle(
+                lasers: [ false, true ],
+                detectors: [ [ true, true, true, false, true, true, true, false ] ],
+            ),
+            Cycle(
+                lasers: [ true, false ],
+                detectors: [ [ true, false, false, false, true, true, true, true ] ],
+            ),
+            Cycle(
+                lasers: [ true, true ],
+                detectors: [ [ false, true, false, false, true, true, true, true ] ],
+            )
+        ]
+    )
+)
+
+// 00010100: 20
+// 11101110: 238
+// 10001111: 143
+// 01001111: 79
