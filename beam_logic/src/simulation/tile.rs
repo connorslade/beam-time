@@ -53,9 +53,12 @@ impl BeamTile {
     pub fn is_powered(&self) -> bool {
         match self {
             Self::Emitter { active: true, .. } | Self::Beam { .. } | Self::CrossBeam { .. } => true,
+            Self::Detector { powered }
+            | Self::Galvo { powered, .. }
+            | Self::Delay { powered, .. }
+            | Self::Wall { powered } => powered.any(),
             Self::Mirror { powered, .. } => powered[0].is_some() || powered[1].is_some(),
             Self::Splitter { powered, .. } => powered.is_some(),
-            Self::Delay { last_powered, .. } => last_powered.any(),
             _ => false,
         }
     }

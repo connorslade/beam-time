@@ -103,7 +103,7 @@ impl InputManager {
             WindowEvent::MouseWheel { delta, .. } => {
                 self.scroll_delta += match delta {
                     MouseScrollDelta::LineDelta(_, y) => *y,
-                    MouseScrollDelta::PixelDelta(pos) => pos.y as f32,
+                    MouseScrollDelta::PixelDelta(pos) => pos.y as f32 / 10.0,
                 };
             }
             WindowEvent::KeyboardInput { event, .. } if !event.repeat => {

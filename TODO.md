@@ -109,7 +109,7 @@
 - [x] Cache get_results stuff
 - [ ] Fix up histograms
   - [ ] Render correctly if all bins are the same / zero
-  - [ ] Render where you fall more correctly  
+  - [ ] Render where you fall more correctly
   - [ ] Emulate a smaller number of bins by repeating
 - [ ] Figure out how to support user levels on leaderboard server (steam workshop)
 - [x] Fix input/output label rendering for test cases
@@ -128,3 +128,6 @@
 - [ ] Fix screen_to_world_space and world_to_screen_space
 - [ ] Use screen_to_world_space to handle tile interactions because calling .is_hovered 50k times per frame is kinda slow
 - [x] Use ahash HashMap and HashSet
+- [ ] Fix scroll speed difference between track pad and mousewheel
+- [ ] Use graph layout for campaign?
+- [x] Allow checking powered status of non detector tiles in level checkers

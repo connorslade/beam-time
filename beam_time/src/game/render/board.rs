@@ -56,7 +56,7 @@ impl Board {
             self.transient.history.pop(&mut self.tiles);
         }
 
-        const MESSAGE: &str = "This is a test of the new label system I am considering adding to Beam time to improve the user experance of sandbox worlds.";
+        const MESSAGE: &str = "This is a test of the new label system I am considering adding to Beam time to improve the user experience of sandbox worlds.";
         for (pos, title, note) in [(Vector2::new(10.0, 10.0), "Little Note", MESSAGE)] {
             let mut pos = shared.world_to_screen_space(ctx, pos);
             let marker_pos = pos - Vector2::y() * 4.0 * 2.0 * ctx.scale_factor;

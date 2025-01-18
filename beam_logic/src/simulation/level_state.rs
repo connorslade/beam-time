@@ -118,11 +118,7 @@ impl LevelState {
             .iter()
             .map(|pos| {
                 let pos = pos.into_pos();
-                let BeamTile::Detector { powered } = board.get(pos) else {
-                    return false;
-                };
-
-                powered.any()
+                board.get(pos).is_powered()
             })
             .collect()
     }
