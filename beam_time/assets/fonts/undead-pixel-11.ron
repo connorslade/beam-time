@@ -86,6 +86,7 @@ FontDescriptor(
         'µ': (uv: (110, 20), size: (4, 5), baseline_shift: -1),
         '*': (uv: (115, 18), size: (3, 6)),
         '⇒': (uv: (119, 19), size: (7, 5)),
+        '🔒': (uv: (121, 9), size: (4, 6))
     },
     unknown: (uv: (127, 16), size: (8, 10), baseline_shift: -2),
     height: 6,

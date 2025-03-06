@@ -120,7 +120,7 @@
 - [x] Fix synchronization level checker
 - [x] On level result animation, use previous price instead of current
 - [x] Decide if decay or linier interpolation looks better for tile picker
-- [ ] When making a selection show its size and price
+- [x] When making a selection show its size and price
 - [x] Scroll faster at lower zoom levels
 - [ ] Make emitters default off in levels?
 - [ ] Fix weird animation in level info panel when making screen much larger than the previous frame

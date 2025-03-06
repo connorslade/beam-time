@@ -109,9 +109,14 @@ impl TilePicker {
                 sprite = sprite.color(Rgb::repeat(0.7));
             }
 
-            if !disabled && !sim && is_hovered {
+            if !sim && is_hovered {
                 if board.transient.holding.is_none() {
-                    let text = format!("{}\n${}", tile.name(), tile.price().separate_with_commas());
+                    let text = if disabled {
+                        "🔒 Locked".into()
+                    } else {
+                        format!("{}\n${}", tile.name(), tile.price().separate_with_commas())
+                    };
+
                     let pos = Vector2::new(ctx.input.mouse.x, tile_size * 1.1);
                     let text = Text::new(UNDEAD_FONT, &text)
                         .position(pos, Anchor::BottomCenter)
@@ -120,7 +125,7 @@ impl TilePicker {
                     ctx.draw(text);
                 }
 
-                if ctx.input.mouse_pressed(MouseButton::Left) {
+                if !disabled && ctx.input.mouse_pressed(MouseButton::Left) {
                     board.transient.holding = Holding::Tile(*tile);
                 }
             }
