@@ -6,11 +6,7 @@ use crate::{
 };
 use ahash::HashSet;
 use beam_logic::{simulation::state::BeamState, tile::Tile};
-use common::{
-    direction::{Direction, Directions},
-    map::Map,
-    misc::in_bounds,
-};
+use common::{direction::Direction, map::Map, misc::in_bounds};
 use engine::{
     color::Rgb,
     drawable::{sprite::Sprite, text::Text},
@@ -54,7 +50,13 @@ impl SelectionState {
             )
         });
 
-        if let Some((min, max)) = self.working_selection {
+        let ctrl = ctx.input.key_down(KeyCode::ControlLeft);
+        let alt = ctx.input.key_down(KeyCode::AltLeft);
+        let copy = ctx.input.key_pressed(KeyCode::KeyC);
+        let cut = ctx.input.key_pressed(KeyCode::KeyX);
+        let paste = ctx.input.key_pressed(KeyCode::KeyV);
+
+        if let (Some((min, max)), false) = (self.working_selection, ctrl || alt) {
             let middle = ((min + max).map(|x| x as f32) - Vector2::repeat(1.0)) / 2.0;
             let screen = shared.world_to_screen_space(ctx, middle);
             // todo clip to screen
@@ -111,11 +113,6 @@ impl SelectionState {
             }
         });
 
-        let ctrl = ctx.input.key_down(KeyCode::ControlLeft);
-        let copy = ctx.input.key_pressed(KeyCode::KeyC);
-        let cut = ctx.input.key_pressed(KeyCode::KeyX);
-        let paste = ctx.input.key_pressed(KeyCode::KeyV);
-
         if ctrl && (copy || cut) {
             let mut list = Vec::new();
             let mut old = Vec::new();
@@ -158,30 +155,32 @@ impl SelectionState {
         pos: Vector2<i32>,
         render_pos: Vector2<f32>,
     ) {
-        if let Some(bounds @ (min, max)) = self.working_selection {
-            if in_bounds(pos, bounds) {
-                let directions = Directions::empty()
-                    | (Direction::Left * (pos.x == min.x))
-                    | (Direction::Right * (pos.x == max.x))
-                    | (Direction::Up * (pos.y == max.y))
-                    | (Direction::Down * (pos.y == min.y));
+        let ctrl = ctx.input.key_down(KeyCode::ControlLeft);
+        let alt = ctx.input.key_down(KeyCode::AltLeft);
+        let shift = ctx.input.key_down(KeyCode::ShiftLeft);
 
-                for dir in directions.iter() {
-                    let selection_overlay = Sprite::new(OVERLAY_SELECTION)
-                        .scale(Vector2::repeat(shared.scale))
-                        .position(render_pos, Anchor::Center)
-                        .rotate(dir.to_angle(), Anchor::Center)
-                        .z_index(layer::TILE_BACKGROUND_OVERLAY);
-                    ctx.draw(selection_overlay);
-                }
+        let in_selection = |pos| {
+            let selection = self.selection.contains(&pos);
+            let working = self
+                .working_selection
+                .is_some_and(|bound| in_bounds(pos, bound));
+
+            if ctrl {
+                working || selection
+            } else if alt {
+                selection && !working
+            } else if shift && self.working_selection.is_some() {
+                working
+            } else {
+                selection
             }
-        }
+        };
 
         // draw overlay_selection if the tile is in the selection and the direction is not
-        if self.selection.contains(&pos) {
+        if in_selection(pos) {
             for dir in Direction::ALL {
                 let offset_point = dir.offset(pos);
-                if !self.selection.contains(&offset_point) {
+                if !in_selection(offset_point) {
                     let selection_overlay = Sprite::new(OVERLAY_SELECTION)
                         .scale(Vector2::repeat(shared.scale))
                         .position(render_pos, Anchor::Center)
