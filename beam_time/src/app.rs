@@ -2,6 +2,7 @@ use std::{fs, path::PathBuf, time::Instant};
 
 use anyhow::Result;
 use common::user::UserId;
+use engine::graphics_context::GraphicsContext;
 use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "steam")]
@@ -66,6 +67,14 @@ impl App {
             config,
             data_dir,
         }
+    }
+
+    // => (Margin, Padding)
+    pub fn spacing<App>(&self, ctx: &mut GraphicsContext<App>) -> (f32, f32) {
+        let margin = 16.0 * self.config.ui_scale * ctx.scale_factor;
+        let padding = 10.0 * self.config.ui_scale * ctx.scale_factor;
+
+        (margin, padding)
     }
 
     pub fn debug(&mut self, _msg: impl Fn() -> String) {

@@ -1,49 +1,73 @@
+use common::misc::in_bounds;
 use engine::{
     drawable::sprite::Sprite,
     exports::nalgebra::Vector2,
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::{Anchor, GraphicsContext},
 };
 
 use crate::assets::PANEL;
 
-type Callback<App> = Box<dyn FnOnce(&mut GraphicsContext<App>)>;
-
-pub struct Modal<App> {
+pub struct Modal {
     size: Vector2<f32>,
+    margin: f32,
     layer: i16,
-
-    body: Callback<App>,
 }
 
-impl<App> Drawable<App> for Modal<App> {
-    fn draw(self, ctx: &mut GraphicsContext<App>) {
+impl Modal {
+    pub fn new(size: Vector2<f32>) -> Self {
+        Self {
+            size,
+            layer: 0,
+            margin: 0.0,
+        }
+    }
+
+    pub fn margin(mut self, margin: f32) -> Self {
+        self.margin = margin;
+        self
+    }
+
+    pub fn layer(mut self, layer: i16) -> Self {
+        self.layer = layer;
+        self
+    }
+
+    pub fn inner_width(&self) -> f32 {
+        self.size.x - 2.0 * self.margin
+    }
+
+    pub fn draw<App>(
+        self,
+        ctx: &mut GraphicsContext<App>,
+        ui: impl FnOnce(&mut GraphicsContext<App>),
+    ) {
         let pos = ctx.center() + Vector2::new(-self.size.x, self.size.y) / 2.0;
 
         self.background(ctx, pos);
 
-        let sprites = ctx.draw_callback(|ctx| (self.body)(ctx));
+        let shift = Vector2::new(self.margin, -self.margin);
+        let sprites = ctx.draw_callback(|ctx| (ui)(ctx));
         for sprite in sprites {
-            sprite.points.iter_mut().for_each(|x| *x += pos);
+            sprite.points.iter_mut().for_each(|x| *x += pos + shift);
+            sprite.z_index = sprite.z_index.max(self.layer + 1);
+
+            sprite.clip = [
+                pos - Vector2::new(0.0, self.size.y),
+                pos + self.size - shift,
+            ];
+        }
+
+        if !in_bounds(ctx.input.mouse, (pos, pos + self.size)) {
+            ctx.input.cancel_hover();
+            ctx.input.cancel_clicks();
         }
     }
 }
 
-impl<App> Modal<App> {
-    pub fn new(
-        size: Vector2<f32>,
-        layer: i16,
-        body: impl FnOnce(&mut GraphicsContext<App>) + 'static,
-    ) -> Self {
-        Self {
-            size,
-            layer,
-            body: Box::new(body),
-        }
-    }
-
-    fn background(&self, ctx: &mut GraphicsContext<App>, pos: Vector2<f32>) {
-        let scale = 4.0 * ctx.scale_factor;
-        let tile_size = 16.0 * scale;
+impl Modal {
+    fn background<App>(&self, ctx: &mut GraphicsContext<App>, pos: Vector2<f32>) {
+        let scale = 4.0;
+        let tile_size = 16.0 * scale * ctx.scale_factor;
 
         let y_scale = scale * (self.size.y / tile_size - 2.0);
         let x_scale = scale * (self.size.x / tile_size - 2.0);

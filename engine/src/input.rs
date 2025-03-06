@@ -53,9 +53,19 @@ impl InputManager {
             .any(|(b, s)| b == &button && s == &ElementState::Released)
     }
 
-    pub fn cancel_mouse(&mut self, button: MouseButton) {
+    pub fn cancel_click(&mut self, button: MouseButton) {
         self.mouse_actions.retain(|x| x.0 != button);
         self.mouse_down.retain(|&x| x != button);
+    }
+
+    pub fn cancel_clicks(&mut self) {
+        self.mouse_actions.clear();
+        self.mouse_down.clear();
+    }
+
+    pub fn cancel_hover(&mut self) {
+        self.mouse = Vector2::new(-1.0, -1.0);
+        self.mouse_delta = Vector2::zeros();
     }
 
     pub fn key_down(&self, key: KeyCode) -> bool {
@@ -66,6 +76,19 @@ impl InputManager {
         self.key_actions
             .iter()
             .any(|e| e.state == ElementState::Pressed && e.physical_key == key)
+    }
+
+    pub fn consume_key_pressed(&mut self, key: KeyCode) -> bool {
+        let idx = self
+            .key_actions
+            .iter()
+            .position(|e| e.state == ElementState::Pressed && e.physical_key == key);
+
+        if let Some(idx) = idx {
+            self.key_actions.remove(idx);
+        }
+
+        idx.is_some()
     }
 
     pub fn key_released(&self, key: KeyCode) -> bool {

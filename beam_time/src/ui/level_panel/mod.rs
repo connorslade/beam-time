@@ -13,7 +13,7 @@ use common::misc::{exp_decay, in_bounds};
 use engine::{
     color::Rgb,
     drawable::{sprite::Sprite, text::Text},
-    exports::{nalgebra::Vector2, winit::event::MouseButton},
+    exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
 };
 
@@ -116,8 +116,7 @@ impl LevelPanel {
             Vector2::new(WIDTH as f32 * tile_size, ctx.size().y),
         );
         if in_bounds(ctx.input.mouse, bounds) {
-            ctx.input.cancel_mouse(MouseButton::Left);
-            ctx.input.cancel_mouse(MouseButton::Right);
+            ctx.input.cancel_clicks();
         }
     }
 }

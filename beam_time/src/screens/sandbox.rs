@@ -4,7 +4,10 @@ use common::misc::in_bounds;
 use engine::{
     color::Rgb,
     drawable::{sprite::Sprite, text::Text},
-    exports::{nalgebra::Vector2, winit::event::MouseButton},
+    exports::{
+        nalgebra::Vector2,
+        winit::{event::MouseButton, keyboard::KeyCode},
+    },
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
 };
@@ -16,8 +19,9 @@ use crate::{
     screens::game::GameScreen,
     ui::{
         button::{Button, ButtonState},
+        layout::column::ColumnLayout,
         misc::{font_scale, titled_screen},
-        model::Modal,
+        modal::Modal,
     },
     util::load_level_dir,
     App,
@@ -36,6 +40,35 @@ pub struct SandboxScreen {
 
 impl Screen<App> for SandboxScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
+        if let Some(()) = self.create {
+            if ctx.input.consume_key_pressed(KeyCode::Escape) {
+                self.create = None;
+            }
+
+            let (margin, padding) = state.spacing(ctx);
+            let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
+                .margin(margin)
+                .layer(layer::OVERLAY);
+
+            let width = modal.inner_width();
+            modal.draw(ctx, |ctx| {
+                let mut layout = ColumnLayout::new(padding);
+                layout.draw(
+                    ctx,
+                    Text::new(UNDEAD_FONT, "New Sandbox").scale(Vector2::repeat(4.0)),
+                );
+                layout.draw(
+                    ctx,
+                    Text::new(
+                        UNDEAD_FONT,
+                        "To create a new sandbox pick a name and click create!",
+                    )
+                    .scale(Vector2::repeat(2.0))
+                    .max_width(width),
+                );
+            });
+        }
+
         titled_screen(state, ctx, None, "Sandbox");
 
         if self.worlds.is_empty() {
@@ -119,14 +152,6 @@ impl Screen<App> for SandboxScreen {
             self.create = Some(());
         }
         ctx.draw(create_button);
-
-        if let Some(()) = self.create {
-            ctx.draw(Modal::new(
-                Vector2::new(500.0, 500.0),
-                layer::OVERLAY,
-                |ctx| {},
-            ));
-        }
     }
 
     fn on_init(&mut self, state: &mut App) {
