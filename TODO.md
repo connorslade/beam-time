@@ -129,5 +129,6 @@
 - [ ] Use screen_to_world_space to handle tile interactions because calling .is_hovered 50k times per frame is kinda slow
 - [x] Use ahash HashMap and HashSet
 - [ ] Fix scroll speed difference between track pad and mousewheel
-- [ ] Use graph layout for campaign?
+- [ ] ~~Use graph layout for campaign?~~
 - [x] Allow checking powered status of non detector tiles in level checkers
+- [ ] Solid shape renderers (polygon)

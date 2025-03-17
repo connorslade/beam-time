@@ -9,7 +9,7 @@ use crate::{
     audio::AudioManager,
     color::Rgb,
     input::InputManager,
-    render::sprite::GpuSprite,
+    render::{shape::GpuPolygons, sprite::GpuSprite},
     screens::Screen,
 };
 
@@ -20,8 +20,10 @@ pub struct GraphicsContext<'a, App> {
 
     /// background color
     pub(crate) background: Rgb<f32>,
-    /// list of sprites to render this frame
+    /// List of sprites to render this frame
     pub(crate) sprites: Vec<GpuSprite>,
+    /// List of shapes to render this frame (triangluated)
+    pub(crate) shapes: GpuPolygons,
     /// Screens to open for next frame
     pub(crate) next_screen: Vec<Box<dyn Screen<App>>>,
     /// Screens to close for next_frame
@@ -73,6 +75,7 @@ impl<'a, App> GraphicsContext<'a, App> {
             audio,
             background: Rgb::new(0.0, 0.0, 0.0),
             sprites: Vec::new(),
+            shapes: GpuPolygons::new(),
             next_screen: Vec::new(),
             close_screen: 0,
             cursor: Cursor::default(),

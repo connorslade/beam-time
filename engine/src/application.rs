@@ -22,7 +22,7 @@ use crate::{
     audio::AudioManager,
     graphics_context::GraphicsContext,
     input::InputManager,
-    render::sprite::pipeline::SpriteRenderPipeline,
+    render::{shape::pipeline::ShapeRenderPipeline, sprite::pipeline::SpriteRenderPipeline},
     screens::{Screen, Screens},
     DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
 };
@@ -55,6 +55,7 @@ pub struct State<'a, App> {
 
     // Rendering stuff (pipelines & buffers)
     pub sprite_renderer: SpriteRenderPipeline,
+    pub shape_renderer: ShapeRenderPipeline,
     pub depth_buffer: Texture,
 }
 
@@ -105,6 +106,7 @@ impl<App> ApplicationHandler for Application<'_, App> {
         let assets = Rc::new(asset_constructor.into_manager(&device, &queue));
         self.state = Some(State {
             sprite_renderer: SpriteRenderPipeline::new(&device, assets.clone()),
+            shape_renderer: ShapeRenderPipeline::new(&device),
             depth_buffer: create_depth_buffer(&device, window_size),
             audio: AudioManager::new_default_output(assets.clone()).unwrap(),
             assets,
@@ -166,6 +168,7 @@ impl<App> ApplicationHandler for Application<'_, App> {
                 }
 
                 state.sprite_renderer.prepare(&gcx.device, &gcx.queue, &ctx);
+                state.shape_renderer.prepare(&gcx.device, &gcx.queue, &ctx);
 
                 let mut encoder = gcx
                     .device
@@ -202,6 +205,7 @@ impl<App> ApplicationHandler for Application<'_, App> {
                     occlusion_query_set: None,
                 });
                 state.sprite_renderer.paint(&mut render_pass);
+                state.shape_renderer.paint(&mut render_pass);
                 drop(render_pass);
 
                 gcx.queue.submit(iter::once(encoder.finish()));

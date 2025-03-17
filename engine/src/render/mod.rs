@@ -1,3 +1,4 @@
+pub mod shape;
 pub mod sprite;
 
 #[macro_export]
