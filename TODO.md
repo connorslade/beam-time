@@ -131,4 +131,5 @@
 - [ ] Fix scroll speed difference between track pad and mousewheel
 - [ ] ~~Use graph layout for campaign?~~
 - [x] Allow checking powered status of non detector tiles in level checkers
-- [ ] Solid shape renderers (polygon)
+- [x] Solid shape renderers (polygon)
+- [ ] Use a buffer binding array instead of dispatching the sprite render for each texture atlas?

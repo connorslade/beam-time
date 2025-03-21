@@ -1,7 +1,8 @@
 use std::time::Instant;
 
 use engine::{
-    drawable::sprite::Sprite,
+    color::OkLab,
+    drawable::{rectangle::Rectangle, sprite::Sprite},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
@@ -31,6 +32,17 @@ pub struct TitleScreen {
 impl Screen<App> for TitleScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
         ctx.background(BACKGROUND_COLOR);
+
+        let t = state.start.elapsed().as_secs_f32();
+        ctx.draw(
+            Rectangle::new(Vector2::new(100.0, 100.0))
+                .position(
+                    ctx.center() + 50.0 * Vector2::new(t.cos(), t.sin()),
+                    Anchor::Center,
+                )
+                .color(OkLab::new(0.8, 0.1893, 0.0).hue_shift(t))
+                .z_index(-1),
+        );
 
         ctx.draw(Waterfall::new(&mut state.waterfall));
 

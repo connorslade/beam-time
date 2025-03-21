@@ -1,5 +1,7 @@
 use std::f32::consts::PI;
 
+use nalgebra::Vector3;
+
 #[derive(Debug, Clone, Copy)]
 pub struct OkLab<T> {
     pub l: T,
@@ -134,5 +136,11 @@ fn lerp(a: f32, b: f32, t: f32) -> f32 {
 impl From<OkLab<f32>> for Rgb<f32> {
     fn from(value: OkLab<f32>) -> Self {
         value.to_srgb()
+    }
+}
+
+impl<T> Into<Vector3<T>> for Rgb<T> {
+    fn into(self) -> Vector3<T> {
+        Vector3::new(self.r, self.g, self.b)
     }
 }
