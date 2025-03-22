@@ -1,5 +1,7 @@
 # To Do
 
+## Engine
+
 - [x] Cleanup sprite pipeline
 - [x] Support multiple atlases
 - [x] Text rendering
@@ -11,34 +13,106 @@
 - [ ] ~~Matrix stacks?~~
 - [x] Color struct with mixing and lab
 - [x] Sprite Z-ordering
-- [x] Make a button UI element
 - [x] Bring back the input handler for immediate mode style ui layouts
-- [x] In the background of the title screen have faded versions of all the tiles be flying down
 - [x] Some kinda screen that always runs its handlers
-- [x] Fade to accent color on hover
 - [x] Build out text renderer
 - [x] Fix scale anchor bug
-- [x] Figure out how to pass an app struct around
 - [x] Strongly typed asset references
-- [x] Split tile_map and tile_picker into ui/game components
-- [x] Implement beam logic
 - [ ] ~~Figure out how to apply custom shader effects?~~
+- [ ] ~~Cleanup coordinate systems~~
+- [x] Improve FPS - Basically optimize sprite pipeline
+  - [x] Use instancing instead of making huge meshes
+  - [ ] Also avoid re-creating buffers or bind groups every frame
+- [ ] Engine key chord pressed
+- [x] Allow canceling clicks through the graphics context
+- [ ] ~~Cleanup public fields in engine that should be read only~~
+  - Its not that big of a deal
+- [x] Extend engine with support for clipping sprites to some area
+  - Use instancing of a quad mesh with a uniform containing position, color, depth, clip bounds, etc.
+- [x] Solid shape renderers (polygon)
+- [ ] Use a buffer binding array instead of dispatching the sprite render for each texture atlas?
+- [x] Update draw_callback with support for polygons
+- [ ] Update sprite renderer to make use of the bytemuck impl for nalgebra
+
+## User Interface
+
+- [x] Make a button UI element
+- [x] In the background of the title screen have faded versions of all the tiles be flying down
+- [x] Fade buttons to accent color on hover
+- [x] Create z_order consts for layers
+- [x] Sandbox save selection screen
+- [ ] Verify ui scaling
+  - [ ] Add debug hotkey to change between 1x and 2x scale
+
+## Beam Logic
+
+- [x] Implement beam logic
 - [x] Fix galvo input logic
 - [x] Dont overwrite galvo mirror state when rotating
-- [x] Fix delay gate rendering z order
-- [x] Create z_order consts for layers
 - [x] Actual Infante Boards
   - [x] Use new rendering system
   - [x] Use hash map for tile storage
   - [x] Destroy beams after traveling too far
-- [ ] ~~Cleanup coordinate systems~~
-- [x] Zoom around the cursor position
-- [x] Sandbox save selection screen
-- [ ] Allow managing (creating, deleting) sandbox saves
+- [ ] Fix simulation bug when two galvos are pointed at the same mirror
+- [ ] Splitters take input from all sides to avoid non-deterministic behavior when used as or-gates
+- [x] Split beam logic into its own crate (so solutions can be verified on the server)
+- [x] Cleanup how level results are handled
+  - This also includes fixing the bug where the simulation thread can crash if the tick speed is too high
+- [x] Figure out what to use as user IDs to prevent multiple score uploads for one player
+  - [x] Implement custom hardware id
+- [x] Set LevelMeta::solved to true when level is solved and unset it on board modification
+  - [x] Fire event on board edit
+- [ ] Fix non-deterministic beam logic
+  - [ ] Create test cases to verify simulation
+- [x] Fix edge detector levels
+- [ ] Load custom levels at runtime (on server too :sob:)
+- [x] Fix synchronization level checker
+- [x] On level result animation, use previous price instead of current
+- [ ] Make emitters default off in levels?
+- [x] Allow checking powered status of non detector tiles in level checkers
+- [ ] Allow changing default values of level emitters
+
+## Misc
+
+- [x] Figure out how to pass an app struct around
+- [x] Split tile_map and tile_picker into ui/game components
+- [ ] ~~Persist window size~~
+- [ ] ~~Experiment with animation icon?~~
+  - This is completely unnecessary, but might be kinda cool, maybe an option in settings
+- [x] Fix rpath on linux
+- [x] Use ahash HashMap and HashSet
+
+## Game
+
 - [x] Saves should have a header at the start
   - Save name
   - Playtime
   - Last open date
+- [x] Autosave interval
+- [ ] Cleanup history track_once vs track_many
+- [x] Allow changing simulation speed
+  - [x] Decouple simulation from renderer
+- [ ] Start testing at currently open level panel test case, looping around at the end
+- [x] Allow disabling tiles in level def
+- [x] Price system
+- [ ] ~~Use ron for config file?~~
+  - Just to remove toml dep if its only used once
+- [x] Add a solution latency metric
+- [x] Split beam_time::game::board into some sub modules
+- [x] Put steam features under a feature flag
+- [x] Cache get_results stuff
+- [ ] Figure out how to support user levels on leaderboard server (steam workshop)
+- [ ] Fix screen_to_world_space and world_to_screen_space
+- [ ] Use screen_to_world_space to handle tile interactions because calling .is_hovered 50k times per frame is kinda slow
+
+### Rendering
+
+- [x] Fix delay gate rendering z order
+- [x] Render the little light pixel on active emitters
+- [ ] Cleanup selection renderer with holes
+
+### Interface
+
 - [x] Copy & paste tiles
   - [x] Allow making selections
   - [x] Allow adding and subtracting from selections
@@ -48,22 +122,12 @@
     - [x] Move into holding
 - [x] Undo
   - [x] Store list of modifications
-- [ ] Add sticky notes with text
-- [ ] ~~Persist window size~~
-- [x] Autosave interval
-- [x] Improve FPS - Basically optimize sprite pipeline
-  - [x] Use instancing instead of making huge meshes
-  - [ ] Also avoid re-creating buffers or bind groups every frame
 - [x] Don't overstep pan/zoom goals during lag spikes
-- [ ] Engine key chord pressed
+- [ ] Allow managing (creating, deleting) sandbox saves
+- [x] Zoom around the cursor position
 - [x] Stop simulation on delete, cut, or copy
-- [ ] Cleanup history track_once vs track_many
 - [x] Pop screen & save/free simulation on ESC
-- [x] Allow changing simulation speed
-  - [x] Decouple simulation from renderer
 - [x] Allow rotating copied selections
-- [ ] Fix simulation bug when two galvos are pointed at the same mirror
-- [x] Render the little light pixel on active emitters
 - [x] Visual feedback for test cases
 - [ ] Blueprint system
   - [ ] Allow saving and loading premade-structures in-game
@@ -71,68 +135,24 @@
 - [x] Dont overwrite when placing tile normally
 - [ ] Dont allow interacting with protected tiles through selections
 - [x] Use shift to reverse rotation direction
-- [ ] Cleanup selection renderer with holes
 - [ ] ~~Bias scale to integer zoom levels when at small zooms~~
 - [x] Detect and show failed test cases instead of hanging
-- [ ] ~~Experiment with animation icon?~~
-  - This is completely unnecessary, but might be kinda cool, maybe an option in settings
 - [x] Allow labeling emitters / outputs / tiles in general?
-- [ ] Splitters take input from all sides to avoid non-deterministic behavior when used as or-gates
-- [x] Allow canceling clicks through the graphics context
 - [x] Show current test case in level panel when simulating in test mode
-- [ ] Start testing at currently open level panel test case, looping around at the end
-- [x] Make level panel rendering more efficient by stretching sprites
-- [ ] ~~Cleanup public fields in engine that should be read only~~
-  - Its not that big of a deal
-- [x] Allow disabling tiles in level def
-- [x] Price system
-- [ ] ~~Use ron for config file?~~
-  - Just to remove toml dep if its only used once
-- [x] Add a solution latency metric
-- [x] Verify ui scaling
 - [x] Render histograms on level completion screen
-- [x] Extend engine with support for clipping sprites to some area
-  - Use instancing of a quad mesh with a uniform containing position, color, depth, clip bounds, etc.
-- [x] Split beam logic into its own crate (so solutions can be verified on the server)
-- [x] Cleanup how level results are handled
-  - This also includes fixing the bug where the simulation thread can crash if the tick speed is too high
-- [x] Figure out what to use as user IDs to prevent multiple score uploads for one player
-- [x] Set LevelMeta::solved to true when level is solved and unset it on board modification
-  - [x] Fire event on board edit
-- [x] Split beam_time::game::board into some sub modules
 - [ ] Take a look at test case viewer for Double It level
-- [ ] Fix non-deterministic beam logic
-  - [ ] Create test cases to verify simulation
-- [x] Put steam features under a feature flag
-- [x] Fix rpath on linux
-- [x] Implement custom hardware id
-- [x] Cache get_results stuff
 - [ ] Fix up histograms
   - [ ] Render correctly if all bins are the same / zero
   - [ ] Render where you fall more correctly
   - [ ] Emulate a smaller number of bins by repeating
-- [ ] Figure out how to support user levels on leaderboard server (steam workshop)
 - [x] Fix input/output label rendering for test cases
   - [x] Add output label support
   - [x] Add labels to half adder level
-- [x] Fix edge detector levels
-- [ ] Load custom levels at runtime (on server too :sob:)
-- [x] Fix synchronization level checker
-- [x] On level result animation, use previous price instead of current
 - [x] Decide if decay or linier interpolation looks better for tile picker
 - [x] When making a selection show its size and price
 - [x] Scroll faster at lower zoom levels
-- [ ] Make emitters default off in levels?
 - [ ] Fix weird animation in level info panel when making screen much larger than the previous frame
-- [ ] Allow changing default values of level emitters
-- [ ] Fix screen_to_world_space and world_to_screen_space
-- [ ] Use screen_to_world_space to handle tile interactions because calling .is_hovered 50k times per frame is kinda slow
-- [x] Use ahash HashMap and HashSet
+- [ ] Add sticky notes with text
 - [ ] Fix scroll speed difference between track pad and mousewheel
 - [ ] ~~Use graph layout for campaign?~~
-- [x] Allow checking powered status of non detector tiles in level checkers
-- [x] Solid shape renderers (polygon)
-- [ ] Use a buffer binding array instead of dispatching the sprite render for each texture atlas?
 - [ ] Little keyboard shortcut helper thing on bottom right of screen when in game
-- [ ] Update draw_callback with support for polygons
-- [ ] Update sprite renderer to make use of the bytemuck impl for nalgebra
