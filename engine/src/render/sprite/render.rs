@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use bytemuck::NoUninit;
+use nalgebra::Vector3;
 use wgpu::{BufferDescriptor, BufferUsages, Device, IndexFormat, Queue, RenderPass};
 
 use crate::{assets::TextureRef, graphics_context::GraphicsContext};
@@ -13,7 +14,7 @@ pub struct Instance {
     points: [[f32; 2]; 4],
     uv: [[f32; 2]; 2],
     layer: f32,
-    color: [f32; 3],
+    color: Vector3<f32>,
     clip: [[f32; 2]; 2],
 }
 

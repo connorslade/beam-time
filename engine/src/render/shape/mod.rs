@@ -7,13 +7,13 @@ mod render;
 #[derive(Pod, Zeroable, Clone, Copy)]
 #[repr(C)]
 pub struct ShapeVertex {
-    position: Vector3<f32>,
-    color: Vector3<f32>,
+    pub position: Vector3<f32>,
+    pub color: Vector3<f32>,
 }
 
 pub struct GpuPolygons {
-    vertices: Vec<ShapeVertex>,
-    indices: Vec<u16>,
+    pub(crate) vertices: Vec<ShapeVertex>,
+    pub(crate) indices: Vec<u16>,
 }
 
 impl ShapeVertex {

@@ -9,7 +9,7 @@ use crate::{
     audio::AudioManager,
     color::Rgb,
     input::InputManager,
-    render::{shape::GpuPolygons, sprite::GpuSprite},
+    render::{layer_to_z_coord, shape::GpuPolygons, sprite::GpuSprite},
     screens::Screen,
 };
 
@@ -18,7 +18,7 @@ pub struct GraphicsContext<'a, App> {
     pub assets: Rc<AssetManager>,
     pub audio: &'a AudioManager,
 
-    /// background color
+    /// Background color
     pub(crate) background: Rgb<f32>,
     /// List of sprites to render this frame
     pub(crate) sprites: Vec<GpuSprite>,
@@ -30,6 +30,8 @@ pub struct GraphicsContext<'a, App> {
     pub(crate) close_screen: usize,
     /// The cursor to use for the next frame
     pub(crate) cursor: Cursor,
+    /// Functions to run after main render function completes
+    pub(crate) defer: Vec<Box<dyn FnOnce(&mut GraphicsContext<App>)>>,
 
     pub input: &'a mut InputManager,
     /// Current window scale_factor
@@ -79,6 +81,7 @@ impl<'a, App> GraphicsContext<'a, App> {
             next_screen: Vec::new(),
             close_screen: 0,
             cursor: Cursor::default(),
+            defer: Vec::new(),
             input,
             scale_factor,
             delta_time,
@@ -114,6 +117,10 @@ impl<'a, App> GraphicsContext<'a, App> {
         self.close_screen += 1;
     }
 
+    pub fn defer(&mut self, callback: impl FnOnce(&mut GraphicsContext<App>) + 'static) {
+        self.defer.push(Box::new(callback));
+    }
+
     pub fn draw(&mut self, drawable: impl Drawable<App>) {
         drawable.draw(self);
     }
@@ -129,6 +136,21 @@ impl<'a, App> GraphicsContext<'a, App> {
 
     pub fn set_cursor(&mut self, cursor: impl Into<Cursor>) {
         self.cursor = cursor.into();
+    }
+
+    pub fn darken(&mut self, color: Rgb<f32>, below: i16) {
+        self.background *= color;
+        self.sprites
+            .iter_mut()
+            .filter(|sprite| sprite.z_index < below)
+            .for_each(|sprite| sprite.color *= color);
+
+        let below_z = layer_to_z_coord(below);
+        self.shapes
+            .vertices
+            .iter_mut()
+            .filter(|vert| vert.position.z < below_z)
+            .for_each(|vert| vert.color.component_mul_assign(&color.into()));
     }
 }
 

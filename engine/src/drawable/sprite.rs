@@ -1,4 +1,4 @@
-use nalgebra::{Matrix3, Vector2, Vector3};
+use nalgebra::{Matrix3, Vector2};
 
 use crate::{
     assets::{SpriteAsset, SpriteRef},
@@ -131,7 +131,7 @@ impl<App> Drawable<App> for Sprite {
             texture: asset.texture,
             uv: asset.uv(self.uv_offset).into(),
             points: self.points(ctx, asset),
-            color: Vector3::new(self.color.r, self.color.g, self.color.b),
+            color: Rgb::new(self.color.r, self.color.g, self.color.b),
             z_index: self.z_index,
             clip: self.clip,
         });

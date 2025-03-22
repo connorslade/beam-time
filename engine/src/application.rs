@@ -167,6 +167,10 @@ impl<App> ApplicationHandler for Application<'_, App> {
                     state.last_cursor = mem::take(&mut ctx.cursor);
                 }
 
+                while let Some(defer) = ctx.defer.pop() {
+                    (defer)(&mut ctx);
+                }
+
                 state.sprite_renderer.prepare(&gcx.device, &gcx.queue, &ctx);
                 state.shape_renderer.prepare(&gcx.device, &gcx.queue, &ctx);
 

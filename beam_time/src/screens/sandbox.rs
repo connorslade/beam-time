@@ -45,6 +45,8 @@ impl Screen<App> for SandboxScreen {
                 self.create = None;
             }
 
+            ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::OVERLAY));
+
             let (margin, padding) = state.spacing(ctx);
             let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
                 .margin(margin)

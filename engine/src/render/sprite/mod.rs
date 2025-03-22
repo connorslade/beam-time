@@ -1,6 +1,6 @@
-use nalgebra::{Vector2, Vector3};
+use nalgebra::Vector2;
 
-use crate::assets::TextureRef;
+use crate::{assets::TextureRef, color::Rgb};
 
 pub mod consts;
 pub mod pipeline;
@@ -15,5 +15,5 @@ pub struct GpuSprite {
     pub clip: [Vector2<f32>; 2],
 
     pub z_index: i16,
-    pub color: Vector3<f32>,
+    pub color: Rgb<f32>,
 }

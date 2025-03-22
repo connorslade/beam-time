@@ -133,3 +133,6 @@
 - [x] Allow checking powered status of non detector tiles in level checkers
 - [x] Solid shape renderers (polygon)
 - [ ] Use a buffer binding array instead of dispatching the sprite render for each texture atlas?
+- [ ] Little keyboard shortcut helper thing on bottom right of screen when in game
+- [ ] Update draw_callback with support for polygons
+- [ ] Update sprite renderer to make use of the bytemuck impl for nalgebra

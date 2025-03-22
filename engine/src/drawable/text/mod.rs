@@ -1,7 +1,7 @@
 use core::f32;
 use std::cell::RefCell;
 
-use nalgebra::{Vector2, Vector3};
+use nalgebra::Vector2;
 
 use crate::{
     assets::FontRef,
@@ -128,7 +128,7 @@ impl<App> Drawable<App> for Text<'_> {
                 texture: font.texture,
                 uv: [uv_a, uv_b],
                 points: RECTANGLE_POINTS.map(|x| pos + x.component_mul(&size)),
-                color: Vector3::new(self.color.r, self.color.g, self.color.b),
+                color: Rgb::new(self.color.r, self.color.g, self.color.b),
                 z_index: self.z_index,
                 clip: self.clip,
             });

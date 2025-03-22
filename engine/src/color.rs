@@ -1,4 +1,7 @@
-use std::f32::consts::PI;
+use std::{
+    f32::consts::PI,
+    ops::{Mul, MulAssign},
+};
 
 use nalgebra::Vector3;
 
@@ -142,5 +145,25 @@ impl From<OkLab<f32>> for Rgb<f32> {
 impl<T> Into<Vector3<T>> for Rgb<T> {
     fn into(self) -> Vector3<T> {
         Vector3::new(self.r, self.g, self.b)
+    }
+}
+
+impl Mul<Rgb<f32>> for Rgb<f32> {
+    type Output = Rgb<f32>;
+
+    fn mul(self, rhs: Rgb<f32>) -> Self::Output {
+        Rgb {
+            r: self.r * rhs.r,
+            g: self.g * rhs.g,
+            b: self.b * rhs.b,
+        }
+    }
+}
+
+impl MulAssign<Rgb<f32>> for Rgb<f32> {
+    fn mul_assign(&mut self, rhs: Rgb<f32>) {
+        self.r *= rhs.r;
+        self.g *= rhs.g;
+        self.b *= rhs.b;
     }
 }

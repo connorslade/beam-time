@@ -11,7 +11,7 @@ use crate::{
 use engine::{
     color::{OkLab, Rgb},
     drawable::{sprite::Sprite, text::Text},
-    exports::nalgebra::{Vector2, Vector3},
+    exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
 };
 use leaderboard::api::results::Histogram;
@@ -61,7 +61,7 @@ pub fn level_complete(
         let color = OkLab::new(0.8, 0.1893, 0.0)
             .hue_shift(t * 2.0 * PI - now * 2.0)
             .to_lrgb();
-        sprite.color = Vector3::new(color.r, color.g, color.b).map(|x| x as f32 / 255.0);
+        sprite.color = Rgb::new(color.r, color.g, color.b).map(|x| x as f32 / 255.0);
 
         let offset = (t * 2.0 * PI - now * 6.0).sin() * ui.scale;
         sprite.points.iter_mut().for_each(|point| point.y += offset);
