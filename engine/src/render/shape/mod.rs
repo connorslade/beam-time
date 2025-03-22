@@ -12,6 +12,7 @@ pub struct ShapeVertex {
     pub color: Rgb<f32>,
 }
 
+#[derive(Default)]
 pub struct GpuPolygons {
     pub(crate) vertices: Vec<ShapeVertex>,
     pub(crate) indices: Vec<u16>,
@@ -33,13 +34,6 @@ impl ShapeVertex {
 }
 
 impl GpuPolygons {
-    pub fn new() -> Self {
-        Self {
-            vertices: Vec::new(),
-            indices: Vec::new(),
-        }
-    }
-
     pub fn push_triangle(&mut self, vertices: &[ShapeVertex; 3]) {
         let start = self.vertices.len() as u16;
         self.vertices.extend_from_slice(vertices);

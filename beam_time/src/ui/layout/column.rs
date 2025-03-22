@@ -16,6 +16,10 @@ impl ColumnLayout {
         }
     }
 
+    pub fn space(&mut self, height: f32) {
+        self.origin.y -= height;
+    }
+
     pub fn draw<App>(&mut self, ctx: &mut GraphicsContext<App>, drawable: impl Drawable<App>) {
         let (sprites, shapes) = ctx.draw_callback(|ctx| ctx.draw(drawable));
 

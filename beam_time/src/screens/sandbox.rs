@@ -64,17 +64,20 @@ impl Screen<App> for SandboxScreen {
                     ctx,
                     Text::new(UNDEAD_FONT, "New Sandbox").scale(Vector2::repeat(4.0)),
                 );
+                let body = |text| Text::new(UNDEAD_FONT, text).scale(Vector2::repeat(2.0));
+
                 layout.draw(
                     ctx,
-                    Text::new(
-                        UNDEAD_FONT,
-                        "To create a new sandbox pick a name and click create!",
-                    )
-                    .scale(Vector2::repeat(2.0))
-                    .max_width(width),
+                    body("To create a new sandbox pick a name and click create!").max_width(width),
                 );
 
-                layout.draw(ctx, TextInput::new(&mut create.name_input).width(width));
+                layout.space(8.0 * ctx.scale_factor * state.config.ui_scale);
+                layout.draw(ctx, body("Sandbox Name"));
+                layout.draw(
+                    ctx,
+                    TextInput::new(&mut create.name_input)
+                        .width(width.min(400.0 * ctx.scale_factor)),
+                );
             });
         }
 

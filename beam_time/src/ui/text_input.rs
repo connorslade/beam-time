@@ -64,7 +64,7 @@ impl<'a> TextInput<'a> {
     }
 }
 
-impl<'a, App> Drawable<App> for TextInput<'a> {
+impl<App> Drawable<App> for TextInput<'_> {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
         for key in ctx
             .input
@@ -90,7 +90,7 @@ impl<'a, App> Drawable<App> for TextInput<'a> {
             )
             .z_index(self.z_index)
             .scale(Vector2::repeat(self.scale));
-        let size = text.size(&ctx);
+        let size = text.size(ctx);
 
         ctx.draw(text);
         ctx.draw(

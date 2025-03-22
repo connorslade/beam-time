@@ -16,6 +16,8 @@ use crate::{
     screens::Screen,
 };
 
+type DeferCallback<App> = Box<dyn FnOnce(&mut GraphicsContext<App>)>;
+
 pub struct GraphicsContext<'a, App> {
     /// Reference to asset manager
     pub assets: Rc<AssetManager>,
@@ -34,7 +36,7 @@ pub struct GraphicsContext<'a, App> {
     /// The cursor to use for the next frame
     pub(crate) cursor: Cursor,
     /// Functions to run after main render function completes
-    pub(crate) defer: Vec<Box<dyn FnOnce(&mut GraphicsContext<App>)>>,
+    pub(crate) defer: Vec<DeferCallback<App>>,
 
     pub input: &'a mut InputManager,
     /// Current window scale_factor
@@ -80,7 +82,7 @@ impl<'a, App> GraphicsContext<'a, App> {
             audio,
             background: Rgb::new(0.0, 0.0, 0.0),
             sprites: Vec::new(),
-            shapes: GpuPolygons::new(),
+            shapes: Default::default(),
             next_screen: Vec::new(),
             close_screen: 0,
             cursor: Cursor::default(),

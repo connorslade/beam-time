@@ -142,9 +142,9 @@ impl From<OkLab<f32>> for Rgb<f32> {
     }
 }
 
-impl<T> Into<Vector3<T>> for Rgb<T> {
-    fn into(self) -> Vector3<T> {
-        Vector3::new(self.r, self.g, self.b)
+impl<T> From<Rgb<T>> for Vector3<T> {
+    fn from(value: Rgb<T>) -> Self {
+        Vector3::new(value.r, value.g, value.b)
     }
 }
 
