@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use bytemuck::NoUninit;
-use nalgebra::Vector3;
+use nalgebra::{Vector2, Vector3};
 use wgpu::{BufferDescriptor, BufferUsages, Device, IndexFormat, Queue, RenderPass};
 
 use crate::{assets::TextureRef, graphics_context::GraphicsContext};
@@ -11,11 +11,11 @@ use super::{pipeline::SpriteRenderPipeline, GpuSprite};
 #[derive(NoUninit, Clone, Copy)]
 #[repr(C)]
 pub struct Instance {
-    points: [[f32; 2]; 4],
-    uv: [[f32; 2]; 2],
+    points: [Vector2<f32>; 4],
+    uv: [Vector2<f32>; 2],
     layer: f32,
     color: Vector3<f32>,
-    clip: [[f32; 2]; 2],
+    clip: [Vector2<f32>; 2],
 }
 
 impl SpriteRenderPipeline {
@@ -37,19 +37,11 @@ impl SpriteRenderPipeline {
             for sprite in sprites.iter() {
                 let layer = (i16::MAX as f32 - sprite.z_index as f32) / (i16::MAX as f32 * 2.0);
                 instances.push(Instance {
-                    points: [
-                        sprite.points[0].component_div(&window).into(),
-                        sprite.points[1].component_div(&window).into(),
-                        sprite.points[2].component_div(&window).into(),
-                        sprite.points[3].component_div(&window).into(),
-                    ],
+                    points: sprite.points.map(|x| x.component_div(&window)),
                     layer,
-                    uv: [sprite.uv[0].into(), (sprite.uv[1] - sprite.uv[0]).into()],
+                    uv: [sprite.uv[0], sprite.uv[1] - sprite.uv[0]],
                     color: sprite.color.into(),
-                    clip: [
-                        sprite.clip[0].component_div(&window).into(),
-                        sprite.clip[1].component_div(&window).into(),
-                    ],
+                    clip: sprite.clip.map(|x| x.component_div(&window)),
                 });
             }
 

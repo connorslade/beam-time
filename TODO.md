@@ -32,7 +32,7 @@
 - [x] Solid shape renderers (polygon)
 - [ ] Use a buffer binding array instead of dispatching the sprite render for each texture atlas?
 - [x] Update draw_callback with support for polygons
-- [ ] Update sprite renderer to make use of the bytemuck impl for nalgebra
+- [x] Update sprite renderer to make use of the bytemuck impl for nalgebra
 
 ## User Interface
 
@@ -41,8 +41,10 @@
 - [x] Fade buttons to accent color on hover
 - [x] Create z_order consts for layers
 - [x] Sandbox save selection screen
-- [ ] Verify ui scaling
-  - [ ] Add debug hotkey to change between 1x and 2x scale
+- [x] Verify ui scaling
+  - [x] Add debug hotkey to change between 1x and 2x scale
+  - [x] Fix ui scaling of rectangle outline
+- [ ] Figure out ui scale config option...
 
 ## Beam Logic
 
@@ -89,7 +91,7 @@
   - Playtime
   - Last open date
 - [x] Autosave interval
-- [ ] Cleanup history track_once vs track_many
+- [ ] ~~Cleanup history track_once vs track_many~~
 - [x] Allow changing simulation speed
   - [x] Decouple simulation from renderer
 - [ ] Start testing at currently open level panel test case, looping around at the end
@@ -156,3 +158,13 @@
 - [ ] Fix scroll speed difference between track pad and mousewheel
 - [ ] ~~Use graph layout for campaign?~~
 - [ ] Little keyboard shortcut helper thing on bottom right of screen when in game
+
+---
+
+## Queue
+
+- Cleanup selection renderer
+- Test case renderer for 'Double It'
+- Keyboard shortcut helper
+- Ui buttons for sandbox modal
+- Fix world space ←→ screen space conversion functions

@@ -45,10 +45,10 @@ impl RectangleOutline {
     }
 
     fn points<App>(&self, ctx: &GraphicsContext<App>) -> [[Vector2<f32>; 4]; 2] {
-        let outer_size = self.size + Vector2::repeat(self.thickness * ctx.scale_factor);
+        let outer_size = self.size + Vector2::repeat(self.thickness * 2.0 * ctx.scale_factor);
 
         let offset_outer = self.position + self.position_anchor.offset(outer_size);
-        let offset_inner = offset_outer + Vector2::repeat(self.thickness);
+        let offset_inner = offset_outer + Vector2::repeat(self.thickness * ctx.scale_factor);
 
         [
             RECTANGLE_POINTS.map(|x| offset_outer + x.component_mul(&outer_size)),

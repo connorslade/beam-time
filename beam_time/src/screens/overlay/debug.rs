@@ -2,7 +2,7 @@ use std::time::{Duration, Instant};
 
 use engine::{
     drawable::text::Text,
-    exports::nalgebra::Vector2,
+    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
 };
@@ -16,6 +16,12 @@ pub struct DebugOverlay {
 }
 
 impl Screen<App> for DebugOverlay {
+    fn pre_render(&mut self, _state: &mut App, ctx: &mut GraphicsContext<App>) {
+        if ctx.input.key_down(KeyCode::Slash) {
+            ctx.scale_factor = 1.0 + (ctx.scale_factor == 1.0) as u8 as f32;
+        }
+    }
+
     fn post_render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
         self.frames += 1;
         if self.last_update.elapsed() >= Duration::from_secs(1) {

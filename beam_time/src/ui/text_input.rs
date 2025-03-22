@@ -94,7 +94,7 @@ impl<App> Drawable<App> for TextInput<'_> {
 
         ctx.draw(text);
         ctx.draw(
-            RectangleOutline::new(Vector2::new(self.width, size.y + padding * 3.0), 4.0)
+            RectangleOutline::new(Vector2::new(self.width, size.y + padding * 3.0), 2.0)
                 .position(
                     self.position - Vector2::repeat(padding),
                     self.position_anchor,
