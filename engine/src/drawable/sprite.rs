@@ -7,6 +7,8 @@ use crate::{
     render::sprite::GpuSprite,
 };
 
+use super::RECTANGLE_POINTS;
+
 #[derive(Debug, Clone)]
 pub struct Sprite {
     texture: SpriteRef,
@@ -117,12 +119,7 @@ impl Sprite {
         let transform = |point: Vector2<f32>| (transform * point.push(1.0)).xy();
 
         // Apply to the bounds of the sprite
-        [
-            transform(Vector2::new(0.0, 0.0)),
-            transform(Vector2::new(0.0, size.y)),
-            transform(size),
-            transform(Vector2::new(size.x, 0.0)),
-        ]
+        RECTANGLE_POINTS.map(|x| transform(x.component_mul(&size)))
     }
 }
 

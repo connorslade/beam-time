@@ -11,6 +11,8 @@ use crate::{
 };
 
 use layout::TextLayout;
+
+use super::RECTANGLE_POINTS;
 mod layout;
 
 pub struct Text<'a> {
@@ -125,12 +127,7 @@ impl<App> Drawable<App> for Text<'_> {
             ctx.sprites.push(GpuSprite {
                 texture: font.texture,
                 uv: [uv_a, uv_b],
-                points: [
-                    pos,
-                    pos + Vector2::new(0.0, size.y),
-                    pos + size,
-                    pos + Vector2::new(size.x, 0.0),
-                ],
+                points: RECTANGLE_POINTS.map(|x| pos + x.component_mul(&size)),
                 color: Vector3::new(self.color.r, self.color.g, self.color.b),
                 z_index: self.z_index,
                 clip: self.clip,
