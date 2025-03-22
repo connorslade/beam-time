@@ -10,3 +10,7 @@ macro_rules! include_shader {
         }
     };
 }
+
+pub fn layer_to_z_coord(layer: i16) -> f32 {
+    (i16::MAX as f32 - layer as f32) / (i16::MAX as f32 * 2.0)
+}

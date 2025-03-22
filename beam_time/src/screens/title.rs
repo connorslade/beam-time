@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use engine::{
     color::OkLab,
-    drawable::{rectangle::Rectangle, sprite::Sprite},
+    drawable::{shape::rectangle_outline::RectangleOutline, sprite::Sprite},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
@@ -35,11 +35,8 @@ impl Screen<App> for TitleScreen {
 
         let t = state.start.elapsed().as_secs_f32();
         ctx.draw(
-            Rectangle::new(Vector2::new(100.0, 100.0))
-                .position(
-                    ctx.center() + 50.0 * Vector2::new(t.cos(), t.sin()),
-                    Anchor::Center,
-                )
+            RectangleOutline::new(Vector2::new(100.0, 100.0), 4.0)
+                .position(50.0 * Vector2::repeat(t), Anchor::Center)
                 .color(OkLab::new(0.8, 0.1893, 0.0).hue_shift(t))
                 .z_index(-1),
         );

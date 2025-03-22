@@ -1,9 +1,10 @@
-use nalgebra::{Vector2, Vector3};
+use nalgebra::Vector2;
 
 use crate::{
     color::Rgb,
+    drawable::RECTANGLE_POINTS,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    render::shape::ShapeVertex,
+    render::{layer_to_z_coord, shape::ShapeVertex},
 };
 
 pub struct Rectangle {
@@ -43,29 +44,18 @@ impl Rectangle {
 
     fn points(&self) -> [Vector2<f32>; 4] {
         let offset = self.position + self.position_anchor.offset(self.size);
-
-        [
-            offset + Vector2::new(0.0, 0.0),
-            offset + Vector2::new(0.0, self.size.y),
-            offset + self.size,
-            offset + Vector2::new(self.size.x, 0.0),
-        ]
+        RECTANGLE_POINTS.map(|x| offset + x.component_mul(&self.size))
     }
 }
 
 impl<App> Drawable<App> for Rectangle {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
-        // todo: move layer / div by window to render.rs
-        let [a, b, c, d] = self.points();
-        let z = (i16::MAX as f32 - self.z_index as f32) / (i16::MAX as f32 * 2.0);
-        let window = ctx.size();
+        let size = ctx.size();
+        let z = layer_to_z_coord(self.z_index);
+        let coords = self.points().map(|x| x.component_div(&size).push(z));
 
         let color = self.color.into();
-        ctx.shapes.push_quad([
-            ShapeVertex::new(a.component_div(&window).push(z), color),
-            ShapeVertex::new(b.component_div(&window).push(z), color),
-            ShapeVertex::new(c.component_div(&window).push(z), color),
-            ShapeVertex::new(d.component_div(&window).push(z), color),
-        ]);
+        let verts = coords.map(|x| ShapeVertex::new(x, color));
+        ctx.shapes.push_quad(&verts);
     }
 }

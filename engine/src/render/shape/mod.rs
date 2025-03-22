@@ -30,16 +30,22 @@ impl GpuPolygons {
         }
     }
 
-    pub fn push_triangle(&mut self, vertices: [ShapeVertex; 3]) {
+    pub fn push_triangle(&mut self, vertices: &[ShapeVertex; 3]) {
         let start = self.vertices.len() as u16;
-        self.vertices.extend_from_slice(&vertices);
+        self.vertices.extend_from_slice(vertices);
         self.indices
             .extend_from_slice(&[start, start + 1, start + 2]);
     }
 
-    pub fn push_quad(&mut self, vertices: [ShapeVertex; 4]) {
+    pub fn push_triangles(&mut self, triangles: &[[ShapeVertex; 3]]) {
+        for triangle in triangles {
+            self.push_triangle(triangle);
+        }
+    }
+
+    pub fn push_quad(&mut self, vertices: &[ShapeVertex; 4]) {
         let start = self.vertices.len() as u16;
-        self.vertices.extend_from_slice(&vertices);
+        self.vertices.extend_from_slice(vertices);
         self.indices
             .extend_from_slice(&[start, start + 1, start + 2]);
         self.indices
