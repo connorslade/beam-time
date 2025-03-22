@@ -79,7 +79,7 @@ impl LevelPanel {
         let height = ui.y;
 
         let dt = ctx.delta_time;
-        let gpu = ctx.draw_callback(|ctx| {
+        let (gpu, _shapes) = ctx.draw_callback(|ctx| {
             if let Some((result, price)) = level_result.map(|x| (x, price)).or(self.previous_result)
             {
                 self.previous_result = Some((result, price));

@@ -22,6 +22,7 @@ use crate::{
         layout::column::ColumnLayout,
         misc::{font_scale, titled_screen},
         modal::Modal,
+        text_input::{TextInput, TextInputState},
     },
     util::load_level_dir,
     App,
@@ -35,16 +36,20 @@ pub struct SandboxScreen {
     create_button: ButtonState,
     dropdown_angle: f32,
 
-    create: Option<()>,
+    create: Option<CreateModal>,
+}
+
+pub struct CreateModal {
+    name_input: TextInputState,
 }
 
 impl Screen<App> for SandboxScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
-        if let Some(()) = self.create {
-            if ctx.input.consume_key_pressed(KeyCode::Escape) {
-                self.create = None;
-            }
+        if self.create.is_some() && ctx.input.consume_key_pressed(KeyCode::Escape) {
+            self.create = None;
+        }
 
+        if let Some(create) = &mut self.create {
             ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::OVERLAY));
 
             let (margin, padding) = state.spacing(ctx);
@@ -68,6 +73,8 @@ impl Screen<App> for SandboxScreen {
                     .scale(Vector2::repeat(2.0))
                     .max_width(width),
                 );
+
+                layout.draw(ctx, TextInput::new(&mut create.name_input).width(width));
             });
         }
 
@@ -151,7 +158,9 @@ impl Screen<App> for SandboxScreen {
             )
             .scale(Vector2::repeat(4.0));
         if create_button.is_clicked(ctx) {
-            self.create = Some(());
+            self.create = Some(CreateModal {
+                name_input: TextInputState::default(),
+            });
         }
         ctx.draw(create_button);
     }

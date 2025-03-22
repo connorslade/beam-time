@@ -9,7 +9,10 @@ use crate::{
     audio::AudioManager,
     color::Rgb,
     input::InputManager,
-    render::{layer_to_z_coord, shape::GpuPolygons, sprite::GpuSprite},
+    render::{
+        shape::{GpuPolygons, ShapeVertex},
+        sprite::GpuSprite,
+    },
     screens::Screen,
 };
 
@@ -36,7 +39,7 @@ pub struct GraphicsContext<'a, App> {
     pub input: &'a mut InputManager,
     /// Current window scale_factor
     pub scale_factor: f32,
-    /// One over the time since the last frame
+    /// The time elapsed since the last frame
     pub delta_time: f32,
     /// Which frame is currently being rendered (starting from zero)
     pub frame: u64,
@@ -128,10 +131,16 @@ impl<'a, App> GraphicsContext<'a, App> {
     pub fn draw_callback(
         &mut self,
         drawable: impl FnOnce(&mut GraphicsContext<App>),
-    ) -> &mut [GpuSprite] {
+    ) -> (&mut [GpuSprite], &mut [ShapeVertex]) {
         let sprites = self.sprites.len();
+        let shapes = self.shapes.vertices.len();
+
         drawable(self);
-        &mut self.sprites[sprites..]
+
+        (
+            &mut self.sprites[sprites..],
+            &mut self.shapes.vertices[shapes..],
+        )
     }
 
     pub fn set_cursor(&mut self, cursor: impl Into<Cursor>) {
@@ -145,12 +154,11 @@ impl<'a, App> GraphicsContext<'a, App> {
             .filter(|sprite| sprite.z_index < below)
             .for_each(|sprite| sprite.color *= color);
 
-        let below_z = layer_to_z_coord(below);
         self.shapes
             .vertices
             .iter_mut()
-            .filter(|vert| vert.position.z < below_z)
-            .for_each(|vert| vert.color.component_mul_assign(&color.into()));
+            .filter(|vert| vert.z_index < below)
+            .for_each(|vert| vert.color *= color);
     }
 }
 

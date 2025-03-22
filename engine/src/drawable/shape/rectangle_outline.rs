@@ -4,7 +4,7 @@ use crate::{
     color::Rgb,
     drawable::RECTANGLE_POINTS,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    render::{layer_to_z_coord, shape::ShapeVertex},
+    render::shape::ShapeVertex,
 };
 
 pub struct RectangleOutline {
@@ -59,14 +59,9 @@ impl RectangleOutline {
 
 impl<App> Drawable<App> for RectangleOutline {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
-        let size = ctx.size();
-        let z = layer_to_z_coord(self.z_index);
-        let color = self.color.into();
-
-        let [outer, inner] = self.points(ctx).map(|y| {
-            y.map(|x| x.component_div(&size).push(z))
-                .map(|x| ShapeVertex::new(x, color))
-        });
+        let [outer, inner] = self
+            .points(ctx)
+            .map(|y| y.map(|x| ShapeVertex::new(x, self.color).z_index(self.z_index)));
 
         for i in 0..4 {
             let j = (i + 1) % 4;

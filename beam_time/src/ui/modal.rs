@@ -46,7 +46,7 @@ impl Modal {
         self.background(ctx, pos);
 
         let shift = Vector2::new(self.margin, -self.margin);
-        let sprites = ctx.draw_callback(|ctx| (ui)(ctx));
+        let (sprites, shapes) = ctx.draw_callback(|ctx| (ui)(ctx));
         for sprite in sprites {
             sprite.points.iter_mut().for_each(|x| *x += pos + shift);
             sprite.z_index = sprite.z_index.max(self.layer + 1);
@@ -55,6 +55,11 @@ impl Modal {
                 pos - Vector2::new(0.0, self.size.y),
                 pos + self.size - shift,
             ];
+        }
+
+        for vert in shapes {
+            vert.position += pos + shift;
+            vert.z_index = vert.z_index.max(self.layer + 1);
         }
 
         if !in_bounds(ctx.input.mouse, (pos, pos + self.size)) {

@@ -53,7 +53,7 @@ pub fn level_complete(
     ui.y -= title.size(ctx).y + ui.scale + ui.padding;
 
     let now = state.start.elapsed().as_secs_f32();
-    let sprites = ctx.draw_callback(|ctx| ctx.draw(title));
+    let (sprites, _shapes) = ctx.draw_callback(|ctx| ctx.draw(title));
 
     let count = sprites.len();
     for (idx, sprite) in sprites.iter_mut().enumerate() {

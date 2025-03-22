@@ -13,11 +13,11 @@ pub struct InputManager {
     pub scroll_delta: f32,
     pub resized: bool,
 
-    mouse_down: Vec<MouseButton>,
-    mouse_actions: Vec<(MouseButton, ElementState)>,
+    pub mouse_down: Vec<MouseButton>,
+    pub mouse_actions: Vec<(MouseButton, ElementState)>,
 
-    key_down: Vec<PhysicalKey>,
-    key_actions: Vec<KeyEvent>,
+    pub key_down: Vec<PhysicalKey>,
+    pub key_actions: Vec<KeyEvent>,
 }
 
 impl InputManager {

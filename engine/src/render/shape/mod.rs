@@ -1,14 +1,15 @@
-use bytemuck::{Pod, Zeroable};
-use nalgebra::Vector3;
+use nalgebra::Vector2;
+
+use crate::color::Rgb;
 
 pub mod pipeline;
 mod render;
 
-#[derive(Pod, Zeroable, Clone, Copy)]
-#[repr(C)]
+#[derive(Clone, Copy)]
 pub struct ShapeVertex {
-    pub position: Vector3<f32>,
-    pub color: Vector3<f32>,
+    pub position: Vector2<f32>,
+    pub z_index: i16,
+    pub color: Rgb<f32>,
 }
 
 pub struct GpuPolygons {
@@ -17,8 +18,17 @@ pub struct GpuPolygons {
 }
 
 impl ShapeVertex {
-    pub fn new(position: Vector3<f32>, color: Vector3<f32>) -> Self {
-        Self { position, color }
+    pub fn new(position: Vector2<f32>, color: impl Into<Rgb<f32>>) -> Self {
+        Self {
+            position,
+            z_index: 0,
+            color: color.into(),
+        }
+    }
+
+    pub fn z_index(mut self, z_index: i16) -> Self {
+        self.z_index = z_index;
+        self
     }
 }
 

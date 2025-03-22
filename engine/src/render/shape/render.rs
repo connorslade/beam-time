@@ -1,12 +1,35 @@
+use bytemuck::{Pod, Zeroable};
+use nalgebra::Vector3;
 use wgpu::{BufferDescriptor, BufferUsages, Device, IndexFormat, Queue, RenderPass};
 
-use crate::graphics_context::GraphicsContext;
+use crate::{graphics_context::GraphicsContext, render::layer_to_z_coord};
 
 use super::pipeline::ShapeRenderPipeline;
 
+#[derive(Pod, Zeroable, Clone, Copy)]
+#[repr(C)]
+pub struct GpuShapeVertex {
+    position: Vector3<f32>,
+    color: Vector3<f32>,
+}
+
 impl ShapeRenderPipeline {
     pub fn prepare<App>(&mut self, device: &Device, queue: &Queue, ctx: &GraphicsContext<App>) {
-        let verts = bytemuck::cast_slice(&ctx.shapes.vertices);
+        let size = ctx.size();
+        let verts = ctx
+            .shapes
+            .vertices
+            .iter()
+            .map(|x| {
+                let z = layer_to_z_coord(x.z_index);
+                GpuShapeVertex {
+                    position: x.position.component_div(&size).push(z),
+                    color: x.color.into(),
+                }
+            })
+            .collect::<Vec<_>>();
+
+        let verts = bytemuck::cast_slice(&verts);
         let index = bytemuck::cast_slice(&ctx.shapes.indices);
         self.count = ctx.shapes.indices.len() as u32;
 

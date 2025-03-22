@@ -4,7 +4,7 @@ use crate::{
     color::Rgb,
     drawable::RECTANGLE_POINTS,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    render::{layer_to_z_coord, shape::ShapeVertex},
+    render::shape::ShapeVertex,
 };
 
 pub struct Rectangle {
@@ -50,12 +50,9 @@ impl Rectangle {
 
 impl<App> Drawable<App> for Rectangle {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
-        let size = ctx.size();
-        let z = layer_to_z_coord(self.z_index);
-        let coords = self.points().map(|x| x.component_div(&size).push(z));
-
-        let color = self.color.into();
-        let verts = coords.map(|x| ShapeVertex::new(x, color));
+        let verts = self
+            .points()
+            .map(|x| ShapeVertex::new(x, self.color).z_index(self.z_index));
         ctx.shapes.push_quad(&verts);
     }
 }
