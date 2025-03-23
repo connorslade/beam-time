@@ -150,6 +150,7 @@ impl SelectionState {
     pub fn update_tile(
         &mut self,
         ctx: &mut GraphicsContext<App>,
+        shared: &SharedState,
         hovered: bool,
         pos: Vector2<i32>,
         render_pos: Vector2<f32>,
@@ -176,7 +177,7 @@ impl SelectionState {
         };
 
         // Draw overlay_selection if the tile is in the selection and the direction is not
-        let px = 4.0 * ctx.scale_factor;
+        let px = ctx.scale_factor * shared.scale;
         if in_selection(pos) {
             for dir in Direction::ALL {
                 let offset_point = dir.offset(pos);

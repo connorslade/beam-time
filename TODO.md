@@ -172,4 +172,3 @@
 - Fix world space ←→ screen space conversion functions
   - To make testing in debug mode possible
 - Paused modal in game
-- Fix scaling of selection rendering
