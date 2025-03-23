@@ -96,6 +96,14 @@ impl Direction {
         }
     }
 
+    pub fn is_horizontal(self) -> bool {
+        matches!(self, Self::Left | Self::Right)
+    }
+
+    pub fn is_vertical(self) -> bool {
+        matches!(self, Self::Up | Self::Down)
+    }
+
     pub fn to_angle(self) -> f32 {
         match self {
             Self::Up => 0.0,

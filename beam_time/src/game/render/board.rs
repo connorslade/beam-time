@@ -104,7 +104,7 @@ impl Board {
 
                 self.transient
                     .selection
-                    .update_tile(ctx, shared, hovered, pos, render_pos);
+                    .update_tile(ctx, hovered, pos, render_pos);
 
                 let tile = self.tiles.get(pos);
                 let permanent = self.is_permanent(&pos);

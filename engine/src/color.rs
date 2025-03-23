@@ -76,7 +76,7 @@ impl<T> Rgb<T> {
 }
 
 impl Rgb<f32> {
-    pub fn hex(hex: u32) -> Self {
+    pub const fn hex(hex: u32) -> Self {
         let r = hex >> 16 & 0xFF;
         let g = hex >> 8 & 0xFF;
         let b = hex & 0xFF;

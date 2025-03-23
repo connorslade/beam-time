@@ -1,7 +1,7 @@
 use crate::{
     app::App,
-    assets::{OVERLAY_SELECTION, UNDEAD_FONT},
-    consts::layer,
+    assets::UNDEAD_FONT,
+    consts::{layer, SELECTION_COLOR},
     util::key_events,
 };
 use ahash::HashSet;
@@ -9,12 +9,12 @@ use beam_logic::{simulation::state::BeamState, tile::Tile};
 use common::{direction::Direction, map::Map, misc::in_bounds};
 use engine::{
     color::Rgb,
-    drawable::{sprite::Sprite, text::Text},
+    drawable::{shape::rectangle::Rectangle, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
 };
 use thousands::Separable;
 
@@ -150,7 +150,6 @@ impl SelectionState {
     pub fn update_tile(
         &mut self,
         ctx: &mut GraphicsContext<App>,
-        shared: &SharedState,
         hovered: bool,
         pos: Vector2<i32>,
         render_pos: Vector2<f32>,
@@ -176,17 +175,29 @@ impl SelectionState {
             }
         };
 
-        // draw overlay_selection if the tile is in the selection and the direction is not
+        // Draw overlay_selection if the tile is in the selection and the direction is not
+        let px = 4.0 * ctx.scale_factor;
         if in_selection(pos) {
             for dir in Direction::ALL {
                 let offset_point = dir.offset(pos);
                 if !in_selection(offset_point) {
-                    let selection_overlay = Sprite::new(OVERLAY_SELECTION)
-                        .scale(Vector2::repeat(shared.scale))
-                        .position(render_pos, Anchor::Center)
-                        .rotate(dir.to_angle(), Anchor::Center)
-                        .z_index(layer::TILE_BACKGROUND_OVERLAY);
-                    ctx.draw(selection_overlay);
+                    let size = match dir {
+                        Direction::Up | Direction::Down => Vector2::new(16.0, 1.0),
+                        _ => Vector2::new(1.0, 16.0),
+                    } * px;
+
+                    let shift = match dir {
+                        Direction::Up => Vector2::new(-9.0 * px, 7.0 * px),
+                        Direction::Down => Vector2::new(-8.0 * px, -9.0 * px),
+                        Direction::Left => Vector2::new(-9.0 * px, -9.0 * px),
+                        Direction::Right => Vector2::new(7.0 * px, -8.0 * px),
+                    };
+
+                    Rectangle::new(size)
+                        .color(SELECTION_COLOR)
+                        .position(render_pos + shift, Anchor::BottomLeft)
+                        .z_index(layer::TILE_BACKGROUND_OVERLAY)
+                        .draw(ctx);
                 }
             }
         }

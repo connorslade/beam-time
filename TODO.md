@@ -111,7 +111,7 @@
 
 - [x] Fix delay gate rendering z order
 - [x] Render the little light pixel on active emitters
-- [ ] Cleanup selection renderer with holes
+- [x] Cleanup selection renderer with holes
 
 ### Interface
 
@@ -163,8 +163,8 @@
 
 ## Queue
 
-- Cleanup selection renderer
 - Test case renderer for 'Double It'
 - Keyboard shortcut helper
 - Ui buttons for sandbox modal
 - Fix world space ←→ screen space conversion functions
+  - To make testing in debug mode possible
