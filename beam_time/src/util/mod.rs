@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use log::warn;
 
@@ -26,7 +26,7 @@ pub macro key_events(
     )*
 }
 
-pub fn load_level_dir(dir: PathBuf) -> Vec<(PathBuf, BoardMeta)> {
+pub fn load_level_dir(dir: &Path) -> Vec<(PathBuf, BoardMeta)> {
     let mut out = Vec::new();
 
     for world in dir.read_dir().unwrap().filter_map(Result::ok) {

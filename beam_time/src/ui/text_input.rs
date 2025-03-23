@@ -1,3 +1,5 @@
+use std::mem;
+
 use engine::{
     color::Rgb,
     drawable::{
@@ -30,6 +32,7 @@ pub struct TextInput<'a> {
 #[derive(Default)]
 pub struct TextInputState {
     content: String,
+    unedited: bool,
     t: f32,
 }
 
@@ -64,6 +67,20 @@ impl<'a> TextInput<'a> {
     }
 }
 
+impl TextInputState {
+    pub fn new(content: String) -> Self {
+        Self {
+            content,
+            unedited: true,
+            t: 0.0,
+        }
+    }
+
+    pub fn content(&self) -> &str {
+        &self.content
+    }
+}
+
 impl<App> Drawable<App> for TextInput<'_> {
     fn draw(self, ctx: &mut GraphicsContext<App>) {
         for key in ctx
@@ -72,12 +89,18 @@ impl<App> Drawable<App> for TextInput<'_> {
             .iter()
             .filter(|x| x.state == ElementState::Pressed)
         {
-            if key.physical_key == PhysicalKey::Code(KeyCode::Backspace) {
-                self.state.content.pop();
+            let backspace = key.physical_key == PhysicalKey::Code(KeyCode::Backspace);
+            if backspace || key.text.is_some() {
                 self.state.t = 0.0;
+                if mem::take(&mut self.state.unedited) {
+                    self.state.content.clear();
+                }
+            }
+
+            if backspace {
+                self.state.content.pop();
             } else if let Some(ref text) = key.text {
                 self.state.content.push_str(text.as_str());
-                self.state.t = 0.0;
             }
         }
 

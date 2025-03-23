@@ -8,14 +8,14 @@ use engine::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::{Anchor, GraphicsContext},
     screens::Screen,
 };
 
 use crate::{
     assets::{BACK_BUTTON, CREATE_BUTTON, LEVEL_DROPDOWN_ARROW, UNDEAD_FONT},
-    consts::layer,
-    game::board::BoardMeta,
+    consts::{layer, ERROR_COLOR},
+    game::board::{Board, BoardMeta},
     screens::game::GameScreen,
     ui::{
         button::{Button, ButtonState},
@@ -30,6 +30,7 @@ use crate::{
 
 #[derive(Default)]
 pub struct SandboxScreen {
+    world_dir: PathBuf,
     worlds: Vec<(PathBuf, BoardMeta)>,
 
     back_button: ButtonState,
@@ -128,7 +129,7 @@ impl Screen<App> for SandboxScreen {
             .scale(Vector2::repeat(4.0));
         if create_button.is_clicked(ctx) {
             self.create = Some(CreateModal {
-                name_input: TextInputState::default(),
+                name_input: TextInputState::new("New Sandbox".into()),
             });
         }
         ctx.draw(create_button);
@@ -136,21 +137,22 @@ impl Screen<App> for SandboxScreen {
 
     fn on_init(&mut self, state: &mut App) {
         // todo: make async with poll_promise?
-        let world_dir = state.data_dir.join("sandbox");
-        if world_dir.exists() {
-            self.worlds = load_level_dir(world_dir);
+        self.world_dir = state.data_dir.join("sandbox");
+        if self.world_dir.exists() {
+            self.worlds = load_level_dir(&self.world_dir);
         }
     }
 }
 
+const NEW_SANDBOX_TEXT: &str = "Choose a name for your new sandbox and press enter to create it!";
+const INVALID_NAME_TEXT: &str =
+    "Only alphanumeric characters, spaces, dashes, and underscores can be used in sandbox names.";
+const NO_NAME_TEXT: &str = "Please enter a name for your new sandbox.";
+
 impl SandboxScreen {
     fn create_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
-        const NEW_SANDBOX_TEXT: &str =
-            "Choose a name for your new sandbox and press enter to create it!";
-
-        if self.create.is_some() && ctx.input.consume_key_pressed(KeyCode::Escape) {
-            self.create = None;
-        }
+        let exit = ctx.input.consume_key_pressed(KeyCode::Escape);
+        let enter = ctx.input.consume_key_pressed(KeyCode::Enter);
 
         if let Some(create) = &mut self.create {
             ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::OVERLAY));
@@ -161,12 +163,17 @@ impl SandboxScreen {
                 .layer(layer::OVERLAY);
 
             let size = modal.inner_size();
+            let mut name_error = false;
             modal.draw(ctx, |ctx| {
-                let body = |text| Text::new(UNDEAD_FONT, text).scale(Vector2::repeat(2.0));
+                let body = |text| {
+                    Text::new(UNDEAD_FONT, text)
+                        .scale(Vector2::repeat(2.0))
+                        .max_width(size.x)
+                };
 
                 let mut layout = ColumnLayout::new(padding);
                 layout.draw(ctx, body("New Sandbox").scale(Vector2::repeat(4.0)));
-                layout.draw(ctx, body(NEW_SANDBOX_TEXT).max_width(size.x));
+                layout.draw(ctx, body(NEW_SANDBOX_TEXT));
 
                 layout.space(8.0 * ctx.scale_factor * state.config.ui_scale);
                 layout.draw(ctx, body("Sandbox Name"));
@@ -176,27 +183,34 @@ impl SandboxScreen {
                         .width(size.x.min(400.0 * ctx.scale_factor)),
                 );
 
-                layout.space_to(size.y - ctx.scale_factor * 12.0);
-                layout.row(ctx, |ctx| {
-                    let button_space = ctx.scale_factor * 10.0;
+                let content = create.name_input.content();
 
-                    Sprite::new(LEVEL_DROPDOWN_ARROW)
-                        .scale(Vector2::repeat(2.0))
-                        .rotate(PI, Anchor::Center)
-                        .draw(ctx);
-                    body("Back")
-                        .position(Vector2::x() * button_space, Anchor::BottomLeft)
-                        .draw(ctx);
+                let no_name = content.is_empty();
+                let invalid_name = content
+                    .chars()
+                    .any(|c| !matches!(c, 'a'..='z' | 'A'..='Z' | '0'..='9' | ' ' | '-' | '_'));
 
-                    Sprite::new(LEVEL_DROPDOWN_ARROW)
-                        .position(Vector2::x() * size.x, Anchor::BottomRight)
-                        .scale(Vector2::repeat(2.0))
-                        .draw(ctx);
-                    body("Create")
-                        .position(Vector2::x() * (size.x - button_space), Anchor::BottomRight)
-                        .draw(ctx);
-                });
+                let checkers = [(no_name, NO_NAME_TEXT), (invalid_name, INVALID_NAME_TEXT)];
+                for (_, error) in checkers.iter().filter(|(predicate, _)| *predicate) {
+                    layout.draw(ctx, body(error).color(ERROR_COLOR));
+                    name_error = true;
+                }
             });
+
+            if enter && !name_error {
+                let name = create.name_input.content();
+
+                let file_name = name.replace(' ', "_");
+                let path = self.world_dir.join(file_name).with_extension("bin");
+
+                let board = Board::new_sandbox(name.into());
+                let screen = GameScreen::new(board, path);
+                ctx.push_screen(screen);
+            }
+        }
+
+        if self.create.is_some() && (exit || enter) {
+            self.create = None;
         }
     }
 }

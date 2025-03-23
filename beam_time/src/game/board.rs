@@ -18,6 +18,8 @@ use common::{consts::BINCODE_OPTIONS, map::Map};
 
 use super::{history::History, holding::Holding, selection::SelectionState};
 
+pub const SAVE_VERSION: u32 = 3;
+
 #[derive(Default, Serialize, Deserialize)]
 pub struct Board {
     pub meta: BoardMeta,
@@ -58,6 +60,21 @@ pub struct LevelMeta {
 }
 
 impl Board {
+    pub fn new_sandbox(name: String) -> Self {
+        Self {
+            meta: BoardMeta {
+                version: SAVE_VERSION,
+                name,
+                level: None,
+                size: None,
+                last_played: Utc::now(),
+                playtime: 0,
+            },
+            tiles: Map::default(),
+            transient: TransientBoardState::default(),
+        }
+    }
+
     pub fn load(path: &PathBuf) -> Result<Self> {
         info!("Loading board from {path:?}");
 
@@ -80,7 +97,7 @@ impl Board {
     pub fn save(mut self, path: &PathBuf) -> Result<()> {
         self.meta.playtime += self.transient.open_timestamp.elapsed().as_secs();
         self.meta.last_played = Utc::now();
-        self.meta.version = 3;
+        self.meta.version = SAVE_VERSION;
 
         let start = Instant::now();
         info!("Saving board to {path:?}");

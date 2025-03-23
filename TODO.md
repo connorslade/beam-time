@@ -160,6 +160,7 @@
 - [ ] Little keyboard shortcut helper thing on bottom right of screen when in game
 - [ ] Use column layout for level panel
 - [ ] Setting model on title page
+- [ ] Paused modal in game
 
 ---
 
@@ -170,3 +171,5 @@
 - Ui buttons for sandbox modal
 - Fix world space ←→ screen space conversion functions
   - To make testing in debug mode possible
+- Paused modal in game
+- Fix scaling of selection rendering

@@ -23,6 +23,7 @@ pub static LEADERBOARD_SERVER: Lazy<Url> =
 pub const BACKGROUND_COLOR: Rgb<f32> = Rgb::new(0.235, 0.235, 0.235);
 pub const ACCENT_COLOR: Rgb<f32> = Rgb::new(0.812, 0.306, 0.306);
 pub const SELECTION_COLOR: Rgb<f32> = Rgb::hex(0xE27285);
+pub const ERROR_COLOR: Rgb<f32> = Rgb::hex(0xE43636);
 
 pub mod layer {
     pub const TILE_HOLDING: i16 = 6;

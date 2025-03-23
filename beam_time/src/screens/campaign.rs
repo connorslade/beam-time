@@ -103,7 +103,7 @@ impl Screen<App> for CampaignScreen {
 
         let campaign = state.data_dir.join("campaign");
         if campaign.exists() {
-            for (path, meta) in load_level_dir(campaign) {
+            for (path, meta) in load_level_dir(&campaign) {
                 let Some(level) = meta.level else { continue };
                 self.worlds.insert(level.id, (path, meta));
             }
