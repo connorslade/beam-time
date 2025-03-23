@@ -128,14 +128,10 @@ impl<App> Drawable<App> for TextInput<'_> {
         self.state.t += ctx.delta_time;
         if (self.state.t * 4.0).cos() > 0.0 {
             ctx.draw(
-                Rectangle::new(Vector2::new(2.0 * ctx.scale_factor, size.y))
-                    .position(
-                        self.position
-                            + Vector2::repeat(padding)
-                            + Vector2::x() * (size.x + padding),
-                        self.position_anchor,
-                    )
-                    .color(Rgb::repeat(0.75)),
+                Rectangle::new(Vector2::new(2.0 * ctx.scale_factor, size.y)).position(
+                    self.position + Vector2::repeat(padding) + Vector2::x() * (size.x + padding),
+                    self.position_anchor,
+                ),
             );
         }
     }

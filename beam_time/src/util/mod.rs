@@ -44,3 +44,16 @@ pub fn load_level_dir(dir: &Path) -> Vec<(PathBuf, BoardMeta)> {
 
     out
 }
+
+pub fn human_duration(mut secs: u64) -> String {
+    let mut out = String::new();
+
+    for &(unit, label) in &[(86400, "d"), (3600, "h"), (60, "m"), (1, "s")] {
+        if secs >= unit {
+            out.push_str(&format!("{}{} ", secs / unit, label));
+            secs %= unit;
+        }
+    }
+
+    out.trim_end().to_string()
+}

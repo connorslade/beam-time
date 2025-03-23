@@ -24,7 +24,7 @@ const PAN_KEYS: [(KeyCode, Vector2<f32>); 4] = [
 ];
 
 impl SharedState {
-    pub fn update(&mut self, ctx: &mut GraphicsContext<App>, state: &App) {
+    pub fn update(&mut self, state: &App, ctx: &mut GraphicsContext<App>) {
         let mut delta_pan = Vector2::zeros();
 
         if ctx.input.mouse_down(MouseButton::Middle) {

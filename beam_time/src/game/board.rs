@@ -37,7 +37,7 @@ pub struct TransientBoardState {
     pub save_path: Option<PathBuf>,
     pub selection: SelectionState,
 
-    open_timestamp: Instant,
+    pub open_timestamp: Instant,
     last_save: Instant,
 }
 

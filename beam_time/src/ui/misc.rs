@@ -1,13 +1,15 @@
+use std::f32::consts::PI;
+
 use engine::{
     assets::FontRef,
-    drawable::text::Text,
+    drawable::{sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
 };
 
 use crate::{
     app::App,
-    assets::{ALAGARD_FONT, BACK_BUTTON, UNDEAD_FONT},
+    assets::{ALAGARD_FONT, BACK_BUTTON, LEVEL_DROPDOWN_ARROW, UNDEAD_FONT},
     consts::BACKGROUND_COLOR,
 };
 
@@ -77,4 +79,27 @@ pub fn tile_label<'a, App>(
     Text::new(UNDEAD_FONT, label)
         .scale(Vector2::repeat(scale / 2.0))
         .position(pos + offset, Anchor::BottomRight)
+}
+
+pub fn modal_buttons<App>(ctx: &mut GraphicsContext<App>, width: f32, (left, right): (&str, &str)) {
+    let body = |text| Text::new(UNDEAD_FONT, text).scale(Vector2::repeat(2.0));
+    let button_space = ctx.scale_factor * 10.0;
+
+    Sprite::new(LEVEL_DROPDOWN_ARROW)
+        .scale(Vector2::repeat(2.0))
+        .rotate(PI, Anchor::Center)
+        .draw(ctx);
+
+    body(left)
+        .position(Vector2::x() * button_space, Anchor::BottomLeft)
+        .draw(ctx);
+
+    Sprite::new(LEVEL_DROPDOWN_ARROW)
+        .position(Vector2::x() * width, Anchor::BottomRight)
+        .scale(Vector2::repeat(2.0))
+        .draw(ctx);
+
+    body(right)
+        .position(Vector2::x() * (width - button_space), Anchor::BottomRight)
+        .draw(ctx);
 }

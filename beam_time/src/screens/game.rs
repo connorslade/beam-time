@@ -1,14 +1,18 @@
-use std::{borrow::Cow, mem, path::PathBuf, time::Duration};
+use std::{borrow::Cow, f32::consts::PI, mem, path::PathBuf, time::Duration};
 
 use rand::{seq::SliceRandom, thread_rng, Rng};
 
 #[cfg(feature = "steam")]
 use crate::game::achievements::award_campaign_achievements;
 use crate::{
-    consts::BACKGROUND_COLOR,
+    assets::{LEVEL_DROPDOWN_ARROW, UNDEAD_FONT},
+    consts::{layer, BACKGROUND_COLOR},
     game::{board::Board, render::beam::BeamStateRender, shared_state::SharedState},
-    ui::{confetti::Confetti, level_panel::LevelPanel, tile_picker::TilePicker},
-    util::key_events,
+    ui::{
+        confetti::Confetti, layout::column::ColumnLayout, level_panel::LevelPanel,
+        misc::modal_buttons, modal::Modal, tile_picker::TilePicker,
+    },
+    util::{human_duration, key_events},
     App,
 };
 use beam_logic::{
@@ -18,8 +22,10 @@ use beam_logic::{
     },
 };
 use engine::{
+    color::Rgb,
+    drawable::{sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
-    graphics_context::GraphicsContext,
+    graphics_context::{Anchor, Drawable, GraphicsContext},
     screens::Screen,
 };
 
@@ -31,6 +37,7 @@ pub struct GameScreen {
     tile_picker: TilePicker,
     level_panel: LevelPanel,
     confetti: Confetti,
+    paused: Option<PausedModal>,
 
     level_result: Option<LevelResult>,
     save_file: PathBuf,
@@ -38,9 +45,14 @@ pub struct GameScreen {
     tps: f32,
 }
 
+struct PausedModal {}
+
 impl Screen<App> for GameScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
-        self.shared.update(ctx, state);
+        self.paused_modal(state, ctx);
+        if self.paused.is_none() {
+            self.shared.update(state, ctx);
+        }
 
         if self.needs_init {
             if let Some(size) = self.board.meta.size {
@@ -74,7 +86,8 @@ impl Screen<App> for GameScreen {
         sim.runtime.time_per_tick = Duration::from_secs_f32(self.tps.max(1.0).recip());
 
         if sim.beam.is_none() && ctx.input.key_pressed(KeyCode::Escape) {
-            ctx.pop_screen()
+            self.paused = self.paused.is_none().then_some(PausedModal {});
+            // ctx.pop_screen();
         }
 
         let space_pressed = ctx.input.key_pressed(KeyCode::Space);
@@ -181,6 +194,7 @@ impl GameScreen {
             tile_picker: TilePicker::default(),
             level_panel: LevelPanel::default(),
             confetti: Confetti::new(),
+            paused: None,
 
             level_result: None,
             save_file,
@@ -191,6 +205,44 @@ impl GameScreen {
 
     pub fn load(save_file: PathBuf) -> Self {
         GameScreen::new(Board::load(&save_file).unwrap_or_default(), save_file)
+    }
+
+    fn paused_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
+        if let Some(pause) = &mut self.paused {
+            ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::UI_OVERLAY));
+
+            let (margin, padding) = state.spacing(ctx);
+            let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
+                .margin(margin)
+                .layer(layer::UI_OVERLAY);
+
+            let size = modal.inner_size();
+            modal.draw(ctx, |ctx| {
+                let body = |text| {
+                    Text::new(UNDEAD_FONT, text)
+                        .scale(Vector2::repeat(2.0))
+                        .max_width(size.x)
+                };
+
+                let mut layout = ColumnLayout::new(padding);
+                let name = match self.board.transient.level {
+                    Some(level) => format!("Campaign: {}", level.name),
+                    None => format!("Sandbox: {}", self.board.meta.name),
+                };
+
+                layout.draw(ctx, body(&name).scale(Vector2::repeat(4.0)));
+
+                let playtime = self.board.meta.playtime
+                    + self.board.transient.open_timestamp.elapsed().as_secs();
+                let playtime = format!("Playtime: {}", human_duration(playtime));
+                layout.draw(ctx, body(&playtime));
+
+                layout.space_to(size.y - ctx.scale_factor * 12.0);
+                layout.row(ctx, |ctx| {
+                    modal_buttons(ctx, size.x, ("Exit", "Resume"));
+                });
+            });
+        }
     }
 }
 

@@ -20,7 +20,7 @@ use crate::{
     ui::{
         button::{Button, ButtonState},
         layout::column::ColumnLayout,
-        misc::{font_scale, titled_screen},
+        misc::{font_scale, modal_buttons, titled_screen},
         modal::Modal,
         text_input::{TextInput, TextInputState},
     },
@@ -144,7 +144,8 @@ impl Screen<App> for SandboxScreen {
     }
 }
 
-const NEW_SANDBOX_TEXT: &str = "Choose a name for your new sandbox and press enter to create it!";
+const NEW_SANDBOX_TEXT: &str =
+    "Choose a name for your new sandbox then click 'Create' or press enter.";
 const INVALID_NAME_TEXT: &str =
     "Only alphanumeric characters, spaces, dashes, and underscores can be used in sandbox names.";
 const NO_NAME_TEXT: &str = "Please enter a name for your new sandbox.";
@@ -195,6 +196,11 @@ impl SandboxScreen {
                     layout.draw(ctx, body(error).color(ERROR_COLOR));
                     name_error = true;
                 }
+
+                layout.space_to(size.y - ctx.scale_factor * 12.0);
+                layout.row(ctx, |ctx| {
+                    modal_buttons(ctx, size.x, ("Back", "Create"));
+                });
             });
 
             if enter && !name_error {
