@@ -158,6 +158,8 @@
 - [ ] Fix scroll speed difference between track pad and mousewheel
 - [ ] ~~Use graph layout for campaign?~~
 - [ ] Little keyboard shortcut helper thing on bottom right of screen when in game
+- [ ] Use column layout for level panel
+- [ ] Setting model on title page
 
 ---
 

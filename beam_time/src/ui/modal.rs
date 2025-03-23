@@ -32,8 +32,11 @@ impl Modal {
         self
     }
 
-    pub fn inner_width(&self) -> f32 {
-        self.size.x - 2.0 * self.margin
+    pub fn inner_size(&self) -> Vector2<f32> {
+        Vector2::new(
+            self.size.x - 2.0 * self.margin,
+            self.size.y - 2.0 * self.margin,
+        )
     }
 
     pub fn draw<App>(

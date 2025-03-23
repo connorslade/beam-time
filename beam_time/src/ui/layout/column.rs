@@ -1,6 +1,7 @@
 use engine::{
     exports::nalgebra::Vector2,
     graphics_context::{Drawable, GraphicsContext},
+    render::{shape::ShapeVertex, sprite::GpuSprite},
 };
 
 pub struct ColumnLayout {
@@ -16,13 +17,15 @@ impl ColumnLayout {
         }
     }
 
+    pub fn space_to(&mut self, y: f32) {
+        self.origin.y = -y;
+    }
+
     pub fn space(&mut self, height: f32) {
         self.origin.y -= height;
     }
 
-    pub fn draw<App>(&mut self, ctx: &mut GraphicsContext<App>, drawable: impl Drawable<App>) {
-        let (sprites, shapes) = ctx.draw_callback(|ctx| ctx.draw(drawable));
-
+    fn layout(&mut self, (sprites, shapes): (&mut [GpuSprite], &mut [ShapeVertex])) {
         let mut top_left = Vector2::new(f32::INFINITY, f32::NEG_INFINITY);
         for sprite in sprites.iter() {
             for point in sprite.points {
@@ -53,5 +56,17 @@ impl ColumnLayout {
         }
 
         self.origin.y -= self.padding + (max - min);
+    }
+
+    pub fn draw<App>(&mut self, ctx: &mut GraphicsContext<App>, drawable: impl Drawable<App>) {
+        self.layout(ctx.draw_callback(|ctx| ctx.draw(drawable)));
+    }
+
+    pub fn row<App>(
+        &mut self,
+        ctx: &mut GraphicsContext<App>,
+        drawable: impl FnOnce(&mut GraphicsContext<App>),
+    ) {
+        self.layout(ctx.draw_callback(drawable));
     }
 }

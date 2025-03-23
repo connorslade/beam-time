@@ -8,7 +8,7 @@ use engine::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
     screens::Screen,
 };
 
@@ -45,43 +45,9 @@ pub struct CreateModal {
 
 impl Screen<App> for SandboxScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
-        if self.create.is_some() && ctx.input.consume_key_pressed(KeyCode::Escape) {
-            self.create = None;
-        }
-
-        if let Some(create) = &mut self.create {
-            ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::OVERLAY));
-
-            let (margin, padding) = state.spacing(ctx);
-            let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
-                .margin(margin)
-                .layer(layer::OVERLAY);
-
-            let width = modal.inner_width();
-            modal.draw(ctx, |ctx| {
-                let mut layout = ColumnLayout::new(padding);
-                layout.draw(
-                    ctx,
-                    Text::new(UNDEAD_FONT, "New Sandbox").scale(Vector2::repeat(4.0)),
-                );
-                let body = |text| Text::new(UNDEAD_FONT, text).scale(Vector2::repeat(2.0));
-
-                layout.draw(
-                    ctx,
-                    body("To create a new sandbox pick a name and click create!").max_width(width),
-                );
-
-                layout.space(8.0 * ctx.scale_factor * state.config.ui_scale);
-                layout.draw(ctx, body("Sandbox Name"));
-                layout.draw(
-                    ctx,
-                    TextInput::new(&mut create.name_input)
-                        .width(width.min(400.0 * ctx.scale_factor)),
-                );
-            });
-        }
-
         titled_screen(state, ctx, None, "Sandbox");
+
+        self.create_modal(state, ctx);
 
         if self.worlds.is_empty() {
             ctx.draw(
@@ -173,6 +139,64 @@ impl Screen<App> for SandboxScreen {
         let world_dir = state.data_dir.join("sandbox");
         if world_dir.exists() {
             self.worlds = load_level_dir(world_dir);
+        }
+    }
+}
+
+impl SandboxScreen {
+    fn create_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
+        const NEW_SANDBOX_TEXT: &str =
+            "Choose a name for your new sandbox and press enter to create it!";
+
+        if self.create.is_some() && ctx.input.consume_key_pressed(KeyCode::Escape) {
+            self.create = None;
+        }
+
+        if let Some(create) = &mut self.create {
+            ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::OVERLAY));
+
+            let (margin, padding) = state.spacing(ctx);
+            let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
+                .margin(margin)
+                .layer(layer::OVERLAY);
+
+            let size = modal.inner_size();
+            modal.draw(ctx, |ctx| {
+                let body = |text| Text::new(UNDEAD_FONT, text).scale(Vector2::repeat(2.0));
+
+                let mut layout = ColumnLayout::new(padding);
+                layout.draw(ctx, body("New Sandbox").scale(Vector2::repeat(4.0)));
+                layout.draw(ctx, body(NEW_SANDBOX_TEXT).max_width(size.x));
+
+                layout.space(8.0 * ctx.scale_factor * state.config.ui_scale);
+                layout.draw(ctx, body("Sandbox Name"));
+                layout.draw(
+                    ctx,
+                    TextInput::new(&mut create.name_input)
+                        .width(size.x.min(400.0 * ctx.scale_factor)),
+                );
+
+                layout.space_to(size.y - ctx.scale_factor * 12.0);
+                layout.row(ctx, |ctx| {
+                    let button_space = ctx.scale_factor * 10.0;
+
+                    Sprite::new(LEVEL_DROPDOWN_ARROW)
+                        .scale(Vector2::repeat(2.0))
+                        .rotate(PI, Anchor::Center)
+                        .draw(ctx);
+                    body("Back")
+                        .position(Vector2::x() * button_space, Anchor::BottomLeft)
+                        .draw(ctx);
+
+                    Sprite::new(LEVEL_DROPDOWN_ARROW)
+                        .position(Vector2::x() * size.x, Anchor::BottomRight)
+                        .scale(Vector2::repeat(2.0))
+                        .draw(ctx);
+                    body("Create")
+                        .position(Vector2::x() * (size.x - button_space), Anchor::BottomRight)
+                        .draw(ctx);
+                });
+            });
         }
     }
 }
