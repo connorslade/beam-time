@@ -19,7 +19,7 @@ pub struct Instance {
 }
 
 impl SpriteRenderPipeline {
-    pub fn prepare<App>(&mut self, device: &Device, queue: &Queue, ctx: &GraphicsContext<App>) {
+    pub fn prepare(&mut self, device: &Device, queue: &Queue, ctx: &GraphicsContext) {
         let mut atlases = HashMap::<TextureRef, Vec<&GpuSprite>>::new();
 
         for sprite in ctx.sprites.iter() {

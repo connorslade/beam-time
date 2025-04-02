@@ -24,7 +24,7 @@ const PAN_KEYS: [(KeyCode, Vector2<f32>); 4] = [
 ];
 
 impl SharedState {
-    pub fn update(&mut self, state: &App, ctx: &mut GraphicsContext<App>) {
+    pub fn update(&mut self, state: &App, ctx: &mut GraphicsContext) {
         let mut delta_pan = Vector2::zeros();
 
         if ctx.input.mouse_down(MouseButton::Middle) {
@@ -69,15 +69,11 @@ impl SharedState {
         self.pan_goal += delta;
     }
 
-    pub fn origin_tile<App>(&self, ctx: &GraphicsContext<App>) -> Vector2<i32> {
+    pub fn origin_tile(&self, ctx: &GraphicsContext) -> Vector2<i32> {
         (self.pan / (16.0 * self.scale * ctx.scale_factor)).map(|x| x.floor() as i32)
     }
 
-    pub fn render_pos<App>(
-        &self,
-        ctx: &GraphicsContext<App>,
-        (x, y): (usize, usize),
-    ) -> Vector2<f32> {
+    pub fn render_pos(&self, ctx: &GraphicsContext, (x, y): (usize, usize)) -> Vector2<f32> {
         let tile_size = 16.0 * self.scale * ctx.scale_factor;
         let half_tile = Vector2::repeat(tile_size / 2.0);
 
@@ -94,27 +90,15 @@ impl SharedState {
         (size / (16.0 * self.scale)).map(|x| x.ceil() as usize)
     }
 
-    pub fn tile_pos<App>(
-        &self,
-        ctx: &GraphicsContext<App>,
-        (x, y): (usize, usize),
-    ) -> Vector2<i32> {
+    pub fn tile_pos(&self, ctx: &GraphicsContext, (x, y): (usize, usize)) -> Vector2<i32> {
         Vector2::new(x as i32, y as i32) - self.origin_tile(ctx)
     }
 
-    pub fn screen_to_world_space<App>(
-        &self,
-        ctx: &GraphicsContext<App>,
-        pos: Vector2<f32>,
-    ) -> Vector2<f32> {
+    pub fn screen_to_world_space(&self, ctx: &GraphicsContext, pos: Vector2<f32>) -> Vector2<f32> {
         (pos - self.pan) / (16.0 * self.scale * ctx.scale_factor)
     }
 
-    pub fn world_to_screen_space<App>(
-        &self,
-        ctx: &GraphicsContext<App>,
-        pos: Vector2<f32>,
-    ) -> Vector2<f32> {
+    pub fn world_to_screen_space(&self, ctx: &GraphicsContext, pos: Vector2<f32>) -> Vector2<f32> {
         pos * (16.0 * self.scale * ctx.scale_factor) + self.pan
     }
 }

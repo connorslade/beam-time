@@ -11,7 +11,8 @@ pub struct InputManager {
     pub mouse: Vector2<f32>,
     pub mouse_delta: Vector2<f32>,
     pub scroll_delta: f32,
-    pub resized: bool,
+    /// Previous size
+    pub resized: Option<Vector2<u32>>,
 
     pub mouse_down: Vec<MouseButton>,
     pub mouse_actions: Vec<(MouseButton, ElementState)>,
@@ -27,7 +28,7 @@ impl InputManager {
             mouse: Vector2::new(0.0, 0.0),
             mouse_delta: Vector2::new(0.0, 0.0),
             scroll_delta: 0.0,
-            resized: false,
+            resized: None,
 
             mouse_down: Vec::new(),
             mouse_actions: Vec::new(),
@@ -98,11 +99,10 @@ impl InputManager {
     }
 
     pub(crate) fn on_window_event(&mut self, window_event: &WindowEvent) {
-        self.resized = false;
         match window_event {
             WindowEvent::Resized(size) => {
+                self.resized = Some(self.window_size);
                 self.window_size = Vector2::new(size.width, size.height);
-                self.resized = true;
             }
             WindowEvent::CursorMoved { position: pos, .. } => {
                 let new_mouse =
@@ -151,5 +151,6 @@ impl InputManager {
         self.key_actions.clear();
         self.mouse_delta = Vector2::new(0.0, 0.0);
         self.scroll_delta = 0.0;
+        self.resized = None;
     }
 }

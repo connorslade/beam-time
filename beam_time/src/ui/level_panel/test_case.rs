@@ -20,7 +20,7 @@ use super::{LevelPanel, UIContext, WIDTH};
 
 pub fn test_case(
     panel: &mut LevelPanel,
-    ctx: &mut GraphicsContext<App>,
+    ctx: &mut GraphicsContext,
     state: &App,
     level: &Level,
     sim: &MutexGuard<InnerAsyncSimulationState>,
@@ -103,30 +103,29 @@ pub fn test_case(
     let button_width = 4.0 * 3.0 * ctx.scale_factor * state.config.ui_scale;
     let button_padding = 4.0 * 2.0 * ctx.scale_factor * state.config.ui_scale;
 
-    let mut case_button =
-        |ctx: &mut GraphicsContext<App>, dir: bool, pos: Vector2<f32>| -> Sprite {
-            let texture = if dir { RIGHT_ARROW } else { LEFT_ARROW };
-            let mut case = case_tile(texture)
-                .scale(Vector2::repeat(ui.scale))
-                .position(pos, Anchor::CenterRight);
+    let mut case_button = |ctx: &mut GraphicsContext, dir: bool, pos: Vector2<f32>| -> Sprite {
+        let texture = if dir { RIGHT_ARROW } else { LEFT_ARROW };
+        let mut case = case_tile(texture)
+            .scale(Vector2::repeat(ui.scale))
+            .position(pos, Anchor::CenterRight);
 
-            if (!dir && panel.case == 0)
-                || (dir && panel.case + 1 == level.tests.cases.len())
-                || is_test
-            {
-                case = case.color(Rgb::repeat(0.25));
-            } else if case.is_hovered(ctx) {
-                case = case.color(Rgb::repeat(0.9));
-                let d_case = ctx.input.mouse_pressed(MouseButton::Left) as usize;
-                if dir {
-                    panel.case += d_case;
-                } else {
-                    panel.case -= d_case;
-                }
+        if (!dir && panel.case == 0)
+            || (dir && panel.case + 1 == level.tests.cases.len())
+            || is_test
+        {
+            case = case.color(Rgb::repeat(0.25));
+        } else if case.is_hovered(ctx) {
+            case = case.color(Rgb::repeat(0.9));
+            let d_case = ctx.input.mouse_pressed(MouseButton::Left) as usize;
+            if dir {
+                panel.case += d_case;
+            } else {
+                panel.case -= d_case;
             }
+        }
 
-            case
-        };
+        case
+    };
 
     let right_button = case_button(ctx, true, pos);
     pos.x -= button_width + button_padding;

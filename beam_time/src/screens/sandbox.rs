@@ -9,7 +9,6 @@ use engine::{
         winit::{event::MouseButton, keyboard::KeyCode},
     },
     graphics_context::{Anchor, GraphicsContext},
-    screens::Screen,
 };
 
 use crate::{
@@ -28,6 +27,8 @@ use crate::{
     App,
 };
 
+use super::Screen;
+
 #[derive(Default)]
 pub struct SandboxScreen {
     world_dir: PathBuf,
@@ -44,8 +45,8 @@ pub struct CreateModal {
     name_input: TextInputState,
 }
 
-impl Screen<App> for SandboxScreen {
-    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
+impl Screen for SandboxScreen {
+    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         titled_screen(state, ctx, None, "Sandbox");
 
         self.create_modal(state, ctx);
@@ -77,7 +78,7 @@ impl Screen<App> for SandboxScreen {
                     text = text.color(Rgb::new(0.5, 0.5, 0.5));
 
                     if ctx.input.mouse_pressed(MouseButton::Left) {
-                        ctx.push_screen(GameScreen::load(world.clone()));
+                        state.push_screen(GameScreen::load(world.clone()));
                     }
                 }
 
@@ -116,9 +117,7 @@ impl Screen<App> for SandboxScreen {
             )
             .scale(Vector2::repeat(4.0))
             .set_back();
-        if back_button.is_clicked(ctx) {
-            ctx.pop_screen();
-        }
+        back_button.is_clicked(ctx).then(|| state.pop_screen());
         ctx.draw(back_button);
 
         let create_button = Button::new(CREATE_BUTTON, &mut self.create_button)
@@ -151,7 +150,7 @@ const INVALID_NAME_TEXT: &str =
 const NO_NAME_TEXT: &str = "Please enter a name for your new sandbox.";
 
 impl SandboxScreen {
-    fn create_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
+    fn create_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         let exit = ctx.input.consume_key_pressed(KeyCode::Escape);
         let enter = ctx.input.consume_key_pressed(KeyCode::Enter);
 
@@ -211,7 +210,7 @@ impl SandboxScreen {
 
                 let board = Board::new_sandbox(name.into());
                 let screen = GameScreen::new(board, path);
-                ctx.push_screen(screen);
+                state.push_screen(screen);
             }
         }
 

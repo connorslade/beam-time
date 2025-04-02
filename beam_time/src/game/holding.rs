@@ -24,7 +24,7 @@ impl Holding {
         *self == Holding::None
     }
 
-    pub fn render<App>(&mut self, ctx: &mut GraphicsContext<App>, shared: &SharedState) {
+    pub fn render(&mut self, ctx: &mut GraphicsContext, shared: &SharedState) {
         if ctx.input.mouse_down(MouseButton::Right) || ctx.input.key_pressed(KeyCode::KeyQ) {
             *self = Holding::None;
         }

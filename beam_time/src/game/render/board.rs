@@ -25,7 +25,7 @@ use super::tile::{BeamTileBaseSprite, TileAsset};
 impl Board {
     pub fn render(
         &mut self,
-        ctx: &mut GraphicsContext<App>,
+        ctx: &mut GraphicsContext,
         state: &App,
         shared: &SharedState,
         sim: &mut Option<BeamState>,

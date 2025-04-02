@@ -19,7 +19,7 @@ use leaderboard::api::results::Histogram;
 use super::{UIContext, WIDTH};
 
 pub fn level_info(
-    ctx: &mut GraphicsContext<App>,
+    ctx: &mut GraphicsContext,
     state: &App,
     level: &Level,
     price: u32,
@@ -37,7 +37,7 @@ pub fn level_info(
 }
 
 pub fn level_complete(
-    ctx: &mut GraphicsContext<App>,
+    ctx: &mut GraphicsContext,
     state: &App,
     board: &Level,
     latency: u32,
@@ -100,7 +100,7 @@ pub fn level_complete(
     }
 }
 
-pub fn level_failed(ctx: &mut GraphicsContext<App>, state: &App, case: usize, ui: &mut UIContext) {
+pub fn level_failed(ctx: &mut GraphicsContext, state: &App, case: usize, ui: &mut UIContext) {
     let center_x = (WIDTH as f32 * ui.tile_size) / 2.0;
     let title = Text::new(UNDEAD_FONT, "Level Failed...")
         .position(Vector2::new(center_x, ui.y), Anchor::TopCenter)
@@ -115,7 +115,7 @@ pub fn level_failed(ctx: &mut GraphicsContext<App>, state: &App, case: usize, ui
 }
 
 fn histogram(
-    ctx: &mut GraphicsContext<App>,
+    ctx: &mut GraphicsContext,
     state: &App,
     ui: &mut UIContext,
     base: Vector2<f32>,

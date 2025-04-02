@@ -33,6 +33,26 @@
 - [ ] Use a buffer binding array instead of dispatching the sprite render for each texture atlas?
 - [x] Update draw_callback with support for polygons
 - [x] Update sprite renderer to make use of the bytemuck impl for nalgebra
+- [x] Remove screen system to take out App generic from graphics context
+  - [ ] Add on resize event to graphics context
+- [ ] Implement layout system
+
+```rust
+pub struct Bounds2D {
+    pub min: Vector2<f32>,
+    pub max: Vector2<f32>,
+}
+
+pub trait LayoutElement {
+    fn position(&mut self, position: Vector2<f32>, anchor: Anchor);
+    fn bounds(&self) -> Bounds2D;
+}
+
+pub struct Container {
+    bounds: Bounds2D,
+    children: Vec<Box<dyn LayoutElement>>,
+}
+```
 
 ## User Interface
 

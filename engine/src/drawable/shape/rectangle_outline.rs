@@ -44,7 +44,7 @@ impl RectangleOutline {
         self
     }
 
-    fn points<App>(&self, ctx: &GraphicsContext<App>) -> [[Vector2<f32>; 4]; 2] {
+    fn points(&self, ctx: &GraphicsContext) -> [[Vector2<f32>; 4]; 2] {
         let outer_size = self.size + Vector2::repeat(self.thickness * 2.0 * ctx.scale_factor);
 
         let offset_outer = self.position + self.position_anchor.offset(outer_size);
@@ -57,8 +57,8 @@ impl RectangleOutline {
     }
 }
 
-impl<App> Drawable<App> for RectangleOutline {
-    fn draw(self, ctx: &mut GraphicsContext<App>) {
+impl Drawable for RectangleOutline {
+    fn draw(self, ctx: &mut GraphicsContext) {
         let [outer, inner] = self
             .points(ctx)
             .map(|y| y.map(|x| ShapeVertex::new(x, self.color).z_index(self.z_index)));

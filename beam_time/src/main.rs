@@ -1,5 +1,7 @@
 #![feature(decl_macro)]
 
+use std::mem;
+
 use anyhow::Result;
 use engine::{
     application::{Application, ApplicationArgs},
@@ -23,9 +25,7 @@ mod ui;
 mod util;
 
 use app::App;
-#[cfg(feature = "debug")]
-use screens::overlay::debug::DebugOverlay;
-use screens::{overlay::ticker::Ticker, title::TitleScreen};
+use screens::{overlay::debug::DebugOverlay, title::TitleScreen, Screens};
 use util::include_atlas;
 
 fn main() -> Result<()> {
@@ -40,16 +40,27 @@ fn main() -> Result<()> {
             .with_title("Beam Time")
             .with_window_icon(Some(icon))
             .with_inner_size(PhysicalSize::new(1920, 1080)),
-        app_constructor: Box::new(App::new),
-        screen_constructor: Box::new(|| {
-            vec![
-                Box::new(Ticker),
+        asset_constructor: Box::new(assets::init),
+        resumed: Box::new(|| {
+            let mut app = App::new();
+            let mut screens = Screens::new(vec![
                 #[cfg(feature = "debug")]
                 Box::new(DebugOverlay::default()),
                 Box::new(TitleScreen::default()),
-            ]
+            ]);
+            screens.top().on_init(&mut app);
+
+            Box::new(move |ctx| {
+                app.on_tick();
+                if let Some(old_size) = ctx.input.resized {
+                    screens.on_resize(old_size.map(|x| x as f32), ctx.size(), &mut app);
+                }
+
+                screens.render(ctx, &mut app);
+                screens.pop_n(mem::take(&mut app.close_screens), &mut app);
+                screens.extend(mem::take(&mut app.new_screens), &mut app);
+            })
         }),
-        asset_constructor: Box::new(assets::init),
     })
     .run()
 }

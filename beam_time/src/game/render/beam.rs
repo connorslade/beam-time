@@ -19,7 +19,7 @@ use crate::{
 };
 
 pub trait BeamStateRender {
-    fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App, shared: &SharedState);
+    fn render(&mut self, ctx: &mut GraphicsContext, state: &App, shared: &SharedState);
 }
 
 const MIRROR_TEXTURES: [SpriteRef; 4] = [
@@ -38,7 +38,7 @@ const SPLITTER_TEXTURES: [SpriteRef; 4] = [
 
 impl BeamStateRender for BeamState {
     /// Renders the beam over the board.
-    fn render(&mut self, ctx: &mut GraphicsContext<App>, state: &App, shared: &SharedState) {
+    fn render(&mut self, ctx: &mut GraphicsContext, state: &App, shared: &SharedState) {
         let half_tile = Vector2::repeat(ctx.scale_factor * shared.scale * 16.0 / 2.0);
         let size = ctx.size() + half_tile;
 

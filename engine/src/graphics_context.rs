@@ -13,12 +13,11 @@ use crate::{
         shape::{GpuPolygons, ShapeVertex},
         sprite::GpuSprite,
     },
-    screens::Screen,
 };
 
-type DeferCallback<App> = Box<dyn FnOnce(&mut GraphicsContext<App>)>;
+type DeferCallback = Box<dyn FnOnce(&mut GraphicsContext)>;
 
-pub struct GraphicsContext<'a, App> {
+pub struct GraphicsContext<'a> {
     /// Reference to asset manager
     pub assets: Rc<AssetManager>,
     pub audio: &'a AudioManager,
@@ -27,16 +26,12 @@ pub struct GraphicsContext<'a, App> {
     pub(crate) background: Rgb<f32>,
     /// List of sprites to render this frame
     pub(crate) sprites: Vec<GpuSprite>,
-    /// List of shapes to render this frame (triangluated)
+    /// List of shapes to render this frame (triangulated)
     pub(crate) shapes: GpuPolygons,
-    /// Screens to open for next frame
-    pub(crate) next_screen: Vec<Box<dyn Screen<App>>>,
-    /// Screens to close for next_frame
-    pub(crate) close_screen: usize,
     /// The cursor to use for the next frame
     pub(crate) cursor: Cursor,
     /// Functions to run after main render function completes
-    pub(crate) defer: Vec<DeferCallback<App>>,
+    pub(crate) defer: Vec<DeferCallback>,
 
     pub input: &'a mut InputManager,
     /// Current window scale_factor
@@ -47,8 +42,8 @@ pub struct GraphicsContext<'a, App> {
     pub frame: u64,
 }
 
-pub trait Drawable<App> {
-    fn draw(self, ctx: &mut GraphicsContext<App>);
+pub trait Drawable {
+    fn draw(self, ctx: &mut GraphicsContext);
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -68,7 +63,7 @@ pub enum Anchor {
     Custom(Vector2<f32>),
 }
 
-impl<'a, App> GraphicsContext<'a, App> {
+impl<'a> GraphicsContext<'a> {
     pub fn new(
         assets: Rc<AssetManager>,
         scale_factor: f32,
@@ -83,8 +78,6 @@ impl<'a, App> GraphicsContext<'a, App> {
             background: Rgb::new(0.0, 0.0, 0.0),
             sprites: Vec::new(),
             shapes: Default::default(),
-            next_screen: Vec::new(),
-            close_screen: 0,
             cursor: Cursor::default(),
             defer: Vec::new(),
             input,
@@ -114,25 +107,17 @@ impl<'a, App> GraphicsContext<'a, App> {
         self.background = color;
     }
 
-    pub fn push_screen(&mut self, screen: impl Screen<App> + 'static) {
-        self.next_screen.push(Box::new(screen));
-    }
-
-    pub fn pop_screen(&mut self) {
-        self.close_screen += 1;
-    }
-
-    pub fn defer(&mut self, callback: impl FnOnce(&mut GraphicsContext<App>) + 'static) {
+    pub fn defer(&mut self, callback: impl FnOnce(&mut GraphicsContext) + 'static) {
         self.defer.push(Box::new(callback));
     }
 
-    pub fn draw(&mut self, drawable: impl Drawable<App>) {
+    pub fn draw(&mut self, drawable: impl Drawable) {
         drawable.draw(self);
     }
 
     pub fn draw_callback(
         &mut self,
-        drawable: impl FnOnce(&mut GraphicsContext<App>),
+        drawable: impl FnOnce(&mut GraphicsContext),
     ) -> (&mut [GpuSprite], &mut [ShapeVertex]) {
         let sprites = self.sprites.len();
         let shapes = self.shapes.vertices.len();
@@ -164,7 +149,7 @@ impl<'a, App> GraphicsContext<'a, App> {
     }
 }
 
-impl<App> GraphicsContext<'_, App> {
+impl GraphicsContext<'_> {
     pub(crate) fn background_color(&self) -> Color {
         Color {
             r: self.background.r as f64,
@@ -195,8 +180,8 @@ impl Anchor {
     }
 }
 
-impl<App, T: Drawable<App>, const N: usize> Drawable<App> for [T; N] {
-    fn draw(self, ctx: &mut GraphicsContext<App>) {
+impl<T: Drawable, const N: usize> Drawable for [T; N] {
+    fn draw(self, ctx: &mut GraphicsContext) {
         self.into_iter().for_each(|x| ctx.draw(x));
     }
 }

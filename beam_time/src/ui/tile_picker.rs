@@ -49,13 +49,7 @@ pub struct TilePicker {
 }
 
 impl TilePicker {
-    pub fn render(
-        &mut self,
-        ctx: &mut GraphicsContext<App>,
-        state: &App,
-        sim: bool,
-        board: &mut Board,
-    ) {
+    pub fn render(&mut self, ctx: &mut GraphicsContext, state: &App, sim: bool, board: &mut Board) {
         if !self.update_offset(ctx, sim) {
             return;
         }
@@ -144,7 +138,7 @@ impl TilePicker {
         }
     }
 
-    fn update_offset<App>(&mut self, ctx: &GraphicsContext<App>, sim: bool) -> bool {
+    fn update_offset(&mut self, ctx: &GraphicsContext, sim: bool) -> bool {
         let max_offset = 16.0 * 4.0 * ctx.scale_factor;
         let end = max_offset * sim as u8 as f32;
 

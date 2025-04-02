@@ -81,8 +81,8 @@ impl TextInputState {
     }
 }
 
-impl<App> Drawable<App> for TextInput<'_> {
-    fn draw(self, ctx: &mut GraphicsContext<App>) {
+impl Drawable for TextInput<'_> {
+    fn draw(self, ctx: &mut GraphicsContext) {
         for key in ctx
             .input
             .key_actions

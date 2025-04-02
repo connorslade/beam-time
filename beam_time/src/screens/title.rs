@@ -5,7 +5,6 @@ use engine::{
     drawable::{sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::{Anchor, GraphicsContext},
-    screens::Screen,
 };
 
 use crate::{
@@ -20,7 +19,7 @@ use crate::{
     App,
 };
 
-use super::{about::AboutScreen, campaign::CampaignScreen, sandbox::SandboxScreen};
+use super::{about::AboutScreen, campaign::CampaignScreen, sandbox::SandboxScreen, Screen};
 
 pub struct TitleScreen {
     start_time: Instant,
@@ -35,8 +34,8 @@ pub struct TitleScreen {
 
 pub struct SettingsModal {}
 
-impl Screen<App> for TitleScreen {
-    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
+impl Screen for TitleScreen {
+    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         ctx.background(BACKGROUND_COLOR);
         ctx.draw(Waterfall::new(&mut state.waterfall));
 
@@ -85,7 +84,7 @@ impl Screen<App> for TitleScreen {
             .pos(ctx.center(), Anchor::Center)
             .scale(Vector2::repeat(4.0));
         if campaign_button.is_clicked(ctx) {
-            ctx.push_screen(CampaignScreen::default())
+            state.push_screen(CampaignScreen::default())
         }
 
         let sandbox_button = Button::new(SANDBOX_BUTTON, &mut self.sandbox_button)
@@ -95,7 +94,7 @@ impl Screen<App> for TitleScreen {
             )
             .scale(Vector2::repeat(4.0));
         if sandbox_button.is_clicked(ctx) {
-            ctx.push_screen(SandboxScreen::default());
+            state.push_screen(SandboxScreen::default());
         }
 
         let about_button = Button::new(ABOUT_BUTTON, &mut self.about_button)
@@ -105,13 +104,14 @@ impl Screen<App> for TitleScreen {
             )
             .scale(Vector2::repeat(4.0));
         if about_button.is_clicked(ctx) {
-            ctx.push_screen(AboutScreen::default())
+            state.push_screen(AboutScreen::default())
         }
 
         ctx.draw([campaign_button, sandbox_button, about_button]);
     }
 
     fn on_init(&mut self, _state: &mut App) {
+        self.campaign_button.reset();
         self.sandbox_button.reset();
         self.about_button.reset();
         self.options_button.reset();

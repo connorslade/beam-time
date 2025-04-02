@@ -48,7 +48,7 @@ impl<'a> Text<'a> {
         }
     }
 
-    pub fn size<App>(&self, ctx: &GraphicsContext<App>) -> Vector2<f32> {
+    pub fn size(&self, ctx: &GraphicsContext) -> Vector2<f32> {
         if let Some(layout) = &*self.layout.borrow() {
             return layout.size;
         }
@@ -103,8 +103,8 @@ impl<'a> Text<'a> {
     }
 }
 
-impl<App> Drawable<App> for Text<'_> {
-    fn draw(self, ctx: &mut GraphicsContext<App>) {
+impl Drawable for Text<'_> {
+    fn draw(self, ctx: &mut GraphicsContext) {
         let font = ctx.assets.get_font(self.font);
         let scale = self.scale * ctx.scale_factor;
 

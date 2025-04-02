@@ -4,10 +4,9 @@ use engine::{
     drawable::text::Text,
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::{Anchor, GraphicsContext},
-    screens::Screen,
 };
 
-use crate::{assets::UNDEAD_FONT, consts::layer::OVERLAY, App};
+use crate::{assets::UNDEAD_FONT, consts::layer::OVERLAY, screens::Screen, App};
 
 pub struct DebugOverlay {
     last_update: Instant,
@@ -15,14 +14,14 @@ pub struct DebugOverlay {
     last_frames: usize,
 }
 
-impl Screen<App> for DebugOverlay {
-    fn pre_render(&mut self, _state: &mut App, ctx: &mut GraphicsContext<App>) {
+impl Screen for DebugOverlay {
+    fn pre_render(&mut self, _state: &mut App, ctx: &mut GraphicsContext) {
         if ctx.input.key_down(KeyCode::Slash) {
             ctx.scale_factor = 1.0 + (ctx.scale_factor == 1.0) as u8 as f32;
         }
     }
 
-    fn post_render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
+    fn post_render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         self.frames += 1;
         if self.last_update.elapsed() >= Duration::from_secs(1) {
             self.last_frames = self.frames;

@@ -39,11 +39,7 @@ impl Modal {
         )
     }
 
-    pub fn draw<App>(
-        self,
-        ctx: &mut GraphicsContext<App>,
-        ui: impl FnOnce(&mut GraphicsContext<App>),
-    ) {
+    pub fn draw(self, ctx: &mut GraphicsContext, ui: impl FnOnce(&mut GraphicsContext)) {
         let pos = ctx.center() + Vector2::new(-self.size.x, self.size.y) / 2.0;
 
         self.background(ctx, pos);
@@ -73,7 +69,7 @@ impl Modal {
 }
 
 impl Modal {
-    fn background<App>(&self, ctx: &mut GraphicsContext<App>, pos: Vector2<f32>) {
+    fn background(&self, ctx: &mut GraphicsContext, pos: Vector2<f32>) {
         let scale = 4.0;
         let tile_size = 16.0 * scale * ctx.scale_factor;
 

@@ -20,14 +20,14 @@ use super::{
 
 pub fn titled_screen(
     state: &mut App,
-    ctx: &mut GraphicsContext<App>,
+    ctx: &mut GraphicsContext,
     back: Option<&mut ButtonState>,
     title: &str,
 ) -> Vector2<f32> {
-    ctx.input.resized.then(|| state.waterfall.reset());
+    ctx.input.resized.is_some().then(|| state.waterfall.reset());
     ctx.input
         .key_pressed(KeyCode::Escape)
-        .then(|| ctx.pop_screen());
+        .then(|| state.pop_screen());
 
     ctx.background(BACKGROUND_COLOR);
     ctx.draw(Waterfall::new(&mut state.waterfall));
@@ -45,17 +45,15 @@ pub fn titled_screen(
             .pos(back_pos, Anchor::Center)
             .scale(Vector2::repeat(4.0))
             .set_back();
-        if button.is_clicked(ctx) {
-            ctx.pop_screen();
-        }
+        button.is_clicked(ctx).then(|| state.pop_screen());
         ctx.draw(button);
     }
 
     pos
 }
 
-pub fn font_scale<App>(
-    ctx: &mut GraphicsContext<App>,
+pub fn font_scale(
+    ctx: &mut GraphicsContext,
     font: FontRef,
     scale: f32,
     lines: usize,
@@ -68,8 +66,8 @@ pub fn font_scale<App>(
     (line_height, line_spacing, total_height)
 }
 
-pub fn tile_label<'a, App>(
-    ctx: &mut GraphicsContext<App>,
+pub fn tile_label<'a>(
+    ctx: &mut GraphicsContext,
     scale: f32,
     pos: Vector2<f32>,
     label: &'a str,
@@ -81,7 +79,7 @@ pub fn tile_label<'a, App>(
         .position(pos + offset, Anchor::BottomRight)
 }
 
-pub fn modal_buttons<App>(ctx: &mut GraphicsContext<App>, width: f32, (left, right): (&str, &str)) {
+pub fn modal_buttons(ctx: &mut GraphicsContext, width: f32, (left, right): (&str, &str)) {
     let body = |text| Text::new(UNDEAD_FONT, text).scale(Vector2::repeat(2.0));
     let button_space = ctx.scale_factor * 10.0;
 

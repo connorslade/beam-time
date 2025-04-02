@@ -35,8 +35,8 @@ impl WaterfallState {
     }
 }
 
-impl<App> Drawable<App> for Waterfall<'_> {
-    fn draw(self, ctx: &mut GraphicsContext<App>) {
+impl Drawable for Waterfall<'_> {
+    fn draw(self, ctx: &mut GraphicsContext) {
         let tiles = &mut self.state.tiles;
 
         let mut rng = thread_rng();

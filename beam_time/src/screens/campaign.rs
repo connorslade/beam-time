@@ -8,7 +8,6 @@ use engine::{
     drawable::text::Text,
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, GraphicsContext},
-    screens::Screen,
 };
 use log::warn;
 use uuid::Uuid;
@@ -25,6 +24,8 @@ use crate::{
     util::load_level_dir,
 };
 
+use super::Screen;
+
 #[derive(Default)]
 pub struct CampaignScreen {
     back_button: ButtonState,
@@ -33,8 +34,8 @@ pub struct CampaignScreen {
     worlds: HashMap<Uuid, (PathBuf, BoardMeta)>,
 }
 
-impl Screen<App> for CampaignScreen {
-    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
+impl Screen for CampaignScreen {
+    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         titled_screen(state, ctx, Some(&mut self.back_button), "Campaign");
 
         const SCALE: f32 = 3.0;
@@ -68,7 +69,7 @@ impl Screen<App> for CampaignScreen {
 
                 if ctx.input.mouse_pressed(MouseButton::Left) {
                     if let Some((path, _meta)) = world {
-                        ctx.push_screen(GameScreen::load(path.to_path_buf()));
+                        state.push_screen(GameScreen::load(path.to_path_buf()));
                     } else {
                         let board = Board {
                             meta: BoardMeta {
@@ -88,7 +89,7 @@ impl Screen<App> for CampaignScreen {
                             .join("campaign")
                             .join(level.id.to_string())
                             .with_extension("bin");
-                        ctx.push_screen(GameScreen::new(board, path));
+                        state.push_screen(GameScreen::new(board, path));
                     }
                 }
             }

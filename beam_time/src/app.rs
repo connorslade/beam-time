@@ -7,7 +7,12 @@ use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "steam")]
 use crate::steam::Steam;
-use crate::{consts::CONFIG_FILE, leaderboard::LeaderboardManager, ui::waterfall::WaterfallState};
+use crate::{
+    consts::CONFIG_FILE,
+    leaderboard::LeaderboardManager,
+    screens::{title::TitleScreen, Screen, Screens},
+    ui::waterfall::WaterfallState,
+};
 
 pub struct App {
     pub id: UserId,
@@ -22,6 +27,9 @@ pub struct App {
 
     pub config: Config,
     pub data_dir: PathBuf,
+
+    pub new_screens: Vec<Box<dyn Screen>>,
+    pub close_screens: usize,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -66,11 +74,14 @@ impl App {
 
             config,
             data_dir,
+
+            new_screens: vec![],
+            close_screens: 0,
         }
     }
 
     // => (Margin, Padding)
-    pub fn spacing<App>(&self, ctx: &mut GraphicsContext<App>) -> (f32, f32) {
+    pub fn spacing(&self, ctx: &mut GraphicsContext) -> (f32, f32) {
         let margin = 16.0 * self.config.ui_scale * ctx.scale_factor;
         let padding = 10.0 * self.config.ui_scale * ctx.scale_factor;
 
@@ -98,6 +109,17 @@ impl App {
 
     pub fn frame(&self) -> u8 {
         self.start.elapsed().as_millis() as u8 / 100 % 3
+    }
+}
+
+impl App {
+    pub fn pop_screen(&mut self) {
+        self.close_screens += 1;
+    }
+
+    pub fn push_screen(&mut self, mut screen: impl Screen + 'static) {
+        screen.on_init(self);
+        self.new_screens.push(Box::new(screen));
     }
 }
 

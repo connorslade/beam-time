@@ -14,7 +14,7 @@ pub struct GpuShapeVertex {
 }
 
 impl ShapeRenderPipeline {
-    pub fn prepare<App>(&mut self, device: &Device, queue: &Queue, ctx: &GraphicsContext<App>) {
+    pub fn prepare(&mut self, device: &Device, queue: &Queue, ctx: &GraphicsContext) {
         let size = ctx.size();
         let verts = ctx
             .shapes

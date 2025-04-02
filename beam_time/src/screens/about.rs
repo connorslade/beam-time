@@ -2,7 +2,6 @@ use engine::{
     drawable::text::Text,
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
-    screens::Screen,
 };
 use indoc::indoc;
 
@@ -11,6 +10,8 @@ use crate::{
     ui::{button::ButtonState, misc::titled_screen},
     App,
 };
+
+use super::Screen;
 
 const DESCRIPTION: &str = indoc! {"
     Beam time is a logic puzzle about redirecting and splitting laser beams to create circuits. \
@@ -32,8 +33,8 @@ pub struct AboutScreen {
     back_button: ButtonState,
 }
 
-impl Screen<App> for AboutScreen {
-    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
+impl Screen for AboutScreen {
+    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         let pos = titled_screen(state, ctx, Some(&mut self.back_button), "About");
 
         let desc = &ctx.assets.get_font(ALAGARD_FONT).desc;

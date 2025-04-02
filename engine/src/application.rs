@@ -1,7 +1,6 @@
 use std::{iter, mem, rc::Rc, sync::Arc, time::Instant};
 
 use anyhow::{Context, Result};
-use nalgebra::Vector2;
 use wgpu::{
     CommandEncoderDescriptor, CompositeAlphaMode, Device, DeviceDescriptor, Extent3d, Features,
     Instance, InstanceDescriptor, Limits, LoadOp, MemoryHints, Operations, PresentMode, Queue,
@@ -23,31 +22,28 @@ use crate::{
     graphics_context::GraphicsContext,
     input::InputManager,
     render::{shape::pipeline::ShapeRenderPipeline, sprite::pipeline::SpriteRenderPipeline},
-    screens::{Screen, Screens},
     DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
 };
 
-pub struct Application<'a, App> {
-    args: ApplicationArgs<App>,
-    state: Option<State<'a, App>>,
+pub struct Application<'a> {
+    args: ApplicationArgs,
+    state: Option<State<'a>>,
 }
 
-pub struct ApplicationArgs<App> {
+pub struct ApplicationArgs {
     pub window_attributes: WindowAttributes,
-    pub screen_constructor: Box<dyn Fn() -> Vec<Box<dyn Screen<App>>>>,
     pub asset_constructor: Box<dyn Fn(&mut AssetConstructor)>,
-    pub app_constructor: Box<dyn Fn() -> App>,
+    pub resumed: Box<dyn Fn() -> Box<dyn FnMut(&mut GraphicsContext)>>,
 }
 
-pub struct State<'a, App> {
+pub struct State<'a> {
     // Misc
     pub graphics: RenderContext<'a>,
     pub input: InputManager,
-    pub app: App,
 
     pub assets: Rc<AssetManager>,
     pub audio: AudioManager,
-    pub screens: Screens<App>,
+    pub render: Box<dyn FnMut(&mut GraphicsContext)>,
 
     pub frame: u64,
     pub last_frame: Instant,
@@ -66,15 +62,14 @@ pub struct RenderContext<'a> {
     pub queue: Queue,
 }
 
-impl<App> Application<'_, App> {
-    pub fn new(args: ApplicationArgs<App>) -> Self {
+impl Application<'_> {
+    pub fn new(args: ApplicationArgs) -> Self {
         Self { args, state: None }
     }
 }
 
-impl<App> ApplicationHandler for Application<'_, App> {
+impl ApplicationHandler for Application<'_> {
     fn resumed(&mut self, event_loop: &ActiveEventLoop) {
-        let app = (self.args.app_constructor)();
         let window = Arc::new(
             event_loop
                 .create_window(self.args.window_attributes.clone())
@@ -117,11 +112,10 @@ impl<App> ApplicationHandler for Application<'_, App> {
                 device,
                 queue,
             },
-            screens: Screens::new((self.args.screen_constructor)()),
+            render: (self.args.resumed)(),
             frame: 0,
             last_frame: Instant::now(),
             last_cursor: Cursor::default(),
-            app,
         });
     }
 
@@ -132,13 +126,11 @@ impl<App> ApplicationHandler for Application<'_, App> {
         event: WindowEvent,
     ) {
         let state = self.state();
-        let app = &mut state.app;
 
         if window_id != state.graphics.window.id() {
             return;
         }
 
-        let old_size = state.input.window_size;
         state.input.on_window_event(&event);
         match event {
             WindowEvent::CloseRequested => event_loop.exit(),
@@ -156,11 +148,8 @@ impl<App> ApplicationHandler for Application<'_, App> {
                     delta_time,
                     state.frame,
                 );
+                (state.render)(&mut ctx);
                 state.frame = state.frame.wrapping_add(1);
-
-                state.screens.render(&mut ctx, app);
-                state.screens.pop_n(ctx.close_screen, app);
-                state.screens.extend(mem::take(&mut ctx.next_screen), app);
 
                 if ctx.cursor != state.last_cursor {
                     gcx.window.set_cursor(ctx.cursor.clone());
@@ -220,10 +209,6 @@ impl<App> ApplicationHandler for Application<'_, App> {
                 gcx.window.request_redraw();
             }
             WindowEvent::Resized(size) => {
-                let new_size = Vector2::new(size.width as f32, size.height as f32);
-                state
-                    .screens
-                    .on_resize(old_size.map(|x| x as f32), new_size, app);
                 state.depth_buffer = create_depth_buffer(&state.graphics.device, size);
                 self.resize_surface();
             }
@@ -232,16 +217,7 @@ impl<App> ApplicationHandler for Application<'_, App> {
     }
 }
 
-impl<App> Drop for Application<'_, App> {
-    fn drop(&mut self) {
-        let Some(state) = self.state.as_mut() else {
-            return;
-        };
-        state.screens.destroy(&mut state.app);
-    }
-}
-
-impl<'a, App> Application<'a, App> {
+impl<'a> Application<'a> {
     pub fn run(mut self) -> Result<()> {
         let event_loop_builder = EventLoopBuilder::default().build()?;
         event_loop_builder.set_control_flow(ControlFlow::Wait);
@@ -249,7 +225,7 @@ impl<'a, App> Application<'a, App> {
         Ok(())
     }
 
-    fn state(&mut self) -> &mut State<'a, App> {
+    fn state(&mut self) -> &mut State<'a> {
         self.state.as_mut().unwrap()
     }
 

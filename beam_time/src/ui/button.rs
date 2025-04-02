@@ -82,7 +82,7 @@ impl<'a> Button<'a> {
         sprite
     }
 
-    pub fn is_clicked<App>(&self, ctx: &mut GraphicsContext<App>) -> bool {
+    pub fn is_clicked(&self, ctx: &mut GraphicsContext) -> bool {
         let sprite = self.get_sprite();
         sprite.is_hovered(ctx) && ctx.input.mouse_pressed(MouseButton::Left)
     }
@@ -94,8 +94,8 @@ impl ButtonState {
     }
 }
 
-impl<App> Drawable<App> for Button<'_> {
-    fn draw(self, ctx: &mut GraphicsContext<App>) {
+impl Drawable for Button<'_> {
+    fn draw(self, ctx: &mut GraphicsContext) {
         let sprite = self.get_sprite();
 
         let hover = sprite.is_hovered(ctx);

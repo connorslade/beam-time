@@ -58,15 +58,11 @@ impl ColumnLayout {
         self.origin.y -= self.padding + (max - min);
     }
 
-    pub fn draw<App>(&mut self, ctx: &mut GraphicsContext<App>, drawable: impl Drawable<App>) {
+    pub fn draw(&mut self, ctx: &mut GraphicsContext, drawable: impl Drawable) {
         self.layout(ctx.draw_callback(|ctx| ctx.draw(drawable)));
     }
 
-    pub fn row<App>(
-        &mut self,
-        ctx: &mut GraphicsContext<App>,
-        drawable: impl FnOnce(&mut GraphicsContext<App>),
-    ) {
+    pub fn row(&mut self, ctx: &mut GraphicsContext, drawable: impl FnOnce(&mut GraphicsContext)) {
         self.layout(ctx.draw_callback(drawable));
     }
 }

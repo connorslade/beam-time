@@ -1,11 +1,11 @@
-use std::{borrow::Cow, f32::consts::PI, mem, path::PathBuf, time::Duration};
+use std::{borrow::Cow, mem, path::PathBuf, time::Duration};
 
 use rand::{seq::SliceRandom, thread_rng, Rng};
 
 #[cfg(feature = "steam")]
 use crate::game::achievements::award_campaign_achievements;
 use crate::{
-    assets::{LEVEL_DROPDOWN_ARROW, UNDEAD_FONT},
+    assets::UNDEAD_FONT,
     consts::{layer, BACKGROUND_COLOR},
     game::{board::Board, render::beam::BeamStateRender, shared_state::SharedState},
     ui::{
@@ -23,11 +23,12 @@ use beam_logic::{
 };
 use engine::{
     color::Rgb,
-    drawable::{sprite::Sprite, text::Text},
+    drawable::text::Text,
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
-    graphics_context::{Anchor, Drawable, GraphicsContext},
-    screens::Screen,
+    graphics_context::GraphicsContext,
 };
+
+use super::Screen;
 
 pub struct GameScreen {
     shared: SharedState,
@@ -47,8 +48,8 @@ pub struct GameScreen {
 
 struct PausedModal {}
 
-impl Screen<App> for GameScreen {
-    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
+impl Screen for GameScreen {
+    fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         self.paused_modal(state, ctx);
         if self.paused.is_none() {
             self.shared.update(state, ctx);
@@ -207,7 +208,7 @@ impl GameScreen {
         GameScreen::new(Board::load(&save_file).unwrap_or_default(), save_file)
     }
 
-    fn paused_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext<App>) {
+    fn paused_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         if let Some(pause) = &mut self.paused {
             ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::UI_OVERLAY));
 
@@ -246,7 +247,7 @@ impl GameScreen {
     }
 }
 
-fn create_confetti<App>(confetti: &mut Confetti, ctx: &mut GraphicsContext<App>) {
+fn create_confetti(confetti: &mut Confetti, ctx: &mut GraphicsContext) {
     let mut points = [
         Vector2::new(0.25, 0.3),
         Vector2::new(0.5, 0.75),

@@ -48,8 +48,8 @@ impl Rectangle {
     }
 }
 
-impl<App> Drawable<App> for Rectangle {
-    fn draw(self, ctx: &mut GraphicsContext<App>) {
+impl Drawable for Rectangle {
+    fn draw(self, ctx: &mut GraphicsContext) {
         let verts = self
             .points()
             .map(|x| ShapeVertex::new(x, self.color).z_index(self.z_index));

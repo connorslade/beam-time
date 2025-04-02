@@ -46,7 +46,7 @@ impl Sprite {
     }
 
     // Reference: https://stackoverflow.com/a/37865332/12471934
-    pub fn is_hovered<App>(&self, ctx: &GraphicsContext<App>) -> bool {
+    pub fn is_hovered(&self, ctx: &GraphicsContext) -> bool {
         let asset = ctx.assets.get_sprite(self.texture);
         let points = self.points(ctx, asset);
 
@@ -102,7 +102,7 @@ impl Sprite {
         self
     }
 
-    fn points<App>(&self, ctx: &GraphicsContext<App>, sprite: &SpriteAsset) -> [Vector2<f32>; 4] {
+    fn points(&self, ctx: &GraphicsContext, sprite: &SpriteAsset) -> [Vector2<f32>; 4] {
         let size = sprite.size.map(|x| x as f32) * ctx.scale_factor;
         let scaled_size = size.component_mul(&self.scale);
 
@@ -123,8 +123,8 @@ impl Sprite {
     }
 }
 
-impl<App> Drawable<App> for Sprite {
-    fn draw(self, ctx: &mut GraphicsContext<App>) {
+impl Drawable for Sprite {
+    fn draw(self, ctx: &mut GraphicsContext) {
         let asset = ctx.assets.get_sprite(self.texture);
 
         ctx.sprites.push(GpuSprite {

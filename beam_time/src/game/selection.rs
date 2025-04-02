@@ -1,5 +1,4 @@
 use crate::{
-    app::App,
     assets::UNDEAD_FONT,
     consts::{layer, SELECTION_COLOR},
     util::key_events,
@@ -32,7 +31,7 @@ pub struct SelectionState {
 impl SelectionState {
     pub fn update(
         &mut self,
-        ctx: &mut GraphicsContext<App>,
+        ctx: &mut GraphicsContext,
         shared: &SharedState,
         sim: &mut Option<BeamState>,
         tiles: &mut Map<Tile>,
@@ -149,7 +148,7 @@ impl SelectionState {
 
     pub fn update_tile(
         &mut self,
-        ctx: &mut GraphicsContext<App>,
+        ctx: &mut GraphicsContext,
         shared: &SharedState,
         hovered: bool,
         pos: Vector2<i32>,

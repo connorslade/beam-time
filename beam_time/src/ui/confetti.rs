@@ -55,7 +55,7 @@ impl Confetti {
         }
     }
 
-    pub fn render<App>(&mut self, ctx: &mut GraphicsContext<App>) {
+    pub fn render(&mut self, ctx: &mut GraphicsContext) {
         let viewport = ctx.size();
         let half_size = 1.5 * 4.0 * ctx.scale_factor;
 

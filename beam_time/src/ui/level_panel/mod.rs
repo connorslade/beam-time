@@ -42,7 +42,7 @@ const WIDTH: usize = 7;
 impl LevelPanel {
     pub fn render(
         &mut self,
-        ctx: &mut GraphicsContext<App>,
+        ctx: &mut GraphicsContext,
         state: &App,
         board: &Board,
         sim: &MutexGuard<InnerAsyncSimulationState>,
@@ -122,7 +122,7 @@ impl LevelPanel {
 }
 
 impl UIContext {
-    fn text_block(&mut self, ctx: &mut GraphicsContext<App>, state: &App, text: &str) {
+    fn text_block(&mut self, ctx: &mut GraphicsContext, state: &App, text: &str) {
         let text = Text::new(UNDEAD_FONT, text)
             .position(Vector2::new(self.margin, self.y), Anchor::TopLeft)
             .scale(Vector2::repeat(state.config.ui_scale * 2.0))
@@ -132,7 +132,7 @@ impl UIContext {
         ctx.draw(text);
     }
 
-    fn horizontal_rule(&mut self, ctx: &mut GraphicsContext<App>) {
+    fn horizontal_rule(&mut self, ctx: &mut GraphicsContext) {
         self.y -= self.margin;
         for i in 0..WIDTH {
             ctx.draw(
@@ -150,7 +150,7 @@ impl UIContext {
     }
 }
 
-fn background(ctx: &mut GraphicsContext<App>, ui: &mut UIContext) {
+fn background(ctx: &mut GraphicsContext, ui: &mut UIContext) {
     ui.y -= ui.margin;
     let height = ctx.size().y - ui.y - ui.tile_size;
 
