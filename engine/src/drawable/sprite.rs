@@ -4,7 +4,7 @@ use crate::{
     assets::{SpriteAsset, SpriteRef},
     color::Rgb,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{bounds::Bounds2D, LayoutElement},
+    layout::{bounds::Bounds2D, Layout, LayoutElement},
     render::sprite::GpuSprite,
 };
 
@@ -138,6 +138,10 @@ impl Sprite {
 
         // Apply to the bounds of the sprite
         RECTANGLE_POINTS.map(|x| transform(x.component_mul(&size)))
+    }
+
+    pub fn layout(self, ctx: &mut GraphicsContext, layout: &mut impl Layout) {
+        layout.layout(ctx, self);
     }
 }
 

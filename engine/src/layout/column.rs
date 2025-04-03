@@ -2,7 +2,9 @@ use nalgebra::Vector2;
 
 use crate::graphics_context::GraphicsContext;
 
-use super::{bounds::Bounds2D, container::Container, Justify, LayoutElement, SizedLayoutElement};
+use super::{
+    bounds::Bounds2D, container::Container, Justify, Layout, LayoutElement, SizedLayoutElement,
+};
 
 pub struct ColumnLayout {
     origin: Vector2<f32>,
@@ -61,5 +63,11 @@ impl LayoutElement for ColumnLayout {
 
     fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
         ColumnLayout::draw(*self, ctx);
+    }
+}
+
+impl Layout for ColumnLayout {
+    fn layout(&mut self, ctx: &mut GraphicsContext, element: impl LayoutElement + 'static) {
+        self.layout(ctx, element);
     }
 }

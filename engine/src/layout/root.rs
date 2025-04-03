@@ -2,7 +2,7 @@ use nalgebra::Vector2;
 
 use crate::graphics_context::{Anchor, GraphicsContext};
 
-use super::{container::Container, LayoutElement, SizedLayoutElement};
+use super::{container::Container, Layout, LayoutElement, SizedLayoutElement};
 
 pub struct RootLayout {
     container: Container,
@@ -33,5 +33,11 @@ impl RootLayout {
         self.container.translate(shift + Vector2::y() * size.y);
 
         self.container.draw(ctx);
+    }
+}
+
+impl Layout for RootLayout {
+    fn layout(&mut self, ctx: &mut GraphicsContext, element: impl LayoutElement + 'static) {
+        self.layout(ctx, element);
     }
 }

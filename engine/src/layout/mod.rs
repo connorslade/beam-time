@@ -18,6 +18,10 @@ pub trait LayoutElement {
     fn draw(self: Box<Self>, ctx: &mut GraphicsContext);
 }
 
+pub trait Layout {
+    fn layout(&mut self, ctx: &mut GraphicsContext, element: impl LayoutElement + 'static);
+}
+
 pub struct SizedLayoutElement {
     pub element: Box<dyn LayoutElement>,
     pub bounds: Bounds2D,

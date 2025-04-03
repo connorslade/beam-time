@@ -34,12 +34,10 @@ impl Screen for LayoutTestScreen {
                 let mut column = ColumnLayout::new(padding);
 
                 for tile in tiles {
-                    column.layout(
-                        ctx,
-                        Sprite::new(tile)
-                            .uv_offset(Vector2::x() * 16)
-                            .scale(Vector2::repeat(4.0)),
-                    );
+                    Sprite::new(tile)
+                        .uv_offset(Vector2::x() * 16)
+                        .scale(Vector2::repeat(4.0))
+                        .layout(ctx, &mut column);
                 }
 
                 row.layout(ctx, column);
@@ -69,7 +67,9 @@ impl Screen for LayoutTestScreen {
             let mut column = ColumnLayout::new(padding).justify(Justify::Center);
 
             for button in [CAMPAIGN_BUTTON, SANDBOX_BUTTON, OPTIONS_BUTTON] {
-                column.layout(ctx, Sprite::new(button).scale(Vector2::repeat(4.0)));
+                Sprite::new(button)
+                    .scale(Vector2::repeat(4.0))
+                    .layout(ctx, &mut column);
             }
 
             root.layout(ctx, column);
