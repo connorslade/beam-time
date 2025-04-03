@@ -23,10 +23,12 @@ impl ColumnLayout {
 
     // todo: Try to remove graphics context here?
     pub fn layout(&mut self, ctx: &mut GraphicsContext, mut element: impl LayoutElement + 'static) {
-        let bounds = element.bounds(ctx);
+        let mut bounds = element.bounds(ctx);
 
-        self.origin.y -= bounds.height() - self.padding;
+        self.origin.y -= bounds.height();
         element.translate(self.origin);
+        bounds.translate(self.origin);
+        self.origin.y -= self.padding;
 
         self.container.insert(bounds, element);
     }

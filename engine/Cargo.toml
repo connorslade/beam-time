@@ -3,6 +3,9 @@ name = "engine"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+layout_debug = []
+
 [dependencies]
 anyhow.workspace = true
 bytemuck.workspace = true

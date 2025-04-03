@@ -1,6 +1,8 @@
 use nalgebra::Vector2;
 
 use crate::graphics_context::GraphicsContext;
+#[cfg(feature = "layout_debug")]
+use crate::{color::Rgb, graphics_context::Drawable};
 
 use super::{bounds::Bounds2D, LayoutElement};
 
@@ -17,7 +19,19 @@ impl Container {
     }
 
     pub fn draw(&self, ctx: &mut GraphicsContext) {
+        #[cfg(feature = "layout_debug")]
+        {
+            let outline = self.bounds.outline();
+            outline.color(Rgb::hex(0x00FFFF)).draw(ctx)
+        }
+
         for child in &self.children {
+            #[cfg(feature = "layout_debug")]
+            {
+                let outline = child.bounds(ctx).outline();
+                outline.color(Rgb::hex(0xFF0000)).draw(ctx);
+            }
+
             child.draw(ctx);
         }
     }

@@ -19,7 +19,8 @@ impl Screen for LayoutTestScreen {
         // let scale = Vector2::repeat(4.0 + (t.sin() / 2.0) - 0.5);
         let pos = ctx.input.mouse;
 
-        let padding = 10.0 + 5.0 * (t.sin() / 2.0 - 0.5) * state.config.ui_scale * ctx.scale_factor;
+        let padding =
+            (16.0 + 16.0 * (t.sin() / 2.0 - 0.5)) * state.config.ui_scale * ctx.scale_factor;
         let mut root = RootLayout::new(pos);
         let mut layout = ColumnLayout::new(padding);
 

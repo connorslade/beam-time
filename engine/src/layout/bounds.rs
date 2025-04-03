@@ -2,7 +2,9 @@ use std::ops::{Add, AddAssign};
 
 use nalgebra::Vector2;
 
-#[derive(Default, Clone, Copy)]
+use crate::{drawable::shape::rectangle_outline::RectangleOutline, graphics_context::Anchor};
+
+#[derive(Clone, Copy)]
 pub struct Bounds2D {
     pub min: Vector2<f32>,
     pub max: Vector2<f32>,
@@ -27,9 +29,24 @@ impl Bounds2D {
         Bounds2D { min, max }
     }
 
+    pub fn outline(&self) -> RectangleOutline {
+        RectangleOutline::new(self.size(), 1.0).position(self.min, Anchor::BottomLeft)
+    }
+
     pub fn translate(&mut self, distance: Vector2<f32>) {
         self.min += distance;
         self.max += distance;
+    }
+
+    pub fn translated(&self, distance: Vector2<f32>) -> Self {
+        Bounds2D {
+            min: self.min + distance,
+            max: self.max + distance,
+        }
+    }
+
+    pub fn size(&self) -> Vector2<f32> {
+        self.max - self.min
     }
 
     pub fn height(&self) -> f32 {
@@ -38,6 +55,15 @@ impl Bounds2D {
 
     pub fn width(&self) -> f32 {
         self.max.x - self.min.x
+    }
+}
+
+impl Default for Bounds2D {
+    fn default() -> Self {
+        Bounds2D {
+            min: Vector2::new(f32::MAX, f32::MAX),
+            max: Vector2::new(f32::MIN, f32::MIN),
+        }
     }
 }
 

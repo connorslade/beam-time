@@ -19,8 +19,10 @@ impl RootLayout {
     }
 
     pub fn layout(&mut self, ctx: &mut GraphicsContext, mut element: impl LayoutElement + 'static) {
+        let bounds = element.bounds(ctx).translated(self.origin);
         element.translate(self.origin);
-        self.container.insert(element.bounds(ctx), element);
+
+        self.container.insert(bounds, element);
     }
 
     pub fn draw(self, ctx: &mut GraphicsContext) {
