@@ -1,6 +1,6 @@
 use nalgebra::Vector2;
 
-use crate::graphics_context::GraphicsContext;
+use crate::graphics_context::{Anchor, GraphicsContext};
 
 use super::{container::Container, LayoutElement};
 
@@ -8,13 +8,15 @@ pub struct RootLayout {
     container: Container,
 
     origin: Vector2<f32>,
+    anchor: Anchor,
 }
 
 impl RootLayout {
-    pub fn new(origin: Vector2<f32>) -> Self {
+    pub fn new(origin: Vector2<f32>, anchor: Anchor) -> Self {
         Self {
             container: Container::default(),
             origin,
+            anchor,
         }
     }
 
@@ -25,7 +27,11 @@ impl RootLayout {
         self.container.insert(bounds, element);
     }
 
-    pub fn draw(self, ctx: &mut GraphicsContext) {
+    pub fn draw(mut self, ctx: &mut GraphicsContext) {
+        let size = self.container.bounds(ctx).size();
+        let shift = self.anchor.offset(size);
+        self.container.translate(shift + Vector2::y() * size.y);
+
         self.container.draw(ctx);
     }
 }

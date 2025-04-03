@@ -28,6 +28,11 @@ impl RectangleOutline {
         }
     }
 
+    pub fn thickness(mut self, thickness: f32) -> Self {
+        self.thickness = thickness;
+        self
+    }
+
     pub fn position(mut self, position: Vector2<f32>, anchor: Anchor) -> Self {
         self.position = position;
         self.position_anchor = anchor;

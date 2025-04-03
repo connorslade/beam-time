@@ -38,6 +38,10 @@
 - [x] Allow setting a `dynamic_scale` on sprites / drawables to allow for a scale anchor
 - [x] Implement layout system
   - [ ] Cleanup with martix stacks?
+  - [ ] Add justify support to column and row layouts
+  - [ ] Figure out how to check if hovered
+    - A 'positioned element' type
+    - Wrapper type that caches is_hovered after layout run for the next frame
 
 ## User Interface
 
