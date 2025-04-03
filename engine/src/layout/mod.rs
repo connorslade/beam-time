@@ -1,18 +1,18 @@
 use nalgebra::Vector2;
 
-use crate::graphics_context::Anchor;
+use crate::graphics_context::GraphicsContext;
 
-pub struct Bounds2D {
-    pub min: Vector2<f32>,
-    pub max: Vector2<f32>,
-}
+use bounds::Bounds2D;
+pub mod bounds;
+pub mod column;
+pub mod container;
+pub mod root;
 
 pub trait LayoutElement {
-    fn position(&mut self, position: Vector2<f32>, anchor: Anchor);
-    fn bounds(&self) -> Bounds2D;
-}
-
-pub struct Container {
-    bounds: Bounds2D,
-    children: Vec<Box<dyn LayoutElement>>,
+    /// Shifts the element by the given distance.
+    fn translate(&mut self, distance: Vector2<f32>);
+    /// Gets the rectangular bounds of the element.
+    fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D;
+    /// Draws the element.
+    fn draw(&self, ctx: &mut GraphicsContext);
 }

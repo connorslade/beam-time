@@ -36,7 +36,8 @@
 - [x] Remove screen system to take out App generic from graphics context
   - [x] Add on resize event to graphics context
 - [x] Allow setting a `dynamic_scale` on sprites / drawables to allow for a scale anchor
-- [ ] Implement layout system
+- [x] Implement layout system
+  - [ ] Cleanup with martix stacks?
 
 ## User Interface
 

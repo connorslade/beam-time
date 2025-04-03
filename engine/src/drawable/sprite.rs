@@ -4,6 +4,7 @@ use crate::{
     assets::{SpriteAsset, SpriteRef},
     color::Rgb,
     graphics_context::{Anchor, Drawable, GraphicsContext},
+    layout::{bounds::Bounds2D, LayoutElement},
     render::sprite::GpuSprite,
 };
 
@@ -142,6 +143,33 @@ impl Sprite {
 
 impl Drawable for Sprite {
     fn draw(self, ctx: &mut GraphicsContext) {
+        let asset = ctx.assets.get_sprite(self.texture);
+
+        ctx.sprites.push(GpuSprite {
+            texture: asset.texture,
+            uv: asset.uv(self.uv_offset).into(),
+            points: self.points(ctx, asset),
+            color: Rgb::new(self.color.r, self.color.g, self.color.b),
+            z_index: self.z_index,
+            clip: self.clip,
+        });
+    }
+}
+
+impl LayoutElement for Sprite {
+    fn translate(&mut self, distance: Vector2<f32>) {
+        self.position += distance;
+    }
+
+    fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
+        // TODO: Cache points maybe?
+        let asset = ctx.assets.get_sprite(self.texture);
+        let points = self.points(ctx, asset);
+        Bounds2D::from_points(&points)
+    }
+
+    // todo: don't repeat this code from the drawable impl
+    fn draw(&self, ctx: &mut GraphicsContext) {
         let asset = ctx.assets.get_sprite(self.texture);
 
         ctx.sprites.push(GpuSprite {
