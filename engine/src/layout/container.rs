@@ -4,18 +4,18 @@ use crate::graphics_context::GraphicsContext;
 #[cfg(feature = "layout_debug")]
 use crate::{color::Rgb, graphics_context::Drawable};
 
-use super::{bounds::Bounds2D, LayoutElement};
+use super::{bounds::Bounds2D, LayoutElement, SizedLayoutElement};
 
 #[derive(Default)]
 pub struct Container {
     pub(crate) bounds: Bounds2D,
-    pub(crate) children: Vec<Box<dyn LayoutElement>>,
+    pub(crate) children: Vec<SizedLayoutElement>,
 }
 
 impl Container {
-    pub fn insert(&mut self, bounds: Bounds2D, element: impl LayoutElement + 'static) {
-        self.children.push(Box::new(element));
-        self.bounds += bounds;
+    pub fn insert(&mut self, element: SizedLayoutElement) {
+        self.bounds += element.bounds;
+        self.children.push(element);
     }
 
     pub fn draw(self, ctx: &mut GraphicsContext) {
@@ -32,7 +32,7 @@ impl Container {
                 outline.color(Rgb::hex(0xFF0000)).draw(ctx);
             }
 
-            child.draw(ctx);
+            child.element.draw(ctx);
         }
     }
 }

@@ -2,7 +2,7 @@ use nalgebra::Vector2;
 
 use crate::graphics_context::GraphicsContext;
 
-use super::{bounds::Bounds2D, container::Container, Justify, LayoutElement};
+use super::{bounds::Bounds2D, container::Container, Justify, LayoutElement, SizedLayoutElement};
 
 pub struct RowLayout {
     origin: Vector2<f32>,
@@ -29,20 +29,19 @@ impl RowLayout {
     }
 
     // todo: Try to remove graphics context here?
-    pub fn layout(&mut self, ctx: &mut GraphicsContext, mut element: impl LayoutElement + 'static) {
-        let mut bounds = element.bounds(ctx);
+    pub fn layout(&mut self, ctx: &mut GraphicsContext, element: impl LayoutElement + 'static) {
+        let mut element = SizedLayoutElement::new(ctx, Box::new(element));
 
         element.translate(self.origin);
-        bounds.translate(self.origin);
-        self.origin.x += bounds.width() + self.padding;
+        self.origin.x += element.bounds.width() + self.padding;
 
-        self.container.insert(bounds, element);
+        self.container.insert(element);
     }
 
     pub fn draw(mut self, ctx: &mut GraphicsContext) {
         let container_width = self.container.bounds.size().y;
         for child in &mut self.container.children {
-            let width = child.bounds(ctx).size().y;
+            let width = child.bounds.size().y;
             let offset = self.justify.offset(container_width, width);
             child.translate(Vector2::y() * offset);
         }
