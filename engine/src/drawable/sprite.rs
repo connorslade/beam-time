@@ -18,12 +18,14 @@ pub struct Sprite {
     color: Rgb<f32>,
     z_index: i16,
 
-    scale: Vector2<f32>,
     position: Vector2<f32>,
     rotation: f32,
+    scale: Vector2<f32>,
+    dynamic_scale: Vector2<f32>,
 
     position_anchor: Anchor,
     rotation_anchor: Anchor,
+    scale_anchor: Anchor,
 }
 
 impl Sprite {
@@ -36,12 +38,14 @@ impl Sprite {
             color: Rgb::new(1.0, 1.0, 1.0),
             z_index: 0,
 
-            scale: Vector2::repeat(1.0),
             position: Vector2::zeros(),
             rotation: 0.0,
+            scale: Vector2::repeat(1.0),
+            dynamic_scale: Vector2::repeat(1.0),
 
             position_anchor: Anchor::BottomLeft,
             rotation_anchor: Anchor::Center,
+            scale_anchor: Anchor::Center,
         }
     }
 
@@ -79,8 +83,19 @@ impl Sprite {
         self
     }
 
+    /// Used for temperately scaling a sprite with an anchor point calculated
+    /// with the size of the sprite scaled with the normal scale. This is useful
+    /// if you want to shrink a sprite around it's center on hover even if you
+    /// are positioning it by it's bottom left corner.
+    pub fn dynamic_scale(mut self, scale: Vector2<f32>, anchor: Anchor) -> Self {
+        self.dynamic_scale = scale;
+        self.scale_anchor = anchor;
+        self
+    }
+
     pub fn scale(mut self, scale: Vector2<f32>) -> Self {
         self.scale = scale;
+        self.dynamic_scale = scale;
         self
     }
 
@@ -105,15 +120,17 @@ impl Sprite {
     fn points(&self, ctx: &GraphicsContext, sprite: &SpriteAsset) -> [Vector2<f32>; 4] {
         let size = sprite.size.map(|x| x as f32) * ctx.scale_factor;
         let scaled_size = size.component_mul(&self.scale);
+        let delta_scaled_size = size.component_mul(&((self.dynamic_scale - self.scale) / 2.0));
 
         // Calculate anchor offsets for each transformation
         let rotation_offset = self.rotation_anchor.offset(size);
         let position_offset = self.position_anchor.offset(scaled_size);
+        let scale_offset = self.scale_anchor.offset(delta_scaled_size);
 
         // Combine transformations and offsets
-        let transform = Matrix3::new_translation(&(self.position + position_offset))
-            * Matrix3::new_nonuniform_scaling(&self.scale)
-            * Matrix3::new_translation(&(-rotation_offset))
+        let transform = Matrix3::new_translation(&(self.position + position_offset - scale_offset))
+            * Matrix3::new_nonuniform_scaling(&self.dynamic_scale)
+            * Matrix3::new_translation(&(-rotation_offset + scale_offset))
             * Matrix3::new_rotation(self.rotation)
             * Matrix3::new_translation(&rotation_offset);
         let transform = |point: Vector2<f32>| (transform * point.push(1.0)).xy();
