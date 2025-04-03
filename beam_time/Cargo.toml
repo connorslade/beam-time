@@ -10,7 +10,7 @@ debug = []
 [dependencies]
 beam_logic = { path = "../beam_logic" }
 common = { path = "../common" }
-engine = { path = "../engine" }
+engine = { path = "../engine", features = ["layout_debug"] }
 leaderboard = { path = "../leaderboard" }
 
 ahash.workspace = true

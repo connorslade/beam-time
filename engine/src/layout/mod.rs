@@ -7,6 +7,7 @@ pub mod bounds;
 pub mod column;
 pub mod container;
 pub mod root;
+pub mod row;
 
 pub trait LayoutElement {
     /// Shifts the element by the given distance.

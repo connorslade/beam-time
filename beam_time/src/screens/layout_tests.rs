@@ -3,10 +3,14 @@ use engine::{
     drawable::{shape::rectangle_outline::RectangleOutline, sprite::Sprite},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{column::ColumnLayout, root::RootLayout},
+    layout::{column::ColumnLayout, root::RootLayout, row::RowLayout},
 };
 
-use crate::{app::App, assets::TILE_EMITTER_RIGHT, consts::EMITTER};
+use crate::{
+    app::App,
+    assets::TILE_EMITTER_RIGHT,
+    consts::{EMITTER, GALVO},
+};
 
 use super::Screen;
 
@@ -22,18 +26,24 @@ impl Screen for LayoutTestScreen {
         let padding =
             (16.0 + 16.0 * (t.sin() / 2.0 - 0.5)) * state.config.ui_scale * ctx.scale_factor;
         let mut root = RootLayout::new(pos);
-        let mut layout = ColumnLayout::new(padding);
+        let mut row = RowLayout::new(padding);
 
-        for tile in EMITTER {
-            layout.layout(
-                ctx,
-                Sprite::new(tile)
-                    .uv_offset(Vector2::x() * 16)
-                    .scale(Vector2::repeat(4.0)),
-            );
+        for tiles in [EMITTER, GALVO] {
+            let mut column = ColumnLayout::new(padding);
+
+            for tile in tiles {
+                column.layout(
+                    ctx,
+                    Sprite::new(tile)
+                        .uv_offset(Vector2::x() * 16)
+                        .scale(Vector2::repeat(4.0)),
+                );
+            }
+
+            row.layout(ctx, column);
         }
 
-        root.layout(ctx, layout);
+        root.layout(ctx, row);
         root.draw(ctx);
 
         // Sprite::new(TILE_EMITTER_RIGHT)
