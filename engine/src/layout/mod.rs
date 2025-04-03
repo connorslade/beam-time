@@ -15,5 +15,22 @@ pub trait LayoutElement {
     /// Gets the rectangular bounds of the element.
     fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D;
     /// Draws the element.
-    fn draw(&self, ctx: &mut GraphicsContext);
+    fn draw(self: Box<Self>, ctx: &mut GraphicsContext);
+}
+
+#[derive(Debug)]
+pub enum Justify {
+    Min,
+    Center,
+    Max,
+}
+
+impl Justify {
+    pub fn offset(&self, container: f32, element: f32) -> f32 {
+        match self {
+            Justify::Min => 0.0,
+            Justify::Center => (container - element) / 2.0,
+            Justify::Max => container - element,
+        }
+    }
 }

@@ -3,7 +3,7 @@ use engine::{
     drawable::{shape::rectangle_outline::RectangleOutline, sprite::Sprite},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{column::ColumnLayout, root::RootLayout, row::RowLayout},
+    layout::{column::ColumnLayout, root::RootLayout, row::RowLayout, Justify},
 };
 
 use crate::{
@@ -66,13 +66,13 @@ impl Screen for LayoutTestScreen {
 
         {
             let mut root = RootLayout::new(ctx.center(), Anchor::Center);
-            let mut row = ColumnLayout::new(padding);
+            let mut column = ColumnLayout::new(padding).justify(Justify::Center);
 
             for button in [CAMPAIGN_BUTTON, SANDBOX_BUTTON, OPTIONS_BUTTON] {
-                row.layout(ctx, Sprite::new(button).scale(Vector2::repeat(4.0)));
+                column.layout(ctx, Sprite::new(button).scale(Vector2::repeat(4.0)));
             }
 
-            root.layout(ctx, row);
+            root.layout(ctx, column);
             root.draw(ctx);
         }
     }

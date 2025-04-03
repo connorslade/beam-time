@@ -8,8 +8,8 @@ use super::{bounds::Bounds2D, LayoutElement};
 
 #[derive(Default)]
 pub struct Container {
-    bounds: Bounds2D,
-    children: Vec<Box<dyn LayoutElement>>,
+    pub(crate) bounds: Bounds2D,
+    pub(crate) children: Vec<Box<dyn LayoutElement>>,
 }
 
 impl Container {
@@ -18,14 +18,14 @@ impl Container {
         self.bounds += bounds;
     }
 
-    pub fn draw(&self, ctx: &mut GraphicsContext) {
+    pub fn draw(self, ctx: &mut GraphicsContext) {
         #[cfg(feature = "layout_debug")]
         {
             let outline = self.bounds.outline();
             outline.color(Rgb::hex(0x00FFFF)).draw(ctx)
         }
 
-        for child in &self.children {
+        for child in self.children {
             #[cfg(feature = "layout_debug")]
             {
                 let outline = child.bounds(ctx).outline();
@@ -49,7 +49,7 @@ impl LayoutElement for Container {
         self.bounds
     }
 
-    fn draw(&self, ctx: &mut GraphicsContext) {
-        Container::draw(self, ctx);
+    fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
+        Container::draw(*self, ctx);
     }
 }

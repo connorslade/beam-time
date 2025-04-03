@@ -169,7 +169,7 @@ impl LayoutElement for Sprite {
     }
 
     // todo: don't repeat this code from the drawable impl
-    fn draw(&self, ctx: &mut GraphicsContext) {
+    fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
         let asset = ctx.assets.get_sprite(self.texture);
 
         ctx.sprites.push(GpuSprite {
