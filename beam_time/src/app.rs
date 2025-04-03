@@ -8,9 +8,7 @@ use serde::{Deserialize, Serialize};
 #[cfg(feature = "steam")]
 use crate::steam::Steam;
 use crate::{
-    consts::CONFIG_FILE,
-    leaderboard::LeaderboardManager,
-    screens::{title::TitleScreen, Screen, Screens},
+    consts::CONFIG_FILE, leaderboard::LeaderboardManager, screens::Screen,
     ui::waterfall::WaterfallState,
 };
 

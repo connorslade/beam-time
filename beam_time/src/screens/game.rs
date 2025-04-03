@@ -209,7 +209,7 @@ impl GameScreen {
     }
 
     fn paused_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        if let Some(pause) = &mut self.paused {
+        if let Some(_pause) = &mut self.paused {
             ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::UI_OVERLAY));
 
             let (margin, padding) = state.spacing(ctx);

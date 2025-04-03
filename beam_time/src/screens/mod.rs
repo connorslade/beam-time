@@ -4,8 +4,9 @@ use crate::app::App;
 
 pub mod about;
 pub mod campaign;
+#[cfg(feature = "debug")]
+pub mod debug_overlay;
 pub mod game;
-pub mod overlay;
 pub mod sandbox;
 pub mod title;
 
@@ -61,9 +62,5 @@ impl Screens {
         self.inner
             .iter_mut()
             .for_each(|x| x.on_resize(state, old_size, new_size));
-    }
-
-    pub fn destroy(&mut self, state: &mut App) {
-        self.inner.iter_mut().for_each(|x| x.on_destroy(state));
     }
 }

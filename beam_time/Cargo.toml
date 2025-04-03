@@ -7,8 +7,6 @@ edition = "2021"
 steam = ["steamworks"]
 debug = []
 
-default = ["debug"]
-
 [dependencies]
 beam_logic = { path = "../beam_logic" }
 common = { path = "../common" }

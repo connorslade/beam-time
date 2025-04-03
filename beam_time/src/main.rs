@@ -25,7 +25,9 @@ mod ui;
 mod util;
 
 use app::App;
-use screens::{overlay::debug::DebugOverlay, title::TitleScreen, Screens};
+#[cfg(feature = "debug")]
+use screens::debug_overlay::DebugOverlay;
+use screens::{title::TitleScreen, Screens};
 use util::include_atlas;
 
 fn main() -> Result<()> {

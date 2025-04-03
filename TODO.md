@@ -34,7 +34,7 @@
 - [x] Update draw_callback with support for polygons
 - [x] Update sprite renderer to make use of the bytemuck impl for nalgebra
 - [x] Remove screen system to take out App generic from graphics context
-  - [ ] Add on resize event to graphics context
+  - [x] Add on resize event to graphics context
 - [ ] Implement layout system
 
 ```rust
