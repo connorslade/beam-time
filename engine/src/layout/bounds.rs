@@ -56,6 +56,13 @@ impl Bounds2D {
     pub fn width(&self) -> f32 {
         self.max.x - self.min.x
     }
+
+    pub fn contains(&self, point: Vector2<f32>) -> bool {
+        point.x >= self.min.x
+            && point.x <= self.max.x
+            && point.y >= self.min.y
+            && point.y <= self.max.y
+    }
 }
 
 impl Default for Bounds2D {

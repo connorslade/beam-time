@@ -1,7 +1,7 @@
 use std::{
     any::{Any, TypeId},
     collections::HashMap,
-    hash::{Hash, Hasher},
+    hash::{DefaultHasher, Hash, Hasher},
 };
 
 #[derive(Default)]
@@ -42,9 +42,11 @@ impl MemoryKey {
         Self(const_fnv1a_hash::fnv1a_hash_str_32(name))
     }
 
-    pub const fn context(self, name: &str) -> Self {
-        let name_hash = const_fnv1a_hash::fnv1a_hash_str_32(name);
-        Self(self.0.wrapping_add(name_hash))
+    pub fn context(self, context: impl Hash) -> Self {
+        let mut hasher = DefaultHasher::new();
+        context.hash(&mut hasher);
+        self.0.hash(&mut hasher);
+        Self(hasher.finish() as u32)
     }
 }
 
@@ -58,5 +60,12 @@ impl Hash for MemoryKey {
 macro_rules! memory_key {
     () => {
         $crate::memory::MemoryKey::new(concat!(file!(), line!()))
+    };
+    ($($ctx:expr),+) => {
+        {
+            let mut key = memory_key!();
+            $(key = key.context($ctx);)+
+            key
+        }
     };
 }

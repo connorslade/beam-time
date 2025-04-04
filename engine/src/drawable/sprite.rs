@@ -53,7 +53,7 @@ impl Sprite {
     // Reference: https://stackoverflow.com/a/37865332/12471934
     pub fn is_hovered(&self, ctx: &GraphicsContext) -> bool {
         let asset = ctx.assets.get_sprite(self.texture);
-        let points = self.points(ctx, asset);
+        let points = self.points(ctx, asset, false);
 
         let ab = points[1] - points[0];
         let am = ctx.input.mouse - points[0];
@@ -118,10 +118,20 @@ impl Sprite {
         self
     }
 
-    fn points(&self, ctx: &GraphicsContext, sprite: &SpriteAsset) -> [Vector2<f32>; 4] {
+    fn points(
+        &self,
+        ctx: &GraphicsContext,
+        sprite: &SpriteAsset,
+        dynamic_scale: bool,
+    ) -> [Vector2<f32>; 4] {
         let size = sprite.size.map(|x| x as f32) * ctx.scale_factor;
         let scaled_size = size.component_mul(&self.scale);
-        let delta_scaled_size = size.component_mul(&((self.dynamic_scale - self.scale) / 2.0));
+        let dynamic_scale = if dynamic_scale {
+            self.dynamic_scale
+        } else {
+            self.scale
+        };
+        let delta_scaled_size = size.component_mul(&((dynamic_scale - self.scale) / 2.0));
 
         // Calculate anchor offsets for each transformation
         let rotation_offset = self.rotation_anchor.offset(size);
@@ -130,7 +140,7 @@ impl Sprite {
 
         // Combine transformations and offsets
         let transform = Matrix3::new_translation(&(self.position + position_offset - scale_offset))
-            * Matrix3::new_nonuniform_scaling(&self.dynamic_scale)
+            * Matrix3::new_nonuniform_scaling(&dynamic_scale)
             * Matrix3::new_translation(&(-rotation_offset + scale_offset))
             * Matrix3::new_rotation(self.rotation)
             * Matrix3::new_translation(&rotation_offset);
@@ -152,7 +162,7 @@ impl Drawable for Sprite {
         ctx.sprites.push(GpuSprite {
             texture: asset.texture,
             uv: asset.uv(self.uv_offset).into(),
-            points: self.points(ctx, asset),
+            points: self.points(ctx, asset, true),
             color: Rgb::new(self.color.r, self.color.g, self.color.b),
             z_index: self.z_index,
             clip: self.clip,
@@ -168,7 +178,7 @@ impl LayoutElement for Sprite {
     fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
         // TODO: Cache points maybe?
         let asset = ctx.assets.get_sprite(self.texture);
-        let points = self.points(ctx, asset);
+        let points = self.points(ctx, asset, false);
         Bounds2D::from_points(&points)
     }
 
@@ -179,7 +189,7 @@ impl LayoutElement for Sprite {
         ctx.sprites.push(GpuSprite {
             texture: asset.texture,
             uv: asset.uv(self.uv_offset).into(),
-            points: self.points(ctx, asset),
+            points: self.points(ctx, asset, true),
             color: Rgb::new(self.color.r, self.color.g, self.color.b),
             z_index: self.z_index,
             clip: self.clip,

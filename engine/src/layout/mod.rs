@@ -6,6 +6,7 @@ use bounds::Bounds2D;
 pub mod bounds;
 pub mod column;
 pub mod container;
+pub mod hovered;
 pub mod root;
 pub mod row;
 

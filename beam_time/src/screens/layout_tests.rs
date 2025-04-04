@@ -3,8 +3,13 @@ use engine::{
     drawable::{shape::rectangle_outline::RectangleOutline, sprite::Sprite, text::Text},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{column::ColumnLayout, root::RootLayout, row::RowLayout, Justify},
-    memory::MemoryKey,
+    layout::{
+        column::ColumnLayout,
+        hovered::{HoverTracker, TrackedElement},
+        root::RootLayout,
+        row::RowLayout,
+        Justify,
+    },
     memory_key,
 };
 
@@ -68,10 +73,22 @@ impl Screen for LayoutTestScreen {
             let mut root = RootLayout::new(ctx.center(), Anchor::Center);
             let mut column = ColumnLayout::new(padding).justify(Justify::Center);
 
-            for button in [CAMPAIGN_BUTTON, SANDBOX_BUTTON, OPTIONS_BUTTON] {
-                Sprite::new(button)
-                    .scale(Vector2::repeat(4.0))
-                    .layout(ctx, &mut column);
+            for (i, button) in [CAMPAIGN_BUTTON, SANDBOX_BUTTON, OPTIONS_BUTTON]
+                .into_iter()
+                .enumerate()
+            {
+                let hovered = HoverTracker::new(memory_key!(i));
+                let dyn_scale = Vector2::repeat(4.0) * if hovered.hovered(ctx) { 0.9 } else { 1.0 };
+
+                column.layout(
+                    ctx,
+                    TrackedElement::new(
+                        hovered,
+                        Sprite::new(button)
+                            .scale(Vector2::repeat(4.0))
+                            .dynamic_scale(dyn_scale, Anchor::Center),
+                    ),
+                );
             }
 
             root.layout(ctx, column);
