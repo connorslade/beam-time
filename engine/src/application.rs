@@ -21,6 +21,7 @@ use crate::{
     audio::AudioManager,
     graphics_context::GraphicsContext,
     input::InputManager,
+    memory::Memory,
     render::{shape::pipeline::ShapeRenderPipeline, sprite::pipeline::SpriteRenderPipeline},
     DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
 };
@@ -43,6 +44,7 @@ pub struct State<'a> {
 
     pub assets: Rc<AssetManager>,
     pub audio: AudioManager,
+    pub memory: Memory,
     pub render: Box<dyn FnMut(&mut GraphicsContext)>,
 
     pub frame: u64,
@@ -105,6 +107,7 @@ impl ApplicationHandler for Application<'_> {
             depth_buffer: create_depth_buffer(&device, window_size),
             audio: AudioManager::new_default_output(assets.clone()).unwrap(),
             assets,
+            memory: Memory::default(),
             input: InputManager::new(window.inner_size()),
             graphics: RenderContext {
                 surface,
@@ -145,6 +148,7 @@ impl ApplicationHandler for Application<'_> {
                     gcx.window.scale_factor() as f32,
                     &mut state.input,
                     &state.audio,
+                    &mut state.memory,
                     delta_time,
                     state.frame,
                 );

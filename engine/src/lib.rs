@@ -8,6 +8,7 @@ pub mod drawable;
 pub mod graphics_context;
 pub mod input;
 pub mod layout;
+pub mod memory;
 pub mod render;
 
 pub mod exports {

@@ -9,6 +9,7 @@ use crate::{
     audio::AudioManager,
     color::Rgb,
     input::InputManager,
+    memory::Memory,
     render::{
         shape::{GpuPolygons, ShapeVertex},
         sprite::GpuSprite,
@@ -21,6 +22,7 @@ pub struct GraphicsContext<'a> {
     /// Reference to asset manager
     pub assets: Rc<AssetManager>,
     pub audio: &'a AudioManager,
+    pub memory: &'a mut Memory,
 
     /// Background color
     pub(crate) background: Rgb<f32>,
@@ -69,12 +71,14 @@ impl<'a> GraphicsContext<'a> {
         scale_factor: f32,
         input: &'a mut InputManager,
         audio: &'a AudioManager,
+        memory: &'a mut Memory,
         delta_time: f32,
         frame: u64,
     ) -> Self {
         GraphicsContext {
             assets,
             audio,
+            memory,
             background: Rgb::new(0.0, 0.0, 0.0),
             sprites: Vec::new(),
             shapes: Default::default(),

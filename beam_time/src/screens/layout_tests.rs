@@ -1,14 +1,16 @@
 use engine::{
     color::Rgb,
-    drawable::{shape::rectangle_outline::RectangleOutline, sprite::Sprite},
+    drawable::{shape::rectangle_outline::RectangleOutline, sprite::Sprite, text::Text},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{column::ColumnLayout, root::RootLayout, row::RowLayout, Justify},
+    memory::MemoryKey,
+    memory_key,
 };
 
 use crate::{
     app::App,
-    assets::{CAMPAIGN_BUTTON, OPTIONS_BUTTON, SANDBOX_BUTTON, TILE_EMITTER_RIGHT},
+    assets::{CAMPAIGN_BUTTON, OPTIONS_BUTTON, SANDBOX_BUTTON, TILE_EMITTER_RIGHT, UNDEAD_FONT},
     consts::{EMITTER, GALVO},
 };
 
@@ -58,7 +60,7 @@ impl Screen for LayoutTestScreen {
                 .draw(ctx);
             RectangleOutline::new(Vector2::repeat(4.0) * 16.0 * ctx.scale_factor, 1.0)
                 .position(pos, Anchor::Center)
-                .color(Rgb::hex(0x69bdd2))
+                .color(Rgb::hex(0xFF0000))
                 .draw(ctx);
         }
 
@@ -74,6 +76,19 @@ impl Screen for LayoutTestScreen {
 
             root.layout(ctx, column);
             root.draw(ctx);
+        }
+
+        {
+            let frame = ctx.memory.get_or_insert(memory_key!(), 0);
+            *frame += 1;
+
+            Text::new(UNDEAD_FONT, &format!("Frame {frame}"))
+                .position(
+                    Vector2::new(padding, ctx.size().y - padding),
+                    Anchor::TopLeft,
+                )
+                .scale(Vector2::repeat(2.0))
+                .draw(ctx);
         }
     }
 }
