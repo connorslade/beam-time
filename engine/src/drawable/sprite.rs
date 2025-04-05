@@ -126,12 +126,13 @@ impl Sprite {
     ) -> [Vector2<f32>; 4] {
         let size = sprite.size.map(|x| x as f32) * ctx.scale_factor;
         let scaled_size = size.component_mul(&self.scale);
-        let dynamic_scale = if dynamic_scale {
-            self.dynamic_scale
-        } else {
-            self.scale
-        };
-        let delta_scaled_size = size.component_mul(&((dynamic_scale - self.scale) / 2.0));
+        let dynamic_scale = dynamic_scale
+            .then_some(self.dynamic_scale)
+            .unwrap_or(self.scale);
+
+        let delta_scaled_size = (size / 2.0)
+            .component_mul(&(dynamic_scale - self.scale))
+            .component_mul(&dynamic_scale.zip_map(&self.scale, |a, b| (a > b) as u8 as f32 * 0.5));
 
         // Calculate anchor offsets for each transformation
         let rotation_offset = self.rotation_anchor.offset(size);

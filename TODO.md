@@ -43,7 +43,7 @@
     - A 'positioned element' type
     - Wrapper type that caches is_hovered after layout run for the next frame
   - [x] Switch to child.layout(ctx, &mut parent) for all types implementing LayoutElement
-  - [ ] Fix anchor point when dynamic_scale > scale
+  - [x] Fix anchor point when dynamic_scale > scale
 
 ## User Interface
 

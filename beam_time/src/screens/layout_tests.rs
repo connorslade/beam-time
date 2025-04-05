@@ -85,7 +85,7 @@ impl Screen for LayoutTestScreen {
 
                 Sprite::new(button)
                     .scale(Vector2::repeat(4.0))
-                    .dynamic_scale(Vector2::repeat(4.0 + *t * 0.5), Anchor::Center)
+                    .dynamic_scale(Vector2::repeat(4.0 + *t), Anchor::Center)
                     .color(color)
                     .tracked(tracker)
                     .layout(ctx, &mut column);
