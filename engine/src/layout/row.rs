@@ -30,16 +30,6 @@ impl RowLayout {
         self
     }
 
-    // todo: Try to remove graphics context here?
-    pub fn layout(&mut self, ctx: &mut GraphicsContext, element: impl LayoutElement + 'static) {
-        let mut element = SizedLayoutElement::new(ctx, Box::new(element));
-
-        element.translate(self.origin);
-        self.origin.x += element.bounds.width() + self.padding;
-
-        self.container.insert(element);
-    }
-
     pub fn draw(mut self, ctx: &mut GraphicsContext) {
         let container_width = self.container.bounds.size().y;
         for child in &mut self.container.children {
@@ -67,7 +57,12 @@ impl LayoutElement for RowLayout {
 }
 
 impl Layout for RowLayout {
-    fn layout(&mut self, ctx: &mut GraphicsContext, element: impl LayoutElement + 'static) {
-        self.layout(ctx, element);
+    fn layout(&mut self, ctx: &mut GraphicsContext, element: Box<dyn LayoutElement>) {
+        let mut element = SizedLayoutElement::new(ctx, element);
+
+        element.translate(self.origin);
+        self.origin.x += element.bounds.width() + self.padding;
+
+        self.container.insert(element);
     }
 }

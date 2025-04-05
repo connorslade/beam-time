@@ -29,26 +29,17 @@ impl ColumnLayout {
         self.justify = justify;
         self
     }
+}
 
-    pub fn layout(&mut self, ctx: &mut GraphicsContext, element: impl LayoutElement + 'static) {
-        let mut element = SizedLayoutElement::new(ctx, Box::new(element));
+impl Layout for ColumnLayout {
+    fn layout(&mut self, ctx: &mut GraphicsContext, element: Box<dyn LayoutElement>) {
+        let mut element = SizedLayoutElement::new(ctx, element);
 
         self.origin.y -= element.bounds.height();
         element.translate(self.origin);
         self.origin.y -= self.padding;
 
         self.container.insert(element);
-    }
-
-    pub fn draw(mut self, ctx: &mut GraphicsContext) {
-        let container_width = self.container.bounds.size().x;
-        for child in &mut self.container.children {
-            let width = child.bounds.size().x;
-            let offset = self.justify.offset(container_width, width);
-            child.translate(Vector2::x() * offset);
-        }
-
-        self.container.draw(ctx);
     }
 }
 
@@ -61,13 +52,14 @@ impl LayoutElement for ColumnLayout {
         self.container.bounds
     }
 
-    fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
-        ColumnLayout::draw(*self, ctx);
-    }
-}
+    fn draw(mut self: Box<Self>, ctx: &mut GraphicsContext) {
+        let container_width = self.container.bounds.size().x;
+        for child in &mut self.container.children {
+            let width = child.bounds.size().x;
+            let offset = self.justify.offset(container_width, width);
+            child.translate(Vector2::x() * offset);
+        }
 
-impl Layout for ColumnLayout {
-    fn layout(&mut self, ctx: &mut GraphicsContext, element: impl LayoutElement + 'static) {
-        self.layout(ctx, element);
+        self.container.draw(ctx);
     }
 }

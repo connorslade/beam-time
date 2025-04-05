@@ -1,4 +1,5 @@
 use nalgebra::Vector2;
+use tracker::{LayoutTracker, TrackedElement};
 
 use crate::graphics_context::GraphicsContext;
 
@@ -17,10 +18,25 @@ pub trait LayoutElement {
     fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D;
     /// Draws the element.
     fn draw(self: Box<Self>, ctx: &mut GraphicsContext);
+
+    /// Add the element to some other layout.
+    fn layout(self, ctx: &mut GraphicsContext, layout: &mut dyn Layout)
+    where
+        Self: Sized + 'static,
+    {
+        layout.layout(ctx, Box::new(self));
+    }
+    /// Convert the element to a tracked element with the given layout tracker.
+    fn tracked(self, tracker: LayoutTracker) -> TrackedElement<Self>
+    where
+        Self: Sized + 'static,
+    {
+        TrackedElement::new(tracker, self)
+    }
 }
 
 pub trait Layout {
-    fn layout(&mut self, ctx: &mut GraphicsContext, element: impl LayoutElement + 'static);
+    fn layout(&mut self, ctx: &mut GraphicsContext, element: Box<dyn LayoutElement>);
 }
 
 pub struct SizedLayoutElement {

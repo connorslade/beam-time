@@ -4,7 +4,7 @@ use nalgebra::Vector2;
 
 use crate::{drawable::shape::rectangle_outline::RectangleOutline, graphics_context::Anchor};
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct Bounds2D {
     pub min: Vector2<f32>,
     pub max: Vector2<f32>,

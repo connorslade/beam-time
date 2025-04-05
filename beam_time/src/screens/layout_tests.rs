@@ -5,6 +5,7 @@ use engine::{
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{
         column::ColumnLayout, root::RootLayout, row::RowLayout, tracker::LayoutTracker, Justify,
+        LayoutElement,
     },
     memory_key,
 };
@@ -43,10 +44,10 @@ impl Screen for LayoutTestScreen {
                         .layout(ctx, &mut column);
                 }
 
-                row.layout(ctx, column);
+                column.layout(ctx, &mut row);
             }
 
-            root.layout(ctx, row);
+            row.layout(ctx, &mut root);
             root.draw(ctx);
         }
 
@@ -83,7 +84,7 @@ impl Screen for LayoutTestScreen {
                     .layout(ctx, &mut column);
             }
 
-            root.layout(ctx, column);
+            column.layout(ctx, &mut root);
             root.draw(ctx);
         }
 

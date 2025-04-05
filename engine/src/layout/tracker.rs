@@ -2,7 +2,7 @@ use nalgebra::Vector2;
 
 use crate::{graphics_context::GraphicsContext, memory::MemoryKey, memory_key};
 
-use super::{bounds::Bounds2D, Layout, LayoutElement};
+use super::{bounds::Bounds2D, LayoutElement};
 
 #[derive(Clone, Copy)]
 pub struct LayoutTracker {
@@ -11,7 +11,9 @@ pub struct LayoutTracker {
 
 impl LayoutTracker {
     pub fn new(key: MemoryKey) -> Self {
-        Self { key }
+        Self {
+            key: key.context(memory_key!()),
+        }
     }
 
     pub fn bounds(&self, ctx: &mut GraphicsContext) -> Option<Bounds2D> {
@@ -33,17 +35,13 @@ pub struct TrackedElement<T: LayoutElement> {
 impl<T: LayoutElement + 'static> TrackedElement<T> {
     pub fn new(tracker: LayoutTracker, element: T) -> Self {
         Self {
-            key: tracker.key.context(memory_key!()),
+            key: tracker.key,
             element,
         }
     }
 
     pub fn into_inner(self) -> T {
         self.element
-    }
-
-    pub fn layout(self, ctx: &mut GraphicsContext, layout: &mut impl Layout) {
-        layout.layout(ctx, self);
     }
 }
 
