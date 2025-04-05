@@ -18,7 +18,7 @@ pub trait Screen {
 
     fn on_init(&mut self, _state: &mut App) {}
     fn on_resize(&mut self, _state: &mut App, _old_size: Vector2<f32>, _new_size: Vector2<f32>) {}
-    fn on_destroy(&mut self, _state: &mut App) {}
+    fn on_destroy(&mut self) {}
 }
 
 pub struct Screens {
@@ -38,7 +38,7 @@ impl Screens {
     pub fn pop_n(&mut self, n: usize, state: &mut App) {
         for _ in 0..n {
             if let Some(mut screen) = self.inner.pop() {
-                screen.on_destroy(state);
+                screen.on_destroy();
             }
         }
 
@@ -63,5 +63,11 @@ impl Screens {
         self.inner
             .iter_mut()
             .for_each(|x| x.on_resize(state, old_size, new_size));
+    }
+}
+
+impl Drop for Screens {
+    fn drop(&mut self) {
+        self.inner.iter_mut().for_each(|x| x.on_destroy());
     }
 }

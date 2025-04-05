@@ -56,6 +56,7 @@
   - [x] Add debug hotkey to change between 1x and 2x scale
   - [x] Fix ui scaling of rectangle outline
 - [ ] Figure out ui scale config option...
+- [ ] Migrate to new engine UI layout system
 
 ## Beam Logic
 

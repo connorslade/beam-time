@@ -170,13 +170,13 @@ impl Screen for GameScreen {
         }
     }
 
-    fn on_destroy(&mut self, _state: &mut App) {
-        let board = mem::take(&mut self.board);
-        board.save(&self.save_file).unwrap();
-    }
-
     fn on_resize(&mut self, _state: &mut App, old_size: Vector2<f32>, new_size: Vector2<f32>) {
         self.shared.on_resize(old_size, new_size);
+    }
+
+    fn on_destroy(&mut self) {
+        let board = mem::take(&mut self.board);
+        board.save(&self.save_file).unwrap();
     }
 }
 
