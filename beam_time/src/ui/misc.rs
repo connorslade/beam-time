@@ -5,6 +5,7 @@ use engine::{
     drawable::{sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::{Anchor, Drawable, GraphicsContext},
+    memory::MemoryKey,
 };
 
 use crate::{
@@ -13,15 +14,12 @@ use crate::{
     consts::BACKGROUND_COLOR,
 };
 
-use super::{
-    button::{Button, ButtonState},
-    waterfall::Waterfall,
-};
+use super::{button::Button, waterfall::Waterfall};
 
 pub fn titled_screen(
     state: &mut App,
     ctx: &mut GraphicsContext,
-    back: Option<&mut ButtonState>,
+    back: Option<MemoryKey>,
     title: &str,
 ) -> Vector2<f32> {
     ctx.input.resized.is_some().then(|| state.waterfall.reset());

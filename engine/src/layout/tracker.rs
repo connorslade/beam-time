@@ -1,6 +1,10 @@
 use nalgebra::Vector2;
 
-use crate::{graphics_context::GraphicsContext, memory::MemoryKey, memory_key};
+use crate::{
+    graphics_context::{Drawable, GraphicsContext},
+    memory::MemoryKey,
+    memory_key,
+};
 
 use super::{bounds::Bounds2D, LayoutElement};
 
@@ -59,5 +63,14 @@ impl<T: LayoutElement> LayoutElement for TrackedElement<T> {
         ctx.memory.insert(self.key, bounds);
 
         Box::new(self.element).draw(ctx)
+    }
+}
+
+impl<T: LayoutElement> Drawable for TrackedElement<T> {
+    fn draw(self, ctx: &mut GraphicsContext) {
+        let bounds = self.element.bounds(ctx);
+        ctx.memory.insert(self.key, bounds);
+
+        Box::new(self.element).draw(ctx);
     }
 }

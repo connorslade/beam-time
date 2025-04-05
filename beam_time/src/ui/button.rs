@@ -1,11 +1,11 @@
-use std::cell::RefCell;
-
 use engine::{
     assets::SpriteRef,
     color::Rgb,
     drawable::sprite::Sprite,
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, Drawable, GraphicsContext},
+    layout::{tracker::LayoutTracker, LayoutElement},
+    memory::MemoryKey,
 };
 
 use crate::{
@@ -13,17 +13,15 @@ use crate::{
     consts::ACCENT_COLOR,
 };
 
-pub struct Button<'a> {
+pub struct Button {
     asset: SpriteRef,
-    state: &'a mut ButtonState,
+    key: MemoryKey,
     is_back: bool,
 
     color: Rgb<f32>,
     pos: Vector2<f32>,
     anchor: Anchor,
     scale: Vector2<f32>,
-
-    sprite: RefCell<Option<Sprite>>,
 }
 
 #[derive(Default)]
@@ -32,19 +30,17 @@ pub struct ButtonState {
     last_hovered: bool,
 }
 
-impl<'a> Button<'a> {
-    pub fn new(asset: SpriteRef, state: &'a mut ButtonState) -> Self {
+impl Button {
+    pub fn new(asset: SpriteRef, key: MemoryKey) -> Self {
         Self {
             asset,
-            state,
+            key,
             is_back: false,
 
             color: Rgb::new(1.0, 1.0, 1.0),
             pos: Vector2::zeros(),
             anchor: Anchor::BottomLeft,
             scale: Vector2::repeat(1.0),
-
-            sprite: RefCell::new(None),
         }
     }
 
@@ -64,59 +60,44 @@ impl<'a> Button<'a> {
         self
     }
 
-    fn get_sprite(&self) -> Sprite {
-        if let Some(sprite) = &*self.sprite.borrow() {
-            return sprite.clone();
-        }
+    pub fn is_clicked(&self, ctx: &mut GraphicsContext) -> bool {
+        let hovered = LayoutTracker::new(self.key).hovered(ctx);
+        hovered && ctx.input.mouse_pressed(MouseButton::Left)
+    }
+}
 
-        let color = self.color.lerp(ACCENT_COLOR, self.state.hover_time / 0.1);
-        let scale =
-            self.scale + Vector2::repeat(self.state.hover_time / 2.0).component_mul(&self.scale);
+impl Drawable for Button {
+    fn draw(self, ctx: &mut GraphicsContext) {
+        let tracker = LayoutTracker::new(self.key);
+        let hover = tracker.hovered(ctx);
+
+        let state = ctx.memory.get_or_insert(self.key, ButtonState::default());
+        state.hover_time += ctx.delta_time * if hover { 1.0 } else { -1.0 };
+        state.hover_time = state.hover_time.clamp(0.0, 0.1);
+
+        let color = self.color.lerp(ACCENT_COLOR, state.hover_time / 0.1);
+        let scale = self.scale + Vector2::repeat(state.hover_time / 2.0).component_mul(&self.scale);
 
         let sprite = Sprite::new(self.asset)
             .color(color)
             .position(self.pos, self.anchor)
-            .scale(scale);
+            .scale(scale)
+            .tracked(tracker);
 
-        *self.sprite.borrow_mut() = Some(sprite.clone());
-        sprite
-    }
-
-    pub fn is_clicked(&self, ctx: &mut GraphicsContext) -> bool {
-        let sprite = self.get_sprite();
-        sprite.is_hovered(ctx) && ctx.input.mouse_pressed(MouseButton::Left)
-    }
-}
-
-impl ButtonState {
-    pub fn reset(&mut self) {
-        self.hover_time = 0.0;
-    }
-}
-
-impl Drawable for Button<'_> {
-    fn draw(self, ctx: &mut GraphicsContext) {
-        let sprite = self.get_sprite();
-
-        let hover = sprite.is_hovered(ctx);
-        self.state.hover_time += ctx.delta_time * if hover { 1.0 } else { -1.0 };
-        self.state.hover_time = self.state.hover_time.clamp(0.0, 0.1);
-
-        if hover && !self.state.last_hovered {
+        if hover && !state.last_hovered {
             ctx.audio.builder(BUTTON_HOVER).with_gain(0.2).play_now();
         }
 
         if hover && ctx.input.mouse_pressed(MouseButton::Left) {
-            ctx.audio
-                .builder(if self.is_back {
-                    BUTTON_BACK
-                } else {
-                    BUTTON_SUCCESS
-                })
-                .play_now();
+            let sound = if self.is_back {
+                BUTTON_BACK
+            } else {
+                BUTTON_SUCCESS
+            };
+            ctx.audio.builder(sound).play_now();
         }
 
-        self.state.last_hovered = hover;
-        ctx.draw(sprite);
+        state.last_hovered = hover;
+        sprite.draw(ctx);
     }
 }

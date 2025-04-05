@@ -9,6 +9,7 @@ use engine::{
         winit::{event::MouseButton, keyboard::KeyCode},
     },
     graphics_context::{Anchor, GraphicsContext},
+    memory_key,
 };
 
 use crate::{
@@ -17,7 +18,7 @@ use crate::{
     game::board::{Board, BoardMeta},
     screens::game::GameScreen,
     ui::{
-        button::{Button, ButtonState},
+        button::Button,
         layout::column::ColumnLayout,
         misc::{font_scale, modal_buttons, titled_screen},
         modal::Modal,
@@ -34,10 +35,7 @@ pub struct SandboxScreen {
     world_dir: PathBuf,
     worlds: Vec<(PathBuf, BoardMeta)>,
 
-    back_button: ButtonState,
-    create_button: ButtonState,
     dropdown_angle: f32,
-
     create: Option<CreateModal>,
 }
 
@@ -47,7 +45,7 @@ pub struct CreateModal {
 
 impl Screen for SandboxScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        titled_screen(state, ctx, None, "Sandbox");
+        titled_screen(state, ctx, Some(memory_key!()), "Sandbox");
 
         self.create_modal(state, ctx);
 
@@ -110,7 +108,7 @@ impl Screen for SandboxScreen {
         let half_width = (35 + 26 + 10) as f32 * ctx.scale_factor;
         let height = (10 + 28) as f32 * ctx.scale_factor;
 
-        let back_button = Button::new(BACK_BUTTON, &mut self.back_button)
+        let back_button = Button::new(BACK_BUTTON, memory_key!())
             .pos(
                 Vector2::new(ctx.center().x + half_width, height),
                 Anchor::Center,
@@ -120,7 +118,7 @@ impl Screen for SandboxScreen {
         back_button.is_clicked(ctx).then(|| state.pop_screen());
         ctx.draw(back_button);
 
-        let create_button = Button::new(CREATE_BUTTON, &mut self.create_button)
+        let create_button = Button::new(CREATE_BUTTON, memory_key!())
             .pos(
                 Vector2::new(ctx.center().x - half_width, height),
                 Anchor::Center,

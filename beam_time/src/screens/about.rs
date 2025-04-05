@@ -2,12 +2,13 @@ use engine::{
     drawable::text::Text,
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
+    memory_key,
 };
 use indoc::indoc;
 
 use crate::{
     assets::{ALAGARD_FONT, UNDEAD_FONT},
-    ui::{button::ButtonState, misc::titled_screen},
+    ui::misc::titled_screen,
     App,
 };
 
@@ -29,13 +30,11 @@ const DESCRIPTION: &str = indoc! {"
 "};
 
 #[derive(Default)]
-pub struct AboutScreen {
-    back_button: ButtonState,
-}
+pub struct AboutScreen {}
 
 impl Screen for AboutScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        let pos = titled_screen(state, ctx, Some(&mut self.back_button), "About");
+        let pos = titled_screen(state, ctx, Some(memory_key!()), "About");
 
         let desc = &ctx.assets.get_font(ALAGARD_FONT).desc;
         let height = (desc.height + desc.leading) * 6.0 * ctx.scale_factor;

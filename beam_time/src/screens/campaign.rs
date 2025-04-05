@@ -17,10 +17,7 @@ use crate::{
     assets::UNDEAD_FONT,
     game::board::{Board, BoardMeta, LevelMeta},
     screens::game::GameScreen,
-    ui::{
-        button::ButtonState,
-        misc::{font_scale, titled_screen},
-    },
+    ui::misc::{font_scale, titled_screen},
     util::load_level_dir,
 };
 
@@ -28,15 +25,13 @@ use super::Screen;
 
 #[derive(Default)]
 pub struct CampaignScreen {
-    back_button: ButtonState,
-
     runtime_levels: Vec<Level>,
     worlds: HashMap<Uuid, (PathBuf, BoardMeta)>,
 }
 
 impl Screen for CampaignScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        titled_screen(state, ctx, Some(&mut self.back_button), "Campaign");
+        titled_screen(state, ctx, None, "Campaign");
 
         const SCALE: f32 = 3.0;
         let (_line_height, line_spacing, total_height) =
@@ -51,7 +46,7 @@ impl Screen for CampaignScreen {
             let color = if world.map(|(_, meta)| meta.is_solved()) == Some(true) {
                 Rgb::hex(0x8fd032)
             } else {
-                Rgb::new(1.0, 1.0, 1.0)
+                Rgb::hex(0xFFFFFF)
             };
 
             let pos =

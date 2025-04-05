@@ -5,17 +5,13 @@ use engine::{
     drawable::{sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::{Anchor, GraphicsContext},
+    memory_key,
 };
 
 use crate::{
     assets::{ABOUT_BUTTON, CAMPAIGN_BUTTON, COPYRIGHT, SANDBOX_BUTTON, TITLE, UNDEAD_FONT},
     consts::{layer, BACKGROUND_COLOR},
-    ui::{
-        button::{Button, ButtonState},
-        layout::column::ColumnLayout,
-        modal::Modal,
-        waterfall::Waterfall,
-    },
+    ui::{button::Button, layout::column::ColumnLayout, modal::Modal, waterfall::Waterfall},
     App,
 };
 
@@ -25,11 +21,6 @@ pub struct TitleScreen {
     start_time: Instant,
 
     settings: Option<SettingsModal>,
-
-    sandbox_button: ButtonState,
-    campaign_button: ButtonState,
-    options_button: ButtonState,
-    about_button: ButtonState,
 }
 
 pub struct SettingsModal {}
@@ -80,14 +71,14 @@ impl Screen for TitleScreen {
         );
 
         // Buttons
-        let campaign_button = Button::new(CAMPAIGN_BUTTON, &mut self.campaign_button)
+        let campaign_button = Button::new(CAMPAIGN_BUTTON, memory_key!())
             .pos(ctx.center(), Anchor::Center)
             .scale(Vector2::repeat(4.0));
         if campaign_button.is_clicked(ctx) {
             state.push_screen(CampaignScreen::default())
         }
 
-        let sandbox_button = Button::new(SANDBOX_BUTTON, &mut self.sandbox_button)
+        let sandbox_button = Button::new(SANDBOX_BUTTON, memory_key!())
             .pos(
                 ctx.center() - Vector2::new(0.0, 14.0 * 5.0 * ctx.scale_factor),
                 Anchor::Center,
@@ -97,7 +88,7 @@ impl Screen for TitleScreen {
             state.push_screen(SandboxScreen::default());
         }
 
-        let about_button = Button::new(ABOUT_BUTTON, &mut self.about_button)
+        let about_button = Button::new(ABOUT_BUTTON, memory_key!())
             .pos(
                 ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0 * ctx.scale_factor),
                 Anchor::Center,
@@ -108,13 +99,6 @@ impl Screen for TitleScreen {
         }
 
         ctx.draw([campaign_button, sandbox_button, about_button]);
-    }
-
-    fn on_init(&mut self, _state: &mut App) {
-        self.campaign_button.reset();
-        self.sandbox_button.reset();
-        self.about_button.reset();
-        self.options_button.reset();
     }
 
     fn on_resize(&mut self, state: &mut App, _old_size: Vector2<f32>, _size: Vector2<f32>) {
@@ -128,11 +112,6 @@ impl Default for TitleScreen {
             start_time: Instant::now(),
 
             settings: None,
-
-            campaign_button: ButtonState::default(),
-            sandbox_button: ButtonState::default(),
-            about_button: ButtonState::default(),
-            options_button: ButtonState::default(),
         }
     }
 }
