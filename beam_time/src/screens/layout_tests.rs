@@ -13,7 +13,7 @@ use engine::{
 use crate::{
     app::App,
     assets::{CAMPAIGN_BUTTON, OPTIONS_BUTTON, SANDBOX_BUTTON, TILE_EMITTER_RIGHT, UNDEAD_FONT},
-    consts::{EMITTER, GALVO},
+    consts::{ACCENT_COLOR, EMITTER, GALVO},
 };
 
 use super::Screen;
@@ -74,12 +74,19 @@ impl Screen for LayoutTestScreen {
                 .into_iter()
                 .enumerate()
             {
-                let tracker = LayoutTracker::new(memory_key!(i));
-                let dyn_scale = Vector2::repeat(4.0) * if tracker.hovered(ctx) { 0.9 } else { 1.0 };
+                let key = memory_key!(i);
+                let tracker = LayoutTracker::new(key);
+                let hovered = tracker.hovered(ctx);
+
+                let dt = ctx.delta_time * ((hovered as u8 as f32) * 2.0 - 1.0);
+                let t = ctx.memory.get_or_insert(key, 0.0);
+                *t = (*t + dt).clamp(0.0, 0.1);
+                let color = Rgb::hex(0xFFFFFF).lerp(ACCENT_COLOR, *t / 0.1);
 
                 Sprite::new(button)
                     .scale(Vector2::repeat(4.0))
-                    .dynamic_scale(dyn_scale, Anchor::Center)
+                    .dynamic_scale(Vector2::repeat(4.0 + *t * 0.5), Anchor::Center)
+                    .color(color)
                     .tracked(tracker)
                     .layout(ctx, &mut column);
             }

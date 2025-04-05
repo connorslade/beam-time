@@ -1,36 +1,49 @@
 use std::{
     any::{Any, TypeId},
-    collections::HashMap,
+    cell::RefCell,
+    collections::{HashMap, HashSet},
     hash::{DefaultHasher, Hash, Hasher},
 };
 
+type Key = (MemoryKey, TypeId);
+
 #[derive(Default)]
 pub struct Memory {
-    entries: HashMap<(MemoryKey, TypeId), Box<dyn Any>>,
+    entries: HashMap<Key, Box<dyn Any>>,
+    accessed: RefCell<HashSet<Key>>,
 }
 
 impl Memory {
-    fn key<T: 'static>(key: MemoryKey) -> (MemoryKey, TypeId) {
+    fn key<T: 'static>(key: MemoryKey) -> Key {
         (key, TypeId::of::<T>())
     }
 
     pub fn insert<T: 'static>(&mut self, key: MemoryKey, value: T) {
-        self.entries.insert(Self::key::<T>(key), Box::new(value));
+        let key = Self::key::<T>(key);
+        self.accessed.borrow_mut().insert(key);
+        self.entries.insert(key, Box::new(value));
     }
 
     pub fn get<T: 'static>(&self, key: MemoryKey) -> Option<&T> {
-        self.entries
-            .get(&Self::key::<T>(key))
-            .map(|x| x.downcast_ref().unwrap())
+        let key = Self::key::<T>(key);
+        self.accessed.borrow_mut().insert(key);
+        self.entries.get(&key).map(|x| x.downcast_ref().unwrap())
     }
 
     pub fn get_or_insert<T: 'static>(&mut self, key: MemoryKey, fallback: T) -> &mut T {
         let key = Self::key::<T>(key);
+        self.accessed.borrow_mut().insert(key);
         self.entries
             .entry(key)
             .or_insert(Box::new(fallback))
             .downcast_mut()
             .unwrap()
+    }
+
+    pub(crate) fn garbage_collect(&mut self) {
+        let mut accessed = self.accessed.borrow_mut();
+        self.entries.retain(|k, _v| accessed.contains(k));
+        accessed.clear();
     }
 }
 

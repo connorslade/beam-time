@@ -143,6 +143,7 @@ impl ApplicationHandler for Application<'_> {
                 let delta_time = state.last_frame.elapsed().as_secs_f32();
                 state.last_frame = Instant::now();
 
+                state.memory.garbage_collect();
                 let mut ctx = GraphicsContext::new(
                     state.assets.clone(),
                     gcx.window.scale_factor() as f32,

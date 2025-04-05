@@ -16,11 +16,11 @@ impl LayoutTracker {
         }
     }
 
-    pub fn bounds(&self, ctx: &mut GraphicsContext) -> Option<Bounds2D> {
+    pub fn bounds(&self, ctx: &GraphicsContext) -> Option<Bounds2D> {
         ctx.memory.get::<Bounds2D>(self.key).copied()
     }
 
-    pub fn hovered(&self, ctx: &mut GraphicsContext) -> bool {
+    pub fn hovered(&self, ctx: &GraphicsContext) -> bool {
         self.bounds(ctx)
             .map(|x| x.contains(ctx.input.mouse))
             .unwrap_or_default()
