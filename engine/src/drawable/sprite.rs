@@ -4,7 +4,11 @@ use crate::{
     assets::{SpriteAsset, SpriteRef},
     color::Rgb,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{bounds::Bounds2D, Layout, LayoutElement},
+    layout::{
+        bounds::Bounds2D,
+        tracker::{LayoutTracker, TrackedElement},
+        Layout, LayoutElement,
+    },
     render::sprite::GpuSprite,
 };
 
@@ -152,6 +156,10 @@ impl Sprite {
 
     pub fn layout(self, ctx: &mut GraphicsContext, layout: &mut impl Layout) {
         layout.layout(ctx, self);
+    }
+
+    pub fn tracked(self, tracker: LayoutTracker) -> TrackedElement<Self> {
+        TrackedElement::new(tracker, self)
     }
 }
 

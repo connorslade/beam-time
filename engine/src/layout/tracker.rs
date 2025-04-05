@@ -1,27 +1,27 @@
 use nalgebra::Vector2;
 
-use crate::{graphics_context::GraphicsContext, memory::MemoryKey};
+use crate::{graphics_context::GraphicsContext, memory::MemoryKey, memory_key};
 
-use super::{bounds::Bounds2D, LayoutElement};
+use super::{bounds::Bounds2D, Layout, LayoutElement};
 
 #[derive(Clone, Copy)]
-pub struct HoverTracker {
+pub struct LayoutTracker {
     key: MemoryKey,
 }
 
-impl HoverTracker {
+impl LayoutTracker {
     pub fn new(key: MemoryKey) -> Self {
         Self { key }
     }
 
-    pub fn hovered(&self, ctx: &mut GraphicsContext) -> bool {
-        // todo: use bounds wrapper to avoid memory key collisions?
-        let bounds = match ctx.memory.get::<Bounds2D>(self.key) {
-            Some(bounds) => bounds,
-            None => return false,
-        };
+    pub fn bounds(&self, ctx: &mut GraphicsContext) -> Option<Bounds2D> {
+        ctx.memory.get::<Bounds2D>(self.key).copied()
+    }
 
-        bounds.contains(ctx.input.mouse)
+    pub fn hovered(&self, ctx: &mut GraphicsContext) -> bool {
+        self.bounds(ctx)
+            .map(|x| x.contains(ctx.input.mouse))
+            .unwrap_or_default()
     }
 }
 
@@ -30,16 +30,20 @@ pub struct TrackedElement<T: LayoutElement> {
     key: MemoryKey,
 }
 
-impl<T: LayoutElement> TrackedElement<T> {
-    pub fn new(tracker: HoverTracker, element: T) -> Self {
+impl<T: LayoutElement + 'static> TrackedElement<T> {
+    pub fn new(tracker: LayoutTracker, element: T) -> Self {
         Self {
-            key: tracker.key,
+            key: tracker.key.context(memory_key!()),
             element,
         }
     }
 
     pub fn into_inner(self) -> T {
         self.element
+    }
+
+    pub fn layout(self, ctx: &mut GraphicsContext, layout: &mut impl Layout) {
+        layout.layout(ctx, self);
     }
 }
 

@@ -4,11 +4,7 @@ use engine::{
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{
-        column::ColumnLayout,
-        hovered::{HoverTracker, TrackedElement},
-        root::RootLayout,
-        row::RowLayout,
-        Justify,
+        column::ColumnLayout, root::RootLayout, row::RowLayout, tracker::LayoutTracker, Justify,
     },
     memory_key,
 };
@@ -77,18 +73,14 @@ impl Screen for LayoutTestScreen {
                 .into_iter()
                 .enumerate()
             {
-                let hovered = HoverTracker::new(memory_key!(i));
-                let dyn_scale = Vector2::repeat(4.0) * if hovered.hovered(ctx) { 0.9 } else { 1.0 };
+                let tracker = LayoutTracker::new(memory_key!(i));
+                let dyn_scale = Vector2::repeat(4.0) * if tracker.hovered(ctx) { 0.9 } else { 1.0 };
 
-                column.layout(
-                    ctx,
-                    TrackedElement::new(
-                        hovered,
-                        Sprite::new(button)
-                            .scale(Vector2::repeat(4.0))
-                            .dynamic_scale(dyn_scale, Anchor::Center),
-                    ),
-                );
+                Sprite::new(button)
+                    .scale(Vector2::repeat(4.0))
+                    .dynamic_scale(dyn_scale, Anchor::Center)
+                    .tracked(tracker)
+                    .layout(ctx, &mut column);
             }
 
             root.layout(ctx, column);

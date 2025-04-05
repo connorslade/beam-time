@@ -39,9 +39,10 @@
 - [x] Implement layout system
   - [ ] Cleanup with martix stacks?
   - [x] Add justify support to column and row layouts
-  - [ ] Figure out how to check if hovered
+  - [X] Figure out how to check if hovered
     - A 'positioned element' type
     - Wrapper type that caches is_hovered after layout run for the next frame
+  - [ ] Switch to child.layout(ctx, &mut parent) for all types implementing LayoutElement
 
 ## User Interface
 
