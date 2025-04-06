@@ -35,15 +35,16 @@
 - [x] Update sprite renderer to make use of the bytemuck impl for nalgebra
 - [x] Remove screen system to take out App generic from graphics context
   - [x] Add on resize event to graphics context
-- [x] Allow setting a `dynamic_scale` on sprites / drawables to allow for a scale anchor
+- [x] Allow setting a `dynamic_scale` on sprites / drawable to allow for a scale anchor
 - [x] Implement layout system
-  - [ ] Cleanup with martix stacks?
+  - [ ] Cleanup with matrix stacks?
   - [x] Add justify support to column and row layouts
   - [X] Figure out how to check if hovered
     - A 'positioned element' type
     - Wrapper type that caches is_hovered after layout run for the next frame
   - [x] Switch to child.layout(ctx, &mut parent) for all types implementing LayoutElement
   - [x] Fix anchor point when dynamic_scale > scale
+  - [x] Layout spacers
 
 ## User Interface
 

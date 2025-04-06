@@ -1,6 +1,7 @@
 use nalgebra::Vector2;
 
 pub mod shape;
+pub mod spacer;
 pub mod sprite;
 pub mod text;
 
