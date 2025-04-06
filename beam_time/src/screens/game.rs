@@ -243,14 +243,14 @@ impl GameScreen {
                 body(&playtime).layout(ctx, &mut column);
 
                 column.layout(ctx, root);
-            });
 
-            modal_buttons(
-                ctx,
-                origin + Vector2::new(margin, -size.y - ctx.scale_factor * 12.0),
-                size.x,
-                ("Exit", "Resume"),
-            );
+                modal_buttons(
+                    ctx,
+                    origin + Vector2::new(margin, -size.y - ctx.scale_factor * 12.0),
+                    size.x,
+                    ("Exit", "Resume"),
+                );
+            });
         }
     }
 }

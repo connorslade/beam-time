@@ -107,5 +107,17 @@ impl Screen for LayoutTestScreen {
                 .scale(Vector2::repeat(2.0))
                 .draw(ctx);
         }
+
+        {
+            let text = Text::new(UNDEAD_FONT, "Hello, World!")
+                .position(ctx.center() + ctx.size() * 0.25, Anchor::BottomLeft)
+                .scale(Vector2::repeat(2.0))
+                .dynamic_scale(Vector2::repeat(2.0 + t.sin()), Anchor::Center);
+            text.bounds(ctx)
+                .outline()
+                .color(Rgb::hex(0xFF0000))
+                .draw(ctx);
+            text.draw(ctx);
+        }
     }
 }

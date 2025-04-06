@@ -132,7 +132,9 @@ impl Sprite {
 
         let delta_scaled_size = (size / 2.0)
             .component_mul(&(dynamic_scale - self.scale))
-            .component_mul(&dynamic_scale.zip_map(&self.scale, |a, b| (a > b) as u8 as f32 * 0.5));
+            .component_mul(
+                &dynamic_scale.zip_map(&self.scale, |a, b| 1.0 - (a > b) as u8 as f32 * 0.5),
+            );
 
         // Calculate anchor offsets for each transformation
         let rotation_offset = self.rotation_anchor.offset(size);
