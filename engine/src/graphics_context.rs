@@ -167,7 +167,7 @@ impl GraphicsContext<'_> {
 impl Anchor {
     pub fn offset(&self, size: Vector2<f32>) -> Vector2<f32> {
         match self {
-            Anchor::Custom(offset) => *offset,
+            Anchor::Custom(offset) => size.component_mul(offset),
 
             Anchor::CenterLeft => -Vector2::new(0.0, size.y / 2.0),
             Anchor::Center => -size / 2.0,

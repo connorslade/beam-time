@@ -55,6 +55,10 @@ impl MemoryKey {
         Self(const_fnv1a_hash::fnv1a_hash_str_32(name))
     }
 
+    pub const fn from_raw(hash: u32) -> Self {
+        Self(hash)
+    }
+
     pub fn context(self, context: impl Hash) -> Self {
         let mut hasher = DefaultHasher::new();
         context.hash(&mut hasher);

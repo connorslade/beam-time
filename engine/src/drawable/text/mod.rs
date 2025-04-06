@@ -31,7 +31,14 @@ pub struct Text {
     position_anchor: Anchor,
     scale_anchor: Anchor,
 
-    layout: RefCell<Option<TextLayout>>,
+    layout: RefCell<Option<CachedLayout>>,
+}
+
+struct CachedLayout {
+    /// Size of the text bounding box when using scale.
+    base: Vector2<f32>,
+    /// Text layout using dynamic_scale.
+    scaled: TextLayout,
 }
 
 impl Text {
@@ -57,7 +64,7 @@ impl Text {
 
     pub fn size(&self, ctx: &GraphicsContext) -> Vector2<f32> {
         self.generate_layout(ctx);
-        self.layout.borrow().as_ref().unwrap().size
+        self.layout.borrow().as_ref().unwrap().base
     }
 
     pub fn position(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
@@ -109,10 +116,17 @@ impl Text {
         }
 
         let font = ctx.assets.get_font(self.font);
-        let max_width = self.max_width / self.dynamic_scale.x;
-        let layout = TextLayout::generate(&font.desc, max_width, &self.text);
+        let dynamic_scale = self.dynamic_scale * ctx.scale_factor;
+        let scaled = TextLayout::generate(&font.desc, self.max_width, dynamic_scale, &self.text);
 
-        *self.layout.borrow_mut() = Some(layout);
+        let base = if self.scale == self.dynamic_scale {
+            scaled.size
+        } else {
+            let scale = self.scale * ctx.scale_factor;
+            TextLayout::generate(&font.desc, self.max_width, scale, &self.text).size
+        };
+
+        *self.layout.borrow_mut() = Some(CachedLayout { base, scaled });
     }
 
     fn invalidate_layout(&self) {
@@ -125,7 +139,7 @@ impl Text {
         let layout = self.layout.borrow();
         let layout = layout.as_ref().unwrap();
 
-        let size = layout.size.component_mul(&(self.scale * ctx.scale_factor));
+        let size = layout.base;
         let offset = self.position_anchor.offset(size);
 
         Bounds2D::new(self.pos + offset, self.pos + size + offset)
@@ -140,19 +154,15 @@ impl Drawable for Text {
         let atlas_size = font.texture.size.map(|x| x as f32);
         let process_uv = |uv: Vector2<u32>| uv.map(|x| x as f32).component_div(&atlas_size);
 
-        let layout = self
-            .layout
-            .into_inner()
-            .unwrap_or_else(|| TextLayout::generate(&font.desc, self.max_width, &self.text));
-        let dynamic_size = layout.size.component_mul(&scale);
+        self.generate_layout(ctx);
+        let layout = self.layout.into_inner().unwrap();
+        let dynamic_size = layout.scaled.size;
 
-        let scale_offset = self
-            .scale_anchor
-            .offset(dynamic_size.component_mul(&(self.dynamic_scale - self.scale)));
+        let delta_scaled_size =
+            (layout.base / 2.0).component_mul(&(self.dynamic_scale - self.scale));
+        let dynamic_scale_offset = self.scale_anchor.offset(delta_scaled_size);
 
-        for (character, pos) in layout.chars {
-            let pos = pos.component_mul(&scale);
-
+        for (character, pos) in layout.scaled.chars {
             let uv_a = process_uv(character.uv);
             let uv_b = process_uv(character.uv + character.size);
 
@@ -160,7 +170,7 @@ impl Drawable for Text {
             let baseline_shift = Vector2::y() * character.baseline_shift as f32 * scale.y;
             let pos = (pos + self.pos + baseline_shift + self.position_anchor.offset(dynamic_size))
                 .map(|x| x.round())
-                + scale_offset;
+                + dynamic_scale_offset;
 
             ctx.sprites.push(GpuSprite {
                 texture: font.texture,
@@ -184,12 +194,7 @@ impl LayoutElement for Text {
     }
 
     fn translate(&mut self, distance: Vector2<f32>) {
-        let mut layout = self.layout.borrow_mut();
-        let layout = layout.as_mut().unwrap();
-
-        for (_char, pos) in &mut layout.chars {
-            *pos += distance;
-        }
+        self.pos += distance;
     }
 
     fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
