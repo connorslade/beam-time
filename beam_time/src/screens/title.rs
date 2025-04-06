@@ -5,13 +5,17 @@ use engine::{
     drawable::{sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::{Anchor, GraphicsContext},
+    layout::{column::ColumnLayout, LayoutElement},
     memory_key,
 };
 
 use crate::{
     assets::{ABOUT_BUTTON, CAMPAIGN_BUTTON, COPYRIGHT, SANDBOX_BUTTON, TITLE, UNDEAD_FONT},
     consts::{layer, BACKGROUND_COLOR},
-    ui::{button::Button, layout::column::ColumnLayout, modal::Modal, waterfall::Waterfall},
+    ui::{
+        components::{button::Button, modal::Modal},
+        waterfall::Waterfall,
+    },
     App,
 };
 
@@ -47,10 +51,14 @@ impl Screen for TitleScreen {
                 .margin(margin)
                 .layer(layer::OVERLAY);
 
-            modal.draw(ctx, |ctx| {
-                let mut layout = ColumnLayout::new(padding);
+            modal.draw(ctx, |ctx, root| {
+                let mut column = ColumnLayout::new(padding);
                 let body = |text| Text::new(UNDEAD_FONT, text).scale(Vector2::repeat(2.0));
-                layout.draw(ctx, body("Settings").scale(Vector2::repeat(4.0)));
+                body("Settings")
+                    .scale(Vector2::repeat(4.0))
+                    .layout(ctx, &mut column);
+
+                column.layout(ctx, root);
             });
         }
 

@@ -1,9 +1,6 @@
-pub mod button;
+pub mod components;
 pub mod confetti;
-pub mod layout;
 pub mod level_panel;
 pub mod misc;
-pub mod modal;
-pub mod text_input;
 pub mod tile_picker;
 pub mod waterfall;

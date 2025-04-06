@@ -9,8 +9,8 @@ use crate::{
     consts::{layer, BACKGROUND_COLOR},
     game::{board::Board, render::beam::BeamStateRender, shared_state::SharedState},
     ui::{
-        confetti::Confetti, layout::column::ColumnLayout, level_panel::LevelPanel,
-        misc::modal_buttons, modal::Modal, tile_picker::TilePicker,
+        components::modal::Modal, confetti::Confetti, level_panel::LevelPanel, misc::modal_buttons,
+        tile_picker::TilePicker,
     },
     util::{human_duration, key_events},
     App,
@@ -26,6 +26,7 @@ use engine::{
     drawable::text::Text,
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::GraphicsContext,
+    layout::{column::ColumnLayout, LayoutElement},
 };
 
 use super::Screen;
@@ -217,32 +218,39 @@ impl GameScreen {
                 .margin(margin)
                 .layer(layer::UI_OVERLAY);
 
+            let origin = modal.origin(ctx);
             let size = modal.inner_size();
-            modal.draw(ctx, |ctx| {
+            modal.draw(ctx, |ctx, root| {
                 let body = |text| {
                     Text::new(UNDEAD_FONT, text)
                         .scale(Vector2::repeat(2.0))
                         .max_width(size.x)
                 };
 
-                let mut layout = ColumnLayout::new(padding);
+                let mut column = ColumnLayout::new(padding);
                 let name = match self.board.transient.level {
                     Some(level) => format!("Campaign: {}", level.name),
                     None => format!("Sandbox: {}", self.board.meta.name),
                 };
 
-                layout.draw(ctx, body(&name).scale(Vector2::repeat(4.0)));
+                body(&name)
+                    .scale(Vector2::repeat(4.0))
+                    .layout(ctx, &mut column);
 
                 let playtime = self.board.meta.playtime
                     + self.board.transient.open_timestamp.elapsed().as_secs();
                 let playtime = format!("Playtime: {}", human_duration(playtime));
-                layout.draw(ctx, body(&playtime));
+                body(&playtime).layout(ctx, &mut column);
 
-                layout.space_to(size.y - ctx.scale_factor * 12.0);
-                layout.row(ctx, |ctx| {
-                    modal_buttons(ctx, size.x, ("Exit", "Resume"));
-                });
+                column.layout(ctx, root);
             });
+
+            modal_buttons(
+                ctx,
+                origin + Vector2::new(margin, -size.y - ctx.scale_factor * 12.0),
+                size.x,
+                ("Exit", "Resume"),
+            );
         }
     }
 }

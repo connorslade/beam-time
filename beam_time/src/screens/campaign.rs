@@ -8,6 +8,7 @@ use engine::{
     drawable::text::Text,
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, GraphicsContext},
+    memory_key,
 };
 use log::warn;
 use uuid::Uuid;
@@ -31,7 +32,7 @@ pub struct CampaignScreen {
 
 impl Screen for CampaignScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        titled_screen(state, ctx, None, "Campaign");
+        titled_screen(state, ctx, Some(memory_key!()), "Campaign");
 
         const SCALE: f32 = 3.0;
         let (_line_height, line_spacing, total_height) =

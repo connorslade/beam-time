@@ -2,7 +2,8 @@ use common::misc::in_bounds;
 use engine::{
     drawable::sprite::Sprite,
     exports::nalgebra::Vector2,
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
+    layout::root::RootLayout,
 };
 
 use crate::assets::PANEL;
@@ -39,17 +40,27 @@ impl Modal {
         )
     }
 
-    pub fn draw(self, ctx: &mut GraphicsContext, ui: impl FnOnce(&mut GraphicsContext)) {
+    pub fn origin(&self, ctx: &mut GraphicsContext) -> Vector2<f32> {
+        ctx.center() + Vector2::new(-self.size.x, self.size.y) / 2.0
+    }
+
+    pub fn draw(
+        self,
+        ctx: &mut GraphicsContext,
+        ui: impl FnOnce(&mut GraphicsContext, &mut RootLayout),
+    ) {
         let pos = ctx.center() + Vector2::new(-self.size.x, self.size.y) / 2.0;
+        let shift = Vector2::new(self.margin, -self.margin);
 
         self.background(ctx, pos);
+        let (sprites, shapes) = ctx.draw_callback(|ctx| {
+            let mut root = RootLayout::new(pos + shift, Anchor::TopLeft);
+            (ui)(ctx, &mut root);
+            root.draw(ctx);
+        });
 
-        let shift = Vector2::new(self.margin, -self.margin);
-        let (sprites, shapes) = ctx.draw_callback(|ctx| (ui)(ctx));
         for sprite in sprites {
-            sprite.points.iter_mut().for_each(|x| *x += pos + shift);
             sprite.z_index = sprite.z_index.max(self.layer + 1);
-
             sprite.clip = [
                 pos - Vector2::new(0.0, self.size.y),
                 pos + self.size - shift,
@@ -57,7 +68,6 @@ impl Modal {
         }
 
         for vert in shapes {
-            vert.position += pos + shift;
             vert.z_index = vert.z_index.max(self.layer + 1);
         }
 
@@ -80,6 +90,7 @@ impl Modal {
             .z_index(self.layer)
             .scale(Vector2::repeat(scale));
 
+        // god this is awful...
         ctx.draw([
             // Top
             base.clone()

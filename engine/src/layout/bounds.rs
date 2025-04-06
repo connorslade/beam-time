@@ -30,7 +30,9 @@ impl Bounds2D {
     }
 
     pub fn outline(&self) -> RectangleOutline {
-        RectangleOutline::new(self.size(), 1.0).position(self.min, Anchor::BottomLeft)
+        RectangleOutline::new(self.size(), 1.0)
+            .position(self.min, Anchor::BottomLeft)
+            .z_index(i16::MAX)
     }
 
     pub fn translate(&mut self, distance: Vector2<f32>) {

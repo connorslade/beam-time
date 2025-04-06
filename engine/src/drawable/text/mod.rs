@@ -7,6 +7,7 @@ use crate::{
     assets::FontRef,
     color::Rgb,
     graphics_context::{Anchor, Drawable, GraphicsContext},
+    layout::{bounds::Bounds2D, Layout, LayoutElement},
     render::sprite::GpuSprite,
 };
 
@@ -15,9 +16,9 @@ use layout::TextLayout;
 use super::RECTANGLE_POINTS;
 mod layout;
 
-pub struct Text<'a> {
+pub struct Text {
     font: FontRef,
-    text: &'a str,
+    text: String,
     color: Rgb<f32>,
     max_width: f32,
 
@@ -30,11 +31,11 @@ pub struct Text<'a> {
     layout: RefCell<Option<TextLayout>>,
 }
 
-impl<'a> Text<'a> {
-    pub fn new(font: FontRef, text: &'a str) -> Self {
+impl Text {
+    pub fn new(font: FontRef, text: impl ToString) -> Self {
         Self {
             font,
-            text,
+            text: text.to_string(),
             max_width: f32::MAX,
 
             pos: Vector2::repeat(0.0),
@@ -48,19 +49,21 @@ impl<'a> Text<'a> {
         }
     }
 
-    pub fn size(&self, ctx: &GraphicsContext) -> Vector2<f32> {
-        if let Some(layout) = &*self.layout.borrow() {
-            return layout.size;
+    fn generate_layout(&self, ctx: &GraphicsContext) {
+        if self.layout.borrow().is_some() {
+            return;
         }
 
         let scale = self.scale * ctx.scale_factor;
         let font = ctx.assets.get_font(self.font);
-        let layout = TextLayout::generate(&font.desc, self.max_width, scale, self.text);
+        let layout = TextLayout::generate(&font.desc, self.max_width, scale, &self.text);
 
-        let size = layout.size;
         *self.layout.borrow_mut() = Some(layout);
+    }
 
-        size
+    pub fn size(&self, ctx: &GraphicsContext) -> Vector2<f32> {
+        self.generate_layout(ctx);
+        self.layout.borrow().as_ref().unwrap().size
     }
 
     fn invalidate_layout(&self) {
@@ -103,7 +106,7 @@ impl<'a> Text<'a> {
     }
 }
 
-impl Drawable for Text<'_> {
+impl Drawable for Text {
     fn draw(self, ctx: &mut GraphicsContext) {
         let font = ctx.assets.get_font(self.font);
         let scale = self.scale * ctx.scale_factor;
@@ -114,7 +117,7 @@ impl Drawable for Text<'_> {
         let layout = self
             .layout
             .into_inner()
-            .unwrap_or_else(|| TextLayout::generate(&font.desc, self.max_width, scale, self.text));
+            .unwrap_or_else(|| TextLayout::generate(&font.desc, self.max_width, scale, &self.text));
         for (character, pos) in layout.chars {
             let uv_a = process_uv(character.uv);
             let uv_b = process_uv(character.uv + character.size);
@@ -133,5 +136,38 @@ impl Drawable for Text<'_> {
                 clip: self.clip,
             });
         }
+    }
+}
+
+impl LayoutElement for Text {
+    fn layout(self, ctx: &mut GraphicsContext, layout: &mut dyn Layout)
+    where
+        Self: Sized + 'static,
+    {
+        self.generate_layout(ctx);
+        layout.layout(ctx, Box::new(self));
+    }
+
+    fn translate(&mut self, distance: Vector2<f32>) {
+        let mut layout = self.layout.borrow_mut();
+        let layout = layout.as_mut().unwrap();
+
+        for (_char, pos) in &mut layout.chars {
+            *pos += distance;
+        }
+    }
+
+    // todo: verify correctness
+    fn bounds(&self, _ctx: &mut GraphicsContext) -> Bounds2D {
+        let layout = self.layout.borrow();
+        let layout = layout.as_ref().unwrap();
+
+        // todo: count anchor point
+        let origin = layout.chars[0].1;
+        Bounds2D::new(origin, origin + layout.size)
+    }
+
+    fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
+        (*self).draw(ctx);
     }
 }

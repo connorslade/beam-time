@@ -14,7 +14,7 @@ use crate::{
     consts::BACKGROUND_COLOR,
 };
 
-use super::{button::Button, waterfall::Waterfall};
+use super::{components::button::Button, waterfall::Waterfall};
 
 pub fn titled_screen(
     state: &mut App,
@@ -64,12 +64,12 @@ pub fn font_scale(
     (line_height, line_spacing, total_height)
 }
 
-pub fn tile_label<'a>(
+pub fn tile_label(
     ctx: &mut GraphicsContext,
     scale: f32,
     pos: Vector2<f32>,
-    label: &'a str,
-) -> Text<'a> {
+    label: impl ToString,
+) -> Text {
     let offset = scale * ctx.scale_factor;
     let offset = Vector2::new(6.5 * offset, -7.5 * offset);
     Text::new(UNDEAD_FONT, label)
@@ -77,25 +77,34 @@ pub fn tile_label<'a>(
         .position(pos + offset, Anchor::BottomRight)
 }
 
-pub fn modal_buttons(ctx: &mut GraphicsContext, width: f32, (left, right): (&str, &str)) {
+pub fn modal_buttons(
+    ctx: &mut GraphicsContext,
+    origin: Vector2<f32>,
+    width: f32,
+    (left, right): (&str, &str),
+) {
     let body = |text| Text::new(UNDEAD_FONT, text).scale(Vector2::repeat(2.0));
     let button_space = ctx.scale_factor * 10.0;
 
     Sprite::new(LEVEL_DROPDOWN_ARROW)
+        .position(origin, Anchor::BottomLeft)
         .scale(Vector2::repeat(2.0))
         .rotate(PI, Anchor::Center)
         .draw(ctx);
 
     body(left)
-        .position(Vector2::x() * button_space, Anchor::BottomLeft)
+        .position(origin + Vector2::x() * button_space, Anchor::BottomLeft)
         .draw(ctx);
 
     Sprite::new(LEVEL_DROPDOWN_ARROW)
-        .position(Vector2::x() * width, Anchor::BottomRight)
+        .position(origin + Vector2::x() * width, Anchor::BottomRight)
         .scale(Vector2::repeat(2.0))
         .draw(ctx);
 
     body(right)
-        .position(Vector2::x() * (width - button_space), Anchor::BottomRight)
+        .position(
+            origin + Vector2::x() * (width - button_space),
+            Anchor::BottomRight,
+        )
         .draw(ctx);
 }

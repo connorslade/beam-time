@@ -9,6 +9,7 @@ use engine::{
         winit::{event::MouseButton, keyboard::KeyCode},
     },
     graphics_context::{Anchor, GraphicsContext},
+    layout::{column::ColumnLayout, LayoutElement},
     memory_key,
 };
 
@@ -18,11 +19,12 @@ use crate::{
     game::board::{Board, BoardMeta},
     screens::game::GameScreen,
     ui::{
-        button::Button,
-        layout::column::ColumnLayout,
+        components::{
+            button::Button,
+            modal::Modal,
+            text_input::{TextInput, TextInputState},
+        },
         misc::{font_scale, modal_buttons, titled_screen},
-        modal::Modal,
-        text_input::{TextInput, TextInputState},
     },
     util::load_level_dir,
     App,
@@ -45,7 +47,7 @@ pub struct CreateModal {
 
 impl Screen for SandboxScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        titled_screen(state, ctx, Some(memory_key!()), "Sandbox");
+        titled_screen(state, ctx, None, "Sandbox");
 
         self.create_modal(state, ctx);
 
@@ -162,24 +164,25 @@ impl SandboxScreen {
 
             let size = modal.inner_size();
             let mut name_error = false;
-            modal.draw(ctx, |ctx| {
+            modal.draw(ctx, |ctx, root| {
                 let body = |text| {
                     Text::new(UNDEAD_FONT, text)
                         .scale(Vector2::repeat(2.0))
                         .max_width(size.x)
                 };
 
-                let mut layout = ColumnLayout::new(padding);
-                layout.draw(ctx, body("New Sandbox").scale(Vector2::repeat(4.0)));
-                layout.draw(ctx, body(NEW_SANDBOX_TEXT));
+                let mut column = ColumnLayout::new(padding);
+                body("New Sandbox")
+                    .scale(Vector2::repeat(4.0))
+                    .layout(ctx, &mut column);
+                body(NEW_SANDBOX_TEXT).layout(ctx, &mut column);
 
-                layout.space(8.0 * ctx.scale_factor * state.config.ui_scale);
-                layout.draw(ctx, body("Sandbox Name"));
-                layout.draw(
-                    ctx,
-                    TextInput::new(&mut create.name_input)
-                        .width(size.x.min(400.0 * ctx.scale_factor)),
-                );
+                // column.space(8.0 * ctx.scale_factor * state.config.ui_scale);
+                body("Sandbox Name").layout(ctx, &mut column);
+
+                // TextInput::new(&mut create.name_input)
+                //     .width(size.x.min(400.0 * ctx.scale_factor))
+                //     .layout(ctx, &mut column);
 
                 let content = create.name_input.content();
 
@@ -190,14 +193,16 @@ impl SandboxScreen {
 
                 let checkers = [(no_name, NO_NAME_TEXT), (invalid_name, INVALID_NAME_TEXT)];
                 for (_, error) in checkers.iter().filter(|(predicate, _)| *predicate) {
-                    layout.draw(ctx, body(error).color(ERROR_COLOR));
+                    body(error).color(ERROR_COLOR).layout(ctx, &mut column);
                     name_error = true;
                 }
 
-                layout.space_to(size.y - ctx.scale_factor * 12.0);
-                layout.row(ctx, |ctx| {
-                    modal_buttons(ctx, size.x, ("Back", "Create"));
-                });
+                // layout.space_to(size.y - ctx.scale_factor * 12.0);
+                // layout.row(ctx, |ctx| {
+                //     modal_buttons(ctx, size.x, ("Back", "Create"));
+                // });
+
+                column.layout(ctx, root);
             });
 
             if enter && !name_error {

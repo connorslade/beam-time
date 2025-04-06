@@ -179,17 +179,7 @@ impl LayoutElement for Sprite {
         Bounds2D::from_points(&points)
     }
 
-    // todo: don't repeat this code from the drawable impl
     fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
-        let asset = ctx.assets.get_sprite(self.texture);
-
-        ctx.sprites.push(GpuSprite {
-            texture: asset.texture,
-            uv: asset.uv(self.uv_offset).into(),
-            points: self.points(ctx, asset, true),
-            color: Rgb::new(self.color.r, self.color.g, self.color.b),
-            z_index: self.z_index,
-            clip: self.clip,
-        });
+        (*self).draw(ctx);
     }
 }
