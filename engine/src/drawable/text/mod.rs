@@ -107,6 +107,19 @@ impl Text {
         self.clip = [Vector2::new(x1, y1), Vector2::new(x2, y2)];
         self
     }
+
+    pub fn is_hovered(&self, ctx: &mut GraphicsContext) -> bool {
+        self.generate_layout(ctx);
+
+        let layout = self.layout.borrow();
+        let layout = layout.as_ref().unwrap();
+
+        let min = self.pos + self.position_anchor.offset(layout.base);
+        let max = min + layout.base;
+
+        let mouse = ctx.input.mouse;
+        mouse.x >= min.x && mouse.x <= max.x && mouse.y >= min.y && mouse.y <= max.y
+    }
 }
 
 impl Text {

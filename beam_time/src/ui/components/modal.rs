@@ -1,4 +1,3 @@
-use common::misc::in_bounds;
 use engine::{
     drawable::sprite::Sprite,
     exports::nalgebra::Vector2,
@@ -71,10 +70,8 @@ impl Modal {
             vert.z_index = vert.z_index.max(self.layer + 1);
         }
 
-        if !in_bounds(ctx.input.mouse, (pos, pos + self.size)) {
-            ctx.input.cancel_hover();
-            ctx.input.cancel_clicks();
-        }
+        ctx.input.cancel_hover();
+        ctx.input.cancel_clicks();
     }
 }
 

@@ -82,7 +82,7 @@ pub fn modal_buttons(
     origin: Vector2<f32>,
     width: f32,
     (left, right): (&str, &str),
-) {
+) -> (bool, bool) {
     let body = |text| Text::new(UNDEAD_FONT, text).scale(Vector2::repeat(2.0));
     let button_space = ctx.scale_factor * 10.0;
 
@@ -92,19 +92,20 @@ pub fn modal_buttons(
         .rotate(PI, Anchor::Center)
         .draw(ctx);
 
-    body(left)
-        .position(origin + Vector2::x() * button_space, Anchor::BottomLeft)
-        .draw(ctx);
+    let left = body(left).position(origin + Vector2::x() * button_space, Anchor::BottomLeft);
 
     Sprite::new(LEVEL_DROPDOWN_ARROW)
         .position(origin + Vector2::x() * width, Anchor::BottomRight)
         .scale(Vector2::repeat(2.0))
         .draw(ctx);
 
-    body(right)
-        .position(
-            origin + Vector2::x() * (width - button_space),
-            Anchor::BottomRight,
-        )
-        .draw(ctx);
+    let right = body(right).position(
+        origin + Vector2::x() * (width - button_space),
+        Anchor::BottomRight,
+    );
+
+    let hovered = (left.is_hovered(ctx), right.is_hovered(ctx));
+    ctx.draw([left, right]);
+
+    hovered
 }

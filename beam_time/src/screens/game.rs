@@ -24,7 +24,10 @@ use beam_logic::{
 use engine::{
     color::Rgb,
     drawable::text::Text,
-    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
+    exports::{
+        nalgebra::Vector2,
+        winit::{event::MouseButton, keyboard::KeyCode},
+    },
     graphics_context::GraphicsContext,
     layout::{column::ColumnLayout, LayoutElement},
 };
@@ -244,12 +247,21 @@ impl GameScreen {
 
                 column.layout(ctx, root);
 
-                modal_buttons(
+                let clicking = ctx.input.mouse_down(MouseButton::Left);
+                let (exit, resume) = modal_buttons(
                     ctx,
                     origin + Vector2::new(margin, -size.y - ctx.scale_factor * 12.0),
                     size.x,
                     ("Exit", "Resume"),
                 );
+
+                if clicking && resume {
+                    self.paused = None;
+                }
+
+                if clicking && exit {
+                    state.pop_screen();
+                }
             });
         }
     }

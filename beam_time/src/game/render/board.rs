@@ -154,7 +154,7 @@ impl Board {
                 }
 
                 // TODO: Move to holding.rs?
-                if sim.is_none() && grid.is_hovered(ctx) {
+                if sim.is_none() && hovered {
                     let holding = &mut self.transient.holding;
 
                     if ctx.input.mouse_pressed(MouseButton::Left) {
@@ -189,12 +189,9 @@ impl Board {
                         }
                     }
 
-                    if ctx.input.mouse_down(MouseButton::Right) {
+                    if ctx.input.mouse_down(MouseButton::Right) && !tile.is_empty() {
                         self.tiles.remove(pos);
-
-                        if !tile.is_empty() {
-                            self.transient.history.track_one(pos, tile);
-                        }
+                        self.transient.history.track_one(pos, tile);
                     }
 
                     if holding.is_none() {

@@ -65,8 +65,7 @@ impl InputManager {
     }
 
     pub fn cancel_hover(&mut self) {
-        self.mouse = Vector2::new(-1.0, -1.0);
-        self.mouse_delta = Vector2::zeros();
+        self.mouse *= -1.0;
     }
 
     pub fn key_down(&self, key: KeyCode) -> bool {
@@ -149,6 +148,7 @@ impl InputManager {
     pub(crate) fn on_frame_end(&mut self) {
         self.mouse_actions.clear();
         self.key_actions.clear();
+        self.mouse = self.mouse.map(|x| x.abs());
         self.mouse_delta = Vector2::new(0.0, 0.0);
         self.scroll_delta = 0.0;
         self.resized = None;

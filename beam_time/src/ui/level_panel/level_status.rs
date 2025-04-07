@@ -75,7 +75,7 @@ pub fn level_complete(
     ui.y -= ui.padding;
 
     let Some(hist_data) = state.leaderboard.get_results(board.id) else {
-        ui.text_block(ctx, state, "Failed to load global data.");
+        ui.text_block(ctx, state, "Failed to load global leaderboard.");
         return;
     };
 
