@@ -99,7 +99,7 @@ impl Screen for LayoutTestScreen {
             let frame = ctx.memory.get_or_insert(memory_key!(), 0);
             *frame += 1;
 
-            Text::new(UNDEAD_FONT, &format!("Frame {frame}"))
+            Text::new(UNDEAD_FONT, format!("Frame {frame}"))
                 .position(
                     Vector2::new(padding, ctx.size().y - padding),
                     Anchor::TopLeft,

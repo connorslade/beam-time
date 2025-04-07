@@ -10,14 +10,14 @@ use crate::{
 };
 use beam_logic::simulation::{state::BeamState, tile::BeamTile};
 use common::misc::in_bounds;
-use engine::drawable::text::Text;
 use engine::{
-    drawable::sprite::Sprite,
+    drawable::{sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
+    layout::{column::ColumnLayout, root::RootLayout, Justify, LayoutElement},
 };
 
 use super::tile::{BeamTileBaseSprite, TileAsset};
@@ -58,32 +58,32 @@ impl Board {
 
         const MESSAGE: &str = "This is a test of the new label system I am considering adding to Beam time to improve the user experience of sandbox worlds.";
         for (pos, title, note) in [(Vector2::new(10.0, 10.0), "Little Note", MESSAGE)] {
-            let mut pos = shared.world_to_screen_space(ctx, pos);
-            let marker_pos = pos - Vector2::y() * 4.0 * 2.0 * ctx.scale_factor;
+            let pos = shared.world_to_screen_space(ctx, pos);
 
-            ctx.draw(
-                Sprite::new(HISTOGRAM_MARKER)
-                    .scale(Vector2::repeat(2.0))
-                    .position(marker_pos, Anchor::TopCenter)
-                    .z_index(layer::OVERLAY),
-            );
+            let (_, padding) = state.spacing(ctx);
+            let mut root = RootLayout::new(pos, Anchor::BottomCenter);
+            let mut column = ColumnLayout::new(padding).justify(Justify::Center);
+
+            Text::new(UNDEAD_FONT, title)
+                .scale(Vector2::repeat(2.0))
+                .z_index(layer::OVERLAY)
+                .layout(ctx, &mut column);
 
             if shared.scale >= 6.0 {
-                let text = Text::new(UNDEAD_FONT, note)
+                Text::new(UNDEAD_FONT, note)
                     .max_width(16.0 * 20.0 * ctx.scale_factor)
                     .scale(Vector2::repeat(2.0))
-                    .position(pos, Anchor::BottomCenter)
-                    .z_index(layer::OVERLAY);
-                pos.y += text.size(ctx).y + 8.0 * ctx.scale_factor;
-                ctx.draw(text);
+                    .z_index(layer::OVERLAY)
+                    .layout(ctx, &mut column);
             }
 
-            ctx.draw(
-                Text::new(UNDEAD_FONT, title)
-                    .scale(Vector2::repeat(2.0))
-                    .position(pos, Anchor::BottomCenter)
-                    .z_index(layer::OVERLAY),
-            );
+            Sprite::new(HISTOGRAM_MARKER)
+                .scale(Vector2::repeat(2.0))
+                .z_index(layer::OVERLAY)
+                .layout(ctx, &mut column);
+
+            column.layout(ctx, &mut root);
+            root.draw(ctx);
         }
 
         for x in 0..tile_counts.x {

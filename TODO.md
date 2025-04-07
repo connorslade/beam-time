@@ -46,7 +46,7 @@
   - [x] Fix anchor point when dynamic_scale > scale
   - [x] Layout spacers
   - [ ] Available space system?
-- [ ] Cache text layouts
+- [ ] Cache text layouts?
 
 ## User Interface
 
@@ -119,7 +119,7 @@
 - [x] Put steam features under a feature flag
 - [x] Cache get_results stuff
 - [ ] Figure out how to support user levels on leaderboard server (steam workshop)
-- [ ] Fix screen_to_world_space and world_to_screen_space
+- [x] Fix screen_to_world_space and world_to_screen_space
 - [ ] Use screen_to_world_space to handle tile interactions because calling .is_hovered 50k times per frame is kinda slow
 
 ### Rendering

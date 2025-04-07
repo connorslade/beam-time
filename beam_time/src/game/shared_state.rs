@@ -41,7 +41,7 @@ impl SharedState {
             self.pan_goal += direction.normalize() * state.config.movement_speed * ctx.delta_time;
         }
 
-        // TODO: Dont allow scale goal to be non integer values when close to 1.0
+        // TODO: Don't allow scale goal to be non integer values when close to 1.0
         let old_scale = self.scale;
         self.scale_goal = (self.scale_goal
             + ctx.input.scroll_delta * state.config.zoom_sensitivity)
@@ -52,7 +52,7 @@ impl SharedState {
         self.pan.x = exp_decay(self.pan.x, self.pan_goal.x, decay, dt);
         self.pan.y = exp_decay(self.pan.y, self.pan_goal.y, decay, dt);
 
-        // Scale around the curser position, not the world origin. Don't ask how
+        // Scale around the cursor position, not the world origin. Don't ask how
         // long this took me to get right...
         delta_pan += (ctx.input.mouse - self.pan) * (old_scale - self.scale) / old_scale;
 

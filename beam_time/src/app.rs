@@ -78,7 +78,7 @@ impl App {
         }
     }
 
-    // => (Margin, Padding)
+    /// => (Margin, Padding)
     pub fn spacing(&self, ctx: &mut GraphicsContext) -> (f32, f32) {
         let margin = 16.0 * self.config.ui_scale * ctx.scale_factor;
         let padding = 10.0 * self.config.ui_scale * ctx.scale_factor;
