@@ -4,6 +4,7 @@ use crate::{
     color::Rgb,
     drawable::RECTANGLE_POINTS,
     graphics_context::{Anchor, Drawable, GraphicsContext},
+    layout::{bounds::Bounds2D, LayoutElement},
     render::shape::ShapeVertex,
 };
 
@@ -75,5 +76,21 @@ impl Drawable for RectangleOutline {
                 [inner[i], inner[j], outer[j]],
             ]);
         }
+    }
+}
+
+impl LayoutElement for RectangleOutline {
+    fn translate(&mut self, distance: Vector2<f32>) {
+        self.position += distance;
+    }
+
+    fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
+        let outer_size = self.size + Vector2::repeat(self.thickness * 2.0 * ctx.scale_factor);
+        let offset_outer = self.position + self.position_anchor.offset(outer_size);
+        Bounds2D::new(offset_outer, offset_outer + outer_size)
+    }
+
+    fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
+        (*self).draw(ctx);
     }
 }

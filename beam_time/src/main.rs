@@ -49,7 +49,7 @@ fn main() -> Result<()> {
                 #[cfg(feature = "debug")]
                 Box::new(DebugOverlay::default()),
                 Box::new(TitleScreen::default()),
-                // Box::new(LayoutTestScreen::default()),
+                Box::new(LayoutTestScreen::default()),
             ]);
             screens.top().on_init(&mut app);
 

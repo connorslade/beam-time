@@ -4,6 +4,7 @@ use crate::{
     color::Rgb,
     drawable::RECTANGLE_POINTS,
     graphics_context::{Anchor, Drawable, GraphicsContext},
+    layout::{bounds::Bounds2D, LayoutElement},
     render::shape::ShapeVertex,
 };
 
@@ -54,5 +55,20 @@ impl Drawable for Rectangle {
             .points()
             .map(|x| ShapeVertex::new(x, self.color).z_index(self.z_index));
         ctx.shapes.push_quad(&verts);
+    }
+}
+
+impl LayoutElement for Rectangle {
+    fn translate(&mut self, distance: Vector2<f32>) {
+        self.position += distance;
+    }
+
+    fn bounds(&self, _ctx: &mut GraphicsContext) -> Bounds2D {
+        let pos = self.position + self.position_anchor.offset(self.size);
+        Bounds2D::new(pos, pos + self.size)
+    }
+
+    fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
+        (*self).draw(ctx);
     }
 }

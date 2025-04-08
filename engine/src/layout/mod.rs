@@ -51,6 +51,13 @@ pub enum Justify {
     Max,
 }
 
+pub enum Direction {
+    /// Left to right or top to bottom.
+    MinToMax,
+    /// Right to left or bottom to top.
+    MaxToMin,
+}
+
 impl SizedLayoutElement {
     pub fn new(ctx: &mut GraphicsContext, element: Box<dyn LayoutElement>) -> Self {
         let bounds = element.bounds(ctx);
@@ -65,6 +72,12 @@ impl Justify {
             Justify::Center => (container - element) / 2.0,
             Justify::Max => container - element,
         }
+    }
+}
+
+impl Direction {
+    pub fn is_flipped(&self) -> bool {
+        matches!(self, Direction::MaxToMin)
     }
 }
 
