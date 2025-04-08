@@ -56,6 +56,7 @@ pub static DEFAULT_LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
         "counter.ron",
         "full_adder.ron",
         "count_ones.ron",
+        "conway_life.ron"
     )
 });
 
@@ -109,7 +110,7 @@ impl ElementLocation {
     pub fn into_pos(self) -> Vector2<i32> {
         match self {
             ElementLocation::Static(pos) => pos,
-            ElementLocation::Dynamic(_) => todo!(),
+            ElementLocation::Dynamic(_) => Vector2::zeros(),
         }
     }
 }

@@ -14,6 +14,7 @@ use super::{level_state::LevelState, tile::BeamTile};
 pub struct BeamState {
     pub board: Map<BeamTile>,
     pub level: Option<LevelState>,
+    pub bounds: (Vector2<i32>, Vector2<i32>),
 }
 
 impl BeamState {
@@ -22,7 +23,7 @@ impl BeamState {
     pub fn new(tiles: &Map<Tile>, level: Option<Cow<'static, Level>>, test: bool) -> Self {
         let level = test.then(|| level.map(LevelState::new)).flatten();
 
-        let board = tiles.map(|x| match x {
+        let board = tiles.map(|tile| match tile {
             Tile::Empty => BeamTile::Empty,
             Tile::Emitter { rotation, active } => BeamTile::Emitter {
                 direction: rotation,
@@ -53,7 +54,19 @@ impl BeamState {
             },
         });
 
-        let mut state = Self { board, level };
+        let mut bounds = (Vector2::repeat(i32::MAX), Vector2::repeat(i32::MIN));
+        for (coord, _tile) in board.iter() {
+            bounds.0.x = bounds.0.x.min(coord.x);
+            bounds.0.y = bounds.0.y.min(coord.y);
+            bounds.1.x = bounds.1.x.max(coord.x);
+            bounds.1.y = bounds.1.y.max(coord.y);
+        }
+
+        let mut state = Self {
+            board,
+            level,
+            bounds,
+        };
 
         if let Some(level) = &mut state.level {
             trace!("Running with level: {}", level.level.name);
@@ -64,14 +77,15 @@ impl BeamState {
     }
 
     pub fn hash(&self) -> u64 {
-        let size = self.level.as_ref().unwrap().level.size.unwrap();
-        let bounds = (Vector2::zeros(), size.map(|x| x as i32));
-
-        let mut tiles = self.board.iter().collect::<Vec<_>>();
+        let mut tiles = self
+            .board
+            .iter()
+            .filter(|(pos, _)| in_bounds(*pos, self.bounds))
+            .collect::<Vec<_>>();
         tiles.sort_by(|(a, _), (b, _)| a.x.cmp(&b.x).then(a.y.cmp(&b.y)));
 
         let mut hasher = DefaultHasher::new();
-        for (pos, tile) in tiles.iter().filter(|(pos, _)| in_bounds(*pos, bounds)) {
+        for (pos, tile) in tiles.iter() {
             pos.hash(&mut hasher);
             tile.hash(&mut hasher);
         }

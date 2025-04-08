@@ -121,6 +121,8 @@
 - [ ] Figure out how to support user levels on leaderboard server (steam workshop)
 - [x] Fix screen_to_world_space and world_to_screen_space
 - [ ] Use screen_to_world_space to handle tile interactions because calling .is_hovered 50k times per frame is kinda slow
+- [ ] Stop counting time played when in pause menu
+- [ ] Display system. Select an area of tiles then press 'D' or something. That will open a window thing with a pixel in the display for each detector in the board. The pixels will show the state of the detectors in real time.
 
 ### Rendering
 
@@ -175,7 +177,7 @@
 - [ ] Little keyboard shortcut helper thing on bottom right of screen when in game
 - [ ] Use column layout for level panel
 - [ ] Setting model on title page
-- [ ] Paused modal in game
+- [x] Paused modal in game
 
 ---
 
@@ -186,4 +188,3 @@
 - Ui buttons for sandbox modal
 - Fix world space ←→ screen space conversion functions
   - To make testing in debug mode possible
-- Paused modal in game

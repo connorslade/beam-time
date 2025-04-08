@@ -1,0 +1,82 @@
+Level(
+    id: "f79d2928-aa91-44d8-ac3a-176e991b2c7a",
+    name: "Conway's Game of Life",
+    description: "todo: description",
+
+    size: None,
+    permanent: [ (0, 0), (1, 0), (2, 0), (3, 0), (5, 0), (7, 0) ],
+    labels: {
+        (0, 0): "8",
+        (1, 0): "4",
+        (2, 0): "2",
+        (3, 0): "1",
+        (5, 0): "Live"
+    },
+    tiles: {
+        (0, 0): Emitter( rotation: Down, active: false ),
+        (1, 0): Emitter( rotation: Down, active: false ),
+        (2, 0): Emitter( rotation: Down, active: false ),
+        (3, 0): Emitter( rotation: Down, active: false ),
+        (5, 0): Emitter( rotation: Down, active: false ),
+        (7, 0): Detector
+    },
+
+    tests: Tests(
+        lasers: [ Static((0, 0)), Static((1, 0)), Static((2, 0)), Static((3, 0)), Static((5, 0)) ],
+        detectors: [ Static((7, 0)) ],
+
+        cases: [
+            Cycle(
+                lasers: [ false, true, false, false, false ],
+                detectors: [ [ false ] ],
+            ),
+            Cycle(
+                lasers: [ false, false, true, false, true ],
+                detectors: [ [ true ] ],
+            ),
+            Cycle(
+                lasers: [ false, false, false, true, false ],
+                detectors: [ [ false ] ],
+            ),
+            Cycle(
+                lasers: [ false, false, true, true, true ],
+                detectors: [ [ true ] ],
+            ),
+            Cycle(
+                lasers: [ false, true, true, false, false ],
+                detectors: [ [ false ] ],
+            ),
+            Cycle(
+                lasers: [ false, true, true, true, false ],
+                detectors: [ [ false ] ],
+            )
+        ]
+    )
+)
+
+// Test cases generated with the following code:
+/*
+use std::collections::HashSet;
+use rand::prelude::*;
+
+fn main() {
+    let mut rng = rand::rng();
+    let mut seen = HashSet::new();
+    while seen.len() < 15 {
+        let around = rng.random_range::<u32, _>(0..=8);
+        let is_live = rng.random::<bool>();
+
+        if !seen.insert((around, is_live)) {
+            continue;
+        }
+
+        let next = if is_live {
+            matches!(around, 2 | 3)
+        } else {
+            around == 3
+        };
+
+        println!("{around:0>4b}{:b},{next}", is_live as u8);
+    }
+}
+*/
