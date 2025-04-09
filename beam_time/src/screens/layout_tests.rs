@@ -7,7 +7,7 @@ use engine::{
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{
         column::ColumnLayout, root::RootLayout, row::RowLayout, tracker::LayoutTracker, Direction,
-        Justify, LayoutElement,
+        Justify, Layout, LayoutElement, LayoutMethods,
     },
     memory_key,
 };
@@ -16,9 +16,9 @@ use crate::{
     app::App,
     assets::{
         CAMPAIGN_BUTTON, OPTIONS_BUTTON, SANDBOX_BUTTON, TILE_EMITTER_RIGHT, TILE_MIRROR_A,
-        TILE_MIRROR_B, UNDEAD_FONT,
+        UNDEAD_FONT,
     },
-    consts::{ACCENT_COLOR, EMITTER, GALVO},
+    consts::{ACCENT_COLOR, EMITTER, GALVO, MIRROR},
 };
 
 use super::Screen;
@@ -125,38 +125,31 @@ impl Screen for LayoutTestScreen {
             text.draw(ctx);
         }
 
-        // this ugly but whatever
         {
-            let mut root = RootLayout::new(ctx.size() / 4.0, Anchor::Center);
-            let mut column = ColumnLayout::new(padding).sized(Vector2::repeat(350.0));
-            let mut row = RowLayout::new(padding).sized(column.available());
+            let mut root =
+                RootLayout::new(ctx.size() / 4.0, Anchor::Center).sized(Vector2::repeat(500.0));
 
-            Sprite::new(TILE_MIRROR_A)
-                .scale(Vector2::repeat(4.0))
-                .layout(ctx, &mut row);
+            root.with_layout(ctx, RowLayout::new(padding), |ctx, layout| {
+                for tile in MIRROR {
+                    Sprite::new(tile)
+                        .scale(Vector2::repeat(4.0))
+                        .layout(ctx, layout);
+                }
 
-            let mut row2 = RowLayout::new(padding)
-                .sized(row.available())
-                .direction(Direction::MaxToMin);
-            Sprite::new(TILE_MIRROR_B)
-                .scale(Vector2::repeat(4.0))
-                .layout(ctx, &mut row2);
-            Spacer::new(Vector2::x() * row2.available().x).layout(ctx, &mut row2);
+                layout.with_layout(
+                    ctx,
+                    RowLayout::new(padding)
+                        .direction(Direction::MaxToMin)
+                        .justify(Justify::Center),
+                    |ctx, layout| {
+                        Sprite::new(TILE_MIRROR_A)
+                            .scale(Vector2::repeat(4.0))
+                            .layout(ctx, layout);
+                        Spacer::new(Vector2::x() * layout.available().x).layout(ctx, layout);
+                    },
+                );
+            });
 
-            row2.layout(ctx, &mut row);
-            row.layout(ctx, &mut column);
-
-            let mut column2 = ColumnLayout::new(padding)
-                .direction(Direction::MaxToMin)
-                .sized(column.available());
-
-            Sprite::new(TILE_MIRROR_A)
-                .scale(Vector2::repeat(4.0))
-                .layout(ctx, &mut column2);
-            Spacer::new(Vector2::y() * column2.available().y).layout(ctx, &mut column);
-
-            column2.layout(ctx, &mut column);
-            column.layout(ctx, &mut root);
             root.draw(ctx);
         }
     }

@@ -4,7 +4,9 @@ use crate::graphics_context::{Anchor, Drawable, GraphicsContext};
 
 use super::{container::Container, Layout, LayoutElement, SizedLayoutElement};
 
+/// This is where all layout hierarchies start.
 pub struct RootLayout {
+    available: Vector2<f32>,
     container: Container,
 
     origin: Vector2<f32>,
@@ -14,10 +16,16 @@ pub struct RootLayout {
 impl RootLayout {
     pub fn new(origin: Vector2<f32>, anchor: Anchor) -> Self {
         Self {
+            available: Vector2::zeros(),
             container: Container::default(),
             origin,
             anchor,
         }
+    }
+
+    /// Set the starting available size of this layout element.
+    pub fn sized(self, available: Vector2<f32>) -> Self {
+        Self { available, ..self }
     }
 }
 
@@ -27,6 +35,14 @@ impl Layout for RootLayout {
         element.translate(self.origin);
 
         self.container.insert(element);
+    }
+
+    fn available(&self) -> Vector2<f32> {
+        self.available
+    }
+
+    fn sized(&mut self, available: Vector2<f32>) {
+        self.available = available;
     }
 }
 

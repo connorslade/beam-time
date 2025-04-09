@@ -11,6 +11,7 @@ pub mod root;
 pub mod row;
 pub mod tracker;
 
+/// Elements that can be laid out programmatically.
 pub trait LayoutElement {
     /// Shifts the element by the given distance.
     fn translate(&mut self, distance: Vector2<f32>);
@@ -35,8 +36,31 @@ pub trait LayoutElement {
     }
 }
 
+/// System that can be passed layout elements and use the
+/// [`LayoutElement::translate`] method to lay them out in some fashion.
 pub trait Layout {
+    /// Adds the specified element to the current layout.
     fn layout(&mut self, ctx: &mut GraphicsContext, element: Box<dyn LayoutElement>);
+    /// How much space is available to this container. If the root layout
+    /// element was not given a defined size, this will not return a positive
+    /// number (≤ 0).
+    fn available(&self) -> Vector2<f32>;
+    /// Set the starting available size of this layout element.
+    fn sized(&mut self, available: Vector2<f32>);
+}
+
+/// Convince methods for creating layouts.
+pub trait LayoutMethods: Layout {
+    fn with_layout<T: Layout + LayoutElement + 'static>(
+        &mut self,
+        ctx: &mut GraphicsContext,
+        mut layout: T,
+        mut ui: impl FnMut(&mut GraphicsContext, &mut T),
+    ) {
+        layout.sized(self.available());
+        ui(ctx, &mut layout);
+        self.layout(ctx, Box::new(layout));
+    }
 }
 
 pub struct SizedLayoutElement {
@@ -72,6 +96,8 @@ impl Justify {
         }
     }
 }
+
+impl<T: Layout> LayoutMethods for T {}
 
 impl LayoutElement for SizedLayoutElement {
     fn translate(&mut self, distance: Vector2<f32>) {

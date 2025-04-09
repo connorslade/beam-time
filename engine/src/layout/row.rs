@@ -47,13 +47,6 @@ impl RowLayout {
         self.justify = justify;
         self
     }
-
-    /// How much space is available to this container. If the root layout
-    /// element was not given a defined size, this will not return a positive
-    /// number (≤ 0).
-    pub fn available(&self) -> Vector2<f32> {
-        self.available
-    }
 }
 
 impl Layout for RowLayout {
@@ -75,6 +68,14 @@ impl Layout for RowLayout {
 
         self.available.x -= width + self.padding;
         self.container.insert(element);
+    }
+
+    fn available(&self) -> Vector2<f32> {
+        self.available
+    }
+
+    fn sized(&mut self, available: Vector2<f32>) {
+        self.available = available;
     }
 }
 
