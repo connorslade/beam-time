@@ -37,22 +37,20 @@ impl Screen for LayoutTestScreen {
 
         {
             let mut root = RootLayout::new(pos, Anchor::TopLeft);
-            let mut row = RowLayout::new(padding);
 
-            for tiles in [EMITTER, GALVO] {
-                let mut column = ColumnLayout::new(padding);
-
-                for tile in tiles {
-                    Sprite::new(tile)
-                        .uv_offset(Vector2::x() * 16)
-                        .scale(Vector2::repeat(4.0))
-                        .layout(ctx, &mut column);
+            root.nest(ctx, RowLayout::new(padding), |ctx, layout| {
+                for tiles in [EMITTER, GALVO] {
+                    layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+                        for tile in tiles {
+                            Sprite::new(tile)
+                                .uv_offset(Vector2::x() * 16)
+                                .scale(Vector2::repeat(4.0))
+                                .layout(ctx, layout);
+                        }
+                    });
                 }
+            });
 
-                column.layout(ctx, &mut row);
-            }
-
-            row.layout(ctx, &mut root);
             root.draw(ctx);
         }
 
@@ -129,14 +127,14 @@ impl Screen for LayoutTestScreen {
             let mut root =
                 RootLayout::new(ctx.size() / 4.0, Anchor::Center).sized(Vector2::repeat(500.0));
 
-            root.with_layout(ctx, RowLayout::new(padding), |ctx, layout| {
+            root.nest(ctx, RowLayout::new(padding), |ctx, layout| {
                 for tile in MIRROR {
                     Sprite::new(tile)
                         .scale(Vector2::repeat(4.0))
                         .layout(ctx, layout);
                 }
 
-                layout.with_layout(
+                layout.nest(
                     ctx,
                     RowLayout::new(padding)
                         .direction(Direction::MaxToMin)

@@ -51,7 +51,7 @@ pub trait Layout {
 
 /// Convince methods for creating layouts.
 pub trait LayoutMethods: Layout {
-    fn with_layout<T: Layout + LayoutElement + 'static>(
+    fn nest<T: Layout + LayoutElement + 'static>(
         &mut self,
         ctx: &mut GraphicsContext,
         mut layout: T,
