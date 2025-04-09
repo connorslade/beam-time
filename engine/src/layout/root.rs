@@ -34,7 +34,7 @@ impl Drawable for RootLayout {
     fn draw(mut self, ctx: &mut GraphicsContext) {
         let size = self.container.bounds.size();
         let shift = self.anchor.offset(size);
-        self.container.translate(shift + Vector2::y() * size.y);
+        self.container.translate(shift);
 
         self.container.draw(ctx);
     }

@@ -21,7 +21,7 @@ impl ColumnLayout {
     pub fn new(padding: f32) -> Self {
         Self {
             origin: Vector2::zeros(),
-            available: Vector2::repeat(f32::MAX),
+            available: Vector2::repeat(0.0),
             container: Container::default(),
 
             padding,
@@ -48,8 +48,8 @@ impl ColumnLayout {
     }
 
     /// How much space is available to this container. If the root layout
-    /// element was not given a defined size, this will return a very large
-    /// number on the order of [`f32::MAX`].
+    /// element was not given a defined size, this will not return a positive
+    /// number (≤ 0).
     pub fn available(&self) -> Vector2<f32> {
         self.available
     }
@@ -58,21 +58,21 @@ impl ColumnLayout {
 impl Layout for ColumnLayout {
     fn layout(&mut self, ctx: &mut GraphicsContext, element: Box<dyn LayoutElement>) {
         let mut element = SizedLayoutElement::new(ctx, element);
-        let size = element.bounds.size();
+        let height = element.bounds.height();
 
         match self.direction {
             Direction::MinToMax => {
-                self.origin.y -= size.y;
+                self.origin.y -= height;
                 element.translate(self.origin);
                 self.origin.y -= self.padding;
             }
             Direction::MaxToMin => {
                 element.translate(self.origin);
-                self.origin.y += size.y + self.padding;
+                self.origin.y += height + self.padding;
             }
         }
 
-        self.available.y -= size.y + self.padding;
+        self.available.y -= height + self.padding;
         self.container.insert(element);
     }
 }
@@ -83,18 +83,21 @@ impl LayoutElement for ColumnLayout {
     }
 
     fn bounds(&self, _ctx: &mut GraphicsContext) -> Bounds2D {
-        let offset = self
-            .direction
-            .is_flipped()
-            .then(|| Vector2::y() * -self.container.bounds.height())
+        let needs_offset = matches!(self.direction, Direction::MinToMax);
+        let offset = needs_offset
+            .then(|| Vector2::y() * self.container.bounds.height())
             .unwrap_or_default();
         self.container.bounds.translated(offset)
     }
 
     fn draw(mut self: Box<Self>, ctx: &mut GraphicsContext) {
-        if self.direction.is_flipped() {
+        // When laying items out going down, the first item's top left point is
+        // put at the origin. Any items after that are put beneath it. Here we
+        // shift the whole container up so the bottom left corner of the last
+        // element is at the origin.
+        if matches!(self.direction, Direction::MinToMax) {
             let height = self.container.bounds.height();
-            self.container.translate(Vector2::y() * -height);
+            self.container.translate(Vector2::y() * height);
         }
 
         let container_width = self.container.bounds.size().x;

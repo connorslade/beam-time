@@ -45,7 +45,7 @@
   - [x] Switch to child.layout(ctx, &mut parent) for all types implementing LayoutElement
   - [x] Fix anchor point when dynamic_scale > scale
   - [x] Layout spacers
-  - [ ] Available space system?
+  - [x] Available space system?
 - [ ] Cache text layouts?
 
 ## User Interface

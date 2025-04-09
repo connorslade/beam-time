@@ -1,9 +1,7 @@
 use engine::{
     color::Rgb,
     drawable::{
-        shape::{rectangle::Rectangle, rectangle_outline::RectangleOutline},
-        sprite::Sprite,
-        text::Text,
+        shape::rectangle_outline::RectangleOutline, spacer::Spacer, sprite::Sprite, text::Text,
     },
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
@@ -20,7 +18,7 @@ use crate::{
         CAMPAIGN_BUTTON, OPTIONS_BUTTON, SANDBOX_BUTTON, TILE_EMITTER_RIGHT, TILE_MIRROR_A,
         TILE_MIRROR_B, UNDEAD_FONT,
     },
-    consts::{ACCENT_COLOR, EMITTER, GALVO, MIRROR},
+    consts::{ACCENT_COLOR, EMITTER, GALVO},
 };
 
 use super::Screen;
@@ -127,31 +125,35 @@ impl Screen for LayoutTestScreen {
             text.draw(ctx);
         }
 
+        // this ugly but whatever
         {
-            Rectangle::new(Vector2::repeat(4.0))
-                .position(ctx.size() / 4.0, Anchor::Center)
-                .color(Rgb::repeat(1.0))
-                .draw(ctx);
+            let mut root = RootLayout::new(ctx.size() / 4.0, Anchor::Center);
+            let mut column = ColumnLayout::new(padding).sized(Vector2::repeat(350.0));
+            let mut row = RowLayout::new(padding).sized(column.available());
 
-            let mut root = RootLayout::new(ctx.size() / 4.0, Anchor::BottomLeft);
-            let mut column = ColumnLayout::new(padding).sized(Vector2::repeat(500.0));
-            let mut row = RowLayout::new(padding);
+            Sprite::new(TILE_MIRROR_A)
+                .scale(Vector2::repeat(4.0))
+                .layout(ctx, &mut row);
 
-            for tile in MIRROR {
-                Sprite::new(tile)
-                    .scale(Vector2::repeat(4.0))
-                    .layout(ctx, &mut row);
-            }
-
-            row.layout(ctx, &mut column);
-
-            let mut column2 = ColumnLayout::new(padding);
-            // .direction(Direction::MaxToMin);
-
+            let mut row2 = RowLayout::new(padding)
+                .sized(row.available())
+                .direction(Direction::MaxToMin);
             Sprite::new(TILE_MIRROR_B)
                 .scale(Vector2::repeat(4.0))
+                .layout(ctx, &mut row2);
+            Spacer::new(Vector2::x() * row2.available().x).layout(ctx, &mut row2);
+
+            row2.layout(ctx, &mut row);
+            row.layout(ctx, &mut column);
+
+            let mut column2 = ColumnLayout::new(padding)
+                .direction(Direction::MaxToMin)
+                .sized(column.available());
+
+            Sprite::new(TILE_MIRROR_A)
+                .scale(Vector2::repeat(4.0))
                 .layout(ctx, &mut column2);
-            // Spacer::new(Vector2::y() * column.available().y).layout(ctx, &mut column);
+            Spacer::new(Vector2::y() * column2.available().y).layout(ctx, &mut column);
 
             column2.layout(ctx, &mut column);
             column.layout(ctx, &mut root);
