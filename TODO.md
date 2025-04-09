@@ -179,6 +179,37 @@
 - [ ] Setting model on title page
 - [x] Paused modal in game
 
+## Levels
+
+- [ ] More basic logic gates
+- [ ] Gates that take in more inputs
+- [ ] Force them to make OR gates both ways
+- [ ] Randomizer that repeats every 512 ticks or smth
+- [ ] Implement one cell of Conways game of life
+- [ ] Triple it (multiply by three)
+- [ ] Demuxer
+- [ ] R/W Multi-bit register
+- [ ] Down counter (inverted counter)
+- [ ] Up down counter
+- [ ] Shift registers (Serial / parallel, in / out)
+- [ ] Error checking (parity bit)
+- [ ] Error correction?
+- [ ] All types of flip flops (SR, D, JK, T)
+- [ ] Sequence (primes?)
+- [ ] Program counter (Increment and jump)
+- [ ] BCD converters
+- [ ] Ring counter and Johnson counter
+- [ ] Comparators
+- [ ] https://en.wikipedia.org/wiki/Aiken_code
+- [ ] https://en.wikipedia.org/wiki/Barrel_shifter (also barrel rotater?)
+- [ ] https://en.wikipedia.org/wiki/Carry-save_adder (Accumulator)
+- [ ] https://en.wikipedia.org/wiki/Serial_binary_adder
+- [ ] https://en.wikipedia.org/wiki/Find_first_set
+- [ ] https://en.wikipedia.org/wiki/Differential_coding
+- [ ] Twos compliment
+- [ ] Stack
+- [ ] Queue
+
 ---
 
 ## Queue
