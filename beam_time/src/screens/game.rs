@@ -214,6 +214,10 @@ impl GameScreen {
 
     fn paused_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         if let Some(_pause) = &mut self.paused {
+            // Don't add to time played when game is paused
+            let delta = Duration::from_secs_f32(ctx.delta_time);
+            self.board.transient.open_timestamp += delta;
+
             ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::UI_OVERLAY));
 
             let (margin, padding) = state.spacing(ctx);
