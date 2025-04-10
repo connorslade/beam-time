@@ -157,6 +157,14 @@ impl Board {
     ) {
         let this = &mut self.transient.selection;
 
+        if this.selection_start.is_none()
+            && hovered
+            && ctx.input.key_down(KeyCode::ShiftLeft)
+            && ctx.input.mouse_pressed(MouseButton::Left)
+        {
+            this.selection_start = Some(pos);
+        }
+
         // Return quickly if there is not currently a selection.
         if this.working_selection.is_none() && this.selection.is_empty() {
             return;
@@ -212,13 +220,6 @@ impl Board {
                         .draw(ctx);
                 }
             }
-        }
-
-        if hovered
-            && ctx.input.key_down(KeyCode::ShiftLeft)
-            && ctx.input.mouse_pressed(MouseButton::Left)
-        {
-            this.selection_start = Some(pos);
         }
     }
 }
