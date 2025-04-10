@@ -64,9 +64,9 @@ pub struct LevelMeta {
 
 #[derive(Default, Clone, Serialize, Deserialize)]
 pub struct Note {
-    position: Vector2<f32>,
-    title: String,
-    body: String,
+    pub position: Vector2<f32>,
+    pub title: String,
+    pub body: String,
 }
 
 impl Board {
@@ -74,15 +74,11 @@ impl Board {
         Self {
             meta: BoardMeta {
                 version: SAVE_VERSION,
-                name,
-                level: None,
-                size: None,
                 last_played: Utc::now(),
-                playtime: 0,
+                name,
+                ..Default::default()
             },
-            notes: Vec::new(),
-            tiles: Map::default(),
-            transient: TransientBoardState::default(),
+            ..Default::default()
         }
     }
 
@@ -143,7 +139,7 @@ impl Board {
 
 impl BoardMeta {
     pub fn is_solved(&self) -> bool {
-        self.level.map(|x| x.solved) == Some(true)
+        self.level.map(|x| x.solved).unwrap_or_default()
     }
 }
 

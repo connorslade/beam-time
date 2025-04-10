@@ -1,6 +1,5 @@
 use std::mem;
 
-use crate::assets::{HISTOGRAM_MARKER, UNDEAD_FONT};
 use crate::game::board::Board;
 use crate::{
     app::App,
@@ -13,13 +12,12 @@ use crate::{
 use beam_logic::simulation::{state::BeamState, tile::BeamTile};
 use common::misc::in_bounds;
 use engine::{
-    drawable::{sprite::Sprite, text::Text},
+    drawable::sprite::Sprite,
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
-    graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{column::ColumnLayout, root::RootLayout, Justify, LayoutElement},
+    graphics_context::{Anchor, GraphicsContext},
 };
 
 use super::tile::{BeamTileBaseSprite, TileAsset};
@@ -43,42 +41,13 @@ impl Board {
         let shift_down = ctx.input.key_down(KeyCode::ShiftLeft);
         self.transient.holding.render(ctx, shared);
         self.update_selection(ctx, shared, sim);
+        self.render_notes(ctx, state, shared);
 
         if sim.is_none()
             && ctx.input.key_down(KeyCode::ControlLeft)
             && ctx.input.key_pressed(KeyCode::KeyZ)
         {
             self.transient.history.pop(&mut self.tiles);
-        }
-
-        const MESSAGE: &str = "This is a test of the new label system I am considering adding to Beam time to improve the user experience of sandbox worlds.";
-        for (pos, title, note) in [(Vector2::new(10.0, 10.0), "Little Note", MESSAGE)] {
-            let pos = shared.world_to_screen_space(ctx, pos);
-
-            let (_, padding) = state.spacing(ctx);
-            let mut root = RootLayout::new(pos, Anchor::BottomCenter);
-            let mut column = ColumnLayout::new(padding).justify(Justify::Center);
-
-            Text::new(UNDEAD_FONT, title)
-                .scale(Vector2::repeat(2.0))
-                .z_index(layer::OVERLAY)
-                .layout(ctx, &mut column);
-
-            if shared.scale >= 6.0 {
-                Text::new(UNDEAD_FONT, note)
-                    .max_width(16.0 * 20.0 * ctx.scale_factor)
-                    .scale(Vector2::repeat(2.0))
-                    .z_index(layer::OVERLAY)
-                    .layout(ctx, &mut column);
-            }
-
-            Sprite::new(HISTOGRAM_MARKER)
-                .scale(Vector2::repeat(2.0))
-                .z_index(layer::OVERLAY)
-                .layout(ctx, &mut column);
-
-            column.layout(ctx, &mut root);
-            root.draw(ctx);
         }
 
         for x in 0..tile_counts.x {

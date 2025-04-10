@@ -14,11 +14,13 @@ use engine::{
         },
     },
     graphics_context::{Anchor, Drawable, GraphicsContext},
+    layout::{bounds::Bounds2D, LayoutElement},
+    memory::MemoryKey,
 };
 
 use crate::assets::UNDEAD_FONT;
 
-pub struct TextInput<'a> {
+pub struct TextInput {
     position: Vector2<f32>,
     position_anchor: Anchor,
     z_index: i16,
@@ -26,7 +28,7 @@ pub struct TextInput<'a> {
     width: f32,
     scale: f32,
 
-    state: &'a mut TextInputState,
+    key: MemoryKey,
 }
 
 #[derive(Default)]
@@ -36,8 +38,8 @@ pub struct TextInputState {
     t: f32,
 }
 
-impl<'a> TextInput<'a> {
-    pub fn new(state: &'a mut TextInputState) -> Self {
+impl TextInput {
+    pub fn new(key: MemoryKey) -> Self {
         Self {
             position: Vector2::zeros(),
             position_anchor: Anchor::BottomLeft,
@@ -46,7 +48,7 @@ impl<'a> TextInput<'a> {
             width: 0.0,
             scale: 2.0,
 
-            state,
+            key,
         }
     }
 
@@ -65,6 +67,20 @@ impl<'a> TextInput<'a> {
         self.width = width;
         self
     }
+
+    pub fn content(&self, ctx: &mut GraphicsContext) -> String {
+        ctx.memory
+            .get::<TextInputState>(self.key)
+            .map(|x| x.content.to_owned())
+            .unwrap_or_default()
+    }
+
+    pub fn content_for(ctx: &mut GraphicsContext, key: MemoryKey) -> String {
+        ctx.memory
+            .get::<TextInputState>(key)
+            .map(|x| x.content.to_owned())
+            .unwrap_or_default()
+    }
 }
 
 impl TextInputState {
@@ -81,8 +97,14 @@ impl TextInputState {
     }
 }
 
-impl Drawable for TextInput<'_> {
+impl Drawable for TextInput {
     fn draw(self, ctx: &mut GraphicsContext) {
+        let state = ctx
+            .memory
+            .get_or_insert(self.key, TextInputState::default());
+        state.t += ctx.delta_time;
+        let t = state.t;
+
         for key in ctx
             .input
             .key_actions
@@ -91,22 +113,22 @@ impl Drawable for TextInput<'_> {
         {
             let backspace = key.physical_key == PhysicalKey::Code(KeyCode::Backspace);
             if backspace || key.text.is_some() {
-                self.state.t = 0.0;
-                if mem::take(&mut self.state.unedited) {
-                    self.state.content.clear();
+                state.t = 0.0;
+                if mem::take(&mut state.unedited) {
+                    state.content.clear();
                 }
             }
 
             if backspace {
-                self.state.content.pop();
+                state.content.pop();
             } else if let Some(ref text) = key.text {
-                self.state.content.push_str(text.as_str());
+                state.content.push_str(text.as_str());
             }
         }
 
         let padding = 4.0 * ctx.scale_factor;
 
-        let text = Text::new(UNDEAD_FONT, &self.state.content)
+        let text = Text::new(UNDEAD_FONT, &state.content)
             .position(
                 self.position + Vector2::repeat(padding),
                 self.position_anchor,
@@ -114,25 +136,45 @@ impl Drawable for TextInput<'_> {
             .z_index(self.z_index)
             .scale(Vector2::repeat(self.scale));
         let size = text.size(ctx);
+        text.draw(ctx);
 
-        ctx.draw(text);
-        ctx.draw(
-            RectangleOutline::new(Vector2::new(self.width, size.y + padding * 3.0), 2.0)
+        RectangleOutline::new(Vector2::new(self.width, size.y + padding * 3.0), 2.0)
+            .position(
+                self.position - Vector2::repeat(padding),
+                self.position_anchor,
+            )
+            .color(Rgb::repeat(0.75))
+            .draw(ctx);
+
+        if (t * 4.0).cos() > 0.0 {
+            Rectangle::new(Vector2::new(2.0 * ctx.scale_factor, size.y))
                 .position(
-                    self.position - Vector2::repeat(padding),
-                    self.position_anchor,
-                )
-                .color(Rgb::repeat(0.75)),
-        );
-
-        self.state.t += ctx.delta_time;
-        if (self.state.t * 4.0).cos() > 0.0 {
-            ctx.draw(
-                Rectangle::new(Vector2::new(2.0 * ctx.scale_factor, size.y)).position(
                     self.position + Vector2::repeat(padding) + Vector2::x() * (size.x + padding),
                     self.position_anchor,
-                ),
-            );
+                )
+                .draw(ctx);
         }
+    }
+}
+
+impl LayoutElement for TextInput {
+    fn translate(&mut self, distance: Vector2<f32>) {
+        self.position += distance;
+    }
+
+    fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
+        let font = ctx.assets.get_font(UNDEAD_FONT);
+        let font_height = font.desc.height * ctx.scale_factor * self.scale;
+
+        let padding = 4.0 * ctx.scale_factor;
+        let height = font_height + padding * 3.0;
+
+        // todo: account for position anchor
+        let pos = self.position - Vector2::repeat(padding);
+        Bounds2D::new(pos, pos + Vector2::new(self.width, height))
+    }
+
+    fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
+        (*self).draw(ctx);
     }
 }

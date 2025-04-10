@@ -5,14 +5,10 @@ use rand::{seq::SliceRandom, thread_rng, Rng};
 #[cfg(feature = "steam")]
 use crate::game::achievements::award_campaign_achievements;
 use crate::{
-    assets::UNDEAD_FONT,
-    consts::{layer, BACKGROUND_COLOR},
+    consts::BACKGROUND_COLOR,
     game::{board::Board, render::beam::BeamStateRender, shared_state::SharedState},
-    ui::{
-        components::modal::Modal, confetti::Confetti, level_panel::LevelPanel, misc::modal_buttons,
-        tile_picker::TilePicker,
-    },
-    util::{human_duration, key_events},
+    ui::{confetti::Confetti, level_panel::LevelPanel, tile_picker::TilePicker},
+    util::key_events,
     App,
 };
 use beam_logic::{
@@ -22,17 +18,16 @@ use beam_logic::{
     },
 };
 use engine::{
-    color::Rgb,
-    drawable::text::Text,
-    exports::{
-        nalgebra::Vector2,
-        winit::{event::MouseButton, keyboard::KeyCode},
-    },
+    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::GraphicsContext,
-    layout::{column::ColumnLayout, LayoutElement},
 };
 
 use super::Screen;
+
+use note_edit_modal::NoteEditModal;
+use paused_modal::PausedModal;
+mod note_edit_modal;
+mod paused_modal;
 
 pub struct GameScreen {
     shared: SharedState,
@@ -43,6 +38,7 @@ pub struct GameScreen {
     level_panel: LevelPanel,
     confetti: Confetti,
     paused: Option<PausedModal>,
+    note_edit: Option<NoteEditModal>,
 
     level_result: Option<LevelResult>,
     save_file: PathBuf,
@@ -50,12 +46,12 @@ pub struct GameScreen {
     tps: f32,
 }
 
-struct PausedModal {}
-
 impl Screen for GameScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         self.paused_modal(state, ctx);
-        if self.paused.is_none() {
+        self.note_edit_modal(state, ctx);
+
+        if self.paused.is_none() && self.note_edit.is_none() {
             self.shared.update(state, ctx);
         }
 
@@ -200,6 +196,7 @@ impl GameScreen {
             level_panel: LevelPanel::default(),
             confetti: Confetti::new(),
             paused: None,
+            note_edit: Some(NoteEditModal {}),
 
             level_result: None,
             save_file,
@@ -210,64 +207,6 @@ impl GameScreen {
 
     pub fn load(save_file: PathBuf) -> Self {
         GameScreen::new(Board::load(&save_file).unwrap_or_default(), save_file)
-    }
-
-    fn paused_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        if let Some(_pause) = &mut self.paused {
-            // Don't add to time played when game is paused
-            let delta = Duration::from_secs_f32(ctx.delta_time);
-            self.board.transient.open_timestamp += delta;
-
-            ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::UI_OVERLAY));
-
-            let (margin, padding) = state.spacing(ctx);
-            let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
-                .margin(margin)
-                .layer(layer::UI_OVERLAY);
-
-            let origin = modal.origin(ctx);
-            let size = modal.inner_size();
-            modal.draw(ctx, |ctx, root| {
-                let body = |text| {
-                    Text::new(UNDEAD_FONT, text)
-                        .scale(Vector2::repeat(2.0))
-                        .max_width(size.x)
-                };
-
-                let mut column = ColumnLayout::new(padding);
-                let name = match self.board.transient.level {
-                    Some(level) => format!("Campaign: {}", level.name),
-                    None => format!("Sandbox: {}", self.board.meta.name),
-                };
-
-                body(&name)
-                    .scale(Vector2::repeat(4.0))
-                    .layout(ctx, &mut column);
-
-                let playtime = self.board.meta.playtime
-                    + self.board.transient.open_timestamp.elapsed().as_secs();
-                let playtime = format!("Playtime: {}", human_duration(playtime));
-                body(&playtime).layout(ctx, &mut column);
-
-                column.layout(ctx, root);
-
-                let clicking = ctx.input.mouse_down(MouseButton::Left);
-                let (exit, resume) = modal_buttons(
-                    ctx,
-                    origin + Vector2::new(margin, -size.y - ctx.scale_factor * 12.0),
-                    size.x,
-                    ("Exit", "Resume"),
-                );
-
-                if clicking && resume {
-                    self.paused = None;
-                }
-
-                if clicking && exit {
-                    state.pop_screen();
-                }
-            });
-        }
     }
 }
 
