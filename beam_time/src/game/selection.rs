@@ -4,7 +4,7 @@ use crate::{
     util::key_events,
 };
 use ahash::HashSet;
-use beam_logic::{simulation::state::BeamState, tile::Tile};
+use beam_logic::{level::Level, simulation::state::BeamState, tile::Tile};
 use common::{direction::Direction, map::Map, misc::in_bounds};
 use engine::{
     color::Rgb,
@@ -37,6 +37,8 @@ impl SelectionState {
         tiles: &mut Map<Tile>,
         history: &mut History,
         holding: &mut Holding,
+        level: Option<&Level>,
+        size: Option<Vector2<u32>>,
     ) {
         self.working_selection = self.selection_start.map(|start| {
             let end = shared
@@ -81,6 +83,7 @@ impl SelectionState {
             self.selection_start = None;
             let new_selection = (selection.0.x..=selection.1.x)
                 .flat_map(|x| (selection.0.y..=selection.1.y).map(move |y| Vector2::new(x, y)))
+                .filter(|&pos| valid_tile(pos, level, size))
                 .collect();
 
             // if ctrl down, add to selection
@@ -153,12 +156,18 @@ impl SelectionState {
         hovered: bool,
         pos: Vector2<i32>,
         render_pos: Vector2<f32>,
+        level: Option<&Level>,
+        size: Option<Vector2<u32>>,
     ) {
         let ctrl = ctx.input.key_down(KeyCode::ControlLeft);
         let alt = ctx.input.key_down(KeyCode::AltLeft);
         let shift = ctx.input.key_down(KeyCode::ShiftLeft);
 
         let in_selection = |pos| {
+            if !valid_tile(pos, level, size) {
+                return false;
+            }
+
             let selection = self.selection.contains(&pos);
             let working = self
                 .working_selection
@@ -209,4 +218,13 @@ impl SelectionState {
             self.selection_start = Some(pos);
         }
     }
+}
+
+fn valid_tile(pos: Vector2<i32>, level: Option<&Level>, size: Option<Vector2<u32>>) -> bool {
+    let moveable = level.map(|x| x.permanent.contains(&pos)) != Some(true);
+    let in_bounds = size
+        .map(|size| in_bounds(pos, (Vector2::repeat(0), size.map(|x| x as i32 - 1))))
+        .unwrap_or(true);
+
+    moveable && in_bounds
 }

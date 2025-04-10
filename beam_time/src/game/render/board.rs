@@ -47,6 +47,8 @@ impl Board {
             &mut self.tiles,
             &mut self.transient.history,
             &mut self.transient.holding,
+            self.transient.level,
+            self.meta.size,
         );
 
         if sim.is_none()
@@ -102,9 +104,15 @@ impl Board {
                     (render_pos - half_tile, render_pos + half_tile),
                 );
 
-                self.transient
-                    .selection
-                    .update_tile(ctx, shared, hovered, pos, render_pos);
+                self.transient.selection.update_tile(
+                    ctx,
+                    shared,
+                    hovered,
+                    pos,
+                    render_pos,
+                    self.transient.level,
+                    self.meta.size,
+                );
 
                 let tile = self.tiles.get(pos);
                 let permanent = self.is_permanent(&pos);
