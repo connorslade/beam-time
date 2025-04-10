@@ -41,9 +41,8 @@ pub struct SandboxScreen {
     create: Option<CreateModal>,
 }
 
-pub struct CreateModal {
-    name_input: TextInputState,
-}
+#[derive(Default)]
+pub struct CreateModal {}
 
 impl Screen for SandboxScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
@@ -127,9 +126,7 @@ impl Screen for SandboxScreen {
             )
             .scale(Vector2::repeat(4.0));
         if create_button.is_clicked(ctx) {
-            self.create = Some(CreateModal {
-                name_input: TextInputState::new("New Sandbox".into()),
-            });
+            self.create = Some(CreateModal {});
         }
         ctx.draw(create_button);
     }
@@ -154,7 +151,7 @@ impl SandboxScreen {
         let exit = ctx.input.consume_key_pressed(KeyCode::Escape);
         let enter = ctx.input.consume_key_pressed(KeyCode::Enter);
 
-        if let Some(create) = &mut self.create {
+        if let Some(_create) = &mut self.create {
             ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::OVERLAY));
 
             let (margin, padding) = state.spacing(ctx);
@@ -184,7 +181,9 @@ impl SandboxScreen {
                 //     .width(size.x.min(400.0 * ctx.scale_factor))
                 //     .layout(ctx, &mut column);
 
-                let content = create.name_input.content();
+                // let content = create.name_input.content();
+                let content = String::new();
+                // TODO: THIS!!!
 
                 let no_name = content.is_empty();
                 let invalid_name = content
@@ -206,12 +205,14 @@ impl SandboxScreen {
             });
 
             if enter && !name_error {
-                let name = create.name_input.content();
+                // TODO: FIX THIS ALSO!!
+                // let name = create.name_input.content();
+                let name = String::new();
 
                 let file_name = name.replace(' ', "_");
                 let path = self.world_dir.join(file_name).with_extension("bin");
 
-                let board = Board::new_sandbox(name.into());
+                let board = Board::new_sandbox(name);
                 let screen = GameScreen::new(board, path);
                 state.push_screen(screen);
             }

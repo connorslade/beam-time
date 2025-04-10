@@ -84,7 +84,7 @@ impl Hash for MemoryKey {
 #[macro_export]
 macro_rules! memory_key {
     () => {
-        $crate::memory::MemoryKey::new(concat!(file!(), line!()))
+        $crate::memory::MemoryKey::new(concat!(file!(), line!(), column!()))
     };
     ($($ctx:expr),+) => {
         {

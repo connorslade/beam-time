@@ -1,4 +1,5 @@
 use nalgebra::Vector2;
+use winit::event::MouseButton;
 
 use crate::{
     graphics_context::{Drawable, GraphicsContext},
@@ -28,6 +29,10 @@ impl LayoutTracker {
         self.bounds(ctx)
             .map(|x| x.contains(ctx.input.mouse))
             .unwrap_or_default()
+    }
+
+    pub fn clicked(&self, ctx: &GraphicsContext, mouse: MouseButton) -> bool {
+        self.hovered(ctx) && ctx.input.mouse_pressed(mouse)
     }
 }
 

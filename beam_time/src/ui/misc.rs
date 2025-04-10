@@ -109,3 +109,11 @@ pub fn modal_buttons(
 
     hovered
 }
+
+pub fn body(max_width: f32) -> impl Fn(&str) -> Text {
+    move |text| {
+        Text::new(UNDEAD_FONT, text)
+            .scale(Vector2::repeat(2.0))
+            .max_width(max_width)
+    }
+}

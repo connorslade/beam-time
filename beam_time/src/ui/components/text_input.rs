@@ -1,4 +1,4 @@
-use std::{cell::RefCell, mem, u32};
+use std::{cell::RefCell, mem};
 
 use engine::{
     color::Rgb,
@@ -9,13 +9,13 @@ use engine::{
     exports::{
         nalgebra::Vector2,
         winit::{
-            event::ElementState,
+            event::{ElementState, MouseButton},
             keyboard::{KeyCode, PhysicalKey},
         },
     },
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{bounds::Bounds2D, LayoutElement},
-    memory::MemoryKey,
+    memory::{Memory, MemoryKey},
 };
 
 use crate::assets::UNDEAD_FONT;
@@ -26,8 +26,9 @@ pub struct TextInput {
     z_index: i16,
     scale: f32,
 
+    default_content: &'static str,
+    default_active: bool,
     width: f32,
-    default: &'static str,
     max_chars: u32,
     key: MemoryKey,
 
@@ -37,6 +38,7 @@ pub struct TextInput {
 #[derive(Default)]
 pub struct TextInputState {
     content: String,
+    selected: bool,
     unedited: bool,
     t: f32,
 }
@@ -49,17 +51,28 @@ impl TextInput {
             z_index: 0,
             scale: 2.0,
 
-            width: 0.0,
-            default: "",
+            default_content: "",
+            default_active: false,
             max_chars: u32::MAX,
+            width: 0.0,
             key,
 
             text: RefCell::new(None),
         }
     }
 
-    pub fn default(self, default: &'static str) -> Self {
-        Self { default, ..self }
+    pub fn default_active(self, default_active: bool) -> Self {
+        Self {
+            default_active,
+            ..self
+        }
+    }
+
+    pub fn placeholder(self, default_content: &'static str) -> Self {
+        Self {
+            default_content,
+            ..self
+        }
     }
 
     pub fn position(self, position: Vector2<f32>, position_anchor: Anchor) -> Self {
@@ -109,9 +122,7 @@ impl TextInput {
         }
 
         let padding = 4.0 * ctx.scale_factor;
-        let state = ctx
-            .memory
-            .get_or_insert_with(self.key, || TextInputState::new(self.default.into()));
+        let state = self.state(ctx.memory);
 
         let text = Text::new(UNDEAD_FONT, &state.content)
             .position(Vector2::repeat(padding), self.position_anchor)
@@ -121,19 +132,14 @@ impl TextInput {
 
         self.text.replace(Some(text));
     }
-}
 
-impl TextInputState {
-    pub fn new(content: String) -> Self {
-        Self {
-            content,
+    fn state<'a>(&self, memory: &'a mut Memory) -> &'a mut TextInputState {
+        memory.get_or_insert_with(self.key, || TextInputState {
+            content: self.default_content.into(),
+            selected: self.default_active,
             unedited: true,
-            t: 0.0,
-        }
-    }
-
-    pub fn content(&self) -> &str {
-        &self.content
+            ..Default::default()
+        })
     }
 }
 
@@ -141,20 +147,44 @@ impl Drawable for TextInput {
     fn draw(self, ctx: &mut GraphicsContext) {
         let padding = 4.0 * ctx.scale_factor;
 
-        self.generate_text(ctx);
-        let text = self.text.take().unwrap().position(
+        let hovered = self.bounds(ctx).contains(ctx.input.mouse);
+        let state = self.state(ctx.memory);
+
+        if ctx.input.mouse_pressed(MouseButton::Left) {
+            state.t = if hovered { 0.0 } else { state.t };
+            state.selected = hovered;
+        }
+
+        state.t += ctx.delta_time;
+        let (t, selected) = (state.t, state.selected);
+        let color = if state.unedited {
+            Rgb::repeat(0.80)
+        } else {
+            Rgb::repeat(1.0)
+        };
+
+        let text = self.text.take().unwrap();
+        let text = text.color(color).position(
             self.position + Vector2::repeat(padding),
             self.position_anchor,
         );
+
         let size = text.size(ctx);
         text.draw(ctx);
 
-        let state = ctx
-            .memory
-            .get_or_insert_with(self.key, || TextInputState::new(self.default.into()));
-        state.t += ctx.delta_time;
-        let t = state.t;
+        RectangleOutline::new(Vector2::new(self.width, size.y + padding * 3.0), 2.0)
+            .position(
+                self.position - Vector2::repeat(padding),
+                self.position_anchor,
+            )
+            .color(Rgb::repeat(0.75))
+            .draw(ctx);
 
+        if !selected {
+            return;
+        };
+
+        let state = self.state(ctx.memory);
         for key in ctx
             .input
             .key_actions
@@ -171,27 +201,17 @@ impl Drawable for TextInput {
 
             if backspace {
                 state.content.pop();
-            } else if let Some(ref text) = key.text {
-                if (state.content.len() as u32) < self.max_chars {
-                    state.content.push_str(text.as_str());
-                }
+            } else if let (Some(text), true) =
+                (&key.text, (state.content.len() as u32) < self.max_chars)
+            {
+                state.content.push_str(text.as_str());
             }
         }
 
-        RectangleOutline::new(Vector2::new(self.width, size.y + padding * 3.0), 2.0)
-            .position(
-                self.position - Vector2::repeat(padding),
-                self.position_anchor,
-            )
-            .color(Rgb::repeat(0.75))
-            .draw(ctx);
-
         if (t * 4.0).cos() > 0.0 {
-            Rectangle::new(Vector2::new(2.0 * ctx.scale_factor, size.y))
-                .position(
-                    self.position + Vector2::repeat(padding) + Vector2::x() * (size.x + padding),
-                    self.position_anchor,
-                )
+            let pos = self.position + Vector2::x() * (size.x + padding * 1.5);
+            Rectangle::new(Vector2::new(2.0 * ctx.scale_factor, size.y + padding * 2.0))
+                .position(pos, self.position_anchor)
                 .draw(ctx);
         }
     }
@@ -207,7 +227,7 @@ impl LayoutElement for TextInput {
         let size = self.text.borrow().as_ref().unwrap().size(ctx);
 
         let padding = 4.0 * ctx.scale_factor;
-        let pos = self.position - Vector2::repeat(padding);
+        let pos = -Vector2::repeat(padding);
         let offset = padding * 3.0 + ctx.scale_factor * 2.0;
 
         Bounds2D::new(pos, pos + Vector2::new(self.width, size.y + offset))
