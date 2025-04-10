@@ -18,11 +18,14 @@ use common::{consts::BINCODE_OPTIONS, map::Map};
 
 use super::{history::History, holding::Holding, selection::SelectionState};
 
-pub const SAVE_VERSION: u32 = 3;
+mod upgrade;
+
+pub const SAVE_VERSION: u32 = 4;
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct Board {
     pub meta: BoardMeta,
+    pub notes: Vec<Note>,
     pub tiles: Map<Tile>,
 
     #[serde(skip)]
@@ -59,6 +62,13 @@ pub struct LevelMeta {
     pub solved: bool,
 }
 
+#[derive(Default, Clone, Serialize, Deserialize)]
+pub struct Note {
+    position: Vector2<f32>,
+    title: String,
+    body: String,
+}
+
 impl Board {
     pub fn new_sandbox(name: String) -> Self {
         Self {
@@ -70,6 +80,7 @@ impl Board {
                 last_played: Utc::now(),
                 playtime: 0,
             },
+            notes: Vec::new(),
             tiles: Map::default(),
             transient: TransientBoardState::default(),
         }
@@ -79,9 +90,7 @@ impl Board {
         info!("Loading board from {path:?}");
 
         let file = File::open(path)?;
-        let mut board = bincode::DefaultOptions::new()
-            .with_varint_encoding()
-            .deserialize_from::<_, Board>(file)?;
+        let mut board = upgrade::load(file)?;
         board.transient.save_path = Some(path.to_path_buf());
 
         trace!("{:?}", board.meta);
@@ -90,7 +99,7 @@ impl Board {
 
     pub fn load_meta(path: &PathBuf) -> Result<BoardMeta> {
         let file = File::open(path)?;
-        let meta = BINCODE_OPTIONS.deserialize_from::<_, BoardMeta>(file)?;
+        let meta = upgrade::load_meta(file)?;
         Ok(meta)
     }
 
@@ -158,6 +167,7 @@ impl Clone for Board {
     fn clone(&self) -> Self {
         Self {
             meta: self.meta.clone(),
+            notes: self.notes.clone(),
             tiles: self.tiles.clone(),
             transient: TransientBoardState::default(),
         }
