@@ -114,10 +114,7 @@ impl TextInput {
             .get_or_insert_with(self.key, || TextInputState::new(self.default.into()));
 
         let text = Text::new(UNDEAD_FONT, &state.content)
-            .position(
-                self.position + Vector2::repeat(padding),
-                self.position_anchor,
-            )
+            .position(Vector2::repeat(padding), self.position_anchor)
             .scale(Vector2::repeat(self.scale))
             .z_index(self.z_index)
             .max_width(self.width);
@@ -145,7 +142,10 @@ impl Drawable for TextInput {
         let padding = 4.0 * ctx.scale_factor;
 
         self.generate_text(ctx);
-        let text = self.text.take().unwrap();
+        let text = self.text.take().unwrap().position(
+            self.position + Vector2::repeat(padding),
+            self.position_anchor,
+        );
         let size = text.size(ctx);
         text.draw(ctx);
 
@@ -199,7 +199,6 @@ impl Drawable for TextInput {
 
 impl LayoutElement for TextInput {
     fn translate(&mut self, distance: Vector2<f32>) {
-        self.invalidate_text();
         self.position += distance;
     }
 
@@ -210,7 +209,9 @@ impl LayoutElement for TextInput {
         let padding = 4.0 * ctx.scale_factor;
         let pos = self.position - Vector2::repeat(padding);
         let offset = padding * 3.0 + ctx.scale_factor * 2.0;
+
         Bounds2D::new(pos, pos + Vector2::new(self.width, size.y + offset))
+            .translated(self.position)
     }
 
     fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {

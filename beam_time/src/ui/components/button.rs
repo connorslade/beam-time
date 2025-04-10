@@ -85,7 +85,7 @@ impl Button {
         }
 
         let sprite = Sprite::new(self.asset)
-            .position(self.pos, self.anchor)
+            .position(Vector2::zeros(), self.anchor)
             .scale(self.scale);
         self.sprite.replace(Some(sprite));
     }
@@ -106,6 +106,7 @@ impl Drawable for Button {
         self.generate_sprite();
         let sprite = self.sprite.take().unwrap();
         let sprite = sprite
+            .position(self.pos, self.anchor)
             .color(color)
             .dynamic_scale(scale, Anchor::Center)
             .tracked(tracker);
@@ -130,8 +131,6 @@ impl Drawable for Button {
 
 impl LayoutElement for Button {
     fn translate(&mut self, distance: Vector2<f32>) {
-        // todo: invaginating on every translate is bad...
-        self.invalidate_sprite();
         self.pos += distance;
     }
 
@@ -140,7 +139,7 @@ impl LayoutElement for Button {
         let sprite = self.sprite.borrow();
         let sprite = sprite.as_ref().unwrap();
 
-        sprite.bounds(ctx)
+        sprite.bounds(ctx).translated(self.pos)
     }
 
     fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
