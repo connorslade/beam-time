@@ -95,7 +95,9 @@ impl TextInput {
     pub fn max_chars(self, max_chars: u32) -> Self {
         Self { max_chars, ..self }
     }
+}
 
+impl TextInput {
     pub fn content(&self, ctx: &mut GraphicsContext) -> String {
         ctx.memory
             .get::<TextInputState>(self.key)
@@ -108,6 +110,12 @@ impl TextInput {
             .get::<TextInputState>(key)
             .map(|x| x.content.to_owned())
             .unwrap_or_default()
+    }
+
+    pub fn with_content(&self, ctx: &mut GraphicsContext, content: String) {
+        let state = self.state(ctx.memory);
+        state.content = content;
+        state.unedited = false;
     }
 }
 
@@ -185,10 +193,8 @@ impl Drawable for TextInput {
         };
 
         let state = self.state(ctx.memory);
-        for key in ctx
-            .input
-            .key_actions
-            .iter()
+        for key in mem::take(&mut ctx.input.key_actions)
+            .into_iter()
             .filter(|x| x.state == ElementState::Pressed)
         {
             let backspace = key.physical_key == PhysicalKey::Code(KeyCode::Backspace);

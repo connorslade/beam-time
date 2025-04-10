@@ -196,7 +196,7 @@ impl GameScreen {
             level_panel: LevelPanel::default(),
             confetti: Confetti::new(),
             paused: None,
-            note_edit: Some(NoteEditModal { index: 0 }),
+            note_edit: None,
 
             level_result: None,
             save_file,

@@ -1,3 +1,5 @@
+use std::mem;
+
 use engine::{
     color::Rgb,
     drawable::spacer::Spacer,
@@ -12,11 +14,14 @@ use engine::{
     },
     memory_key,
 };
+use itertools::Itertools;
+use ordered_float::OrderedFloat;
 
 use crate::{
     app::App,
     assets::TRASH,
     consts::layer,
+    game::board::Note,
     ui::{
         components::{button::Button, modal::Modal, text_input::TextInput},
         misc::body,
@@ -25,22 +30,54 @@ use crate::{
 
 use super::GameScreen;
 
-const NOTE_DESCRIPTION: &str = "Notes allow you to place blocks of text in the world. All notes have a title and optionally have body text that shows when zoomed in.";
+const DESCRIPTION: &str = "Notes allow you to place blocks of text in the world. \
+All notes have a title and optionally have body text that shows when zoomed in.";
+const DEFAULT_NAME: &str = "New Note";
+const DEFAULT_BODY: &str =
+    "This note doesn't have any content yet, click it to open the edit modal.";
 
-#[derive(Clone, Copy)]
 pub struct NoteEditModal {
     pub index: usize,
+    pub old: bool,
+}
+
+enum Operation {
+    None,
+    Delete,
+    Edit { title: String, body: String },
 }
 
 impl GameScreen {
     pub(super) fn note_edit_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        if let Some(note) = self.note_edit {
+        if self.note_edit.is_none() && ctx.input.consume_key_pressed(KeyCode::KeyN) {
+            let position = self.shared.screen_to_world_space(ctx, ctx.input.mouse);
+            let closest = closest_note(&self.board.notes, position);
+            let closest_distance = closest.map(|x| x.1).unwrap_or(f32::MAX);
+
+            if closest_distance < 1.0 {
+                let index = closest.unwrap().0;
+                self.note_edit = Some(NoteEditModal { index, old: true });
+            } else {
+                let index = self.board.notes.len();
+                self.board.notes.push(Note {
+                    position,
+                    title: DEFAULT_NAME.into(),
+                    body: DEFAULT_BODY.into(),
+                });
+
+                self.note_edit = Some(NoteEditModal { index, old: false });
+            }
+        }
+
+        if let Some(note) = &mut self.note_edit {
             ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::UI_OVERLAY));
 
             let (margin, padding) = state.spacing(ctx);
             let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
                 .margin(margin)
                 .layer(layer::UI_OVERLAY);
+
+            let (mut close, mut operation) = (false, Operation::None);
 
             let size = modal.inner_size();
             modal.draw(ctx, |ctx, root| {
@@ -68,38 +105,70 @@ impl GameScreen {
                                         .layout(ctx, layout);
 
                                     if tracker.clicked(ctx, MouseButton::Left) {
-                                        self.board.notes.remove(note.index);
-                                        self.note_edit = None;
+                                        operation = Operation::Delete;
+                                        close = true;
                                     }
                                 },
                             );
                         },
                     );
 
-                    body(NOTE_DESCRIPTION).layout(ctx, layout);
+                    body(DESCRIPTION).layout(ctx, layout);
 
-                    let (title, body) = (memory_key!(), memory_key!());
-                    TextInput::new(title)
+                    let title = TextInput::new(memory_key!())
                         .default_active(true)
                         .placeholder("Title")
                         .width(size.x.min(400.0 * ctx.scale_factor))
-                        .max_chars(32)
-                        .layout(ctx, layout);
+                        .max_chars(32);
 
-                    TextInput::new(body)
+                    let body = TextInput::new(memory_key!())
                         .placeholder("Body")
-                        .width(size.x)
-                        .layout(ctx, layout);
+                        .width(size.x);
+
+                    if mem::take(&mut note.old) {
+                        let note = &self.board.notes[note.index];
+                        title.with_content(ctx, note.title.to_owned());
+                        body.with_content(ctx, note.body.to_owned());
+                    }
 
                     if ctx.input.consume_key_pressed(KeyCode::Escape) {
-                        let note = &mut self.board.notes[note.index];
-                        note.title = TextInput::content_for(ctx, title);
-                        note.body = TextInput::content_for(ctx, body);
-
-                        self.note_edit = None;
+                        operation = Operation::Edit {
+                            title: title.content(ctx),
+                            body: body.content(ctx),
+                        };
+                        close = true;
                     }
+
+                    title.layout(ctx, layout);
+                    body.layout(ctx, layout);
                 });
             });
+
+            match operation {
+                Operation::Delete => {
+                    self.board.notes.remove(note.index);
+                }
+                Operation::Edit { title, body } => {
+                    let note = &mut self.board.notes[note.index];
+                    note.title = title;
+                    note.body = body;
+                }
+                Operation::None => {}
+            }
+
+            if close {
+                self.note_edit = None;
+            }
         }
     }
+}
+
+fn closest_note(notes: &[Note], pos: Vector2<f32>) -> Option<(usize, f32)> {
+    notes
+        .iter()
+        .enumerate()
+        .map(|(idx, x)| (idx, OrderedFloat((x.position - pos).magnitude_squared())))
+        .sorted_by_key(|(_x, dist)| *dist)
+        .next()
+        .map(|(idx, dist)| (idx, *dist))
 }

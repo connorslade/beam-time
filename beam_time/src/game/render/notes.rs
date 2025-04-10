@@ -1,6 +1,6 @@
 use engine::{
     drawable::{sprite::Sprite, text::Text},
-    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
+    exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{column::ColumnLayout, root::RootLayout, Justify, LayoutElement, LayoutMethods},
 };
@@ -9,10 +9,7 @@ use crate::{
     app::App,
     assets::{HISTOGRAM_MARKER, UNDEAD_FONT},
     consts::layer,
-    game::{
-        board::{Board, Note},
-        shared_state::SharedState,
-    },
+    game::{board::Board, shared_state::SharedState},
 };
 
 impl Board {
@@ -48,16 +45,6 @@ impl Board {
             );
 
             root.draw(ctx);
-        }
-
-        if ctx.input.key_pressed(KeyCode::KeyN) {
-            let position = shared.screen_to_world_space(ctx, ctx.input.mouse);
-            self.notes.push(Note {
-                position,
-                title: "New Note".to_owned(),
-                body: "This note doesn't have any content yet, click it to open the edit modal."
-                    .to_owned(),
-            });
         }
     }
 }

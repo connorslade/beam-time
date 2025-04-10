@@ -21,13 +21,13 @@ mod leaderboard;
 mod screens;
 #[cfg(feature = "steam")]
 mod steam;
-mod ui;
+pub mod ui;
 mod util;
 
 use app::App;
 #[cfg(feature = "debug")]
 use screens::debug_overlay::DebugOverlay;
-use screens::{layout_tests::LayoutTestScreen, title::TitleScreen, Screens};
+use screens::{title::TitleScreen, Screens};
 use util::include_atlas;
 
 fn main() -> Result<()> {
@@ -49,7 +49,6 @@ fn main() -> Result<()> {
                 #[cfg(feature = "debug")]
                 Box::new(DebugOverlay::default()),
                 Box::new(TitleScreen::default()),
-                // Box::new(LayoutTestScreen::default()),
             ]);
             screens.top().on_init(&mut app);
 
