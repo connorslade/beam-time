@@ -99,23 +99,23 @@ impl TextInput {
 
 impl TextInput {
     pub fn content(&self, ctx: &mut GraphicsContext) -> String {
-        ctx.memory
-            .get::<TextInputState>(self.key)
-            .map(|x| x.content.to_owned())
-            .unwrap_or_default()
-    }
-
-    pub fn content_for(ctx: &mut GraphicsContext, key: MemoryKey) -> String {
-        ctx.memory
-            .get::<TextInputState>(key)
-            .map(|x| x.content.to_owned())
-            .unwrap_or_default()
+        let state = ctx.memory.get::<TextInputState>(self.key);
+        if let Some(TextInputState {
+            content,
+            unedited: false,
+            ..
+        }) = state
+        {
+            content.to_owned()
+        } else {
+            String::new()
+        }
     }
 
     pub fn with_content(&self, ctx: &mut GraphicsContext, content: String) {
         let state = self.state(ctx.memory);
+        state.unedited = content.is_empty();
         state.content = content;
-        state.unedited = false;
     }
 }
 

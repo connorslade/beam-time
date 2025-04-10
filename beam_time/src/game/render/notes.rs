@@ -29,7 +29,7 @@ impl Board {
                         .z_index(layer::OVERLAY)
                         .layout(ctx, layout);
 
-                    if shared.scale >= 6.0 {
+                    if shared.scale >= 6.0 && !note.body.is_empty() {
                         Text::new(UNDEAD_FONT, &note.body)
                             .max_width(16.0 * 20.0 * ctx.scale_factor)
                             .scale(Vector2::repeat(2.0))

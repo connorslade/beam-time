@@ -132,10 +132,12 @@ impl GameScreen {
                     }
 
                     if ctx.input.consume_key_pressed(KeyCode::Escape) {
-                        operation = Operation::Edit {
-                            title: title.content(ctx),
-                            body: body.content(ctx),
-                        };
+                        let (title, body) = (title.content(ctx), body.content(ctx));
+                        if title.is_empty() && body.is_empty() {
+                            operation = Operation::Delete;
+                        } else {
+                            operation = Operation::Edit { title, body };
+                        }
                         close = true;
                     }
 
