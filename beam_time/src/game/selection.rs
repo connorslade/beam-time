@@ -4,8 +4,8 @@ use crate::{
     util::key_events,
 };
 use ahash::HashSet;
-use beam_logic::{level::Level, simulation::state::BeamState, tile::Tile};
-use common::{direction::Direction, map::Map, misc::in_bounds};
+use beam_logic::{level::Level, simulation::state::BeamState};
+use common::{direction::Direction, misc::in_bounds};
 use engine::{
     color::Rgb,
     drawable::{shape::rectangle::Rectangle, text::Text},
@@ -17,7 +17,7 @@ use engine::{
 };
 use thousands::Separable;
 
-use super::{history::History, holding::Holding, shared_state::SharedState};
+use super::{board::Board, holding::Holding, shared_state::SharedState};
 
 #[derive(Default)]
 pub struct SelectionState {
@@ -28,19 +28,16 @@ pub struct SelectionState {
     last_holding: Holding,
 }
 
-impl SelectionState {
-    pub fn update(
+impl Board {
+    pub(super) fn update_selection(
         &mut self,
         ctx: &mut GraphicsContext,
         shared: &SharedState,
         sim: &mut Option<BeamState>,
-        tiles: &mut Map<Tile>,
-        history: &mut History,
-        holding: &mut Holding,
-        level: Option<&Level>,
-        size: Option<Vector2<u32>>,
     ) {
-        self.working_selection = self.selection_start.map(|start| {
+        let this = &mut self.transient.selection;
+
+        this.working_selection = this.selection_start.map(|start| {
             let end = shared
                 .screen_to_world_space(ctx, ctx.input.mouse)
                 .map(|x| x.ceil() as i32);
@@ -57,7 +54,7 @@ impl SelectionState {
         let cut = ctx.input.key_pressed(KeyCode::KeyX);
         let paste = ctx.input.key_pressed(KeyCode::KeyV);
 
-        if let (Some((min, max)), false) = (self.working_selection, ctrl || alt) {
+        if let (Some((min, max)), false) = (this.working_selection, ctrl || alt) {
             let middle = ((min + max).map(|x| x as f32) - Vector2::repeat(1.0)) / 2.0;
             let screen = shared.world_to_screen_space(ctx, middle);
             // todo clip to screen
@@ -65,7 +62,7 @@ impl SelectionState {
             let size = max - min + Vector2::repeat(1);
             let price = (min.x..=max.x)
                 .flat_map(|x| (min.y..=max.y).map(move |y| Vector2::new(x, y)))
-                .map(|pos| tiles.get(pos).price())
+                .map(|pos| self.tiles.get(pos).price())
                 .sum::<u32>();
             let text = format!("{}x{} • ${}", size.x, size.y, price.separate_with_commas());
             ctx.draw(
@@ -77,41 +74,41 @@ impl SelectionState {
         }
 
         if let (Some(selection), false) = (
-            self.working_selection,
+            this.working_selection,
             ctx.input.mouse_down(MouseButton::Left),
         ) {
-            self.selection_start = None;
+            this.selection_start = None;
             let new_selection = (selection.0.x..=selection.1.x)
                 .flat_map(|x| (selection.0.y..=selection.1.y).map(move |y| Vector2::new(x, y)))
-                .filter(|&pos| valid_tile(pos, level, size))
+                .filter(|&pos| valid_tile(pos, self.transient.level, self.meta.size))
                 .collect();
 
             // if ctrl down, add to selection
             // if alt down, remove from selection
             if ctx.input.key_down(KeyCode::ControlLeft) {
-                self.selection.extend(new_selection);
+                this.selection.extend(new_selection);
             } else if ctx.input.key_down(KeyCode::AltLeft) {
                 // remove new_selection from selection
-                self.selection = self.selection.difference(&new_selection).copied().collect();
+                this.selection = this.selection.difference(&new_selection).copied().collect();
             } else {
-                self.selection = new_selection;
+                this.selection = new_selection;
             }
         }
 
         key_events!(ctx, {
             KeyCode::KeyU => {
-                self.selection_start = None;
-                self.selection.clear();
+                this.selection_start = None;
+                this.selection.clear();
             },
             KeyCode::Delete => {
                 let mut old = Vec::new();
-                for pos in self.selection.iter() {
-                    old.push((*pos, tiles.get(*pos)));
-                    tiles.remove(*pos);
+                for pos in this.selection.iter() {
+                    old.push((*pos, self.tiles.get(*pos)));
+                    self.tiles.remove(*pos);
                 }
                 *sim = None;
-                history.track_many(old);
-                self.selection.clear();
+                self.transient.history.track_many(old);
+                this.selection.clear();
             }
         });
 
@@ -119,18 +116,18 @@ impl SelectionState {
             let mut list = Vec::new();
             let mut old = Vec::new();
 
-            for pos in self.selection.iter() {
-                let tile = tiles.get(*pos);
+            for pos in this.selection.iter() {
+                let tile = self.tiles.get(*pos);
                 old.push((*pos, tile));
 
                 if !tile.is_empty() {
                     list.push((*pos, tile));
                 }
 
-                cut.then(|| tiles.remove(*pos));
+                cut.then(|| self.tiles.remove(*pos));
             }
 
-            history.track_many(old);
+            self.transient.history.track_many(old);
 
             let origin = shared
                 .screen_to_world_space(ctx, ctx.input.mouse)
@@ -138,38 +135,38 @@ impl SelectionState {
             list.iter_mut().for_each(|(pos, _)| *pos -= origin);
 
             *sim = None;
-            *holding = Holding::Paste(list);
-            self.last_holding = holding.clone();
-            self.selection.clear();
+            self.transient.holding = Holding::Paste(list);
+            this.last_holding = self.transient.holding.clone();
+            this.selection.clear();
         }
 
         if ctrl && paste {
             *sim = None;
-            *holding = self.last_holding.clone();
+            self.transient.holding = this.last_holding.clone();
         }
     }
 
-    pub fn update_tile(
+    pub(super) fn tile_selection(
         &mut self,
         ctx: &mut GraphicsContext,
         shared: &SharedState,
         hovered: bool,
         pos: Vector2<i32>,
         render_pos: Vector2<f32>,
-        level: Option<&Level>,
-        size: Option<Vector2<u32>>,
     ) {
+        let this = &mut self.transient.selection;
+
         let ctrl = ctx.input.key_down(KeyCode::ControlLeft);
         let alt = ctx.input.key_down(KeyCode::AltLeft);
         let shift = ctx.input.key_down(KeyCode::ShiftLeft);
 
         let in_selection = |pos| {
-            if !valid_tile(pos, level, size) {
+            if !valid_tile(pos, self.transient.level, self.meta.size) {
                 return false;
             }
 
-            let selection = self.selection.contains(&pos);
-            let working = self
+            let selection = this.selection.contains(&pos);
+            let working = this
                 .working_selection
                 .is_some_and(|bound| in_bounds(pos, bound));
 
@@ -177,7 +174,7 @@ impl SelectionState {
                 working || selection
             } else if alt {
                 selection && !working
-            } else if shift && self.working_selection.is_some() {
+            } else if shift && this.working_selection.is_some() {
                 working
             } else {
                 selection
@@ -215,7 +212,7 @@ impl SelectionState {
             && ctx.input.key_down(KeyCode::ShiftLeft)
             && ctx.input.mouse_pressed(MouseButton::Left)
         {
-            self.selection_start = Some(pos);
+            this.selection_start = Some(pos);
         }
     }
 }

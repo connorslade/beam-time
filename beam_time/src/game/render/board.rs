@@ -1,3 +1,5 @@
+use std::mem;
+
 use crate::assets::{HISTOGRAM_MARKER, UNDEAD_FONT};
 use crate::game::board::Board;
 use crate::{
@@ -40,16 +42,7 @@ impl Board {
 
         let shift_down = ctx.input.key_down(KeyCode::ShiftLeft);
         self.transient.holding.render(ctx, shared);
-        self.transient.selection.update(
-            ctx,
-            shared,
-            sim,
-            &mut self.tiles,
-            &mut self.transient.history,
-            &mut self.transient.holding,
-            self.transient.level,
-            self.meta.size,
-        );
+        self.update_selection(ctx, shared, sim);
 
         if sim.is_none()
             && ctx.input.key_down(KeyCode::ControlLeft)
@@ -104,15 +97,7 @@ impl Board {
                     (render_pos - half_tile, render_pos + half_tile),
                 );
 
-                self.transient.selection.update_tile(
-                    ctx,
-                    shared,
-                    hovered,
-                    pos,
-                    render_pos,
-                    self.transient.level,
-                    self.meta.size,
-                );
+                self.tile_selection(ctx, shared, hovered, pos, render_pos);
 
                 let tile = self.tiles.get(pos);
                 let permanent = self.is_permanent(&pos);
@@ -156,45 +141,50 @@ impl Board {
                     ctx.draw(sprite);
                 }
 
-                if shift_down || permanent {
-                    ctx.draw(grid);
-                    continue;
-                }
-
                 // TODO: Move to holding.rs?
-                if sim.is_none() && hovered {
-                    let holding = &mut self.transient.holding;
-
+                if sim.is_none() && hovered && !shift_down {
                     if ctx.input.mouse_pressed(MouseButton::Left) {
                         let old = tile;
-                        match holding {
-                            Holding::None if !is_empty => {
+                        match mem::take(&mut self.transient.holding) {
+                            Holding::None if !is_empty && !permanent => {
                                 self.transient.history.track_one(pos, old);
                                 self.tiles.remove(pos);
-                                *holding = Holding::Tile(tile);
+                                self.transient.holding = Holding::Tile(tile);
                             }
-                            Holding::Tile(tile) => {
+                            Holding::Tile(tile) if !permanent => {
                                 self.transient.history.track_one(pos, old);
-                                self.tiles.set(pos, *tile);
-                                *holding = if old.is_empty() {
-                                    Holding::None
-                                } else {
-                                    Holding::Tile(old)
-                                };
+                                self.tiles.set(pos, tile);
+
+                                if !old.is_empty() {
+                                    self.transient.holding = Holding::Tile(old);
+                                }
                             }
-                            Holding::Paste(vec) => {
+                            Holding::Paste(tiles) => {
                                 let mut old = Vec::new();
-                                for (paste_pos, paste_tile) in vec.iter() {
-                                    let pos = pos + *paste_pos;
+
+                                let is_mutable = |paste_pos: Vector2<i32>| {
+                                    self.transient
+                                        .level
+                                        .map(|x| x.permanent.contains(&(paste_pos + pos)))
+                                        != Some(true)
+                                };
+                                for (paste_pos, paste_tile) in
+                                    tiles.iter().filter(|(paste_pos, _)| is_mutable(*paste_pos))
+                                {
+                                    let pos = pos + paste_pos;
                                     old.push((pos, self.tiles.get(pos)));
                                     self.tiles.set(pos, *paste_tile);
                                 }
 
                                 self.transient.history.track_many(old);
-                                *holding = Holding::None;
                             }
                             _ => {}
                         }
+                    }
+
+                    if permanent {
+                        ctx.draw(grid);
+                        continue;
                     }
 
                     if ctx.input.mouse_down(MouseButton::Right) && !tile.is_empty() {
@@ -202,6 +192,7 @@ impl Board {
                         self.transient.history.track_one(pos, tile);
                     }
 
+                    let holding = &mut self.transient.holding;
                     if holding.is_none() {
                         key_events!(ctx, {
                             KeyCode::KeyR => {
