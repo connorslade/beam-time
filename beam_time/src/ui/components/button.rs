@@ -1,10 +1,12 @@
+use std::cell::RefCell;
+
 use engine::{
     assets::SpriteRef,
     color::Rgb,
     drawable::sprite::Sprite,
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{tracker::LayoutTracker, LayoutElement},
+    layout::{bounds::Bounds2D, tracker::LayoutTracker, LayoutElement},
     memory::MemoryKey,
 };
 
@@ -22,6 +24,8 @@ pub struct Button {
     pos: Vector2<f32>,
     anchor: Anchor,
     scale: Vector2<f32>,
+
+    sprite: RefCell<Option<Sprite>>,
 }
 
 #[derive(Default)]
@@ -41,16 +45,20 @@ impl Button {
             pos: Vector2::zeros(),
             anchor: Anchor::BottomLeft,
             scale: Vector2::repeat(1.0),
+
+            sprite: RefCell::new(None),
         }
     }
 
     pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
+        self.invalidate_sprite();
         self.pos = pos;
         self.anchor = anchor;
         self
     }
 
     pub fn scale(mut self, scale: Vector2<f32>) -> Self {
+        self.invalidate_sprite();
         self.scale = scale;
         self
     }
@@ -66,6 +74,23 @@ impl Button {
     }
 }
 
+impl Button {
+    fn invalidate_sprite(&self) {
+        self.sprite.replace(None);
+    }
+
+    fn generate_sprite(&self) {
+        if self.sprite.borrow().is_some() {
+            return;
+        }
+
+        let sprite = Sprite::new(self.asset)
+            .position(self.pos, self.anchor)
+            .scale(self.scale);
+        self.sprite.replace(Some(sprite));
+    }
+}
+
 impl Drawable for Button {
     fn draw(self, ctx: &mut GraphicsContext) {
         let tracker = LayoutTracker::new(self.key);
@@ -78,10 +103,11 @@ impl Drawable for Button {
         let color = self.color.lerp(ACCENT_COLOR, state.hover_time / 0.1);
         let scale = self.scale + Vector2::repeat(state.hover_time / 2.0).component_mul(&self.scale);
 
-        let sprite = Sprite::new(self.asset)
+        self.generate_sprite();
+        let sprite = self.sprite.take().unwrap();
+        let sprite = sprite
             .color(color)
-            .position(self.pos, self.anchor)
-            .scale(scale)
+            .dynamic_scale(scale, Anchor::Center)
             .tracked(tracker);
 
         if hover && !state.last_hovered {
@@ -99,5 +125,25 @@ impl Drawable for Button {
 
         state.last_hovered = hover;
         sprite.draw(ctx);
+    }
+}
+
+impl LayoutElement for Button {
+    fn translate(&mut self, distance: Vector2<f32>) {
+        // todo: invaginating on every translate is bad...
+        self.invalidate_sprite();
+        self.pos += distance;
+    }
+
+    fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
+        self.generate_sprite();
+        let sprite = self.sprite.borrow();
+        let sprite = sprite.as_ref().unwrap();
+
+        sprite.bounds(ctx)
+    }
+
+    fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
+        (*self).draw(ctx);
     }
 }

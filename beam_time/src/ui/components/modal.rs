@@ -53,7 +53,7 @@ impl Modal {
 
         self.background(ctx, pos);
         let (sprites, shapes) = ctx.draw_callback(|ctx| {
-            let mut root = RootLayout::new(pos + shift, Anchor::TopLeft);
+            let mut root = RootLayout::new(pos + shift, Anchor::TopLeft).sized(self.inner_size());
             (ui)(ctx, &mut root);
             root.draw(ctx);
         });

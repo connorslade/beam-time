@@ -40,6 +40,14 @@ impl Memory {
             .unwrap()
     }
 
+    pub fn get_or_insert_with<T: 'static>(
+        &mut self,
+        key: MemoryKey,
+        fallback: impl FnOnce() -> T,
+    ) -> &mut T {
+        self.get_or_insert(key, fallback())
+    }
+
     pub(crate) fn garbage_collect(&mut self) {
         let mut accessed = self.accessed.borrow_mut();
         self.entries.retain(|k, _v| accessed.contains(k));

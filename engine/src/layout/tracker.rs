@@ -16,7 +16,7 @@ pub struct LayoutTracker {
 impl LayoutTracker {
     pub fn new(key: MemoryKey) -> Self {
         Self {
-            key: key.context(memory_key!()),
+            key: memory_key!(key),
         }
     }
 
