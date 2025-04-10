@@ -141,7 +141,6 @@ impl Board {
                     ctx.draw(sprite);
                 }
 
-                // TODO: Move to holding.rs?
                 if sim.is_none() && hovered && !shift_down {
                     if ctx.input.mouse_pressed(MouseButton::Left) {
                         let old = tile;

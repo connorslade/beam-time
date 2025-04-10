@@ -54,10 +54,11 @@ impl Board {
         let cut = ctx.input.key_pressed(KeyCode::KeyX);
         let paste = ctx.input.key_pressed(KeyCode::KeyV);
 
-        if let (Some((min, max)), false) = (this.working_selection, ctrl || alt) {
+        let in_level = self.transient.level.is_some();
+        if let (Some((min, max)), false) = (this.working_selection, ctrl || alt || in_level) {
             let middle = ((min + max).map(|x| x as f32) - Vector2::repeat(1.0)) / 2.0;
             let screen = shared.world_to_screen_space(ctx, middle);
-            // todo clip to screen
+            // todo clip to screen?
 
             let size = max - min + Vector2::repeat(1);
             let price = (min.x..=max.x)
@@ -155,6 +156,11 @@ impl Board {
         render_pos: Vector2<f32>,
     ) {
         let this = &mut self.transient.selection;
+
+        // Return quickly if there is not currently a selection.
+        if this.working_selection.is_none() && this.selection.is_empty() {
+            return;
+        }
 
         let ctrl = ctx.input.key_down(KeyCode::ControlLeft);
         let alt = ctx.input.key_down(KeyCode::AltLeft);
