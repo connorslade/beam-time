@@ -5,6 +5,7 @@ use crate::assets::font::{Character, FontDescriptor};
 pub struct TextLayout {
     pub chars: Vec<(Character, Vector2<f32>)>,
     pub size: Vector2<f32>,
+    pub ending_position: Vector2<f32>,
 }
 
 impl TextLayout {
@@ -59,6 +60,10 @@ impl TextLayout {
 
         chars.iter_mut().for_each(|(_, x)| x.y -= pos.y);
         let size = Vector2::new(width, -pos.y + font.height * scale.y);
-        Self { chars, size }
+        Self {
+            chars,
+            size,
+            ending_position: pos,
+        }
     }
 }

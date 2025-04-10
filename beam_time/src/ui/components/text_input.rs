@@ -177,7 +177,9 @@ impl Drawable for TextInput {
             self.position_anchor,
         );
 
-        let size = text.size(ctx);
+        let layout = text.scaled_layout(ctx);
+        let (size, cursor) = (layout.size, layout.ending_position);
+        drop(layout);
         text.draw(ctx);
 
         RectangleOutline::new(Vector2::new(self.width, size.y + padding * 3.0), 2.0)
@@ -215,10 +217,15 @@ impl Drawable for TextInput {
         }
 
         if (t * 4.0).cos() > 0.0 {
-            let pos = self.position + Vector2::x() * (size.x + padding * 1.5);
-            Rectangle::new(Vector2::new(2.0 * ctx.scale_factor, size.y + padding * 2.0))
-                .position(pos, self.position_anchor)
-                .draw(ctx);
+            let font_desc = &ctx.assets.get_font(UNDEAD_FONT).desc;
+            let font_height = font_desc.height * self.scale * ctx.scale_factor;
+            let pos = self.position + Vector2::x() * padding + cursor;
+            Rectangle::new(Vector2::new(
+                2.0 * ctx.scale_factor,
+                font_height + padding * 2.0,
+            ))
+            .position(pos, self.position_anchor)
+            .draw(ctx);
         }
     }
 }

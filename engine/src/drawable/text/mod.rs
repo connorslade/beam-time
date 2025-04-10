@@ -1,5 +1,5 @@
 use core::f32;
-use std::cell::RefCell;
+use std::cell::{Ref, RefCell};
 
 use nalgebra::Vector2;
 
@@ -65,6 +65,11 @@ impl Text {
     pub fn size(&self, ctx: &GraphicsContext) -> Vector2<f32> {
         self.generate_layout(ctx);
         self.layout.borrow().as_ref().unwrap().base
+    }
+
+    pub fn scaled_layout(&self, ctx: &GraphicsContext) -> Ref<'_, TextLayout> {
+        self.generate_layout(ctx);
+        Ref::map(self.layout.borrow(), |x| &x.as_ref().unwrap().scaled)
     }
 
     pub fn position(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
