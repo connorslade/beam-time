@@ -1,17 +1,20 @@
 use engine::{
     color::Rgb,
-    drawable::text::Text,
+    drawable::{spacer::Spacer, text::Text},
     exports::nalgebra::Vector2,
     graphics_context::GraphicsContext,
-    layout::{column::ColumnLayout, LayoutElement, LayoutMethods},
+    layout::{
+        column::ColumnLayout, row::RowLayout, Direction, Justify, Layout, LayoutElement,
+        LayoutMethods,
+    },
     memory_key,
 };
 
 use crate::{
     app::App,
-    assets::UNDEAD_FONT,
+    assets::{TRASH, UNDEAD_FONT},
     consts::layer,
-    ui::components::{modal::Modal, text_input::TextInput},
+    ui::components::{button::Button, modal::Modal, text_input::TextInput},
 };
 
 use super::GameScreen;
@@ -37,12 +40,37 @@ impl GameScreen {
                 };
 
                 root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
-                    body("Editing Note")
-                        .scale(Vector2::repeat(4.0))
+                    layout.nest(
+                        ctx,
+                        RowLayout::new(padding).justify(Justify::Center),
+                        |ctx, layout| {
+                            body("Editing Note")
+                                .scale(Vector2::repeat(4.0))
+                                .layout(ctx, layout);
+
+                            layout.nest(
+                                ctx,
+                                RowLayout::new(padding).direction(Direction::MaxToMin),
+                                |ctx, layout| {
+                                    Button::new(TRASH, memory_key!())
+                                        .scale(Vector2::repeat(2.0))
+                                        .layout(ctx, layout);
+                                    Spacer::new(Vector2::x() * layout.available().x)
+                                        .layout(ctx, layout);
+                                },
+                            );
+                        },
+                    );
+
+                    TextInput::new(memory_key!())
+                        .default("Title")
+                        .width(size.x.min(400.0 * ctx.scale_factor))
+                        .max_chars(32)
                         .layout(ctx, layout);
 
                     TextInput::new(memory_key!())
-                        .width(size.x.min(400.0 * ctx.scale_factor))
+                        .default("Body")
+                        .width(size.x)
                         .layout(ctx, layout);
                 });
             });

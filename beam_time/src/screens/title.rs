@@ -5,7 +5,7 @@ use engine::{
     drawable::{sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::{Anchor, GraphicsContext},
-    layout::{column::ColumnLayout, LayoutElement},
+    layout::{column::ColumnLayout, LayoutElement, LayoutMethods},
     memory_key,
 };
 
@@ -52,13 +52,13 @@ impl Screen for TitleScreen {
                 .layer(layer::OVERLAY);
 
             modal.draw(ctx, |ctx, root| {
-                let mut column = ColumnLayout::new(padding);
                 let body = |text| Text::new(UNDEAD_FONT, text).scale(Vector2::repeat(2.0));
-                body("Settings")
-                    .scale(Vector2::repeat(4.0))
-                    .layout(ctx, &mut column);
 
-                column.layout(ctx, root);
+                root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+                    body("Settings")
+                        .scale(Vector2::repeat(4.0))
+                        .layout(ctx, layout);
+                });
             });
         }
 
