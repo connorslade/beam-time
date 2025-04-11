@@ -197,6 +197,7 @@ pub fn modal_buttons(
 }
 
 impl Modal {
+    // it's like whatever
     fn background(&self, ctx: &mut GraphicsContext, pos: Vector2<f32>) {
         Rectangle::new(self.size)
             .color(MODAL_COLOR)
@@ -208,30 +209,15 @@ impl Modal {
         let tb_size = Vector2::new(self.size.x - px * 2.0, px);
         let lr_size = Vector2::new(px, self.size.y - px * 2.0);
         let c_size = Vector2::repeat(px);
-
-        let (t, b, l, r) = (
-            ModalSides::TOP,
-            ModalSides::BOTTOM,
-            ModalSides::LEFT,
-            ModalSides::RIGHT,
-        );
-
         let size = self.size;
-        for (_parts, size, offset) in [
-            (t | l, c_size, Vector2::new(0.0, 0.0)),
-            (t | r, c_size, Vector2::new(size.x - px, 0.0)),
-            (b | l, c_size, Vector2::new(0.0, px - size.y)),
-            (b | r, c_size, Vector2::new(size.x - px, px - size.y)),
-        ]
-        .into_iter()
-        .filter(|(parts, _, _)| self.sides.contains(*parts))
-        {
+
+        let mut border = |size, pos| {
             Rectangle::new(size)
                 .color(MODAL_BORDER_COLOR)
-                .position(pos + offset, Anchor::TopLeft)
+                .position(pos, Anchor::TopLeft)
                 .z_index(self.layer)
-                .draw(ctx);
-        }
+                .draw(ctx)
+        };
 
         for (dir, mut size, mut offset) in [
             (Direction::Up, tb_size, Vector2::new(px, px)),
@@ -250,28 +236,34 @@ impl Modal {
             }
 
             if left {
-                if dir.is_vertical() {
-                    size.x += px;
-                    offset.x -= px;
-                } else {
-                    size.y += px;
-                    offset.y += px;
-                }
+                let idx = dir.is_horizontal() as usize;
+                size[idx] += px;
+                offset[idx] += px * if dir.is_vertical() { -1.0 } else { 1.0 };
             }
 
             if right {
-                if dir.is_vertical() {
-                    size.x += px;
-                } else {
-                    size.y += px;
-                }
+                let idx = dir.is_horizontal() as usize;
+                size[idx] += px;
             }
 
-            Rectangle::new(size)
-                .color(MODAL_BORDER_COLOR)
-                .position(pos + offset, Anchor::TopLeft)
-                .z_index(self.layer)
-                .draw(ctx);
+            border(size, pos + offset);
+        }
+
+        let (t, b, l, r) = (
+            ModalSides::TOP,
+            ModalSides::BOTTOM,
+            ModalSides::LEFT,
+            ModalSides::RIGHT,
+        );
+        for (parts, size, offset) in [
+            (t | l, c_size, Vector2::zeros()),
+            (t | r, c_size, Vector2::x() * (size.x - px)),
+            (b | l, c_size, Vector2::y() * (px - size.y)),
+            (b | r, c_size, Vector2::new(size.x - px, px - size.y)),
+        ] {
+            if self.sides.contains(parts) {
+                border(size, pos + offset);
+            }
         }
     }
 }
