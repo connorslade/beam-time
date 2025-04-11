@@ -119,6 +119,11 @@ impl App {
         screen.on_init(self);
         self.new_screens.push(Box::new(screen));
     }
+
+    pub fn push_boxed_screen(&mut self, mut screen: Box<dyn Screen>) {
+        screen.on_init(self);
+        self.new_screens.push(screen);
+    }
 }
 
 impl Default for Config {

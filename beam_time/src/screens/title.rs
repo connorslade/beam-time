@@ -2,10 +2,10 @@ use std::time::Instant;
 
 use engine::{
     color::Rgb,
-    drawable::{sprite::Sprite, text::Text},
+    drawable::{spacer::Spacer, sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
-    graphics_context::{Anchor, GraphicsContext},
-    layout::{column::ColumnLayout, LayoutElement, LayoutMethods},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
+    layout::{column::ColumnLayout, root::RootLayout, Justify, LayoutElement, LayoutMethods},
     memory_key,
 };
 
@@ -65,48 +65,45 @@ impl Screen for TitleScreen {
         // Title & copyright
         let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
         let t = self.start_time.elapsed().as_secs_f32().sin() / 20.0;
-        ctx.draw(
-            Sprite::new(TITLE)
-                .position(pos, Anchor::TopCenter)
-                .scale(Vector2::repeat(6.0))
-                .rotate(t, Anchor::Center),
+
+        Sprite::new(TITLE)
+            .position(pos, Anchor::TopCenter)
+            .scale(Vector2::repeat(6.0))
+            .rotate(t, Anchor::Center)
+            .draw(ctx);
+
+        Sprite::new(COPYRIGHT)
+            .position(Vector2::new(ctx.size().x - 10.0, 10.0), Anchor::BottomRight)
+            .scale(Vector2::repeat(2.0))
+            .draw(ctx);
+
+        let mut root = RootLayout::new(ctx.center(), Anchor::Center);
+        let (_, padding) = state.spacing(ctx);
+
+        let buttons: [(_, fn() -> Box<dyn Screen>); 3] = [
+            (CAMPAIGN_BUTTON, || Box::new(CampaignScreen::default())),
+            (SANDBOX_BUTTON, || Box::new(SandboxScreen::default())),
+            (ABOUT_BUTTON, || Box::new(AboutScreen::default())),
+        ];
+
+        root.nest(
+            ctx,
+            ColumnLayout::new(padding).justify(Justify::Center),
+            |ctx, layout| {
+                Spacer::new_y(64.0 * ctx.scale_factor).layout(ctx, layout);
+                for (sprite, on_click) in buttons {
+                    let key = memory_key!(sprite);
+                    let button = Button::new(sprite, key).scale(Vector2::repeat(4.0));
+
+                    button
+                        .is_clicked(ctx)
+                        .then(|| state.push_boxed_screen(on_click()));
+                    button.layout(ctx, layout);
+                }
+            },
         );
 
-        ctx.draw(
-            Sprite::new(COPYRIGHT)
-                .position(Vector2::new(ctx.size().x - 10.0, 10.0), Anchor::BottomRight)
-                .scale(Vector2::repeat(2.0)),
-        );
-
-        // Buttons
-        let campaign_button = Button::new(CAMPAIGN_BUTTON, memory_key!())
-            .pos(ctx.center(), Anchor::Center)
-            .scale(Vector2::repeat(4.0));
-        if campaign_button.is_clicked(ctx) {
-            state.push_screen(CampaignScreen::default())
-        }
-
-        let sandbox_button = Button::new(SANDBOX_BUTTON, memory_key!())
-            .pos(
-                ctx.center() - Vector2::new(0.0, 14.0 * 5.0 * ctx.scale_factor),
-                Anchor::Center,
-            )
-            .scale(Vector2::repeat(4.0));
-        if sandbox_button.is_clicked(ctx) {
-            state.push_screen(SandboxScreen::default());
-        }
-
-        let about_button = Button::new(ABOUT_BUTTON, memory_key!())
-            .pos(
-                ctx.center() - Vector2::new(0.0, 2.0 * 14.0 * 5.0 * ctx.scale_factor),
-                Anchor::Center,
-            )
-            .scale(Vector2::repeat(4.0));
-        if about_button.is_clicked(ctx) {
-            state.push_screen(AboutScreen::default())
-        }
-
-        ctx.draw([campaign_button, sandbox_button, about_button]);
+        root.draw(ctx);
     }
 
     fn on_resize(&mut self, state: &mut App, _old_size: Vector2<f32>, _size: Vector2<f32>) {
@@ -118,7 +115,6 @@ impl Default for TitleScreen {
     fn default() -> Self {
         Self {
             start_time: Instant::now(),
-
             settings: None,
         }
     }

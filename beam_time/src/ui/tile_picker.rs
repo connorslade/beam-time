@@ -20,7 +20,7 @@ use engine::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
 };
 
 const TILE_SHORTCUTS: [KeyCode; 7] = [
@@ -112,11 +112,11 @@ impl TilePicker {
                     };
 
                     let pos = Vector2::new(ctx.input.mouse.x, tile_size * 1.1);
-                    let text = Text::new(UNDEAD_FONT, &text)
+                    Text::new(UNDEAD_FONT, &text)
                         .position(pos, Anchor::BottomCenter)
                         .scale(Vector2::repeat(2.0 * state.config.ui_scale))
-                        .z_index(layer::TILE_HOLDING);
-                    ctx.draw(text);
+                        .z_index(layer::TILE_HOLDING)
+                        .draw(ctx);
                 }
 
                 if !disabled && ctx.input.mouse_pressed(MouseButton::Left) {
