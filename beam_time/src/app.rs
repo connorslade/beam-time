@@ -35,7 +35,6 @@ pub struct App {
 pub struct Config {
     pub zoom_sensitivity: f32,
     pub movement_speed: f32,
-    pub ui_scale: f32,
 }
 
 impl App {
@@ -80,8 +79,8 @@ impl App {
 
     /// => (Margin, Padding)
     pub fn spacing(&self, ctx: &mut GraphicsContext) -> (f32, f32) {
-        let margin = 16.0 * self.config.ui_scale * ctx.scale_factor;
-        let padding = 10.0 * self.config.ui_scale * ctx.scale_factor;
+        let margin = 16.0 * ctx.scale_factor;
+        let padding = 10.0 * ctx.scale_factor;
 
         (margin, padding)
     }
@@ -131,7 +130,6 @@ impl Default for Config {
         Self {
             zoom_sensitivity: 0.08,
             movement_speed: 2000.0,
-            ui_scale: 1.0,
         }
     }
 }

@@ -52,10 +52,10 @@ impl LevelPanel {
             return;
         };
 
-        let scale = state.config.ui_scale * 4.0;
+        let scale = 4.0;
         let tile_size = scale * ctx.scale_factor * 16.0;
         let margin = tile_size / 4.0;
-        let padding = 10.0 * state.config.ui_scale * ctx.scale_factor;
+        let padding = 10.0 * ctx.scale_factor;
 
         let mut ui = UIContext {
             scale,
@@ -73,8 +73,8 @@ impl LevelPanel {
             .map(|(_, tile)| tile.price())
             .sum::<u32>();
 
-        level_info(ctx, state, level, price, &mut ui);
-        test_case(self, ctx, state, level, sim, &mut ui);
+        level_info(ctx, level, price, &mut ui);
+        test_case(self, ctx, level, sim, &mut ui);
 
         let height = ui.y;
 
@@ -89,7 +89,7 @@ impl LevelPanel {
                     LevelResult::Success { latency } => {
                         level_complete(ctx, state, level, latency, price, &mut ui)
                     }
-                    LevelResult::Failed { case } => level_failed(ctx, state, case + 1, &mut ui),
+                    LevelResult::Failed { case } => level_failed(ctx, case + 1, &mut ui),
                     LevelResult::OutOfTime => unreachable!(),
                 }
 
@@ -122,10 +122,10 @@ impl LevelPanel {
 }
 
 impl UIContext {
-    fn text_block(&mut self, ctx: &mut GraphicsContext, state: &App, text: &str) {
+    fn text_block(&mut self, ctx: &mut GraphicsContext, text: &str) {
         let text = Text::new(UNDEAD_FONT, text)
             .position(Vector2::new(self.margin, self.y), Anchor::TopLeft)
-            .scale(Vector2::repeat(state.config.ui_scale * 2.0))
+            .scale(Vector2::repeat(2.0))
             .max_width(WIDTH as f32 * self.tile_size - self.margin * 2.0)
             .z_index(layer::UI_ELEMENT);
         self.y -= text.size(ctx).y + self.padding;

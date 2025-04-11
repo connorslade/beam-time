@@ -39,7 +39,7 @@ impl Screen for AboutScreen {
         let desc = &ctx.assets.get_font(ALAGARD_FONT).desc;
         let height = (desc.height + desc.leading) * 6.0 * ctx.scale_factor;
 
-        let width = (ctx.size().x - 20.0).min(800.0 * ctx.scale_factor * state.config.ui_scale);
+        let width = (ctx.size().x - 20.0).min(800.0 * ctx.scale_factor);
         let pos = Vector2::new(ctx.center().x, pos.y - height - 20.0);
         ctx.draw(
             Text::new(UNDEAD_FONT, DESCRIPTION)

@@ -31,9 +31,7 @@ impl Screen for LayoutTestScreen {
         let t = state.start.elapsed().as_secs_f32();
         let pos = ctx.input.mouse;
 
-        let padding = (16.0 + 16.0 * ((2.0 * t).sin() / 2.0 - 0.5))
-            * state.config.ui_scale
-            * ctx.scale_factor;
+        let padding = (16.0 + 16.0 * ((2.0 * t).sin() / 2.0 - 0.5)) * ctx.scale_factor;
 
         {
             let mut root = RootLayout::new(pos, Anchor::TopLeft);

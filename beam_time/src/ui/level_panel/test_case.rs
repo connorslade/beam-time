@@ -1,7 +1,6 @@
 use parking_lot::MutexGuard;
 
 use crate::{
-    app::App,
     assets::{
         BIG_RIGHT_ARROW, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR, TILE_EMITTER_DOWN, UNDEAD_FONT,
     },
@@ -21,7 +20,6 @@ use super::{LevelPanel, UIContext, WIDTH};
 pub fn test_case(
     panel: &mut LevelPanel,
     ctx: &mut GraphicsContext,
-    state: &App,
     level: &Level,
     sim: &MutexGuard<InnerAsyncSimulationState>,
     ui: &mut UIContext,
@@ -42,11 +40,8 @@ pub fn test_case(
     ui.horizontal_rule(ctx);
 
     let case_elements = preview.elements() + 1;
-    let (mut scale, mut tile_size, mut arrow_size) = (
-        ui.scale,
-        ui.tile_size,
-        11.0 * 4.0 * ctx.scale_factor * state.config.ui_scale,
-    );
+    let (mut scale, mut tile_size, mut arrow_size) =
+        (ui.scale, ui.tile_size, 11.0 * 4.0 * ctx.scale_factor);
 
     if case_elements + 1 > WIDTH {
         scale /= 2.0;
@@ -100,8 +95,8 @@ pub fn test_case(
         ui.tile_size * WIDTH as f32 - ui.margin,
         ui.y - tile_size / 2.0,
     );
-    let button_width = 4.0 * 3.0 * ctx.scale_factor * state.config.ui_scale;
-    let button_padding = 4.0 * 2.0 * ctx.scale_factor * state.config.ui_scale;
+    let button_width = 4.0 * 3.0 * ctx.scale_factor;
+    let button_padding = 4.0 * 2.0 * ctx.scale_factor;
 
     let mut case_button = |ctx: &mut GraphicsContext, dir: bool, pos: Vector2<f32>| -> Sprite {
         let texture = if dir { RIGHT_ARROW } else { LEFT_ARROW };

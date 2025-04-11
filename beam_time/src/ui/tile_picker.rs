@@ -54,8 +54,7 @@ impl TilePicker {
             return;
         }
 
-        let scale = state.config.ui_scale * 4.0;
-        let tile_size = scale * ctx.scale_factor * 16.0;
+        let tile_size = 4.0 * 16.0 * ctx.scale_factor;
         for (i, (tile, key)) in Tile::DEFAULT.iter().zip(TILE_SHORTCUTS).enumerate() {
             let pos = Vector2::new(tile_size * i as f32, -self.offset);
             let tile = match tile {
@@ -83,7 +82,7 @@ impl TilePicker {
 
             let background = Sprite::new(background_texture)
                 .position(pos, Anchor::BottomLeft)
-                .scale(Vector2::repeat(scale))
+                .scale(Vector2::repeat(4.0))
                 .z_index(layer::UI_BACKGROUND);
             let is_hovered = background.is_hovered(ctx);
 
@@ -96,7 +95,7 @@ impl TilePicker {
                 tile.asset()
             }
             .position(pos, Anchor::BottomLeft)
-            .scale(Vector2::repeat(scale))
+            .scale(Vector2::repeat(4.0))
             .z_index(layer::UI_ELEMENT);
 
             if disabled {
@@ -114,7 +113,7 @@ impl TilePicker {
                     let pos = Vector2::new(ctx.input.mouse.x, tile_size * 1.1);
                     Text::new(UNDEAD_FONT, &text)
                         .position(pos, Anchor::BottomCenter)
-                        .scale(Vector2::repeat(2.0 * state.config.ui_scale))
+                        .scale(Vector2::repeat(2.0))
                         .z_index(layer::TILE_HOLDING)
                         .draw(ctx);
                 }

@@ -18,22 +18,16 @@ use leaderboard::api::results::Histogram;
 
 use super::{UIContext, WIDTH};
 
-pub fn level_info(
-    ctx: &mut GraphicsContext,
-    state: &App,
-    level: &Level,
-    price: u32,
-    ui: &mut UIContext,
-) {
+pub fn level_info(ctx: &mut GraphicsContext, level: &Level, price: u32, ui: &mut UIContext) {
     let title = Text::new(UNDEAD_FONT, &level.name)
         .position(Vector2::new(ui.margin, ui.y), Anchor::TopLeft)
-        .scale(Vector2::repeat(state.config.ui_scale * 3.0))
+        .scale(Vector2::repeat(3.0))
         .z_index(layer::UI_ELEMENT);
     ui.y -= title.size(ctx).y + ui.padding;
     ctx.draw(title);
 
     let description = format!("${}\n\n{}", price.separate_with_commas(), level.description);
-    ui.text_block(ctx, state, &description);
+    ui.text_block(ctx, &description);
 }
 
 pub fn level_complete(
@@ -48,7 +42,7 @@ pub fn level_complete(
 
     let title = Text::new(UNDEAD_FONT, "Level Complete!")
         .position(Vector2::new(center_x, ui.y), Anchor::TopCenter)
-        .scale(Vector2::repeat(state.config.ui_scale * 3.0))
+        .scale(Vector2::repeat(3.0))
         .z_index(layer::UI_ELEMENT);
     ui.y -= title.size(ctx).y + ui.scale + ui.padding;
 
@@ -71,11 +65,11 @@ pub fn level_complete(
         "Nice work! Your solution costs ${} and has a total latency of {latency} ticks.",
         cost.separate_with_commas(),
     );
-    ui.text_block(ctx, state, &text);
+    ui.text_block(ctx, &text);
     ui.y -= ui.padding;
 
     let Some(hist_data) = state.leaderboard.get_results(board.id) else {
-        ui.text_block(ctx, state, "Failed to load global leaderboard.");
+        ui.text_block(ctx, "Failed to load global leaderboard.");
         return;
     };
 
@@ -86,37 +80,36 @@ pub fn level_complete(
         );
         let text = Text::new(UNDEAD_FONT, text)
             .position(pos, Anchor::TopCenter)
-            .scale(Vector2::repeat(state.config.ui_scale * 2.0))
+            .scale(Vector2::repeat(2.0))
             .z_index(layer::UI_ELEMENT);
         let offset = text.size(ctx).y + ui.padding * 2.0;
 
         let data = [&hist_data.cost, &hist_data.latency][i];
 
         let hist_pos = Vector2::new(ui.tile_size * WIDTH as f32 / 2.0 * i as f32, ui.y - offset);
-        let height = histogram(ctx, state, ui, hist_pos, ui.tile_size, data, *value as f32);
+        let height = histogram(ctx, ui, hist_pos, ui.tile_size, data, *value as f32);
         ui.y -= (offset + height) * (i == 1) as u8 as f32;
 
         ctx.draw(text);
     }
 }
 
-pub fn level_failed(ctx: &mut GraphicsContext, state: &App, case: usize, ui: &mut UIContext) {
+pub fn level_failed(ctx: &mut GraphicsContext, case: usize, ui: &mut UIContext) {
     let center_x = (WIDTH as f32 * ui.tile_size) / 2.0;
     let title = Text::new(UNDEAD_FONT, "Level Failed...")
         .position(Vector2::new(center_x, ui.y), Anchor::TopCenter)
-        .scale(Vector2::repeat(state.config.ui_scale * 3.0))
+        .scale(Vector2::repeat(3.0))
         .color(Rgb::hex(0xe43636))
         .z_index(layer::UI_ELEMENT);
     ui.y -= title.size(ctx).y + ui.scale + ui.padding;
     ctx.draw(title);
 
     let text = format!("Looks like you failed test case {case}. Check the board to see what went wrong then press ESC to exit the current simulation, make your fixes and re-run the tests.");
-    ui.text_block(ctx, state, &text);
+    ui.text_block(ctx, &text);
 }
 
 fn histogram(
     ctx: &mut GraphicsContext,
-    state: &App,
     ui: &mut UIContext,
     base: Vector2<f32>,
     height: f32,
@@ -144,12 +137,12 @@ fn histogram(
         ctx.draw(
             Sprite::new(HISTOGRAM_BAR)
                 .position(pos, Anchor::TopLeft)
-                .scale(Vector2::repeat(state.config.ui_scale * 4.0))
+                .scale(Vector2::repeat(4.0))
                 .z_index(layer::UI_ELEMENT),
         );
     }
 
-    let scale = ctx.scale_factor * state.config.ui_scale * 4.0;
+    let scale = ctx.scale_factor * 4.0;
     for pos in bars.windows(2).filter(|x| x[0].y != x[1].y) {
         let (y1, y2) = (pos[0].y, pos[1].y);
         let height = -(y1 - y2).abs() - scale;
@@ -158,7 +151,7 @@ fn histogram(
         ctx.draw(
             Sprite::new(HISTOGRAM_BAR)
                 .position(pos, Anchor::TopCenter)
-                .scale(Vector2::new(1.0, height / ctx.scale_factor) * state.config.ui_scale)
+                .scale(Vector2::new(1.0, height / ctx.scale_factor))
                 .z_index(layer::UI_ELEMENT),
         );
     }
@@ -168,7 +161,7 @@ fn histogram(
             base + Vector2::new(ui.tile_size / 4.0, -height - ui.padding - actual_space),
             Anchor::TopLeft,
         )
-        .scale(Vector2::repeat(state.config.ui_scale * 2.0))
+        .scale(Vector2::repeat(2.0))
         .z_index(layer::UI_ELEMENT);
     let text_height = text.size(ctx).y + ui.padding;
     ctx.draw(text);
@@ -182,7 +175,7 @@ fn histogram(
                 ),
                 Anchor::TopRight,
             )
-            .scale(Vector2::repeat(state.config.ui_scale * 2.0))
+            .scale(Vector2::repeat(2.0))
             .z_index(layer::UI_ELEMENT),
     );
 
@@ -195,14 +188,14 @@ fn histogram(
 
     ctx.draw(
         Text::new(UNDEAD_FONT, actual.to_string().as_str())
-            .scale(Vector2::repeat(state.config.ui_scale * 2.0))
+            .scale(Vector2::repeat(2.0))
             .position(actual_pos, Anchor::BottomCenter)
             .z_index(layer::UI_ELEMENT),
     );
 
     ctx.draw(
         Sprite::new(HISTOGRAM_MARKER)
-            .scale(Vector2::repeat(state.config.ui_scale * 2.0))
+            .scale(Vector2::repeat(2.0))
             .position(actual_pos, Anchor::TopCenter) // - (1/2 * bar_width, 0)
             .z_index(layer::UI_ELEMENT),
     );

@@ -173,8 +173,7 @@ impl SandboxScreen {
                         .layout(ctx, layout);
                     body(NEW_SANDBOX_TEXT).layout(ctx, layout);
 
-                    Spacer::new_y(8.0 * ctx.scale_factor * state.config.ui_scale)
-                        .layout(ctx, layout);
+                    Spacer::new_y(8.0 * ctx.scale_factor).layout(ctx, layout);
 
                     body("Sandbox Name").layout(ctx, layout);
 
