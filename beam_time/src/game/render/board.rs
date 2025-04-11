@@ -146,16 +146,11 @@ impl Board {
 
                                 self.transient.history.track_many(old);
                             }
-                            _ => {}
+                            x => self.transient.holding = x,
                         }
                     }
 
-                    if permanent {
-                        ctx.draw(grid);
-                        continue;
-                    }
-
-                    if ctx.input.mouse_down(MouseButton::Right) && !tile.is_empty() {
+                    if !permanent && ctx.input.mouse_down(MouseButton::Right) && !tile.is_empty() {
                         self.tiles.remove(pos);
                         self.transient.history.track_one(pos, tile);
                     }
@@ -163,7 +158,7 @@ impl Board {
                     let holding = &mut self.transient.holding;
                     if holding.is_none() {
                         key_events!(ctx, {
-                            KeyCode::KeyR => {
+                            KeyCode::KeyR => if !permanent {
                                 if ctx.input.key_down(KeyCode::ShiftLeft) {
                                     self.tiles.set(pos, tile.rotate_reverse());
                                 } else {

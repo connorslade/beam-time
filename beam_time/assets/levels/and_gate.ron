@@ -13,14 +13,8 @@ Level(
     labels: { },
     disabled: [ Detector, Delay ],
     tiles: {
-        (0, 5): Emitter(
-            rotation: Down,
-            active: true
-        ),
-        (1, 5): Emitter(
-            rotation: Down,
-            active: true
-        ),
+        (0, 5): Emitter( rotation: Down, active: true ),
+        (1, 5): Emitter( rotation: Down, active: true ),
         (5, 0): Detector
     },
 

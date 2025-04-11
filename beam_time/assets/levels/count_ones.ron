@@ -10,22 +10,10 @@ Level(
     ],
     labels: { },
     tiles: {
-        (0, 19): Emitter(
-            rotation: Down,
-            active: true
-        ),
-        (1, 19): Emitter(
-            rotation: Down,
-            active: true
-        ),
-        (2, 19): Emitter(
-            rotation: Down,
-            active: true
-        ),
-        (3, 19): Emitter(
-            rotation: Down,
-            active: true
-        ),
+        (0, 19): Emitter( rotation: Down, active: true ),
+        (1, 19): Emitter( rotation: Down, active: true ),
+        (2, 19): Emitter( rotation: Down, active: true ),
+        (3, 19): Emitter( rotation: Down, active: true ),
 
         (17, 0): Detector,
         (18, 0): Detector,

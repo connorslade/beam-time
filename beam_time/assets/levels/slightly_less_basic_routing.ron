@@ -14,10 +14,7 @@ Level(
     labels: { },
     disabled: [ Detector, Delay, Emitter, Galvo, Wall ],
     tiles: {
-        (0, 5): Emitter(
-            rotation: Down,
-            active: true
-        ),
+        (0, 5): Emitter( rotation: Down, active: true ),
         (5, 0): Detector,
         (5, 4): Detector,
 

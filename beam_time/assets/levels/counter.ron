@@ -7,10 +7,7 @@ Level(
     permanent: [ (4, 0), (8, 0), (12, 0), (16, 0), (19, 5) ],
     labels: { },
     tiles: {
-        (19, 5): Emitter(
-            rotation: Down,
-            active: true
-        ),
+        (19, 5): Emitter( rotation: Down, active: true ),
         (4, 0):  Detector,
         (8, 0):  Detector,
         (12, 0): Detector,
