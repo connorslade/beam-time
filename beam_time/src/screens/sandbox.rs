@@ -155,10 +155,9 @@ impl SandboxScreen {
         let mut enter = ctx.input.consume_key_pressed(KeyCode::Enter);
 
         if let Some(_create) = &mut self.create {
-            ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::OVERLAY));
-
             let (margin, padding) = state.spacing(ctx);
             let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
+                .position(ctx.center(), Anchor::Center)
                 .margin(margin)
                 .layer(layer::OVERLAY);
 

@@ -1,7 +1,9 @@
 use std::f32::consts::PI;
 
+use bitflags::bitflags;
 use engine::{
-    drawable::{spacer::Spacer, sprite::Sprite},
+    color::Rgb,
+    drawable::{shape::rectangle::Rectangle, spacer::Spacer, sprite::Sprite},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{
@@ -12,33 +14,67 @@ use engine::{
 };
 
 use crate::{
-    assets::{LEVEL_DROPDOWN_ARROW, PANEL},
+    assets::LEVEL_DROPDOWN_ARROW,
+    consts::{MODAL_BORDER_COLOR, MODAL_COLOR},
     ui::misc::body,
 };
 
 pub struct Modal {
     size: Vector2<f32>,
+    position: Vector2<f32>,
+    anchor: Anchor,
+
     margin: f32,
     layer: i16,
+    sides: ModalSides,
+    popup: bool,
+}
+
+bitflags! {
+    #[derive(Clone, Copy)]
+    pub struct ModalSides: u8 {
+        const TOP = 1 << 0;
+        const RIGHT = 1 << 1;
+        const BOTTOM = 1 << 2;
+        const LEFT = 1 << 3;
+    }
 }
 
 impl Modal {
     pub fn new(size: Vector2<f32>) -> Self {
         Self {
             size,
+            position: Vector2::zeros(),
+            anchor: Anchor::BottomLeft,
             layer: 0,
             margin: 0.0,
+            sides: ModalSides::all(),
+            popup: true,
         }
     }
 
-    pub fn margin(mut self, margin: f32) -> Self {
-        self.margin = margin;
-        self
+    pub fn sides(self, sides: ModalSides) -> Self {
+        Self { sides, ..self }
     }
 
-    pub fn layer(mut self, layer: i16) -> Self {
-        self.layer = layer;
-        self
+    pub fn margin(self, margin: f32) -> Self {
+        Self { margin, ..self }
+    }
+
+    pub fn layer(self, layer: i16) -> Self {
+        Self { layer, ..self }
+    }
+
+    pub fn position(self, position: Vector2<f32>, anchor: Anchor) -> Self {
+        Self {
+            position,
+            anchor,
+            ..self
+        }
+    }
+
+    pub fn popup(self, popup: bool) -> Self {
+        Self { popup, ..self }
     }
 
     pub fn inner_size(&self) -> Vector2<f32> {
@@ -48,8 +84,8 @@ impl Modal {
         )
     }
 
-    pub fn origin(&self, ctx: &mut GraphicsContext) -> Vector2<f32> {
-        ctx.center() + Vector2::new(-self.size.x, self.size.y) / 2.0
+    pub fn origin(&self) -> Vector2<f32> {
+        self.position + self.anchor.offset(self.size) + Vector2::y() * self.size.y
     }
 
     pub fn draw(
@@ -57,7 +93,7 @@ impl Modal {
         ctx: &mut GraphicsContext,
         ui: impl FnOnce(&mut GraphicsContext, &mut RootLayout),
     ) {
-        let pos = ctx.center() + Vector2::new(-self.size.x, self.size.y) / 2.0;
+        let pos = self.origin();
         let shift = Vector2::new(self.margin, -self.margin);
 
         self.background(ctx, pos);
@@ -79,8 +115,12 @@ impl Modal {
             vert.z_index = vert.z_index.max(self.layer + 1);
         }
 
-        ctx.input.cancel_hover();
-        ctx.input.cancel_clicks();
+        if self.popup {
+            ctx.defer(move |ctx| ctx.darken(Rgb::repeat(0.5), self.layer));
+
+            ctx.input.cancel_hover();
+            ctx.input.cancel_clicks();
+        }
     }
 }
 
@@ -157,65 +197,43 @@ pub fn modal_buttons(
 
 impl Modal {
     fn background(&self, ctx: &mut GraphicsContext, pos: Vector2<f32>) {
-        let scale = 4.0;
-        let tile_size = 16.0 * scale * ctx.scale_factor;
-
-        let y_scale = scale * (self.size.y / tile_size - 2.0);
-        let x_scale = scale * (self.size.x / tile_size - 2.0);
-
-        let base = Sprite::new(PANEL)
+        Rectangle::new(self.size)
+            .color(MODAL_COLOR)
+            .position(pos, Anchor::TopLeft)
             .z_index(self.layer)
-            .scale(Vector2::repeat(scale));
+            .draw(ctx);
 
-        // god this is awful...
-        ctx.draw([
-            // Top
-            base.clone()
-                .scale(Vector2::repeat(scale))
-                .position(pos, Anchor::TopLeft)
-                .uv_offset(Vector2::new(-16, -16)),
-            base.clone()
-                .scale(Vector2::new(x_scale, scale))
-                .position(pos + Vector2::x() * tile_size, Anchor::TopLeft)
-                .uv_offset(Vector2::new(0, -16)),
-            base.clone()
-                .scale(Vector2::repeat(scale))
-                .position(pos + Vector2::x() * self.size.x, Anchor::TopRight)
-                .uv_offset(Vector2::new(16, -16)),
-            // Sides
-            base.clone()
-                .scale(Vector2::new(scale, y_scale))
-                .position(pos - Vector2::y() * tile_size, Anchor::TopLeft)
-                .uv_offset(Vector2::new(-16, 0)),
-            base.clone()
-                .scale(Vector2::new(scale, y_scale))
-                .position(
-                    pos + Vector2::new(self.size.x, -tile_size),
-                    Anchor::TopRight,
-                )
-                .uv_offset(Vector2::new(16, 0)),
-            // Bottom
-            base.clone()
-                .scale(Vector2::repeat(scale))
-                .position(pos - Vector2::y() * self.size.y, Anchor::BottomLeft)
-                .uv_offset(Vector2::new(-16, 16)),
-            base.clone()
-                .scale(Vector2::new(x_scale, scale))
-                .position(
-                    pos + Vector2::new(tile_size, -self.size.y),
-                    Anchor::BottomLeft,
-                )
-                .uv_offset(Vector2::new(0, 16)),
-            base.clone()
-                .scale(Vector2::repeat(scale))
-                .position(
-                    pos + Vector2::new(self.size.x, -self.size.y),
-                    Anchor::BottomRight,
-                )
-                .uv_offset(Vector2::new(16, 16)),
-            // Middle
-            base.scale(Vector2::new(x_scale, y_scale))
-                .position(pos + Vector2::new(tile_size, -tile_size), Anchor::TopLeft),
-        ]);
+        let px = 4.0 * ctx.scale_factor;
+        let tb_size = Vector2::new(self.size.x - px * 2.0, px);
+        let lr_size = Vector2::new(px, self.size.y - px * 2.0);
+        let c_size = Vector2::repeat(px);
+
+        let (t, b, l, r) = (
+            ModalSides::TOP,
+            ModalSides::BOTTOM,
+            ModalSides::LEFT,
+            ModalSides::RIGHT,
+        );
+
+        let size = self.size;
+        for (_parts, size, offset) in [
+            (t, tb_size, Vector2::new(px, px)),
+            (b, tb_size, Vector2::new(px, -size.y)),
+            (l, lr_size, Vector2::new(-px, -px)),
+            (r, lr_size, Vector2::new(size.x, -px)),
+            (t | l, c_size, Vector2::new(0.0, 0.0)),
+            (t | r, c_size, Vector2::new(size.x - px, 0.0)),
+            (b | l, c_size, Vector2::new(0.0, px - size.y)),
+            (b | r, c_size, Vector2::new(size.x - px, px - size.y)),
+        ]
+        .into_iter()
+        .filter(|(parts, _, _)| self.sides.contains(*parts))
+        {
+            Rectangle::new(size)
+                .color(MODAL_BORDER_COLOR)
+                .position(pos + offset, Anchor::TopLeft)
+                .z_index(self.layer)
+                .draw(ctx);
+        }
     }
 }

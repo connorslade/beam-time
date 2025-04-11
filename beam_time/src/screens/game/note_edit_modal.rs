@@ -1,13 +1,12 @@
 use std::mem;
 
 use engine::{
-    color::Rgb,
     drawable::spacer::Spacer,
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
-    graphics_context::GraphicsContext,
+    graphics_context::{Anchor, GraphicsContext},
     layout::{
         column::ColumnLayout, row::RowLayout, tracker::LayoutTracker, Direction, Justify, Layout,
         LayoutElement, LayoutMethods,
@@ -70,10 +69,9 @@ impl GameScreen {
         }
 
         if let Some(note) = &mut self.note_edit {
-            ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::UI_OVERLAY));
-
             let (margin, padding) = state.spacing(ctx);
             let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
+                .position(ctx.center(), Anchor::Center)
                 .margin(margin)
                 .layer(layer::UI_OVERLAY);
 

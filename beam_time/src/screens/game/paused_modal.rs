@@ -1,10 +1,9 @@
 use std::time::Duration;
 
 use engine::{
-    color::Rgb,
     drawable::spacer::Spacer,
     exports::{nalgebra::Vector2, winit::event::MouseButton},
-    graphics_context::GraphicsContext,
+    graphics_context::{Anchor, GraphicsContext},
     layout::{
         column::ColumnLayout, row::RowLayout, tracker::LayoutTracker, Direction, Layout,
         LayoutElement, LayoutMethods,
@@ -37,10 +36,9 @@ impl GameScreen {
             let delta = Duration::from_secs_f32(ctx.delta_time);
             self.board.transient.open_timestamp += delta;
 
-            ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::UI_OVERLAY));
-
             let (margin, padding) = state.spacing(ctx);
             let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
+                .position(ctx.center(), Anchor::Center)
                 .margin(margin)
                 .layer(layer::UI_OVERLAY);
 

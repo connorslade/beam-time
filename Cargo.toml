@@ -10,6 +10,7 @@ afire = { version = "3.0.0-alpha.3", features = [
 ahash = "0.8.11"
 anyhow = "1.0.88"
 bincode = "1.3.3"
+bitflags = "2.9.0"
 bytemuck = { version = "1.18.0", features = ["derive"] }
 chrono = { version = "0.4.38", features = ["serde"] }
 clone-macro = "0.1.0"

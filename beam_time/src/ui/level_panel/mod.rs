@@ -2,7 +2,7 @@ use parking_lot::MutexGuard;
 
 use crate::{
     app::App,
-    assets::{HORIZONTAL_RULE, PANEL, UNDEAD_FONT},
+    assets::{HORIZONTAL_RULE, UNDEAD_FONT},
     consts::layer,
     game::board::Board,
 };
@@ -21,6 +21,8 @@ mod level_status;
 mod test_case;
 use level_status::{level_complete, level_failed, level_info};
 use test_case::test_case;
+
+use super::components::modal::{Modal, ModalSides};
 
 pub struct LevelPanel {
     pub case: usize,
@@ -65,7 +67,7 @@ impl LevelPanel {
             y: ctx.size().y - margin,
         };
 
-        // todo: Dont re-calc price every frame
+        // todo: Don't re-calc price every frame
         let price = board
             .tiles
             .iter()
@@ -152,43 +154,16 @@ impl UIContext {
 
 fn background(ctx: &mut GraphicsContext, ui: &mut UIContext) {
     ui.y -= ui.margin;
-    let height = ctx.size().y - ui.y - ui.tile_size;
 
-    let y_scale = height / (16.0 * ctx.scale_factor);
-    let x_scale = ui.scale * (WIDTH - 2) as f32;
-    let x_right = ui.tile_size * WIDTH as f32;
+    let width = ui.tile_size * WIDTH as f32;
+    let height = ctx.size().y - ui.y;
 
-    let base = Sprite::new(PANEL)
-        .z_index(layer::UI_BACKGROUND)
-        .scale(Vector2::repeat(ui.scale));
-
-    if height > 0.0 {
-        ctx.draw([
-            base.clone()
-                .scale(Vector2::new(ui.scale, y_scale))
-                .position(Vector2::new(0.0, ctx.size().y), Anchor::TopLeft)
-                .uv_offset(Vector2::new(-16, 0)),
-            base.clone()
-                .scale(Vector2::new(ui.scale, y_scale))
-                .position(Vector2::new(x_right, ctx.size().y), Anchor::TopRight)
-                .uv_offset(Vector2::new(16, 0)),
-            base.clone()
-                .scale(Vector2::new(x_scale, y_scale))
-                .position(Vector2::new(ui.tile_size, ctx.size().y), Anchor::TopLeft),
-        ]);
-    }
-
-    ctx.draw([
-        base.clone()
-            .position(Vector2::new(0.0, ui.y), Anchor::BottomLeft)
-            .uv_offset(Vector2::new(-16, 16)),
-        base.clone()
-            .position(Vector2::new(x_right, ui.y), Anchor::BottomRight)
-            .uv_offset(Vector2::new(16, 16)),
-        base.scale(Vector2::new(x_scale, ui.scale))
-            .position(Vector2::new(ui.tile_size, ui.y), Anchor::BottomLeft)
-            .uv_offset(Vector2::new(0, 16)),
-    ]);
+    Modal::new(Vector2::new(width, height))
+        .position(Vector2::y() * ctx.size().y, Anchor::TopLeft)
+        .layer(layer::UI_BACKGROUND)
+        .sides(ModalSides::BOTTOM | ModalSides::RIGHT)
+        .popup(false)
+        .draw(ctx, |_, _| {});
 }
 
 impl Default for LevelPanel {
