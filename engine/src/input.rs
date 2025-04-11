@@ -14,6 +14,7 @@ pub struct InputManager {
     /// Previous size
     pub resized: Option<Vector2<u32>>,
 
+    pub clicks_canceled: bool,
     pub mouse_down: Vec<MouseButton>,
     pub mouse_actions: Vec<(MouseButton, ElementState)>,
 
@@ -30,6 +31,7 @@ impl InputManager {
             scroll_delta: 0.0,
             resized: None,
 
+            clicks_canceled: false,
             mouse_down: Vec::new(),
             mouse_actions: Vec::new(),
 
@@ -39,6 +41,10 @@ impl InputManager {
     }
 
     pub fn mouse_down(&self, button: MouseButton) -> bool {
+        if self.clicks_canceled {
+            return false;
+        }
+
         self.mouse_down.contains(&button)
     }
 
@@ -54,14 +60,9 @@ impl InputManager {
             .any(|(b, s)| b == &button && s == &ElementState::Released)
     }
 
-    pub fn cancel_click(&mut self, button: MouseButton) {
-        self.mouse_actions.retain(|x| x.0 != button);
-        self.mouse_down.retain(|&x| x != button);
-    }
-
     pub fn cancel_clicks(&mut self) {
         self.mouse_actions.clear();
-        self.mouse_down.clear();
+        self.clicks_canceled = true;
     }
 
     pub fn cancel_hover(&mut self) {
@@ -152,5 +153,6 @@ impl InputManager {
         self.mouse_delta = Vector2::new(0.0, 0.0);
         self.scroll_delta = 0.0;
         self.resized = None;
+        self.clicks_canceled = false;
     }
 }

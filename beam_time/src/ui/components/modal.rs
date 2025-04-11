@@ -109,7 +109,7 @@ impl Modal {
         });
 
         for sprite in sprites {
-            sprite.z_index = sprite.z_index.max(self.layer + 1);
+            sprite.z_index += self.layer + 1;
             sprite.clip = [
                 pos - Vector2::new(0.0, self.size.y),
                 pos + self.size - shift,

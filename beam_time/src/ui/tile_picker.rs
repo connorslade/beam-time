@@ -130,8 +130,7 @@ impl TilePicker {
             Vector2::new(Tile::DEFAULT.len() as f32 * tile_size, tile_size),
         );
         if in_bounds(ctx.input.mouse, bounds) {
-            ctx.input.cancel_click(MouseButton::Left);
-            ctx.input.cancel_click(MouseButton::Right);
+            ctx.input.cancel_clicks();
         }
     }
 

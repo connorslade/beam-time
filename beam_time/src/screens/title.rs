@@ -1,11 +1,13 @@
 use std::time::Instant;
 
 use engine::{
-    color::Rgb,
     drawable::{spacer::Spacer, sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{column::ColumnLayout, root::RootLayout, Justify, LayoutElement, LayoutMethods},
+    layout::{
+        column::ColumnLayout, root::RootLayout, row::RowLayout, Justify, LayoutElement,
+        LayoutMethods,
+    },
     memory_key,
 };
 
@@ -13,7 +15,8 @@ use crate::{
     assets::{ABOUT_BUTTON, CAMPAIGN_BUTTON, COPYRIGHT, SANDBOX_BUTTON, TITLE, UNDEAD_FONT},
     consts::{layer, BACKGROUND_COLOR},
     ui::{
-        components::{button::Button, modal::Modal},
+        components::{button::Button, modal::Modal, slider::Slider},
+        misc::body,
         waterfall::Waterfall,
     },
     App,
@@ -96,20 +99,52 @@ impl Screen for TitleScreen {
 impl TitleScreen {
     fn setting_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         if let Some(ref _settings) = self.settings {
-            ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::OVERLAY));
-
             let (margin, padding) = state.spacing(ctx);
             let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
+                .position(ctx.center(), Anchor::Center)
                 .margin(margin)
                 .layer(layer::OVERLAY);
 
+            let size = modal.inner_size();
             modal.draw(ctx, |ctx, root| {
-                let body = |text| Text::new(UNDEAD_FONT, text).scale(Vector2::repeat(2.0));
+                let body = body(size.x);
 
                 root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
                     body("Settings")
                         .scale(Vector2::repeat(4.0))
                         .layout(ctx, layout);
+                    Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
+
+                    let mut slider_setting = |name, value: &mut f32, range: (f32, f32)| {
+                        body(name).layout(ctx, layout);
+                        layout.nest(
+                            ctx,
+                            RowLayout::new(padding).justify(Justify::Center),
+                            |ctx, layout| {
+                                let slider = Slider::new(memory_key!(name))
+                                    .default(*value)
+                                    .bounds(range.0, range.1);
+                                *value = slider.value(ctx);
+                                slider.layout(ctx, layout);
+
+                                Text::new(UNDEAD_FONT, format!("{value:.2}"))
+                                    .scale(Vector2::repeat(2.0))
+                                    .layout(ctx, layout);
+                            },
+                        );
+                    };
+
+                    slider_setting(
+                        "Zoom Sensitivity",
+                        &mut state.config.zoom_sensitivity,
+                        (0.0, 2.0),
+                    );
+
+                    slider_setting(
+                        "Movement Speed",
+                        &mut state.config.movement_speed,
+                        (1000.0, 3000.0),
+                    );
                 });
             });
         }

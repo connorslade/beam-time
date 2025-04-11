@@ -39,6 +39,7 @@ define_refs! {
         HISTOGRAM_BAR,
         HISTOGRAM_MARKER,
         TRASH,
+        SLIDER_HANDLE,
 
         EMPTY_TILE_A,
         EMPTY_TILE_B,
@@ -108,6 +109,7 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, HISTOGRAM_BAR, (32, 65), (4, 1));
     assets.register_sprite(interface, HISTOGRAM_MARKER, (24, 76), (5, 4));
     assets.register_sprite(interface, TRASH, (32, 72), (7, 8));
+    assets.register_sprite(interface, SLIDER_HANDLE, (40, 74), (4, 6));
 
     let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
     assets.register_sprite(tiles, EMPTY_TILE_A, (0, 288), (16, 16));
