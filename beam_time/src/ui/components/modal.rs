@@ -89,6 +89,10 @@ impl Modal {
         self.position + self.anchor.offset(self.size) + Vector2::y() * self.size.y
     }
 
+    pub fn draw_empty(self, ctx: &mut GraphicsContext) {
+        self.background(ctx, self.origin());
+    }
+
     pub fn draw(
         self,
         ctx: &mut GraphicsContext,

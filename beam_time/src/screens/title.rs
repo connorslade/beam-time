@@ -33,6 +33,7 @@ impl Screen for TitleScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         ctx.background(BACKGROUND_COLOR);
         ctx.draw(Waterfall::new(&mut state.waterfall));
+        self.setting_modal(state, ctx);
 
         // Replace with a settings button or smth
         if ctx.input.consume_key_pressed(KeyCode::KeyS) {
@@ -41,25 +42,6 @@ impl Screen for TitleScreen {
 
         if self.settings.is_some() && ctx.input.consume_key_pressed(KeyCode::Escape) {
             self.settings = None;
-        }
-
-        if let Some(ref _settings) = self.settings {
-            ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::OVERLAY));
-
-            let (margin, padding) = state.spacing(ctx);
-            let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
-                .margin(margin)
-                .layer(layer::OVERLAY);
-
-            modal.draw(ctx, |ctx, root| {
-                let body = |text| Text::new(UNDEAD_FONT, text).scale(Vector2::repeat(2.0));
-
-                root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
-                    body("Settings")
-                        .scale(Vector2::repeat(4.0))
-                        .layout(ctx, layout);
-                });
-            });
         }
 
         // Title & copyright
@@ -108,6 +90,29 @@ impl Screen for TitleScreen {
 
     fn on_resize(&mut self, state: &mut App, _old_size: Vector2<f32>, _size: Vector2<f32>) {
         state.waterfall.reset();
+    }
+}
+
+impl TitleScreen {
+    fn setting_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
+        if let Some(ref _settings) = self.settings {
+            ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::OVERLAY));
+
+            let (margin, padding) = state.spacing(ctx);
+            let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
+                .margin(margin)
+                .layer(layer::OVERLAY);
+
+            modal.draw(ctx, |ctx, root| {
+                let body = |text| Text::new(UNDEAD_FONT, text).scale(Vector2::repeat(2.0));
+
+                root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+                    body("Settings")
+                        .scale(Vector2::repeat(4.0))
+                        .layout(ctx, layout);
+                });
+            });
+        }
     }
 }
 

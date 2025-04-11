@@ -163,7 +163,7 @@ fn background(ctx: &mut GraphicsContext, ui: &mut UIContext) {
         .layer(layer::UI_BACKGROUND)
         .sides(ModalSides::BOTTOM | ModalSides::RIGHT)
         .popup(false)
-        .draw(ctx, |_, _| {});
+        .draw_empty(ctx);
 }
 
 impl Default for LevelPanel {

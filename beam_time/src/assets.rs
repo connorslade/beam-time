@@ -30,10 +30,6 @@ define_refs! {
         ABOUT_BUTTON,
         CREATE_BUTTON,
 
-        TILE_PICKER_LEFT,
-        TILE_PICKER_CENTER,
-        TILE_PICKER_RIGHT,
-        PANEL,
         CONFETTI_PARTICLES,
         BIG_RIGHT_ARROW,
         LEFT_ARROW,
@@ -103,10 +99,6 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, ABOUT_BUTTON, (40, 48), (31, 14));
     assets.register_sprite(interface, CREATE_BUTTON, (70, 32), (35, 14));
 
-    assets.register_sprite(interface, TILE_PICKER_LEFT, (64, 80), (16, 16));
-    assets.register_sprite(interface, TILE_PICKER_CENTER, (80, 80), (16, 16));
-    assets.register_sprite(interface, TILE_PICKER_RIGHT, (96, 80), (16, 16));
-    assets.register_sprite(interface, PANEL, (80, 96), (16, 16));
     assets.register_sprite(interface, CONFETTI_PARTICLES, (0, 64), (3, 3));
     assets.register_sprite(interface, BIG_RIGHT_ARROW, (16, 64), (11, 9));
     assets.register_sprite(interface, LEFT_ARROW, (16, 74), (3, 6));
