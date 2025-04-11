@@ -137,7 +137,7 @@ impl Screen for GameScreen {
             sim.beam = Some(BeamState::new(
                 &self.board.tiles,
                 self.board.transient.level.map(Cow::Borrowed),
-                test_pressed,
+                test_pressed.then_some(self.level_panel.case),
             ));
             self.level_result = None;
         }

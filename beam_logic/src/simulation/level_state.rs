@@ -15,6 +15,7 @@ use super::tile::BeamTile;
 pub struct LevelState {
     pub(super) level: Cow<'static, Level>,
     pub test_case: usize,
+    pub test_offset: usize,
 
     latency: u32,
     history: HashMap<u64, usize>,
@@ -32,15 +33,17 @@ pub enum LevelResult {
 }
 
 impl LevelState {
-    pub fn new(level: Cow<'static, Level>) -> Self {
+    pub fn new(level: Cow<'static, Level>, test_offset: usize) -> Self {
         Self {
             level,
+            test_offset,
             ..Default::default()
         }
     }
 
     pub fn tick(&mut self, hash: u64, board: &mut Map<BeamTile>) {
-        let case = &self.level.tests.cases[self.test_case];
+        let idx = (self.test_case + self.test_offset) % self.level.tests.cases.len();
+        let case = &self.level.tests.cases[idx];
         let idx = self.history_states.len();
         self.history_states.push(self.outputs(board));
 
@@ -101,7 +104,8 @@ impl LevelState {
 
     pub fn setup_case(&mut self, board: &mut Map<BeamTile>) {
         let tests = &self.level.tests;
-        let case = &tests.cases[self.test_case];
+        let idx = (self.test_case + self.test_offset) % tests.cases.len();
+        let case = &tests.cases[idx];
 
         for (pos, state) in tests.lasers.iter().zip(case.lasers()) {
             let pos = pos.into_pos();
@@ -149,7 +153,8 @@ impl Default for LevelState {
     fn default() -> Self {
         Self {
             level: Cow::Borrowed(&DEFAULT_LEVELS[0]),
-            test_case: Default::default(),
+            test_case: 0,
+            test_offset: 0,
             latency: 0,
             history: Default::default(),
             history_states: Default::default(),

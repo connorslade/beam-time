@@ -15,7 +15,7 @@ pub struct TestingSimulationState {
 impl TestingSimulationState {
     pub fn new(board: &Map<Tile>, level: Cow<'static, Level>, max_ticks: u32) -> Self {
         Self {
-            beam: BeamState::new(board, Some(level), true),
+            beam: BeamState::new(board, Some(level), Some(0)),
             max_ticks,
         }
     }

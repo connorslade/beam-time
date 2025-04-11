@@ -20,8 +20,8 @@ pub struct BeamState {
 impl BeamState {
     /// Creates a new BeamState from a Board by converting Tiles into their
     /// BeamTile counterparts.
-    pub fn new(tiles: &Map<Tile>, level: Option<Cow<'static, Level>>, test: bool) -> Self {
-        let level = test.then(|| level.map(LevelState::new)).flatten();
+    pub fn new(tiles: &Map<Tile>, level: Option<Cow<'static, Level>>, test: Option<usize>) -> Self {
+        let level = test.and_then(|o| level.map(|x| LevelState::new(x, o)));
 
         let board = tiles.map(|tile| match tile {
             Tile::Empty => BeamTile::Empty,

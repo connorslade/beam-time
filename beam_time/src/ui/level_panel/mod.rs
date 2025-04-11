@@ -23,7 +23,7 @@ use level_status::{level_complete, level_failed, level_info};
 use test_case::test_case;
 
 pub struct LevelPanel {
-    case: usize,
+    pub case: usize,
 
     offset: f32,
     previous_result: Option<(LevelResult, u32)>,

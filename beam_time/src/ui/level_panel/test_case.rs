@@ -28,8 +28,8 @@ pub fn test_case(
 ) {
     let sim_level = sim.beam.as_ref().and_then(|x| x.level.as_ref());
     let is_test = sim_level.is_some();
-    let case_idx = if let Some(level) = sim_level {
-        level.test_case
+    let case_idx = if let Some(sim_level) = sim_level {
+        (sim_level.test_case + sim_level.test_offset) % level.tests.cases.len()
     } else {
         panel.case
     };
