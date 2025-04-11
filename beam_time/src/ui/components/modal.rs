@@ -1,14 +1,15 @@
-use std::f32::consts::PI;
+use std::{f32::consts::PI, mem};
 
 use bitflags::bitflags;
+use common::direction::Direction;
 use engine::{
     color::Rgb,
     drawable::{shape::rectangle::Rectangle, spacer::Spacer, sprite::Sprite},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{
-        column::ColumnLayout, root::RootLayout, row::RowLayout, tracker::LayoutTracker, Direction,
-        Layout, LayoutElement, LayoutMethods,
+        column::ColumnLayout, root::RootLayout, row::RowLayout, tracker::LayoutTracker,
+        Direction as LayoutDirection, Layout, LayoutElement, LayoutMethods,
     },
     memory_key,
 };
@@ -144,9 +145,9 @@ pub fn modal_buttons(
         let scale = Vector2::repeat(2.0 + *t);
 
         let direction = if rotation {
-            Direction::MinToMax
+            LayoutDirection::MinToMax
         } else {
-            Direction::MaxToMin
+            LayoutDirection::MaxToMin
         };
 
         layout.nest(
@@ -173,14 +174,14 @@ pub fn modal_buttons(
     let mut hovered = (false, false);
     layout.nest(
         ctx,
-        ColumnLayout::new(0.0).direction(Direction::MaxToMin),
+        ColumnLayout::new(0.0).direction(LayoutDirection::MaxToMin),
         |ctx, layout| {
             layout.nest(ctx, RowLayout::new(button_space), |ctx, layout| {
                 hovered.0 = button(ctx, layout, left, true);
 
                 layout.nest(
                     ctx,
-                    RowLayout::new(button_space).direction(Direction::MaxToMin),
+                    RowLayout::new(button_space).direction(LayoutDirection::MaxToMin),
                     |ctx, layout| {
                         hovered.1 = button(ctx, layout, right, false);
                         Spacer::new_x(layout.available().x).layout(ctx, layout);
@@ -217,10 +218,6 @@ impl Modal {
 
         let size = self.size;
         for (_parts, size, offset) in [
-            (t, tb_size, Vector2::new(px, px)),
-            (b, tb_size, Vector2::new(px, -size.y)),
-            (l, lr_size, Vector2::new(-px, -px)),
-            (r, lr_size, Vector2::new(size.x, -px)),
             (t | l, c_size, Vector2::new(0.0, 0.0)),
             (t | r, c_size, Vector2::new(size.x - px, 0.0)),
             (b | l, c_size, Vector2::new(0.0, px - size.y)),
@@ -234,6 +231,58 @@ impl Modal {
                 .position(pos + offset, Anchor::TopLeft)
                 .z_index(self.layer)
                 .draw(ctx);
+        }
+
+        for (dir, mut size, mut offset) in [
+            (Direction::Up, tb_size, Vector2::new(px, px)),
+            (Direction::Down, tb_size, Vector2::new(px, -size.y)),
+            (Direction::Left, lr_size, Vector2::new(-px, -px)),
+            (Direction::Right, lr_size, Vector2::new(size.x, -px)),
+        ]
+        .into_iter()
+        .filter(|(parts, _, _)| self.sides.contains((*parts).into()))
+        {
+            let mut left = !self.sides.contains(dir.rotate_reverse().into());
+            let mut right = !self.sides.contains(dir.rotate().into());
+
+            if matches!(dir, Direction::Left | Direction::Down) {
+                mem::swap(&mut left, &mut right);
+            }
+
+            if left {
+                if dir.is_vertical() {
+                    size.x += px;
+                    offset.x -= px;
+                } else {
+                    size.y += px;
+                    offset.y += px;
+                }
+            }
+
+            if right {
+                if dir.is_vertical() {
+                    size.x += px;
+                } else {
+                    size.y += px;
+                }
+            }
+
+            Rectangle::new(size)
+                .color(MODAL_BORDER_COLOR)
+                .position(pos + offset, Anchor::TopLeft)
+                .z_index(self.layer)
+                .draw(ctx);
+        }
+    }
+}
+
+impl From<Direction> for ModalSides {
+    fn from(value: Direction) -> Self {
+        match value {
+            Direction::Up => ModalSides::TOP,
+            Direction::Right => ModalSides::RIGHT,
+            Direction::Down => ModalSides::BOTTOM,
+            Direction::Left => ModalSides::LEFT,
         }
     }
 }
