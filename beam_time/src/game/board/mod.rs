@@ -41,6 +41,7 @@ pub struct TransientBoardState {
     pub selection: SelectionState,
 
     pub open_timestamp: Instant,
+    pub trash: bool,
     last_save: Instant,
 }
 
@@ -154,6 +155,7 @@ impl Default for TransientBoardState {
             selection: Default::default(),
 
             open_timestamp: Instant::now(),
+            trash: false,
             last_save: Instant::now(),
         }
     }

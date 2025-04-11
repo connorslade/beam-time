@@ -1,16 +1,14 @@
-use std::f32::consts::PI;
-
 use engine::{
     assets::FontRef,
-    drawable::{sprite::Sprite, text::Text},
+    drawable::text::Text,
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::{Anchor, GraphicsContext},
     memory::MemoryKey,
 };
 
 use crate::{
     app::App,
-    assets::{ALAGARD_FONT, BACK_BUTTON, LEVEL_DROPDOWN_ARROW, UNDEAD_FONT},
+    assets::{ALAGARD_FONT, BACK_BUTTON, UNDEAD_FONT},
     consts::BACKGROUND_COLOR,
 };
 
@@ -75,39 +73,6 @@ pub fn tile_label(
     Text::new(UNDEAD_FONT, label)
         .scale(Vector2::repeat(scale / 2.0))
         .position(pos + offset, Anchor::BottomRight)
-}
-
-pub fn modal_buttons_old(
-    ctx: &mut GraphicsContext,
-    origin: Vector2<f32>,
-    width: f32,
-    (left, right): (&str, &str),
-) -> (bool, bool) {
-    let body = |text| Text::new(UNDEAD_FONT, text).scale(Vector2::repeat(2.0));
-    let button_space = ctx.scale_factor * 10.0;
-
-    Sprite::new(LEVEL_DROPDOWN_ARROW)
-        .position(origin, Anchor::BottomLeft)
-        .scale(Vector2::repeat(2.0))
-        .rotate(PI, Anchor::Center)
-        .draw(ctx);
-
-    let left = body(left).position(origin + Vector2::x() * button_space, Anchor::BottomLeft);
-
-    Sprite::new(LEVEL_DROPDOWN_ARROW)
-        .position(origin + Vector2::x() * width, Anchor::BottomRight)
-        .scale(Vector2::repeat(2.0))
-        .draw(ctx);
-
-    let right = body(right).position(
-        origin + Vector2::x() * (width - button_space),
-        Anchor::BottomRight,
-    );
-
-    let hovered = (left.is_hovered(ctx), right.is_hovered(ctx));
-    ctx.draw([left, right]);
-
-    hovered
 }
 
 pub fn body(max_width: f32) -> impl Fn(&str) -> Text {

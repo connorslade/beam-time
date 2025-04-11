@@ -1,5 +1,6 @@
 use std::{borrow::Cow, mem, path::PathBuf, time::Duration};
 
+use log::{info, warn};
 use rand::{seq::SliceRandom, thread_rng, Rng};
 
 #[cfg(feature = "steam")]
@@ -176,7 +177,15 @@ impl Screen for GameScreen {
 
     fn on_destroy(&mut self) {
         let board = mem::take(&mut self.board);
+        let trash = board.transient.trash;
         board.save(&self.save_file).unwrap();
+
+        if trash {
+            info!("Moving save to trash.");
+            if let Err(err) = trash::delete(&self.save_file) {
+                warn!("Failed to trash save. {err}")
+            }
+        }
     }
 }
 

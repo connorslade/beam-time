@@ -2,17 +2,27 @@ use std::time::Duration;
 
 use engine::{
     color::Rgb,
-    drawable::text::Text,
+    drawable::spacer::Spacer,
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::GraphicsContext,
-    layout::{column::ColumnLayout, LayoutElement},
+    layout::{
+        column::ColumnLayout, row::RowLayout, tracker::LayoutTracker, Direction, Layout,
+        LayoutElement, LayoutMethods,
+    },
+    memory_key,
 };
 
 use crate::{
     app::App,
-    assets::UNDEAD_FONT,
+    assets::TRASH,
     consts::layer,
-    ui::{components::modal::Modal, misc::modal_buttons_old},
+    ui::{
+        components::{
+            button::Button,
+            modal::{modal_buttons, Modal},
+        },
+        misc::body,
+    },
     util::human_duration,
 };
 
@@ -34,47 +44,52 @@ impl GameScreen {
                 .margin(margin)
                 .layer(layer::UI_OVERLAY);
 
-            let origin = modal.origin(ctx);
             let size = modal.inner_size();
             modal.draw(ctx, |ctx, root| {
-                let body = |text| {
-                    Text::new(UNDEAD_FONT, text)
-                        .scale(Vector2::repeat(2.0))
-                        .max_width(size.x)
-                };
+                let body = body(size.x);
 
-                let mut column = ColumnLayout::new(padding);
-                let name = match self.board.transient.level {
-                    Some(level) => format!("Campaign: {}", level.name),
-                    None => format!("Sandbox: {}", self.board.meta.name),
-                };
+                let mut trash = false;
+                root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+                    let name = match self.board.transient.level {
+                        Some(level) => format!("Campaign: {}", level.name),
+                        None => format!("Sandbox: {}", self.board.meta.name),
+                    };
 
-                body(&name)
-                    .scale(Vector2::repeat(4.0))
-                    .layout(ctx, &mut column);
+                    layout.nest(ctx, RowLayout::new(padding), |ctx, layout| {
+                        body(&name).scale(Vector2::repeat(4.0)).layout(ctx, layout);
 
-                let playtime = self.board.meta.playtime
-                    + self.board.transient.open_timestamp.elapsed().as_secs();
-                let playtime = format!("Playtime: {}", human_duration(playtime));
-                body(&playtime).layout(ctx, &mut column);
+                        layout.nest(
+                            ctx,
+                            RowLayout::new(padding).direction(Direction::MaxToMin),
+                            |ctx, layout| {
+                                let tracker = LayoutTracker::new(memory_key!());
+                                trash = tracker.clicked(ctx, MouseButton::Left);
+                                Button::new(TRASH, memory_key!())
+                                    .scale(Vector2::repeat(2.0))
+                                    .tracked(tracker)
+                                    .layout(ctx, layout);
+                                Spacer::new_x(layout.available().x).layout(ctx, layout);
+                            },
+                        );
+                    });
 
-                column.layout(ctx, root);
+                    let playtime = self.board.meta.playtime
+                        + self.board.transient.open_timestamp.elapsed().as_secs();
+                    let playtime = format!("Playtime: {}", human_duration(playtime));
+                    body(&playtime).layout(ctx, layout);
 
-                let clicking = ctx.input.mouse_down(MouseButton::Left);
-                let (exit, resume) = modal_buttons_old(
-                    ctx,
-                    origin + Vector2::new(margin, -size.y - ctx.scale_factor * 12.0),
-                    size.x,
-                    ("Exit", "Resume"),
-                );
+                    let clicking = ctx.input.mouse_down(MouseButton::Left);
+                    let (exit, resume) = modal_buttons(ctx, layout, size.x, ("Exit", "Resume"));
 
-                if clicking && resume {
-                    self.paused = None;
-                }
+                    if clicking && resume {
+                        self.paused = None;
+                    }
 
-                if clicking && exit {
-                    state.pop_screen();
-                }
+                    if trash || (clicking && exit) {
+                        self.board.transient.trash |= trash;
+                        state.pop_screen();
+                    }
+                });
             });
         }
     }
