@@ -77,7 +77,7 @@ pub fn tile_label(
         .position(pos + offset, Anchor::BottomRight)
 }
 
-pub fn modal_buttons(
+pub fn modal_buttons_old(
     ctx: &mut GraphicsContext,
     origin: Vector2<f32>,
     width: f32,

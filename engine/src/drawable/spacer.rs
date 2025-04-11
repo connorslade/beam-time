@@ -15,6 +15,14 @@ impl Spacer {
             bounds: Bounds2D::new(Vector2::zeros(), size),
         }
     }
+
+    pub fn new_x(size: f32) -> Self {
+        Self::new(Vector2::x() * size)
+    }
+
+    pub fn new_y(size: f32) -> Self {
+        Self::new(Vector2::y() * size)
+    }
 }
 
 impl LayoutElement for Spacer {

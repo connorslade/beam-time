@@ -1,11 +1,20 @@
+use std::f32::consts::PI;
+
 use engine::{
-    drawable::sprite::Sprite,
+    drawable::{spacer::Spacer, sprite::Sprite},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::root::RootLayout,
+    layout::{
+        column::ColumnLayout, root::RootLayout, row::RowLayout, tracker::LayoutTracker, Direction,
+        Layout, LayoutElement, LayoutMethods,
+    },
+    memory_key,
 };
 
-use crate::assets::PANEL;
+use crate::{
+    assets::{LEVEL_DROPDOWN_ARROW, PANEL},
+    ui::misc::body,
+};
 
 pub struct Modal {
     size: Vector2<f32>,
@@ -73,6 +82,77 @@ impl Modal {
         ctx.input.cancel_hover();
         ctx.input.cancel_clicks();
     }
+}
+
+pub fn modal_buttons(
+    ctx: &mut GraphicsContext,
+    layout: &mut ColumnLayout,
+    width: f32,
+    (left, right): (&str, &str),
+) -> (bool, bool) {
+    let button_space = ctx.scale_factor * 10.0;
+    let body = body(width);
+
+    let button = |ctx: &mut GraphicsContext, layout: &mut RowLayout, text, rotation| {
+        let key = memory_key!(rotation);
+        let tracker = LayoutTracker::new(key);
+        let hover = tracker.hovered(ctx);
+
+        let t = ctx.memory.get_or_insert(key, 0.0);
+        *t += ctx.delta_time * if hover { 1.0 } else { -1.0 };
+        *t = t.clamp(0.0, 0.1);
+        let scale = Vector2::repeat(2.0 + *t);
+
+        let direction = if rotation {
+            Direction::MinToMax
+        } else {
+            Direction::MaxToMin
+        };
+
+        layout.nest(
+            ctx,
+            RowLayout::new(button_space)
+                .direction(direction)
+                .tracked(tracker),
+            |ctx, layout| {
+                let anchors = [Anchor::CenterLeft, Anchor::CenterRight];
+                Sprite::new(LEVEL_DROPDOWN_ARROW)
+                    .scale(Vector2::repeat(2.0))
+                    .dynamic_scale(scale, anchors[rotation as usize])
+                    .rotate(PI * rotation as u8 as f32, Anchor::Center)
+                    .layout(ctx, layout);
+                body(text)
+                    .dynamic_scale(scale, anchors[(1 + rotation as usize) % 2])
+                    .layout(ctx, layout);
+            },
+        );
+
+        hover
+    };
+
+    let mut hovered = (false, false);
+    layout.nest(
+        ctx,
+        ColumnLayout::new(0.0).direction(Direction::MaxToMin),
+        |ctx, layout| {
+            layout.nest(ctx, RowLayout::new(button_space), |ctx, layout| {
+                hovered.0 = button(ctx, layout, left, true);
+
+                layout.nest(
+                    ctx,
+                    RowLayout::new(button_space).direction(Direction::MaxToMin),
+                    |ctx, layout| {
+                        hovered.1 = button(ctx, layout, right, false);
+                        Spacer::new_x(layout.available().x).layout(ctx, layout);
+                    },
+                );
+            });
+
+            Spacer::new_y(layout.available().y).layout(ctx, layout);
+        },
+    );
+
+    hovered
 }
 
 impl Modal {

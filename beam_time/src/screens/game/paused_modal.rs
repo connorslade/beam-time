@@ -12,7 +12,7 @@ use crate::{
     app::App,
     assets::UNDEAD_FONT,
     consts::layer,
-    ui::{components::modal::Modal, misc::modal_buttons},
+    ui::{components::modal::Modal, misc::modal_buttons_old},
     util::human_duration,
 };
 
@@ -61,7 +61,7 @@ impl GameScreen {
                 column.layout(ctx, root);
 
                 let clicking = ctx.input.mouse_down(MouseButton::Left);
-                let (exit, resume) = modal_buttons(
+                let (exit, resume) = modal_buttons_old(
                     ctx,
                     origin + Vector2::new(margin, -size.y - ctx.scale_factor * 12.0),
                     size.x,

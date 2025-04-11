@@ -3,13 +3,14 @@ use std::{f32::consts::PI, path::PathBuf};
 use common::misc::in_bounds;
 use engine::{
     color::Rgb,
-    drawable::{sprite::Sprite, text::Text},
+    drawable::{spacer::Spacer, sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
-        winit::{event::MouseButton, keyboard::KeyCode},
+        winit::{event::MouseButton, keyboard::KeyCode, window::CursorIcon},
     },
     graphics_context::{Anchor, GraphicsContext},
-    layout::{column::ColumnLayout, LayoutElement},
+    layout::{column::ColumnLayout, LayoutElement, LayoutMethods},
+    memory::MemoryKey,
     memory_key,
 };
 
@@ -21,10 +22,10 @@ use crate::{
     ui::{
         components::{
             button::Button,
-            modal::Modal,
-            text_input::{TextInput, TextInputState},
+            modal::{modal_buttons, Modal},
+            text_input::TextInput,
         },
-        misc::{font_scale, modal_buttons, titled_screen},
+        misc::{body, font_scale, titled_screen},
     },
     util::load_level_dir,
     App,
@@ -146,10 +147,12 @@ const INVALID_NAME_TEXT: &str =
     "Only alphanumeric characters, spaces, dashes, and underscores can be used in sandbox names.";
 const NO_NAME_TEXT: &str = "Please enter a name for your new sandbox.";
 
+const NAME_KEY: MemoryKey = memory_key!();
+
 impl SandboxScreen {
     fn create_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        let exit = ctx.input.consume_key_pressed(KeyCode::Escape);
-        let enter = ctx.input.consume_key_pressed(KeyCode::Enter);
+        let mut exit = ctx.input.consume_key_pressed(KeyCode::Escape);
+        let mut enter = ctx.input.consume_key_pressed(KeyCode::Enter);
 
         if let Some(_create) = &mut self.create {
             ctx.defer(|ctx| ctx.darken(Rgb::repeat(0.5), layer::OVERLAY));
@@ -162,52 +165,49 @@ impl SandboxScreen {
             let size = modal.inner_size();
             let mut name_error = false;
             modal.draw(ctx, |ctx, root| {
-                let body = |text| {
-                    Text::new(UNDEAD_FONT, text)
-                        .scale(Vector2::repeat(2.0))
-                        .max_width(size.x)
-                };
+                let body = body(size.x);
 
-                let mut column = ColumnLayout::new(padding);
-                body("New Sandbox")
-                    .scale(Vector2::repeat(4.0))
-                    .layout(ctx, &mut column);
-                body(NEW_SANDBOX_TEXT).layout(ctx, &mut column);
+                root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+                    body("New Sandbox")
+                        .scale(Vector2::repeat(4.0))
+                        .layout(ctx, layout);
+                    body(NEW_SANDBOX_TEXT).layout(ctx, layout);
 
-                // column.space(8.0 * ctx.scale_factor * state.config.ui_scale);
-                body("Sandbox Name").layout(ctx, &mut column);
+                    Spacer::new_y(8.0 * ctx.scale_factor * state.config.ui_scale)
+                        .layout(ctx, layout);
 
-                // TextInput::new(&mut create.name_input)
-                //     .width(size.x.min(400.0 * ctx.scale_factor))
-                //     .layout(ctx, &mut column);
+                    body("Sandbox Name").layout(ctx, layout);
 
-                // let content = create.name_input.content();
-                let content = String::new();
-                // TODO: THIS!!!
+                    let name = TextInput::new(NAME_KEY)
+                        .default_active(true)
+                        .width(size.x.min(400.0 * ctx.scale_factor));
+                    let content = name.content(ctx);
+                    name.layout(ctx, layout);
 
-                let no_name = content.is_empty();
-                let invalid_name = content
-                    .chars()
-                    .any(|c| !matches!(c, 'a'..='z' | 'A'..='Z' | '0'..='9' | ' ' | '-' | '_'));
+                    let no_name = content.is_empty();
+                    let invalid_name = content
+                        .chars()
+                        .any(|c| !matches!(c, 'a'..='z' | 'A'..='Z' | '0'..='9' | ' ' | '-' | '_'));
 
-                let checkers = [(no_name, NO_NAME_TEXT), (invalid_name, INVALID_NAME_TEXT)];
-                for (_, error) in checkers.iter().filter(|(predicate, _)| *predicate) {
-                    body(error).color(ERROR_COLOR).layout(ctx, &mut column);
-                    name_error = true;
-                }
+                    let checkers = [(no_name, NO_NAME_TEXT), (invalid_name, INVALID_NAME_TEXT)];
+                    for (_, error) in checkers.iter().filter(|(predicate, _)| *predicate) {
+                        body(error).color(ERROR_COLOR).layout(ctx, layout);
+                        name_error = true;
+                    }
 
-                // layout.space_to(size.y - ctx.scale_factor * 12.0);
-                // layout.row(ctx, |ctx| {
-                //     modal_buttons(ctx, size.x, ("Back", "Create"));
-                // });
+                    let (back, create) = modal_buttons(ctx, layout, size.x, ("Back", "Create"));
+                    let click = ctx.input.mouse_pressed(MouseButton::Left);
+                    enter |= create && !name_error && click;
+                    exit |= back && click;
 
-                column.layout(ctx, root);
+                    if create && name_error {
+                        ctx.set_cursor(CursorIcon::NotAllowed);
+                    }
+                });
             });
 
             if enter && !name_error {
-                // TODO: FIX THIS ALSO!!
-                // let name = create.name_input.content();
-                let name = String::new();
+                let name = TextInput::content_for(ctx, NAME_KEY);
 
                 let file_name = name.replace(' ', "_");
                 let path = self.world_dir.join(file_name).with_extension("bin");

@@ -7,7 +7,7 @@ use crate::{
     memory_key,
 };
 
-use super::{bounds::Bounds2D, LayoutElement};
+use super::{bounds::Bounds2D, Layout, LayoutElement};
 
 #[derive(Clone, Copy)]
 pub struct LayoutTracker {
@@ -68,6 +68,20 @@ impl<T: LayoutElement> LayoutElement for TrackedElement<T> {
         ctx.memory.insert(self.key, bounds);
 
         Box::new(self.element).draw(ctx)
+    }
+}
+
+impl<T: Layout + LayoutElement> Layout for TrackedElement<T> {
+    fn layout(&mut self, ctx: &mut GraphicsContext, element: Box<dyn LayoutElement>) {
+        Layout::layout(&mut self.element, ctx, element);
+    }
+
+    fn available(&self) -> Vector2<f32> {
+        self.element.available()
+    }
+
+    fn sized(&mut self, available: Vector2<f32>) {
+        self.element.sized(available);
     }
 }
 

@@ -23,18 +23,23 @@ In the future I want to build a programmable computer within the sandbox.
 
 Use WASD or middle mouse + drag to pan and scroll to zoom.
 
-| Key                           | Action                                      |
-| ----------------------------- | ------------------------------------------- |
-| <kbd>Q</kbd>                  | Copy hovered tile into cursor               |
-| <kbd>E</kbd>                  | Toggle state of the hovered emitter         |
-| <kbd>R</kbd>                  | Rotates the tile to selection in the cursor |
-| <kbd>Shift</kbd>+<kbd>R</kbd> | Same as above but in the opposite direction |
-| <kbd>V</kbd>                  | Flip vertically                             |
-| <kbd>H</kbd>                  | Flip horizontally                           |
-| <kbd>P</kbd>                  | Start (play) simulation                     |
-| <kbd>T</kbd>                  | Run cases (when in campaign level)          |
-| <kbd>Space</kbd>              | Run one simulation step                     |
-| <kbd>+</kbd>                  | Increase simulation speed                   |
-| <kbd>-</kbd>                  | Decrease simulation speed                   |
-| <kbd>0</kbd>                  | Reset simulation speed                      |
-| <kbd>Shift</kbd>+<kbd>0</kbd> | Max simulation speed                        |
+| Key                           | Action                                          |
+| ----------------------------- | ----------------------------------------------- |
+| <kbd>Q</kbd>                  | Copy hovered tile into cursor                   |
+| <kbd>E</kbd>                  | Toggle state of the hovered emitter             |
+| <kbd>R</kbd>                  | Rotates the tile to selection in the cursor     |
+| <kbd>Shift</kbd>+<kbd>R</kbd> | Same as above but in the opposite direction     |
+| <kbd>V</kbd>                  | Flip vertically                                 |
+| <kbd>H</kbd>                  | Flip horizontally                               |
+| <kbd>1</kbd>-<kbd>7</kbd>     | Picks up tile from panel                        |
+| <kbd>Shift</kbd>+drag         | Make a selection (ctrl to add, alt to subtract) |
+| <kbd>U</kbd>                  | Delete current selection                        |
+| <kbd>N</kbd>                  | Create sticky note at mouse position            |
+| <kbd>Ctrl</kbd>+<kbd>Z</kbd>  | Undo                                            |
+| <kbd>P</kbd>                  | Start (play) simulation                         |
+| <kbd>T</kbd>                  | Run cases (when in campaign level)              |
+| <kbd>Space</kbd>              | Run one simulation step                         |
+| <kbd>+</kbd>                  | Increase simulation speed                       |
+| <kbd>-</kbd>                  | Decrease simulation speed                       |
+| <kbd>0</kbd>                  | Reset simulation speed                          |
+| <kbd>Shift</kbd>+<kbd>0</kbd> | Max simulation speed                            |

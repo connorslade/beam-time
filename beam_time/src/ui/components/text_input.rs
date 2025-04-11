@@ -99,7 +99,11 @@ impl TextInput {
 
 impl TextInput {
     pub fn content(&self, ctx: &mut GraphicsContext) -> String {
-        let state = ctx.memory.get::<TextInputState>(self.key);
+        Self::content_for(ctx, self.key)
+    }
+
+    pub fn content_for(ctx: &mut GraphicsContext, key: MemoryKey) -> String {
+        let state = ctx.memory.get::<TextInputState>(key);
         if let Some(TextInputState {
             content,
             unedited: false,
