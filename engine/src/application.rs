@@ -26,6 +26,8 @@ use crate::{
     DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
 };
 
+type Render = Box<dyn FnMut(&mut GraphicsContext)>;
+
 pub struct Application<'a> {
     args: ApplicationArgs,
     state: Option<State<'a>>,
@@ -34,7 +36,7 @@ pub struct Application<'a> {
 pub struct ApplicationArgs {
     pub window_attributes: WindowAttributes,
     pub asset_constructor: Box<dyn Fn(&mut AssetConstructor)>,
-    pub resumed: Box<dyn Fn() -> Box<dyn FnMut(&mut GraphicsContext)>>,
+    pub resumed: Box<dyn Fn() -> Render>,
 }
 
 pub struct State<'a> {

@@ -89,3 +89,9 @@ impl Confetti {
         }
     }
 }
+
+impl Default for Confetti {
+    fn default() -> Self {
+        Self::new()
+    }
+}

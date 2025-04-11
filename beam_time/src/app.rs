@@ -131,6 +131,12 @@ impl Default for Config {
     }
 }
 
+impl Default for App {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Drop for App {
     fn drop(&mut self) {
         let _ = self.save_config();
