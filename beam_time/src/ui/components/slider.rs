@@ -1,3 +1,4 @@
+use common::misc::in_bounds;
 use engine::{
     drawable::{shape::rectangle::Rectangle, sprite::Sprite},
     exports::{nalgebra::Vector2, winit::event::MouseButton},
@@ -71,7 +72,8 @@ impl Slider {
 impl Drawable for Slider {
     fn draw(self, ctx: &mut GraphicsContext) {
         let px = 4.0 * ctx.scale_factor;
-        let width = self.width * ctx.scale_factor - px * 4.0;
+        let full_width = self.width * ctx.scale_factor;
+        let width = full_width - px * 4.0;
 
         let state = self.state(ctx.memory);
         let offset = Vector2::x() * (state.t * width);
@@ -86,13 +88,21 @@ impl Drawable for Slider {
             .position(self.position + offset, Anchor::BottomLeft)
             .scale(Vector2::repeat(4.0))
             .z_index(1);
-        if handle.is_hovered(ctx) && ctx.input.mouse_pressed(MouseButton::Left) {
-            let state = self.state(ctx.memory);
+
+        let click = ctx.input.mouse_pressed(MouseButton::Left);
+        let hovered = handle.is_hovered(ctx);
+
+        let state = self.state(ctx.memory);
+        let size = Vector2::new(full_width, px * 6.0);
+        if click && hovered {
             state.dragging = true;
             state.offset = ctx.input.mouse.x - (self.position.x + offset.x);
+        } else if click && in_bounds(ctx.input.mouse, (self.position, self.position + size)) {
+            state.dragging = true;
+            state.offset = px * 2.0;
         }
 
-        Rectangle::new(Vector2::new(self.width * ctx.scale_factor, px))
+        Rectangle::new(Vector2::new(full_width, px))
             .position(self.position + Vector2::y() * px * 2.5, Anchor::BottomLeft)
             .color(MODAL_BORDER_COLOR)
             .draw(ctx);
