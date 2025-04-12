@@ -78,6 +78,7 @@ impl LevelPanel {
         level_info(ctx, level, price, &mut ui);
         test_case(self, ctx, level, sim, &mut ui);
 
+        let resized = ctx.input.resized.is_some();
         let height = ui.y;
 
         let dt = ctx.delta_time;
@@ -103,6 +104,10 @@ impl LevelPanel {
 
         self.offset = self.offset.min(height);
         self.offset = exp_decay(self.offset, ui.y, 10.0, dt);
+
+        if resized {
+            self.offset = ui.y;
+        }
 
         let clip = [
             Vector2::new(0.0, self.offset),
