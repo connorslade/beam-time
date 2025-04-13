@@ -1,4 +1,5 @@
 use nalgebra::Vector2;
+use wgpu::naga::Type;
 
 use crate::graphics_context::GraphicsContext;
 #[cfg(feature = "layout_debug")]
@@ -13,6 +14,18 @@ pub struct Container {
 }
 
 impl Container {
+    pub fn of(
+        ctx: &mut GraphicsContext,
+        elements: impl IntoIterator<Item = Box<dyn LayoutElement>>,
+    ) -> Self {
+        let mut container = Self::default();
+        for element in elements.into_iter() {
+            container.insert(SizedLayoutElement::new(ctx, element));
+        }
+
+        container
+    }
+
     pub fn insert(&mut self, element: SizedLayoutElement) {
         self.bounds += element.bounds;
         self.children.push(element);
