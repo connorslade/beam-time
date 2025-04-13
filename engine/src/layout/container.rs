@@ -1,5 +1,4 @@
 use nalgebra::Vector2;
-use wgpu::naga::Type;
 
 use crate::graphics_context::GraphicsContext;
 #[cfg(feature = "layout_debug")]

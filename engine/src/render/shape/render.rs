@@ -40,8 +40,6 @@ impl ShapeRenderPipeline {
                 usage: BufferUsages::VERTEX | BufferUsages::COPY_DST,
                 mapped_at_creation: false,
             });
-        } else {
-            queue.write_buffer(&self.vertex, 0, verts);
         }
 
         if index.len() as u64 > self.index.size() {
@@ -51,9 +49,10 @@ impl ShapeRenderPipeline {
                 usage: BufferUsages::INDEX | BufferUsages::COPY_DST,
                 mapped_at_creation: false,
             });
-        } else {
-            queue.write_buffer(&self.index, 0, index);
         }
+
+        queue.write_buffer(&self.vertex, 0, verts);
+        queue.write_buffer(&self.index, 0, index);
     }
 
     pub fn paint<'a>(&'a self, render_pass: &mut RenderPass<'a>) {
