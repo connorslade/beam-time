@@ -108,16 +108,16 @@ impl Modal {
             root.draw(ctx);
         });
 
+        let clip_bounds = [pos - Vector2::new(0.0, self.size.y), pos + self.size];
+
         for sprite in sprites {
             sprite.z_index += self.layer + 1;
-            sprite.clip = [
-                pos - Vector2::new(0.0, self.size.y),
-                pos + self.size - shift,
-            ];
+            sprite.clip = clip_bounds;
         }
 
         for vert in shapes {
             vert.z_index = vert.z_index.max(self.layer + 1);
+            *vert = vert.clip(clip_bounds);
         }
 
         if self.popup {

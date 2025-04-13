@@ -27,6 +27,13 @@ impl ShapeVertex {
         }
     }
 
+    pub fn clip(mut self, [min, max]: [Vector2<f32>; 2]) -> Self {
+        let clipped_x = self.position.x.clamp(min.x, max.x);
+        let clipped_y = self.position.y.clamp(min.y, max.y);
+        self.position = Vector2::new(clipped_x, clipped_y);
+        self
+    }
+
     pub fn z_index(mut self, z_index: i16) -> Self {
         self.z_index = z_index;
         self

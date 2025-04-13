@@ -8,7 +8,7 @@ use beam_logic::{
     simulation::{level_state::LevelResult, runtime::asynchronous::InnerAsyncSimulationState},
 };
 use engine::{
-    drawable::{spacer::Spacer, text::Text},
+    drawable::{dummy::DummyDrawable, text::Text},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
     layout::{column::ColumnLayout, tracker::LayoutTracker, Layout, LayoutElement, LayoutMethods},
@@ -51,29 +51,32 @@ impl LevelPanel {
 
         let price = price(board, level);
 
-        let tracker = LayoutTracker::new(memory_key!());
-        let target_height = tracker
+        let trackers @ [base, extended] = [memory_key!(), memory_key!()].map(LayoutTracker::new);
+        let tracker = trackers[level_result.is_some() as usize];
+
+        let height = tracker
             .bounds(ctx)
             .map(|x| ctx.size().y - x.min.y)
             .unwrap_or_default();
-
         if self.height == 0.0 {
-            self.height = target_height;
+            self.height = height;
         }
-        self.height = exp_decay(self.height, target_height, 10.0, ctx.delta_time);
+        self.height = exp_decay(self.height, height, 10.0, ctx.delta_time);
 
-        Modal::new(Vector2::new(width, self.height))
-            .position(Vector2::y() * ctx.size().y, Anchor::TopLeft)
+        let position = Vector2::new(4.0 * ctx.scale_factor, ctx.size().y);
+        Modal::new(Vector2::new(width, self.height + padding))
+            .position(position, Anchor::TopLeft)
             .layer(layer::UI_BACKGROUND)
-            .sides(ModalSides::BOTTOM | ModalSides::RIGHT)
+            .sides(ModalSides::LEFT | ModalSides::BOTTOM | ModalSides::RIGHT)
             .margin(margin)
             .popup(false)
             .draw(ctx, |ctx, layout| {
                 layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
                     self.level_info(ctx, layout, level, price);
                     self.test_case(ctx, layout, level, sim);
+                    DummyDrawable::new().tracked(base).layout(ctx, layout);
                     self.level_status(ctx, state, layout, level, level_result, price);
-                    Spacer::new_y(padding).tracked(tracker).layout(ctx, layout);
+                    DummyDrawable::new().tracked(extended).layout(ctx, layout);
                 });
             });
     }

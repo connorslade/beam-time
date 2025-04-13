@@ -10,13 +10,12 @@ use engine::{
     },
     memory_key,
 };
-use leaderboard::api::results;
 
 use crate::{
     assets::{ABOUT_BUTTON, CAMPAIGN_BUTTON, COPYRIGHT, SANDBOX_BUTTON, TITLE, UNDEAD_FONT},
     consts::{layer, BACKGROUND_COLOR},
     ui::{
-        components::{button::Button, histogram::Histogram, modal::Modal, slider::Slider},
+        components::{button::Button, modal::Modal, slider::Slider},
         misc::body,
         waterfall::Waterfall,
     },
