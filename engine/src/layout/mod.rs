@@ -68,7 +68,7 @@ pub struct SizedLayoutElement {
     pub bounds: Bounds2D,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub enum Justify {
     Min,
     Center,

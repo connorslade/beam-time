@@ -46,12 +46,6 @@ impl ColumnLayout {
     pub fn justify(self, justify: Justify) -> Self {
         Self { justify, ..self }
     }
-
-    pub fn justified(&self, justify: Justify) -> Self {
-        ColumnLayout::new(self.padding)
-            .justify(justify)
-            .direction(self.direction)
-    }
 }
 
 impl Layout for ColumnLayout {
@@ -115,5 +109,15 @@ impl LayoutElement for ColumnLayout {
         }
 
         self.container.draw(ctx);
+    }
+}
+
+impl Clone for ColumnLayout {
+    fn clone(&self) -> Self {
+        Self {
+            justify: self.justify,
+            direction: self.direction,
+            ..Self::new(self.padding)
+        }
     }
 }

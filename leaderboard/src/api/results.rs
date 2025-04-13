@@ -21,7 +21,7 @@ pub struct PutResultsRef<'a> {
     pub board: &'a Map<Tile>,
 }
 
-#[derive(Clone, Default, Serialize, Deserialize)]
+#[derive(Copy, Clone, Default, Serialize, Deserialize)]
 pub struct Histogram {
     pub bins: [u32; 12],
     pub max: u32,

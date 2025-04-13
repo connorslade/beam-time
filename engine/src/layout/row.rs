@@ -108,3 +108,13 @@ impl LayoutElement for RowLayout {
         self.container.draw(ctx);
     }
 }
+
+impl Clone for RowLayout {
+    fn clone(&self) -> Self {
+        Self {
+            justify: self.justify,
+            direction: self.direction,
+            ..Self::new(self.padding)
+        }
+    }
+}
