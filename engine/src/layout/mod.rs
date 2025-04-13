@@ -55,7 +55,7 @@ pub trait LayoutMethods: Layout {
         &mut self,
         ctx: &mut GraphicsContext,
         mut layout: T,
-        mut ui: impl FnMut(&mut GraphicsContext, &mut T),
+        ui: impl FnOnce(&mut GraphicsContext, &mut T),
     ) {
         layout.sized(self.available());
         ui(ctx, &mut layout);
@@ -75,6 +75,7 @@ pub enum Justify {
     Max,
 }
 
+#[derive(Debug, Clone, Copy)]
 pub enum Direction {
     MinToMax,
     MaxToMin,

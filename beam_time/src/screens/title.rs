@@ -75,7 +75,7 @@ impl Screen for TitleScreen {
             ctx,
             ColumnLayout::new(padding).justify(Justify::Center),
             |ctx, layout| {
-                Spacer::new_y(64.0 * ctx.scale_factor).layout(ctx, layout);
+                Spacer::new_y(60.0 * ctx.scale_factor).layout(ctx, layout);
                 for (sprite, on_click) in buttons {
                     let key = memory_key!(sprite);
                     let button = Button::new(sprite, key).scale(Vector2::repeat(4.0));

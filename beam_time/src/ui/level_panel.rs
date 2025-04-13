@@ -1,3 +1,6 @@
+use std::f32::consts::PI;
+
+use common::misc::exp_decay;
 use parking_lot::MutexGuard;
 use thousands::Separable;
 
@@ -16,7 +19,7 @@ use beam_logic::{
 };
 use engine::{
     assets::SpriteRef,
-    color::Rgb,
+    color::{OkLab, Rgb},
     drawable::{dummy::DummyDrawable, spacer::Spacer, sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, GraphicsContext},
@@ -35,7 +38,7 @@ use super::components::{
 pub struct LevelPanel {
     pub case: usize,
 
-    offset: f32,
+    height: f32,
     previous_result: Option<(LevelResult, u32)>,
 }
 
@@ -60,7 +63,18 @@ impl LevelPanel {
 
         let price = price(board, level);
 
-        Modal::new(Vector2::new(width, 500.0))
+        let tracker = LayoutTracker::new(memory_key!());
+        let target_height = tracker
+            .bounds(ctx)
+            .map(|x| ctx.size().y - x.min.y)
+            .unwrap_or_default();
+
+        if self.height == 0.0 {
+            self.height = target_height;
+        }
+        self.height = exp_decay(self.height, target_height, 10.0, ctx.delta_time);
+
+        Modal::new(Vector2::new(width, self.height))
             .position(Vector2::y() * ctx.size().y, Anchor::TopLeft)
             .layer(layer::UI_BACKGROUND)
             .sides(ModalSides::BOTTOM | ModalSides::RIGHT)
@@ -70,6 +84,8 @@ impl LevelPanel {
                 layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
                     self.level_info(ctx, layout, level, price);
                     self.test_case(ctx, layout, level, sim);
+                    self.level_status(ctx, state, layout, level, level_result, price);
+                    Spacer::new_y(padding).tracked(tracker).layout(ctx, layout);
                 });
             });
     }
@@ -171,6 +187,72 @@ impl LevelPanel {
             },
         );
     }
+
+    fn level_status(
+        &mut self,
+        ctx: &mut GraphicsContext,
+        state: &App,
+        layout: &mut ColumnLayout,
+        level: &Level,
+        level_result: &Option<LevelResult>,
+        price: u32,
+    ) {
+        if let Some((result, price)) = level_result.map(|x| (x, price)).or(self.previous_result) {
+            self.previous_result = Some((result, price));
+            horizontal_rule(ctx, layout);
+
+            match result {
+                LevelResult::Success { latency } => {
+                    let now = state.start.elapsed().as_secs_f32();
+                    let price = price.separate_with_commas();
+                    let text = format!("Nice work! Your solution costs ${price} and has a total latency of {latency} ticks.");
+
+                    layout.nest(ctx, layout.justified(Justify::Center), |ctx, layout| {
+                        let title =
+                            Text::new(UNDEAD_FONT, "Level Complete").scale(Vector2::repeat(3.0));
+                        Container::of(ctx, [Box::new(title) as Box<dyn LayoutElement>])
+                            .callback(move |sprites, _polygons| {
+                                let count = sprites.len();
+                                for (idx, sprite) in sprites.iter_mut().enumerate() {
+                                    let t = idx as f32 / count as f32;
+                                    let color = OkLab::new(0.8, 0.1893, 0.0)
+                                        .hue_shift(t * 2.0 * PI - now * 2.0)
+                                        .to_lrgb();
+                                    sprite.color = Rgb::new(color.r, color.g, color.b)
+                                        .map(|x| x as f32 / 255.0);
+
+                                    let offset = (t * 2.0 * PI - now * 6.0).sin() * 4.0;
+                                    sprite.points.iter_mut().for_each(|point| point.y += offset);
+                                }
+                            })
+                            .layout(ctx, layout);
+
+                        Text::new(UNDEAD_FONT, text)
+                            .scale(Vector2::repeat(2.0))
+                            .max_width(layout.available().x)
+                            .layout(ctx, layout);
+                    });
+                }
+                LevelResult::Failed { case } => {
+                    const MESSAGE: &str = "Check the board to see what went wrong then press ESC to exit the current simulation, make your fixes and re-run the tests.";
+                    layout.nest(ctx, layout.justified(Justify::Center), |ctx, layout| {
+                        Text::new(UNDEAD_FONT, "Level Failed...")
+                            .scale(Vector2::repeat(3.0))
+                            .color(Rgb::hex(0xe43636))
+                            .layout(ctx, layout);
+
+                        let text =
+                            format!("Looks like you failed test case {}. {MESSAGE}", case + 1);
+                        Text::new(UNDEAD_FONT, text)
+                            .scale(Vector2::repeat(2.0))
+                            .max_width(layout.available().x)
+                            .layout(ctx, layout);
+                    });
+                }
+                LevelResult::OutOfTime => unreachable!(),
+            }
+        }
+    }
 }
 
 // todo: Don't re-calc price every frame
@@ -203,7 +285,7 @@ fn render_tiles<'a>(
         if let Some(label) = level.labels.get(&pos) {
             Box::new(tile_label(ctx, 4.0, tile_label_offset, label).z_index(1))
         } else {
-            Box::new(DummyDrawable)
+            Box::new(DummyDrawable::new())
         }
     };
 
@@ -221,7 +303,7 @@ impl Default for LevelPanel {
         Self {
             case: 0,
 
-            offset: f32::MAX,
+            height: 0.0,
             previous_result: None,
         }
     }

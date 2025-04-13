@@ -46,6 +46,12 @@ impl ColumnLayout {
     pub fn justify(self, justify: Justify) -> Self {
         Self { justify, ..self }
     }
+
+    pub fn justified(&self, justify: Justify) -> Self {
+        ColumnLayout::new(self.padding)
+            .justify(justify)
+            .direction(self.direction)
+    }
 }
 
 impl Layout for ColumnLayout {
