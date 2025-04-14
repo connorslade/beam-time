@@ -2,12 +2,13 @@ use parking_lot::MutexGuard;
 
 use crate::{
     assets::{
-        BIG_RIGHT_ARROW, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR, TILE_EMITTER_DOWN, UNDEAD_FONT,
+        BIG_RIGHT_ARROW, HISTOGRAM_MARKER, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR,
+        TILE_EMITTER_DOWN, UNDEAD_FONT,
     },
     ui::misc::tile_label,
 };
 use beam_logic::{
-    level::{ElementLocation, Level},
+    level::{case::CasePreview, ElementLocation, Level},
     simulation::runtime::asynchronous::InnerAsyncSimulationState,
 };
 use engine::{
@@ -43,6 +44,7 @@ impl LevelPanel {
 
         let case = &level.tests.cases[case_idx];
         let Some(preview) = case.preview(level) else {
+            DummyDrawable::new().layout(ctx, layout);
             return;
         };
 
@@ -53,13 +55,11 @@ impl LevelPanel {
             ctx,
             RowLayout::new(0.0).justify(Justify::Center),
             |ctx, layout| {
-                render_tiles(ctx, layout, level, TILE_EMITTER_DOWN, preview.laser());
-
-                Sprite::new(BIG_RIGHT_ARROW)
-                    .scale(scale)
-                    .layout(ctx, layout);
-
-                render_tiles(ctx, layout, level, TILE_DETECTOR, preview.detector());
+                if preview.elements() < 6 {
+                    case_big(ctx, layout, level, &preview);
+                } else {
+                    case_small(ctx, layout, level, &preview);
+                }
 
                 layout.nest(
                     ctx,
@@ -94,10 +94,26 @@ impl LevelPanel {
                                     .layout(ctx, layout);
                             };
 
+                        let digits = preview.elements().ilog10() as usize + 1;
+                        let width = (digits * 4 + digits - 1) as f32 * 4.0 * ctx.scale_factor;
                         button(ctx, layout, RIGHT_ARROW, true);
-                        Text::new(UNDEAD_FONT, (case_idx + 1).to_string())
-                            .scale(scale)
-                            .layout(ctx, layout);
+                        layout.nest(
+                            ctx,
+                            RowLayout::new(0.0)
+                                .sized(Vector2::x() * width)
+                                .direction(Direction::MaxToMin),
+                            |ctx, layout| {
+                                layout.nest(ctx, RowLayout::new(0.0), |ctx, layout| {
+                                    let text = format!("{:0>width$}", case_idx + 1, width = digits);
+                                    Text::new(UNDEAD_FONT, text)
+                                        .scale(scale)
+                                        .layout(ctx, layout);
+                                    let half_width = layout.available().x / 2.0;
+                                    Spacer::new_x(half_width).layout(ctx, layout);
+                                });
+                                Spacer::new_x(layout.available().x).layout(ctx, layout);
+                            },
+                        );
                         button(ctx, layout, LEFT_ARROW, false);
                         Spacer::new_x(layout.available().x).layout(ctx, layout);
                     },
@@ -107,17 +123,56 @@ impl LevelPanel {
     }
 }
 
+fn case_big(
+    ctx: &mut GraphicsContext,
+    layout: &mut RowLayout,
+    level: &Level,
+    preview: &CasePreview<'_, '_>,
+) {
+    render_tiles(ctx, layout, 4.0, level, TILE_EMITTER_DOWN, preview.laser());
+
+    Sprite::new(BIG_RIGHT_ARROW)
+        .scale(Vector2::repeat(4.0))
+        .layout(ctx, layout);
+
+    render_tiles(ctx, layout, 4.0, level, TILE_DETECTOR, preview.detector());
+}
+
+fn case_small(
+    ctx: &mut GraphicsContext,
+    layout: &mut RowLayout,
+    level: &Level,
+    preview: &CasePreview<'_, '_>,
+) {
+    layout.nest(
+        ctx,
+        ColumnLayout::new(0.0).justify(Justify::Center),
+        |ctx, layout| {
+            layout.nest(ctx, RowLayout::new(0.0), |ctx, layout| {
+                render_tiles(ctx, layout, 2.0, level, TILE_EMITTER_DOWN, preview.laser());
+            });
+            Sprite::new(HISTOGRAM_MARKER)
+                .scale(Vector2::repeat(2.0))
+                .layout(ctx, layout);
+            layout.nest(ctx, RowLayout::new(0.0), |ctx, layout| {
+                render_tiles(ctx, layout, 2.0, level, TILE_DETECTOR, preview.detector());
+            });
+        },
+    );
+}
+
 fn render_tiles<'a>(
     ctx: &mut GraphicsContext,
     layout: &mut RowLayout,
+    scale: f32,
     level: &Level,
     sprite: SpriteRef,
     items: impl Iterator<Item = (&'a bool, &'a ElementLocation)>,
 ) {
-    let tile_label_offset = Vector2::repeat(32.0 * ctx.scale_factor);
+    let tile_label_offset = Vector2::repeat(8.0 * scale * ctx.scale_factor);
     let tile_label = |ctx: &mut GraphicsContext, pos| -> Box<dyn LayoutElement> {
         if let Some(label) = level.labels.get(&pos) {
-            Box::new(tile_label(ctx, 4.0, tile_label_offset, label).z_index(1))
+            Box::new(tile_label(ctx, scale, tile_label_offset, label).z_index(1))
         } else {
             Box::new(DummyDrawable::new())
         }
@@ -127,7 +182,7 @@ fn render_tiles<'a>(
         let label = tile_label(ctx, tile.into_pos());
         let tile_sprite = Sprite::new(sprite)
             .uv_offset(Vector2::new(16 * input as i32, 0))
-            .scale(Vector2::repeat(4.0));
+            .scale(Vector2::repeat(scale));
         Container::of(ctx, [label, Box::new(tile_sprite)]).layout(ctx, layout);
     }
 }

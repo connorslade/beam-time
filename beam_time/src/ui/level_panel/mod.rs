@@ -8,7 +8,7 @@ use beam_logic::{
     simulation::{level_state::LevelResult, runtime::asynchronous::InnerAsyncSimulationState},
 };
 use engine::{
-    drawable::{dummy::DummyDrawable, text::Text},
+    drawable::{spacer::Spacer, text::Text},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
     layout::{column::ColumnLayout, tracker::LayoutTracker, Layout, LayoutElement, LayoutMethods},
@@ -64,6 +64,7 @@ impl LevelPanel {
         self.height = exp_decay(self.height, height, 10.0, ctx.delta_time);
 
         let position = Vector2::new(4.0 * ctx.scale_factor, ctx.size().y);
+        let dummy = || Spacer::new_y(-padding);
         Modal::new(Vector2::new(width, self.height + padding))
             .position(position, Anchor::TopLeft)
             .layer(layer::UI_BACKGROUND)
@@ -74,9 +75,9 @@ impl LevelPanel {
                 layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
                     self.level_info(ctx, layout, level, price);
                     self.test_case(ctx, layout, level, sim);
-                    DummyDrawable::new().tracked(base).layout(ctx, layout);
+                    dummy().tracked(base).layout(ctx, layout);
                     self.level_status(ctx, state, layout, level, level_result, price);
-                    DummyDrawable::new().tracked(extended).layout(ctx, layout);
+                    dummy().tracked(extended).layout(ctx, layout);
                 });
             });
     }
@@ -114,7 +115,7 @@ fn horizontal_rule(ctx: &mut GraphicsContext, layout: &mut ColumnLayout) {
     let margin = 12.0 * ctx.scale_factor;
     HorizontalRule::new(layout.available().x + margin * 2.0)
         .position(Vector2::x() * -margin)
-        .margin(margin)
+        .margin(margin / 2.0)
         .layout(ctx, layout);
 }
 

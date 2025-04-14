@@ -57,7 +57,11 @@ pub trait LayoutMethods: Layout {
         mut layout: T,
         ui: impl FnOnce(&mut GraphicsContext, &mut T),
     ) {
-        layout.sized(self.available());
+        let available = layout.available();
+        if available.x == 0.0 && available.y == 0.0 {
+            layout.sized(self.available());
+        }
+
         ui(ctx, &mut layout);
         self.layout(ctx, Box::new(layout));
     }

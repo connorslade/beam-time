@@ -7,7 +7,7 @@ Level(
         By connecting a handful of these circuits, you can create a ripple-carry adder to add full binary numbers.",
 
     size: Some((14, 9)),
-    permanent: [ 
+    permanent: [
         (0, 8), (1, 8), (2, 8),
         (12, 0), (13, 0)
     ],
@@ -17,7 +17,7 @@ Level(
         (2, 8): "C-In",
 
         (13, 0): "Sum",
-        (14, 0): "C-Out"
+        (12, 0): "C-Out"
     },
     disabled: [ ],
     tiles: {
@@ -40,7 +40,7 @@ Level(
 
     tests: Tests(
         lasers: [ Static((0, 8)), Static((1, 8)), Static((2, 8)) ],
-        detectors: [ Static((13, 0)), Static((14, 0)) ],
+        detectors: [ Static((13, 0)), Static((12, 0)) ],
 
         cases: [
             Cycle(

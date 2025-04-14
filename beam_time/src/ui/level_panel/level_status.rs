@@ -76,6 +76,7 @@ fn success(
                     }
                 })
                 .layout(ctx, layout);
+            Spacer::new_y(5.0 * ctx.scale_factor).layout(ctx, layout);
 
             Text::new(UNDEAD_FONT, text)
                 .scale(Vector2::repeat(2.0))
