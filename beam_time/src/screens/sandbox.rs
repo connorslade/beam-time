@@ -115,8 +115,7 @@ impl Screen for SandboxScreen {
                 Vector2::new(ctx.center().x + half_width, height),
                 Anchor::Center,
             )
-            .scale(Vector2::repeat(4.0))
-            .set_back();
+            .scale(Vector2::repeat(4.0));
         back_button.is_clicked(ctx).then(|| state.pop_screen());
         ctx.draw(back_button);
 

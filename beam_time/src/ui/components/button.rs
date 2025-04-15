@@ -11,14 +11,13 @@ use engine::{
 };
 
 use crate::{
-    assets::{BUTTON_BACK, BUTTON_HOVER, BUTTON_SUCCESS},
+    assets::{BUTTON_CLICK, BUTTON_HOVER},
     consts::ACCENT_COLOR,
 };
 
 pub struct Button {
     asset: SpriteRef,
     key: MemoryKey,
-    is_back: bool,
 
     color: Rgb<f32>,
     pos: Vector2<f32>,
@@ -39,7 +38,6 @@ impl Button {
         Self {
             asset,
             key,
-            is_back: false,
 
             color: Rgb::new(1.0, 1.0, 1.0),
             pos: Vector2::zeros(),
@@ -60,11 +58,6 @@ impl Button {
     pub fn scale(mut self, scale: Vector2<f32>) -> Self {
         self.invalidate_sprite();
         self.scale = scale;
-        self
-    }
-
-    pub fn set_back(mut self) -> Self {
-        self.is_back = true;
         self
     }
 
@@ -116,12 +109,7 @@ impl Drawable for Button {
         }
 
         if hover && ctx.input.mouse_pressed(MouseButton::Left) {
-            let sound = if self.is_back {
-                BUTTON_BACK
-            } else {
-                BUTTON_SUCCESS
-            };
-            ctx.audio.builder(sound).play_now();
+            ctx.audio.builder(BUTTON_CLICK).play_now();
         }
 
         state.last_hovered = hover;

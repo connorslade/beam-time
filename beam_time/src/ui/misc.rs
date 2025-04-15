@@ -39,8 +39,7 @@ pub fn titled_screen(
         let back_pos = Vector2::new(ctx.center().x, 10.0 + 28.0 * ctx.scale_factor);
         let button = Button::new(BACK_BUTTON, back)
             .pos(back_pos, Anchor::Center)
-            .scale(Vector2::repeat(4.0))
-            .set_back();
+            .scale(Vector2::repeat(4.0));
         button.is_clicked(ctx).then(|| state.pop_screen());
         ctx.draw(button);
     }
