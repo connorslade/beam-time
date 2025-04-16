@@ -12,7 +12,6 @@ bytemuck.workspace = true
 const-fnv1a-hash.workspace = true
 encase.workspace = true
 image.workspace = true
-itertools.workspace = true
 nalgebra.workspace = true
 pollster.workspace = true
 rodio.workspace = true

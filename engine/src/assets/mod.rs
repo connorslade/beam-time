@@ -30,7 +30,7 @@ define_ref! { SpriteRef, FontRef, AudioRef }
 
 #[derive(Debug, Copy, Clone, Eq)]
 pub struct TextureRef {
-    pub reference: u32,
+    reference: u32,
     pub size: Vector2<u32>,
 }
 
