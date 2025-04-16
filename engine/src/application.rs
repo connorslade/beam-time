@@ -91,7 +91,8 @@ impl ApplicationHandler for Application<'_> {
         let (device, queue) = pollster::block_on(adapter.request_device(
             &DeviceDescriptor {
                 label: None,
-                required_features: Features::default(),
+                required_features: Features::TEXTURE_BINDING_ARRAY
+                    | Features::SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING,
                 required_limits: Limits::default(),
                 memory_hints: MemoryHints::Performance,
             },
