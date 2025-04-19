@@ -82,7 +82,10 @@ impl ShapeRenderPipeline {
                 stencil: StencilState::default(),
                 bias: DepthBiasState::default(),
             }),
-            multisample: MultisampleState::default(),
+            multisample: MultisampleState {
+                count: 4,
+                ..Default::default()
+            },
             multiview: None,
             cache: None,
         });

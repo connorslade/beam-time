@@ -41,7 +41,7 @@ fn vert(
     out.clip_pos = points[index];
     var pos = out.clip_pos * 2.0 - vec2(1.0);
     out.pos = vec4(pos, instance.layer, 1.0);
-    
+
     var uv = uvs[index];
     out.uv = instance.uv.xy + vec2(
         uv.x * instance.uv.z,

@@ -56,7 +56,8 @@ pub struct State<'a> {
     // Rendering stuff (pipelines & buffers)
     pub sprite_renderer: SpriteRenderPipeline,
     pub shape_renderer: ShapeRenderPipeline,
-    pub depth_buffer: Texture,
+    pub texture: Texture,
+    pub depth_texture: Texture,
 }
 
 pub struct RenderContext<'a> {
@@ -106,7 +107,8 @@ impl ApplicationHandler for Application<'_> {
         self.state = Some(State {
             sprite_renderer: SpriteRenderPipeline::new(&device, assets.clone()),
             shape_renderer: ShapeRenderPipeline::new(&device),
-            depth_buffer: create_depth_buffer(&device, window_size),
+            texture: create_render_texture(&device, window_size),
+            depth_texture: create_depth_texture(&device, window_size),
             audio: AudioManager::new_default_output(assets.clone()).unwrap(),
             assets,
             memory: Memory::default(),
@@ -179,15 +181,17 @@ impl ApplicationHandler for Application<'_> {
                     .texture
                     .create_view(&TextureViewDescriptor::default());
 
+                let texture = state.texture.create_view(&TextureViewDescriptor::default());
+
                 let depth_view = state
-                    .depth_buffer
+                    .depth_texture
                     .create_view(&TextureViewDescriptor::default());
 
                 let mut render_pass = encoder.begin_render_pass(&RenderPassDescriptor {
                     label: None,
                     color_attachments: &[Some(RenderPassColorAttachment {
-                        view: &view,
-                        resolve_target: None,
+                        view: &texture,
+                        resolve_target: Some(&view),
                         ops: Operations {
                             load: LoadOp::Clear(ctx.background_color()),
                             store: StoreOp::Store,
@@ -216,7 +220,8 @@ impl ApplicationHandler for Application<'_> {
                 gcx.window.request_redraw();
             }
             WindowEvent::Resized(size) => {
-                state.depth_buffer = create_depth_buffer(&state.graphics.device, size);
+                state.texture = create_render_texture(&state.graphics.device, size);
+                state.depth_texture = create_depth_texture(&state.graphics.device, size);
                 self.resize_surface();
             }
             _ => (),
@@ -255,7 +260,7 @@ impl<'a> Application<'a> {
     }
 }
 
-fn create_depth_buffer(device: &Device, window_size: PhysicalSize<u32>) -> Texture {
+fn create_depth_texture(device: &Device, window_size: PhysicalSize<u32>) -> Texture {
     let size = Extent3d {
         width: window_size.width,
         height: window_size.height,
@@ -266,9 +271,28 @@ fn create_depth_buffer(device: &Device, window_size: PhysicalSize<u32>) -> Textu
         label: None,
         size,
         mip_level_count: 1,
-        sample_count: 1,
+        sample_count: 4,
         dimension: TextureDimension::D2,
         format: DEPTH_TEXTURE_FORMAT,
+        usage: TextureUsages::RENDER_ATTACHMENT,
+        view_formats: &[],
+    })
+}
+
+fn create_render_texture(device: &Device, window_size: PhysicalSize<u32>) -> Texture {
+    let size = Extent3d {
+        width: window_size.width,
+        height: window_size.height,
+        depth_or_array_layers: 1,
+    };
+
+    device.create_texture(&TextureDescriptor {
+        label: None,
+        size,
+        mip_level_count: 1,
+        sample_count: 4,
+        dimension: TextureDimension::D2,
+        format: TEXTURE_FORMAT,
         usage: TextureUsages::RENDER_ATTACHMENT,
         view_formats: &[],
     })

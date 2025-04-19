@@ -15,7 +15,7 @@ pub struct ShapeVertex {
 #[derive(Default)]
 pub struct GpuPolygons {
     pub(crate) vertices: Vec<ShapeVertex>,
-    pub(crate) indices: Vec<u16>,
+    pub(crate) indices: Vec<u32>,
 }
 
 impl ShapeVertex {
@@ -42,7 +42,7 @@ impl ShapeVertex {
 
 impl GpuPolygons {
     pub fn push_triangle(&mut self, vertices: &[ShapeVertex; 3]) {
-        let start = self.vertices.len() as u16;
+        let start = self.vertices.len() as u32;
         self.vertices.extend_from_slice(vertices);
         self.indices
             .extend_from_slice(&[start, start + 1, start + 2]);
@@ -55,7 +55,7 @@ impl GpuPolygons {
     }
 
     pub fn push_quad(&mut self, vertices: &[ShapeVertex; 4]) {
-        let start = self.vertices.len() as u16;
+        let start = self.vertices.len() as u32;
         self.vertices.extend_from_slice(vertices);
         self.indices
             .extend_from_slice(&[start, start + 1, start + 2]);

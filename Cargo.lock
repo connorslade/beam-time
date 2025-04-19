@@ -1014,6 +1014,7 @@ dependencies = [
  "const-fnv1a-hash",
  "encase",
  "image",
+ "itertools 0.14.0",
  "nalgebra",
  "pollster",
  "rodio",
