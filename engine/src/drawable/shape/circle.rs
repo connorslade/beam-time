@@ -6,6 +6,7 @@ use nalgebra::Vector2;
 use crate::{
     color::Rgb,
     graphics_context::{Anchor, Drawable, GraphicsContext},
+    layout::{bounds::Bounds2D, LayoutElement},
     render::shape::ShapeVertex,
 };
 
@@ -82,5 +83,23 @@ impl Drawable for Circle {
             .for_each(|(a, b)| {
                 ctx.shapes.push_triangle(&[center_vert, a, b]);
             });
+    }
+}
+
+impl LayoutElement for Circle {
+    fn translate(&mut self, distance: Vector2<f32>) {
+        self.position += distance;
+    }
+
+    fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
+        let r = self.r * ctx.scale_factor;
+        let size = Vector2::repeat(r * 2.0);
+
+        let center = self.position + Vector2::repeat(r) + self.anchor.offset(size);
+        Bounds2D::new(center, center + size)
+    }
+
+    fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
+        (*self).draw(ctx);
     }
 }
