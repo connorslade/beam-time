@@ -37,6 +37,7 @@ pub struct ApplicationArgs {
     pub window_attributes: WindowAttributes,
     pub asset_constructor: Box<dyn Fn(&mut AssetConstructor)>,
     pub resumed: Box<dyn Fn() -> Render>,
+    pub multisample: Option<u32>,
 }
 
 pub struct State<'a> {
@@ -103,12 +104,14 @@ impl ApplicationHandler for Application<'_> {
         let mut asset_constructor = AssetConstructor::new();
         (self.args.asset_constructor)(&mut asset_constructor);
 
+        let samples = self.args.multisample.unwrap_or(1);
         let assets = Rc::new(asset_constructor.into_manager(&device, &queue));
+        let (texture, depth_texture) = create_textures(&device, window_size, samples);
         self.state = Some(State {
-            sprite_renderer: SpriteRenderPipeline::new(&device, assets.clone()),
-            shape_renderer: ShapeRenderPipeline::new(&device),
-            texture: create_render_texture(&device, window_size),
-            depth_texture: create_depth_texture(&device, window_size),
+            sprite_renderer: SpriteRenderPipeline::new(&device, samples, assets.clone()),
+            shape_renderer: ShapeRenderPipeline::new(&device, samples),
+            texture,
+            depth_texture,
             audio: AudioManager::new_default_output(assets.clone()).unwrap(),
             assets,
             memory: Memory::default(),
@@ -132,6 +135,9 @@ impl ApplicationHandler for Application<'_> {
         window_id: WindowId,
         event: WindowEvent,
     ) {
+        let samples = self.args.multisample.unwrap_or(1);
+        let is_multisample = self.args.multisample.is_some();
+
         let state = self.state();
 
         if window_id != state.graphics.window.id() {
@@ -181,7 +187,11 @@ impl ApplicationHandler for Application<'_> {
                     .texture
                     .create_view(&TextureViewDescriptor::default());
 
-                let texture = state.texture.create_view(&TextureViewDescriptor::default());
+                let texture = if is_multisample {
+                    &state.texture.create_view(&TextureViewDescriptor::default())
+                } else {
+                    &view
+                };
 
                 let depth_view = state
                     .depth_texture
@@ -190,8 +200,8 @@ impl ApplicationHandler for Application<'_> {
                 let mut render_pass = encoder.begin_render_pass(&RenderPassDescriptor {
                     label: None,
                     color_attachments: &[Some(RenderPassColorAttachment {
-                        view: &texture,
-                        resolve_target: Some(&view),
+                        view: texture,
+                        resolve_target: is_multisample.then_some(&view),
                         ops: Operations {
                             load: LoadOp::Clear(ctx.background_color()),
                             store: StoreOp::Store,
@@ -220,8 +230,9 @@ impl ApplicationHandler for Application<'_> {
                 gcx.window.request_redraw();
             }
             WindowEvent::Resized(size) => {
-                state.texture = create_render_texture(&state.graphics.device, size);
-                state.depth_texture = create_depth_texture(&state.graphics.device, size);
+                let (texture, depth) = create_textures(&state.graphics.device, size, samples);
+                state.texture = texture;
+                state.depth_texture = depth;
                 self.resize_surface();
             }
             _ => (),
@@ -260,40 +271,49 @@ impl<'a> Application<'a> {
     }
 }
 
-fn create_depth_texture(device: &Device, window_size: PhysicalSize<u32>) -> Texture {
+fn create_textures(
+    device: &Device,
+    window_size: PhysicalSize<u32>,
+    samples: u32,
+) -> (Texture, Texture) {
     let size = Extent3d {
         width: window_size.width,
         height: window_size.height,
         depth_or_array_layers: 1,
     };
 
-    device.create_texture(&TextureDescriptor {
+    let render = device.create_texture(&TextureDescriptor {
         label: None,
         size,
         mip_level_count: 1,
-        sample_count: 4,
-        dimension: TextureDimension::D2,
-        format: DEPTH_TEXTURE_FORMAT,
-        usage: TextureUsages::RENDER_ATTACHMENT,
-        view_formats: &[],
-    })
-}
-
-fn create_render_texture(device: &Device, window_size: PhysicalSize<u32>) -> Texture {
-    let size = Extent3d {
-        width: window_size.width,
-        height: window_size.height,
-        depth_or_array_layers: 1,
-    };
-
-    device.create_texture(&TextureDescriptor {
-        label: None,
-        size,
-        mip_level_count: 1,
-        sample_count: 4,
+        sample_count: samples,
         dimension: TextureDimension::D2,
         format: TEXTURE_FORMAT,
         usage: TextureUsages::RENDER_ATTACHMENT,
         view_formats: &[],
-    })
+    });
+
+    let depth = device.create_texture(&TextureDescriptor {
+        label: None,
+        size,
+        mip_level_count: 1,
+        sample_count: samples,
+        dimension: TextureDimension::D2,
+        format: DEPTH_TEXTURE_FORMAT,
+        usage: TextureUsages::RENDER_ATTACHMENT,
+        view_formats: &[],
+    });
+
+    (render, depth)
+}
+
+impl Default for ApplicationArgs {
+    fn default() -> Self {
+        Self {
+            window_attributes: WindowAttributes::default(),
+            asset_constructor: Box::new(|_| {}),
+            multisample: None,
+            resumed: Box::new(|| Box::new(|_| {})),
+        }
+    }
 }

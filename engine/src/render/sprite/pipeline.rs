@@ -33,7 +33,7 @@ pub struct RenderOperation {
 }
 
 impl SpriteRenderPipeline {
-    pub fn new(device: &Device, assets: Rc<AssetManager>) -> Self {
+    pub fn new(device: &Device, samples: u32, assets: Rc<AssetManager>) -> Self {
         let shader = device.create_shader_module(include_shader!("sprite.wgsl"));
 
         let bind_group_layout = device.create_bind_group_layout(&BIND_GROUP_LAYOUT_DESCRIPTOR);
@@ -74,7 +74,7 @@ impl SpriteRenderPipeline {
                 bias: DepthBiasState::default(),
             }),
             multisample: MultisampleState {
-                count: 4,
+                count: samples,
                 ..Default::default()
             },
             multiview: None,

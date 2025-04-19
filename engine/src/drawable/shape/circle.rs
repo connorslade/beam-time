@@ -67,7 +67,6 @@ impl Drawable for Circle {
         };
 
         (0..self.n)
-            .into_iter()
             .map(|i| {
                 let p = i as f32 / self.n as f32 * TAU;
                 let position = Vector2::new(p.cos(), p.sin()) * r + center;

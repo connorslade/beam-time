@@ -20,7 +20,7 @@ pub struct ShapeRenderPipeline {
 }
 
 impl ShapeRenderPipeline {
-    pub fn new(device: &Device) -> Self {
+    pub fn new(device: &Device, samples: u32) -> Self {
         let shader = device.create_shader_module(include_shader!("shape.wgsl"));
 
         let bind_group_layout = device.create_bind_group_layout(&BindGroupLayoutDescriptor {
@@ -83,7 +83,7 @@ impl ShapeRenderPipeline {
                 bias: DepthBiasState::default(),
             }),
             multisample: MultisampleState {
-                count: 4,
+                count: samples,
                 ..Default::default()
             },
             multiview: None,

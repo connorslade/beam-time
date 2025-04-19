@@ -63,6 +63,7 @@ fn main() -> Result<()> {
                 screens.extend(mem::take(&mut app.new_screens), &mut app);
             })
         }),
+        ..Default::default()
     })
     .run()
 }
