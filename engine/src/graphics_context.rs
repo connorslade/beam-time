@@ -27,9 +27,9 @@ pub struct GraphicsContext<'a> {
     /// Background color
     pub(crate) background: Rgb<f32>,
     /// List of sprites to render this frame
-    pub(crate) sprites: Vec<GpuSprite>,
+    pub sprites: Vec<GpuSprite>,
     /// List of shapes to render this frame (triangulated)
-    pub(crate) shapes: GpuPolygons,
+    pub shapes: GpuPolygons,
     /// The cursor to use for the next frame
     pub(crate) cursor: Cursor,
     /// Functions to run after main render function completes

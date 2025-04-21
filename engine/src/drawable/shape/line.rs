@@ -62,14 +62,16 @@ impl Drawable for Line {
         let direction = (b - a).normalize();
         let p = Vector2::new(-direction.y, direction.x) * (self.thickness * ctx.scale_factor / 2.0);
 
-        let vert = |position| ShapeVertex {
-            position,
-            z_index: self.z_index,
-            color: self.color,
+        let mut vert = |position| {
+            ctx.shapes.push_vertex(ShapeVertex {
+                position,
+                z_index: self.z_index,
+                color: self.color,
+            })
         };
 
-        ctx.shapes
-            .push_quad(&[vert(a + p), vert(a - p), vert(b - p), vert(b + p)]);
+        let points = [vert(a + p), vert(a - p), vert(b - p), vert(b + p)];
+        ctx.shapes.push_quad(points);
 
         match self.cap {
             LineCap::Butt => {}

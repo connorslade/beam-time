@@ -51,10 +51,11 @@ impl Rectangle {
 
 impl Drawable for Rectangle {
     fn draw(self, ctx: &mut GraphicsContext) {
-        let verts = self
-            .points()
-            .map(|x| ShapeVertex::new(x, self.color).z_index(self.z_index));
-        ctx.shapes.push_quad(&verts);
+        let verts = self.points().map(|x| {
+            ctx.shapes
+                .push_vertex(ShapeVertex::new(x, self.color).z_index(self.z_index))
+        });
+        ctx.shapes.push_quad(verts);
     }
 }
 

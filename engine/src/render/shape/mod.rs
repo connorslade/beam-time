@@ -41,25 +41,18 @@ impl ShapeVertex {
 }
 
 impl GpuPolygons {
-    pub fn push_triangle(&mut self, vertices: &[ShapeVertex; 3]) {
-        let start = self.vertices.len() as u32;
-        self.vertices.extend_from_slice(vertices);
-        self.indices
-            .extend_from_slice(&[start, start + 1, start + 2]);
+    pub fn push_vertex(&mut self, vertex: ShapeVertex) -> u32 {
+        let index = self.vertices.len() as u32;
+        self.vertices.push(vertex);
+        index
     }
 
-    pub fn push_triangles(&mut self, triangles: &[[ShapeVertex; 3]]) {
-        for triangle in triangles {
-            self.push_triangle(triangle);
-        }
+    pub fn push_triangle(&mut self, vertices: &[u32; 3]) {
+        self.indices.extend_from_slice(vertices);
     }
 
-    pub fn push_quad(&mut self, vertices: &[ShapeVertex; 4]) {
-        let start = self.vertices.len() as u32;
-        self.vertices.extend_from_slice(vertices);
-        self.indices
-            .extend_from_slice(&[start, start + 1, start + 2]);
-        self.indices
-            .extend_from_slice(&[start + 2, start + 3, start]);
+    pub fn push_quad(&mut self, [a, b, c, d]: [u32; 4]) {
+        self.indices.extend_from_slice(&[a, b, c]);
+        self.indices.extend_from_slice(&[c, d, a]);
     }
 }

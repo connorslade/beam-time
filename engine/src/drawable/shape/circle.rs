@@ -61,11 +61,11 @@ impl Drawable for Circle {
         let offset = self.anchor.offset(Vector2::repeat(r * 2.0));
         let center = self.position + Vector2::repeat(r) + offset;
 
-        let center_vert = ShapeVertex {
+        let center_vert = ctx.shapes.push_vertex(ShapeVertex {
             position: center,
             z_index: self.z_index,
             color: self.color,
-        };
+        });
 
         (0..self.n)
             .map(|i| {
@@ -81,6 +81,7 @@ impl Drawable for Circle {
             .take(self.n as usize + 1)
             .tuple_windows()
             .for_each(|(a, b)| {
+                let (a, b) = (ctx.shapes.push_vertex(a), ctx.shapes.push_vertex(b));
                 ctx.shapes.push_triangle(&[center_vert, a, b]);
             });
     }

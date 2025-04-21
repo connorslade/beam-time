@@ -65,16 +65,15 @@ impl RectangleOutline {
 
 impl Drawable for RectangleOutline {
     fn draw(self, ctx: &mut GraphicsContext) {
-        let [outer, inner] = self
-            .points(ctx)
-            .map(|y| y.map(|x| ShapeVertex::new(x, self.color).z_index(self.z_index)));
+        let [outer, inner] = self.points(ctx).map(|y| {
+            y.map(|x| ShapeVertex::new(x, self.color).z_index(self.z_index))
+                .map(|x| ctx.shapes.push_vertex(x))
+        });
 
         for i in 0..4 {
             let j = (i + 1) % 4;
-            ctx.shapes.push_triangles(&[
-                [outer[i], outer[j], inner[i]],
-                [inner[i], inner[j], outer[j]],
-            ]);
+            ctx.shapes.push_triangle(&[outer[i], outer[j], inner[i]]);
+            ctx.shapes.push_triangle(&[inner[i], inner[j], outer[j]]);
         }
     }
 }
