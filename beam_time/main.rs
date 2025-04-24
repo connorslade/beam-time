@@ -36,7 +36,7 @@ fn main() -> Result<()> {
         .write_style(WriteStyle::Always)
         .init();
 
-    let icon = Icon::from_rgba(include_atlas!("icon.png").into_vec(), 30, 30)?;
+    let icon = Icon::from_rgba(include_atlas!("textures/icon.png").into_vec(), 30, 30)?;
     Application::new(ApplicationArgs {
         window_attributes: WindowAttributes::default()
             .with_title("Beam Time")

@@ -84,7 +84,7 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_audio(BUTTON_CLICK, include_asset!("sounds/button-hover.mp3"));
     assets.register_audio(BUTTON_HOVER, include_asset!("sounds/button-click.mp3"));
 
-    let interface = assets.register_atlas(include_atlas!("interface.png"));
+    let interface = assets.register_atlas(include_atlas!("textures/interface.png"));
     assets.register_sprite(interface, TITLE, (0, 0), (81, 20));
     assets.register_sprite(interface, COPYRIGHT, (0, 20), (30, 8));
     assets.register_sprite(interface, BACK_BUTTON, (43, 32), (26, 14));
@@ -103,7 +103,7 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, TRASH, (32, 72), (7, 8));
     assets.register_sprite(interface, SLIDER_HANDLE, (40, 74), (4, 6));
 
-    let tiles = assets.register_atlas(include_atlas!("tilemap.png"));
+    let tiles = assets.register_atlas(include_atlas!("textures/tilemap.png"));
     assets.register_sprite(tiles, EMPTY_TILE_A, (0, 288), (16, 16));
     assets.register_sprite(tiles, EMPTY_TILE_B, (16, 288), (16, 16));
     assets.register_sprite(tiles, PERMANENT_TILE_A, (32, 288), (16, 16));
