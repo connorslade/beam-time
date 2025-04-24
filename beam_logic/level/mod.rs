@@ -17,7 +17,7 @@ use case::TestCase;
 
 pub macro default_level {
     ($name:expr) => {
-        Level::load_slice(include_bytes!(concat!("../../../beam_time/assets/levels/", $name)))
+        Level::load_slice(include_bytes!(concat!("../../assets/levels/", $name)))
     },
     ($($name:expr),* $(,)?) => {{
         let mut out = Vec::new();

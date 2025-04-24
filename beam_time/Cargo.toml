@@ -3,6 +3,10 @@ name = "beam_time"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "beam_time"
+path = "main.rs"
+
 [features]
 steam = ["steamworks"]
 debug = []
