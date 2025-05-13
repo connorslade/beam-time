@@ -186,6 +186,6 @@ impl Anchor {
 
 impl<T: Drawable, const N: usize> Drawable for [T; N] {
     fn draw(self, ctx: &mut GraphicsContext) {
-        self.into_iter().for_each(|x| ctx.draw(x));
+        self.into_iter().for_each(|x| x.draw(ctx));
     }
 }

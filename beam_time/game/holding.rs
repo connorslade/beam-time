@@ -96,12 +96,11 @@ impl Holding {
                 let tile_size = 16.0 * shared.scale * ctx.scale_factor;
                 for (pos, tile) in tiles.iter() {
                     let render_pos = ctx.input.mouse + tile_size * pos.map(|x| x as f32);
-                    ctx.draw(
-                        tile.asset()
-                            .scale(Vector2::repeat(shared.scale))
-                            .position(render_pos, Anchor::Center)
-                            .z_index(layer::TILE_HOLDING),
-                    );
+                    tile.asset()
+                        .scale(Vector2::repeat(shared.scale))
+                        .position(render_pos, Anchor::Center)
+                        .z_index(layer::TILE_HOLDING)
+                        .draw(ctx);
                 }
             }
         }

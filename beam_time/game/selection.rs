@@ -66,12 +66,12 @@ impl Board {
                 .map(|pos| self.tiles.get(pos).price())
                 .sum::<u32>();
             let text = format!("{}x{} • ${}", size.x, size.y, price.separate_with_commas());
-            ctx.draw(
-                Text::new(UNDEAD_FONT, &text)
-                    .position(screen, Anchor::Center)
-                    .scale(Vector2::repeat(2.0))
-                    .color(Rgb::hex(0xe27285)),
-            );
+
+            Text::new(UNDEAD_FONT, &text)
+                .position(screen, Anchor::Center)
+                .scale(Vector2::repeat(2.0))
+                .color(Rgb::hex(0xe27285))
+                .draw(ctx);
         }
 
         if let (Some(selection), false) = (

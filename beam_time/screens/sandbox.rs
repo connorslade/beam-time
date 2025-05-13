@@ -8,7 +8,7 @@ use engine::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode, window::CursorIcon},
     },
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{column::ColumnLayout, LayoutElement, LayoutMethods},
     memory::MemoryKey,
     memory_key,
@@ -52,11 +52,10 @@ impl Screen for SandboxScreen {
         self.create_modal(state, ctx);
 
         if self.worlds.is_empty() {
-            ctx.draw(
-                Text::new(UNDEAD_FONT, "No worlds...")
-                    .position(ctx.center(), Anchor::Center)
-                    .scale(Vector2::repeat(4.0)),
-            );
+            Text::new(UNDEAD_FONT, "No worlds...")
+                .position(ctx.center(), Anchor::Center)
+                .scale(Vector2::repeat(4.0))
+                .draw(ctx);
         } else {
             const SCALE: f32 = 3.0;
             let (line_height, line_spacing, total_height) =
@@ -82,7 +81,7 @@ impl Screen for SandboxScreen {
                     }
                 }
 
-                ctx.draw(text);
+                text.draw(ctx);
 
                 let dropdown = Sprite::new(LEVEL_DROPDOWN_ARROW)
                     .scale(Vector2::repeat(4.0))
@@ -103,7 +102,7 @@ impl Screen for SandboxScreen {
                     }
                     .clamp(0.0, PI / 2.0);
 
-                ctx.draw(dropdown);
+                dropdown.draw(ctx);
             }
         }
 
@@ -117,7 +116,7 @@ impl Screen for SandboxScreen {
             )
             .scale(Vector2::repeat(4.0));
         back_button.is_clicked(ctx).then(|| state.pop_screen());
-        ctx.draw(back_button);
+        back_button.draw(ctx);
 
         let create_button = Button::new(CREATE_BUTTON, memory_key!())
             .pos(
@@ -128,7 +127,7 @@ impl Screen for SandboxScreen {
         if create_button.is_clicked(ctx) {
             self.create = Some(CreateModal {});
         }
-        ctx.draw(create_button);
+        create_button.draw(ctx);
     }
 
     fn on_init(&mut self, state: &mut App) {

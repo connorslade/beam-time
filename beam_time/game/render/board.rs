@@ -13,6 +13,7 @@ use beam_logic::level::ElementLocation;
 use beam_logic::simulation::{state::BeamState, tile::BeamTile};
 use beam_logic::tile::Tile;
 use common::misc::in_bounds;
+use engine::graphics_context::Drawable;
 use engine::{
     drawable::sprite::Sprite,
     exports::{
@@ -95,7 +96,7 @@ impl Board {
                 };
                 if let Some(label) = self.transient.level.and_then(|x| x.labels.get(&element)) {
                     let label = tile_label(ctx, shared.scale, render_pos, label);
-                    ctx.draw(label.z_index(layer::OVERLAY));
+                    label.z_index(layer::OVERLAY).draw(ctx);
                 }
 
                 if !is_empty {
@@ -118,7 +119,7 @@ impl Board {
                         }
                     }
 
-                    ctx.draw(sprite);
+                    sprite.draw(ctx);
                 }
 
                 if sim.is_none() && hovered && !shift_down {
@@ -189,7 +190,7 @@ impl Board {
                     }
                 }
 
-                ctx.draw(grid);
+                grid.draw(ctx);
             }
         }
     }

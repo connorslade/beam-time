@@ -2,7 +2,7 @@ use engine::{
     assets::FontRef,
     drawable::text::Text,
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
     memory::MemoryKey,
 };
 
@@ -26,14 +26,13 @@ pub fn titled_screen(
         .then(|| state.pop_screen());
 
     ctx.background(BACKGROUND_COLOR);
-    ctx.draw(Waterfall::new(&mut state.waterfall));
+    Waterfall::new(&mut state.waterfall).draw(ctx);
 
     let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
-    ctx.draw(
-        Text::new(ALAGARD_FONT, title)
-            .position(pos, Anchor::TopCenter)
-            .scale(Vector2::repeat(6.0)),
-    );
+    Text::new(ALAGARD_FONT, title)
+        .position(pos, Anchor::TopCenter)
+        .scale(Vector2::repeat(6.0))
+        .draw(ctx);
 
     if let Some(back) = back {
         let back_pos = Vector2::new(ctx.center().x, 10.0 + 28.0 * ctx.scale_factor);
@@ -41,7 +40,7 @@ pub fn titled_screen(
             .pos(back_pos, Anchor::Center)
             .scale(Vector2::repeat(4.0));
         button.is_clicked(ctx).then(|| state.pop_screen());
-        ctx.draw(button);
+        button.draw(ctx);
     }
 
     pos

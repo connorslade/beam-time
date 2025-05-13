@@ -1,7 +1,7 @@
 use engine::{
     drawable::text::Text,
     exports::nalgebra::Vector2,
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
     memory_key,
 };
 use indoc::indoc;
@@ -41,11 +41,11 @@ impl Screen for AboutScreen {
 
         let width = (ctx.size().x - 20.0).min(800.0 * ctx.scale_factor);
         let pos = Vector2::new(ctx.center().x, pos.y - height - 20.0);
-        ctx.draw(
-            Text::new(UNDEAD_FONT, DESCRIPTION)
-                .max_width(width)
-                .position(pos, Anchor::TopCenter)
-                .scale(Vector2::repeat(3.0)),
-        );
+
+        Text::new(UNDEAD_FONT, DESCRIPTION)
+            .max_width(width)
+            .position(pos, Anchor::TopCenter)
+            .scale(Vector2::repeat(3.0))
+            .draw(ctx);
     }
 }

@@ -37,12 +37,11 @@ impl Screen for DebugOverlay {
         state.debug.clear();
 
         let pos = ctx.size() - Vector2::new(10.0, 10.0) * scale;
-        ctx.draw(
-            Text::new(UNDEAD_FONT, &text)
-                .position(pos, Anchor::TopRight)
-                .scale(Vector2::repeat(2.0))
-                .z_index(OVERLAY),
-        );
+        Text::new(UNDEAD_FONT, &text)
+            .position(pos, Anchor::TopRight)
+            .scale(Vector2::repeat(2.0))
+            .z_index(OVERLAY)
+            .draw(ctx);
     }
 }
 
