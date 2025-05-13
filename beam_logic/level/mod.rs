@@ -1,6 +1,6 @@
 use std::{fs::File, path::PathBuf};
 
-use ahash::{HashMap, HashSet};
+use ahash::{HashMap, HashMapExt, HashSet};
 use anyhow::Result;
 use common::map::Map;
 use log::warn;
@@ -81,16 +81,15 @@ pub struct Level {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Tests {
-    pub lasers: Vec<ElementLocation>,
-    pub detectors: Vec<ElementLocation>,
+    pub lasers: Vec<u32>,
+    pub detectors: Vec<u32>,
 
     pub cases: Vec<TestCase>,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize)]
-pub enum ElementLocation {
-    Static(Vector2<i32>),
-    Dynamic(usize),
+#[derive(Default)]
+pub struct DynamicElementMap {
+    inner: HashMap<u32, Vector2<i32>>,
 }
 
 impl Level {
@@ -106,12 +105,20 @@ impl Level {
     }
 }
 
-impl ElementLocation {
-    pub fn into_pos(self) -> Vector2<i32> {
-        match self {
-            ElementLocation::Static(pos) => pos,
-            ElementLocation::Dynamic(_) => Vector2::zeros(),
+impl DynamicElementMap {
+    pub fn position(&self, id: u32) -> Option<Vector2<i32>> {
+        self.inner.get(&id).copied()
+    }
+
+    pub fn from_map(map: &Map<Tile>) -> Self {
+        let mut inner = HashMap::new();
+        for (pos, tile) in map.iter() {
+            if let Tile::Emitter { id: Some(id), .. } | Tile::Detector { id: Some(id) } = tile {
+                inner.insert(id, pos);
+            }
         }
+
+        Self { inner }
     }
 }
 
