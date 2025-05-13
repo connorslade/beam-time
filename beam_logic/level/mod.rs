@@ -71,7 +71,7 @@ pub struct Level {
 
     pub size: Option<Vector2<u32>>,
     pub permanent: HashSet<Vector2<i32>>,
-    pub labels: HashMap<Vector2<i32>, String>,
+    pub labels: HashMap<ElementLocation, String>,
     pub disabled: Option<HashSet<TileType>>,
 
     pub tiles: Map<Tile>,
@@ -85,6 +85,12 @@ pub struct Tests {
     pub detectors: Vec<u32>,
 
     pub cases: Vec<TestCase>,
+}
+
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, Deserialize)]
+pub enum ElementLocation {
+    Static(Vector2<i32>),
+    Dynamic(u32),
 }
 
 #[derive(Default)]

@@ -4,7 +4,7 @@ use thousands::Separable;
 
 use crate::{app::App, assets::UNDEAD_FONT, consts::layer, game::board::Board};
 use beam_logic::{
-    level::{DynamicElementMap, Level},
+    level::Level,
     simulation::{level_state::LevelResult, runtime::asynchronous::InnerAsyncSimulationState},
 };
 use engine::{
@@ -50,7 +50,6 @@ impl LevelPanel {
         let width = tile_size * WIDTH as f32;
 
         // idk maybe cache or smth — not that it really matters
-        let dynamic_map = DynamicElementMap::from_map(&board.tiles);
         let price = price(board, level);
 
         let trackers @ [base, extended] = [memory_key!(), memory_key!()].map(LayoutTracker::new);
@@ -76,7 +75,7 @@ impl LevelPanel {
             .draw(ctx, |ctx, layout| {
                 layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
                     self.level_info(ctx, layout, level, price);
-                    self.test_case(ctx, layout, level, &dynamic_map, sim);
+                    self.test_case(ctx, layout, level, sim);
                     dummy().tracked(base).layout(ctx, layout);
                     self.level_status(ctx, state, layout, level, level_result, price);
                     dummy().tracked(extended).layout(ctx, layout);
