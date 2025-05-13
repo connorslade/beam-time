@@ -24,6 +24,8 @@ use crate::{
 
 use super::{about::AboutScreen, campaign::CampaignScreen, sandbox::SandboxScreen, Screen};
 
+type NewScreen = fn() -> Box<dyn Screen>;
+
 pub struct TitleScreen {
     start_time: Instant,
 
@@ -65,7 +67,7 @@ impl Screen for TitleScreen {
         let mut root = RootLayout::new(ctx.center(), Anchor::Center);
         let (_, padding) = state.spacing(ctx);
 
-        let buttons: [(_, fn() -> Box<dyn Screen>); 3] = [
+        let buttons: [(_, NewScreen); 3] = [
             (CAMPAIGN_BUTTON, || Box::new(CampaignScreen::default())),
             (SANDBOX_BUTTON, || Box::new(SandboxScreen::default())),
             (ABOUT_BUTTON, || Box::new(AboutScreen::default())),

@@ -86,9 +86,11 @@ impl LayoutElement for RowLayout {
 
     fn bounds(&self, _ctx: &mut GraphicsContext) -> Bounds2D {
         let needs_offset = matches!(self.direction, Direction::MaxToMin);
-        let offset = needs_offset
-            .then(|| Vector2::x() * self.container.bounds.width())
-            .unwrap_or_default();
+        let offset = if needs_offset {
+            Vector2::x() * self.container.bounds.width()
+        } else {
+            Vector2::zeros()
+        };
         self.container.bounds.translated(offset)
     }
 

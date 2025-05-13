@@ -9,6 +9,8 @@ use crate::{
 
 use super::{bounds::Bounds2D, LayoutElement, SizedLayoutElement};
 
+type Callback = dyn FnOnce(&mut [GpuSprite], &mut [ShapeVertex]);
+
 #[derive(Default)]
 pub struct Container {
     pub(crate) bounds: Bounds2D,
@@ -17,7 +19,7 @@ pub struct Container {
 
 pub struct CallbackContainer {
     container: Container,
-    callback: Box<dyn FnOnce(&mut [GpuSprite], &mut [ShapeVertex])>,
+    callback: Box<Callback>,
 }
 
 impl Container {
