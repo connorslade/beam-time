@@ -85,11 +85,9 @@ impl LayoutElement for ColumnLayout {
 
     fn bounds(&self, _ctx: &mut GraphicsContext) -> Bounds2D {
         let needs_offset = matches!(self.direction, Direction::MinToMax);
-        let offset = if needs_offset {
-            Vector2::y() * self.container.bounds.height()
-        } else {
-            Vector2::zeros()
-        };
+        let offset = needs_offset
+            .then(|| Vector2::y() * self.container.bounds.height())
+            .unwrap_or_default();
         self.container.bounds.translated(offset)
     }
 
