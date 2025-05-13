@@ -1,3 +1,6 @@
+#![allow(clippy::obfuscated_if_else)]
+#![allow(clippy::type_complexity)]
+
 use wgpu::TextureFormat;
 
 pub mod application;

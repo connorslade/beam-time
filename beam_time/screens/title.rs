@@ -65,6 +65,7 @@ impl Screen for TitleScreen {
         let mut root = RootLayout::new(ctx.center(), Anchor::Center);
         let (_, padding) = state.spacing(ctx);
 
+        #[allow(clippy::type_complexity)]
         let buttons: [(_, fn() -> Box<dyn Screen>); 3] = [
             (CAMPAIGN_BUTTON, || Box::new(CampaignScreen::default())),
             (SANDBOX_BUTTON, || Box::new(SandboxScreen::default())),
