@@ -107,6 +107,21 @@ impl Tile {
         }
     }
 
+    /// Removes the tiles internal dynamic id, if there is one.
+    pub fn generic(self) -> Self {
+        match self {
+            Tile::Detector { .. } => Tile::Detector { id: None },
+            Tile::Emitter {
+                rotation, active, ..
+            } => Tile::Emitter {
+                rotation,
+                active,
+                id: None,
+            },
+            x => x,
+        }
+    }
+
     pub fn rotate(self) -> Self {
         match self {
             Tile::Emitter {

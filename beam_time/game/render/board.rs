@@ -1,5 +1,6 @@
 use std::mem;
 
+use crate::assets::{DYNAMIC_TILE_A, DYNAMIC_TILE_B};
 use crate::game::board::Board;
 use crate::{
     app::App,
@@ -73,14 +74,21 @@ impl Board {
                 self.tile_selection(ctx, shared, hovered, pos, render_pos);
 
                 let tile = self.tiles.get(pos);
+                let empty = tile.is_empty();
                 let permanent = self.is_permanent(&pos);
-                let is_empty = tile.is_empty();
+                let dynamic = tile.id().is_some();
 
+                let gridset_index = match (permanent, dynamic) {
+                    (true, _) => 1,
+                    (false, true) => 2,
+                    _ => 0,
+                };
                 let grid_color = (pos.x.abs() + pos.y.abs()) as usize % 2;
                 let grid_tile = [
                     [EMPTY_TILE_A, EMPTY_TILE_B],
                     [PERMANENT_TILE_A, PERMANENT_TILE_B],
-                ][permanent as usize][grid_color];
+                    [DYNAMIC_TILE_A, DYNAMIC_TILE_B],
+                ][gridset_index][grid_color];
                 let grid = Sprite::new(grid_tile)
                     .scale(Vector2::repeat(shared.scale))
                     .position(render_pos, Anchor::Center)
@@ -95,7 +103,7 @@ impl Board {
                     label.z_index(layer::OVERLAY).draw(ctx);
                 }
 
-                if !is_empty {
+                if !empty {
                     let sprite = sim
                         .as_ref()
                         .and_then(|x| x.board.get(pos).base_sprite(frame))
@@ -118,11 +126,12 @@ impl Board {
                     sprite.draw(ctx);
                 }
 
+                // move this out of board render :sob: please
                 if sim.is_none() && hovered && !shift_down {
                     if ctx.input.mouse_pressed(MouseButton::Left) {
                         let old = tile;
                         match mem::take(&mut self.transient.holding) {
-                            Holding::None if !is_empty && !permanent => {
+                            Holding::None if !empty && !permanent => {
                                 self.transient.history.track_one(pos, old);
                                 self.tiles.remove(pos);
                                 self.transient.holding = Holding::Tile(tile);
@@ -137,28 +146,36 @@ impl Board {
                             }
                             Holding::Paste(tiles) => {
                                 let mut old = Vec::new();
+                                let mut next = Vec::new();
 
-                                let is_mutable = |paste_pos: Vector2<i32>| {
-                                    self.transient
-                                        .level
-                                        .map(|x| x.permanent.contains(&(paste_pos + pos)))
-                                        != Some(true)
-                                };
-                                for (paste_pos, paste_tile) in
-                                    tiles.iter().filter(|(paste_pos, _)| is_mutable(*paste_pos))
-                                {
-                                    let pos = pos + paste_pos;
-                                    old.push((pos, self.tiles.get(pos)));
-                                    self.tiles.set(pos, *paste_tile);
+                                let level = self.transient.level;
+                                for set @ (paste_pos, paste_tile) in tiles {
+                                    let pos = paste_pos + pos;
+                                    let current_tile = self.tiles.get(pos);
+                                    if level
+                                        .map(|x| x.permanent.contains(&pos))
+                                        .unwrap_or_default()
+                                        || current_tile.id().is_some()
+                                    {
+                                        next.push(set);
+                                        continue;
+                                    }
+
+                                    old.push((pos, current_tile));
+                                    self.tiles.set(pos, paste_tile);
                                 }
 
                                 self.transient.history.track_many(old);
+                                if !next.is_empty() {
+                                    self.transient.holding = Holding::Paste(next);
+                                }
                             }
                             x => self.transient.holding = x,
                         }
                     }
 
-                    if !permanent && ctx.input.mouse_down(MouseButton::Right) && !tile.is_empty() {
+                    if !permanent && ctx.input.mouse_down(MouseButton::Right) && !empty && !dynamic
+                    {
                         self.tiles.remove(pos);
                         self.transient.history.track_one(pos, tile);
                     }
@@ -181,8 +198,8 @@ impl Board {
                         });
                     }
 
-                    if !is_empty && ctx.input.key_pressed(KeyCode::KeyQ) {
-                        *holding = Holding::Tile(tile);
+                    if !empty && ctx.input.key_pressed(KeyCode::KeyQ) {
+                        *holding = Holding::Tile(tile.generic());
                     }
                 }
 
