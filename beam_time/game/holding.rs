@@ -3,6 +3,7 @@ use beam_logic::{
     tile::Tile,
 };
 use engine::{
+    drawable::sprite::Sprite,
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
@@ -10,7 +11,10 @@ use engine::{
     graphics_context::{Anchor, Drawable, GraphicsContext},
 };
 
-use crate::{consts::layer, game::render::tile::TileAsset, ui::misc::tile_label, util::key_events};
+use crate::{
+    assets::DYNAMIC_TILE_OUTLINE, consts::layer, game::render::tile::TileAsset,
+    ui::misc::tile_label, util::key_events,
+};
 
 use super::shared_state::SharedState;
 
@@ -51,22 +55,7 @@ impl Holding {
                     KeyCode::KeyE => *tile = tile.activate()
                 });
 
-                tile.asset()
-                    .scale(Vector2::repeat(shared.scale))
-                    .position(ctx.input.mouse, Anchor::Center)
-                    .z_index(layer::TILE_HOLDING)
-                    .draw(ctx);
-
-                if let Some(label) = level.and_then(|level| {
-                    tile.id().and_then(|id| {
-                        let pos = ElementLocation::Dynamic(id);
-                        level.labels.get(&pos)
-                    })
-                }) {
-                    tile_label(ctx, shared.scale, ctx.input.mouse, label)
-                        .z_index(layer::TILE_HOLDING)
-                        .draw(ctx);
-                }
+                render_tile(ctx, shared, &level, *tile, ctx.input.mouse);
             }
             Holding::Paste(tiles) => {
                 key_events!(ctx, {
@@ -96,13 +85,39 @@ impl Holding {
                 let tile_size = 16.0 * shared.scale * ctx.scale_factor;
                 for (pos, tile) in tiles.iter() {
                     let render_pos = ctx.input.mouse + tile_size * pos.map(|x| x as f32);
-                    tile.asset()
-                        .scale(Vector2::repeat(shared.scale))
-                        .position(render_pos, Anchor::Center)
-                        .z_index(layer::TILE_HOLDING)
-                        .draw(ctx);
+                    render_tile(ctx, shared, &level, *tile, render_pos);
                 }
             }
         }
+    }
+}
+
+fn render_tile(
+    ctx: &mut GraphicsContext,
+    shared: &SharedState,
+    level: &Option<&'static Level>,
+    tile: Tile,
+    position: Vector2<f32>,
+) {
+    tile.asset()
+        .scale(Vector2::repeat(shared.scale))
+        .position(position, Anchor::Center)
+        .z_index(layer::TILE_HOLDING)
+        .draw(ctx);
+
+    if let Some(label) = level.and_then(|level| {
+        tile.id().and_then(|id| {
+            let pos = ElementLocation::Dynamic(id);
+            level.labels.get(&pos)
+        })
+    }) {
+        Sprite::new(DYNAMIC_TILE_OUTLINE)
+            .scale(Vector2::repeat(shared.scale))
+            .position(position, Anchor::Center)
+            .z_index(layer::TILE_HOLDING_BACKGROUND)
+            .draw(ctx);
+        tile_label(ctx, shared.scale, position, label)
+            .z_index(layer::TILE_HOLDING)
+            .draw(ctx);
     }
 }

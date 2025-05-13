@@ -43,6 +43,7 @@ define_refs! {
         PERMANENT_TILE_B,
         DYNAMIC_TILE_A,
         DYNAMIC_TILE_B,
+        DYNAMIC_TILE_OUTLINE,
 
         TILE_WALL,
         TILE_DETECTOR,
@@ -112,6 +113,7 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(tiles, PERMANENT_TILE_B, (48, 288), (16, 16));
     assets.register_sprite(tiles, DYNAMIC_TILE_A, (96, 304), (16, 16));
     assets.register_sprite(tiles, DYNAMIC_TILE_B, (112, 304), (16, 16));
+    assets.register_sprite(tiles, DYNAMIC_TILE_OUTLINE, (96, 288), (16, 16));
 
     assets.register_sprite(tiles, TILE_WALL, (0, 208), (16, 16));
     assets.register_sprite(tiles, TILE_DETECTOR, (0, 192), (16, 16));
