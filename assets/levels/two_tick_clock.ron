@@ -3,16 +3,16 @@ Level(
     name: "Two-Tick Clock",
     description: "Create an oscillator that is on for two ticks, off for two ticks, then repeats. There is no way to speed up the oscillator you made in that other level, you will need to be clever.",
 
-    size: Some((6, 6)),
+    size: (6, 6),
     permanent: [ (5, 0) ],
     labels: { },
     tiles: {
-        (5, 0): Detector
+        (5, 0): Detector( id: 0 )
     },
 
     tests: Tests(
         lasers: [ ],
-        detectors: [ Static((5, 0)) ],
+        detectors: [ 0 ],
 
         cases: [
             Cycle(

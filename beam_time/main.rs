@@ -33,6 +33,7 @@ use util::include_atlas;
 fn main() -> Result<()> {
     env_logger::builder()
         .filter(Some("beam_time"), LevelFilter::Trace)
+        .filter(Some("beam_logic"), LevelFilter::Trace)
         .write_style(WriteStyle::Always)
         .init();
 

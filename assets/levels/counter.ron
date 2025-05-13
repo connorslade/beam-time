@@ -3,20 +3,20 @@ Level(
     name: "Counter",
     description: "Each time a pulse is recived from the input, the output should count up by one in binary (big-endian).",
 
-    size: Some((20, 6)),
+    size: (20, 6),
     permanent: [ (4, 0), (8, 0), (12, 0), (16, 0), (19, 5) ],
     labels: { },
     tiles: {
-        (19, 5): Emitter( rotation: Down, active: true ),
-        (4, 0):  Detector,
-        (8, 0):  Detector,
-        (12, 0): Detector,
-        (16, 0): Detector
+        (19, 5): Emitter( rotation: Down, active: true, id: 0 ),
+        (4, 0):  Detector( id: 1 ),
+        (8, 0):  Detector( id: 2 ),
+        (12, 0): Detector( id: 3 ),
+        (16, 0): Detector( id: 4 )
     },
 
     tests: Tests(
-        lasers: [ Static((19, 5)) ],
-        detectors: [ Static((4, 0)), Static((8, 0)), Static((12, 0)), Static((16, 0)) ],
+        lasers: [ 0 ],
+        detectors: [ 1, 2, 3, 4 ],
 
         cases: [
             Cycle(

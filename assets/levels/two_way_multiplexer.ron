@@ -3,30 +3,29 @@ Level(
     name: "Two Way Multiplexer",
     description: "This level has three inputs: A, B, and E (for enable). When E is disabled pass the value at A to the output, when E is enabled pass the value at B to the output.",
 
-    size: Some((6, 6)),
+    size: (6, 6),
     permanent: [ (1, 5), (2, 5), (5, 5), (5, 0) ],
     labels: {
-        (1, 5): "A",
-        (2, 5): "B",
-        (5, 5): "E",
+        Dynamic(0): "A",
+        Dynamic(1): "B",
+        Dynamic(2): "E"
     },
     tiles: {
-        (1, 5): Emitter( rotation: Down, active: true ),
-        (2, 5): Emitter( rotation: Down, active: true ),
-        (5, 5): Emitter( rotation: Down, active: true ),
-        (5, 0): Detector
+        (1, 5): Emitter( rotation: Down, active: true, id: 0 ),
+        (2, 5): Emitter( rotation: Down, active: true, id: 1 ),
+        (5, 5): Emitter( rotation: Down, active: true, id: 2 ),
+        (5, 0): Detector( id: 3 )
     },
 
     tests: Tests(
         lasers: [
             // Inputs
-            Static((1, 5)),
-            Static((2, 5)),
+            0, 1,
 
             // Selector
-            Static((5, 5)),
+            2
         ],
-        detectors: [ Static((5, 0)) ],
+        detectors: [ 3 ],
 
         cases: [
             Cycle(

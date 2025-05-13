@@ -6,24 +6,24 @@ Level(
     size: None,
     permanent: [ (0, 0), (1, 0), (2, 0), (3, 0), (5, 0), (7, 0) ],
     labels: {
-        (0, 0): "8",
-        (1, 0): "4",
-        (2, 0): "2",
-        (3, 0): "1",
-        (5, 0): "Live"
+        Dynamic(0): "8",
+        Dynamic(1): "4",
+        Dynamic(2): "2",
+        Dynamic(3): "1",
+        Dynamic(5): "Live"
     },
     tiles: {
-        (0, 0): Emitter( rotation: Down, active: false ),
-        (1, 0): Emitter( rotation: Down, active: false ),
-        (2, 0): Emitter( rotation: Down, active: false ),
-        (3, 0): Emitter( rotation: Down, active: false ),
-        (5, 0): Emitter( rotation: Down, active: false ),
-        (7, 0): Detector
+        (0, 0): Emitter( rotation: Down, active: false, id: 0 ),
+        (1, 0): Emitter( rotation: Down, active: false, id: 1 ),
+        (2, 0): Emitter( rotation: Down, active: false, id: 2 ),
+        (3, 0): Emitter( rotation: Down, active: false, id: 3 ),
+        (5, 0): Emitter( rotation: Down, active: false, id: 5 ),
+        (7, 0): Detector( id: 6 )
     },
 
     tests: Tests(
-        lasers: [ Static((0, 0)), Static((1, 0)), Static((2, 0)), Static((3, 0)), Static((5, 0)) ],
-        detectors: [ Static((7, 0)) ],
+        lasers: [ 1, 2, 3, 4, 5 ],
+        detectors: [ 6 ],
 
         cases: [
             Cycle(

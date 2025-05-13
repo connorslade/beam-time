@@ -3,21 +3,21 @@ Level(
     name: "RS Latch",
     description: "Create a latch that turns on when input S is active and resets when input R is.",
 
-    size: Some((6, 6)),
+    size: (6, 6),
     permanent: [ (0, 5), (1, 5), (5, 0) ],
     labels: {
-        (0, 5): "R",
-        (1, 5): "S",
+        Dynamic(0): "R",
+        Dynamic(1): "S",
     },
     tiles: {
-        (0, 5): Emitter( rotation: Down, active: true ),
-        (1, 5): Emitter( rotation: Down, active: true ),
-        (5, 0): Detector
+        (0, 5): Emitter( rotation: Down, active: true, id: 0 ),
+        (1, 5): Emitter( rotation: Down, active: true, id: 1 ),
+        (5, 0): Detector( id: 2 )
     },
 
     tests: Tests(
-        lasers: [ Static((0, 5)), Static((1, 5)) ], // RS
-        detectors: [ Static((5, 0)) ],
+        lasers: [ 0, 1 ], // RS
+        detectors: [ 2 ],
 
         cases: [
             Cycle(

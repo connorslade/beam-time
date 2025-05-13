@@ -6,41 +6,32 @@ Level(
         
         By connecting a handful of these circuits, you can create a ripple-carry adder to add full binary numbers.",
 
-    size: Some((14, 9)),
+    size: (14, 9),
     permanent: [
         (0, 8), (1, 8), (2, 8),
         (12, 0), (13, 0)
     ],
     labels: {
-        (0, 8): "A",
-        (1, 8): "B",
-        (2, 8): "C-In",
+        Dynamic(0): "A",
+        Dynamic(1): "B",
+        Dynamic(2): "C-In",
 
-        (13, 0): "Sum",
-        (12, 0): "C-Out"
+        Dynamic(3): "Sum",
+        Dynamic(4): "C-Out"
     },
     disabled: [ ],
     tiles: {
-        (0, 8): Emitter(
-            rotation: Down,
-            active: false
-        ),
-        (1, 8): Emitter(
-            rotation: Down,
-            active: false
-        ),
-        (2, 8): Emitter(
-            rotation: Down,
-            active: false
-        ),
+        (0, 8): Emitter( rotation: Down, active: false, id: 0 ),
+        (1, 8): Emitter( rotation: Down, active: false, id: 1 ),
+        (2, 8): Emitter( rotation: Down, active: false, id: 2 ),
 
-        (12, 0): Detector,
-        (13, 0): Detector
+        (12, 0): Detector( id: 3 ),
+        (13, 0): Detector( id: 4 )
     },
 
     tests: Tests(
-        lasers: [ Static((0, 8)), Static((1, 8)), Static((2, 8)) ],
-        detectors: [ Static((13, 0)), Static((12, 0)) ],
+        lasers: [ 0, 1, 2 ],
+        detectors: [ 3, 4 ],
 
         cases: [
             Cycle(

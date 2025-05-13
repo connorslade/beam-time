@@ -6,42 +6,42 @@ Level(
         
         For this level, take the input number with a MSb on the left and convert it to a number with the MSb on the right.",
 
-    size: Some((15, 9)),
-    permanent: [ 
+    size: (15, 9),
+    permanent: [
         (0, 8), (1, 8), (2, 8), (3, 8), (4, 8), (5, 8), (6, 8), (7, 8),
         (7, 0), (8, 0), (9, 0), (10, 0), (11, 0), (12, 0), (13, 0), (14, 0)
     ],
     labels: {
-        (0, 8): "MSb",
-        (7, 8): "LSb",
+        Dynamic(1): "MSb",
+        Dynamic(7): "LSb",
 
-        (7, 0): "LSb",
-        (14, 0): "MSb"
+        Dynamic(8): "LSb",
+        Dynamic(15): "MSb"
     },
     disabled: [ ],
     tiles: {
-        (0, 8): Emitter( rotation: Down, active: false ),
-        (1, 8): Emitter( rotation: Down, active: false ),
-        (2, 8): Emitter( rotation: Down, active: false ),
-        (3, 8): Emitter( rotation: Down, active: false ),
-        (4, 8): Emitter( rotation: Down, active: false ),
-        (5, 8): Emitter( rotation: Down, active: false ),
-        (6, 8): Emitter( rotation: Down, active: false ),
-        (7, 8): Emitter( rotation: Down, active: false ),
+        (0, 8): Emitter( rotation: Down, active: false, id: 0 ),
+        (1, 8): Emitter( rotation: Down, active: false, id: 1 ),
+        (2, 8): Emitter( rotation: Down, active: false, id: 2 ),
+        (3, 8): Emitter( rotation: Down, active: false, id: 3 ),
+        (4, 8): Emitter( rotation: Down, active: false, id: 4 ),
+        (5, 8): Emitter( rotation: Down, active: false, id: 5 ),
+        (6, 8): Emitter( rotation: Down, active: false, id: 6 ),
+        (7, 8): Emitter( rotation: Down, active: false, id: 7 ),
 
-        (7, 0): Detector,
-        (8, 0): Detector,
-        (9, 0): Detector,
-        (10, 0): Detector,
-        (11, 0): Detector,
-        (12, 0): Detector,
-        (13, 0): Detector,
-        (14, 0): Detector,
+        (7, 0): Detector( id: 8 ),
+        (8, 0): Detector( id: 9 ),
+        (9, 0): Detector( id: 10 ),
+        (10, 0): Detector( id: 11 ),
+        (11, 0): Detector( id: 12 ),
+        (12, 0): Detector( id: 13 ),
+        (13, 0): Detector( id: 14 ),
+        (14, 0): Detector( id: 15 ),
     },
 
     tests: Tests(
-        lasers: [ Static((0, 8)), Static((1, 8)), Static((2, 8)), Static((3, 8)), Static((4, 8)), Static((5, 8)), Static((6, 8)), Static((7, 8)) ],
-        detectors: [ Static((7, 0)), Static((8, 0)), Static((9, 0)), Static((10, 0)), Static((11, 0)), Static((12, 0)), Static((13, 0)), Static((14, 0)) ],
+        lasers: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
+        detectors: [ 8, 9, 10, 11, 12, 13, 14, 15 ],
 
         cases: [
             Cycle(

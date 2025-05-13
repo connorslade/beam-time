@@ -6,20 +6,20 @@ Level(
         
         The wall is there to keep you from just routing each input into a different side of the output.",
 
-    size: Some((6, 6)),
+    size: (6, 6),
     permanent: [ (0, 5), (1, 5), (5, 0), (5, 1) ],
     labels: { },
     disabled: [ Detector, Delay ],
     tiles: {
-        (0, 5): Emitter( rotation: Down, active: true ),
-        (1, 5): Emitter( rotation: Down, active: true ),
-        (5, 0): Detector,
+        (0, 5): Emitter( rotation: Down, active: true, id: 0 ),
+        (1, 5): Emitter( rotation: Down, active: true, id: 1 ),
+        (5, 0): Detector( id: 2 ),
         (5, 1): Wall
     },
 
     tests: Tests(
-        lasers: [ Static((0, 5)), Static((1, 5)) ],
-        detectors: [ Static((5, 0)) ],
+        lasers: [ 0, 1 ],
+        detectors: [ 2 ],
 
         cases: [
             Cycle(

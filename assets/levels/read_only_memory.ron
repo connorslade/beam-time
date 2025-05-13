@@ -11,7 +11,7 @@ Level(
         • 2 (0b10) ⇒ 143 (0b10001111)
         • 3 (0b11) ⇒ 79 (0b01001111)",
 
-    size: Some((24, 16)),
+    size: (24, 16),
     permanent: [
         (0, 15), (1, 15),
         (16, 0), (17, 0), (18, 0), (19, 0), (20, 0), (21, 0), (22, 0), (23, 0)
@@ -19,22 +19,22 @@ Level(
     labels: { },
     disabled: [ ],
     tiles: {
-        (0, 15): Emitter( rotation: Down, active: false ),
-        (1, 15): Emitter( rotation: Down, active: false ),
+        (0, 15): Emitter( rotation: Down, active: false, id: 0 ),
+        (1, 15): Emitter( rotation: Down, active: false, id: 1 ),
 
-        (16, 0): Detector,
-        (17, 0): Detector,
-        (18, 0): Detector,
-        (19, 0): Detector,
-        (20, 0): Detector,
-        (21, 0): Detector,
-        (22, 0): Detector,
-        (23, 0): Detector,
+        (16, 0): Detector( id: 2 ),
+        (17, 0): Detector( id: 3 ),
+        (18, 0): Detector( id: 4 ),
+        (19, 0): Detector( id: 5 ),
+        (20, 0): Detector( id: 6 ),
+        (21, 0): Detector( id: 7 ),
+        (22, 0): Detector( id: 8 ),
+        (23, 0): Detector( id: 9 )
     },
 
     tests: Tests(
-        lasers: [ Static((0, 15)), Static((1, 15)) ],
-        detectors: [ Static((16, 0)), Static((17, 0)), Static((18, 0)), Static((19, 0)), Static((20, 0)), Static((21, 0)), Static((22, 0)), Static((23, 0)) ],
+        lasers: [ 0, 1 ],
+        detectors: [ 2, 3, 4, 5, 6, 7, 8, 9 ],
 
         cases: [
             Cycle(
