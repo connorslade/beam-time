@@ -57,15 +57,15 @@ impl Holding {
                     .z_index(layer::TILE_HOLDING)
                     .draw(ctx);
 
-                if let Tile::Emitter { id: Some(id), .. } | Tile::Detector { id: Some(id) } = tile {
-                    if let Some(label) = level
-                        .map(|x| x.labels.get(&ElementLocation::Dynamic(*id)))
-                        .flatten()
-                    {
-                        tile_label(ctx, shared.scale, ctx.input.mouse, label)
-                            .z_index(layer::TILE_HOLDING)
-                            .draw(ctx);
-                    }
+                if let Some(label) = level.and_then(|level| {
+                    tile.id().and_then(|id| {
+                        let pos = ElementLocation::Dynamic(id);
+                        level.labels.get(&pos)
+                    })
+                }) {
+                    tile_label(ctx, shared.scale, ctx.input.mouse, label)
+                        .z_index(layer::TILE_HOLDING)
+                        .draw(ctx);
                 }
             }
             Holding::Paste(tiles) => {

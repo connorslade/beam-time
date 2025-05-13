@@ -3,7 +3,7 @@ use std::time::{Duration, Instant};
 use engine::{
     drawable::text::Text,
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
 };
 
 use crate::{assets::UNDEAD_FONT, consts::layer::OVERLAY, screens::Screen, App};

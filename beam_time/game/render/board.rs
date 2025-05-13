@@ -11,7 +11,6 @@ use crate::{
 };
 use beam_logic::level::ElementLocation;
 use beam_logic::simulation::{state::BeamState, tile::BeamTile};
-use beam_logic::tile::Tile;
 use common::misc::in_bounds;
 use engine::graphics_context::Drawable;
 use engine::{
@@ -87,13 +86,10 @@ impl Board {
                     .position(render_pos, Anchor::Center)
                     .z_index(layer::TILE_BACKGROUND);
 
-                let element = if let Tile::Detector { id: Some(id) }
-                | Tile::Emitter { id: Some(id), .. } = tile
-                {
-                    ElementLocation::Dynamic(id)
-                } else {
-                    ElementLocation::Static(pos)
-                };
+                let element = tile
+                    .id()
+                    .map(ElementLocation::Dynamic)
+                    .unwrap_or(ElementLocation::Static(pos));
                 if let Some(label) = self.transient.level.and_then(|x| x.labels.get(&element)) {
                     let label = tile_label(ctx, shared.scale, render_pos, label);
                     label.z_index(layer::OVERLAY).draw(ctx);

@@ -119,9 +119,7 @@ impl DynamicElementMap {
     pub fn from_map(map: &Map<Tile>) -> Self {
         let mut inner = HashMap::new();
         for (pos, tile) in map.iter() {
-            if let Tile::Emitter { id: Some(id), .. } | Tile::Detector { id: Some(id) } = tile {
-                inner.insert(id, pos);
-            }
+            tile.id().and_then(|id| inner.insert(id, pos));
         }
 
         Self { inner }

@@ -98,6 +98,15 @@ impl Tile {
         }
     }
 
+    /// Returns the tile's dynamic id if it has one. Used for mapping physical
+    /// tiles to level labels and checkers.
+    pub fn id(&self) -> Option<u32> {
+        match self {
+            Tile::Emitter { id, .. } | Tile::Detector { id } => *id,
+            _ => None,
+        }
+    }
+
     pub fn rotate(self) -> Self {
         match self {
             Tile::Emitter {
