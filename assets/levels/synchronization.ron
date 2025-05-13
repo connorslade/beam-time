@@ -3,39 +3,30 @@ Level(
     name: "Synchronization",
     description: "Make all the outputs turn on in the same tick. You will need to use delay gates for this, they delay a beam by one tick.",
 
-    size: Some((6, 6)),
+    size: (6, 6),
     permanent: [
         (0, 5), (1, 5), (2, 5), (3, 5), (4, 5), (5, 5),
         (1, 0), (2, 0), (3, 0), (4, 0), (5, 0)
     ],
     labels: { },
     tiles: {
-        (0, 5): Emitter(
-            rotation: Right,
-            active: true
-        ),
+        (0, 5): Emitter( rotation: Right, active: true, id: 0 ),
         (1, 5): Splitter( rotation: true ),
         (2, 5): Splitter( rotation: true ),
         (3, 5): Splitter( rotation: true ),
         (4, 5): Splitter( rotation: true ),
         (5, 5): Mirror( rotation: true ),
 
-        (1, 0): Detector,
-        (2, 0): Detector,
-        (3, 0): Detector,
-        (4, 0): Detector,
-        (5, 0): Detector
+        (1, 0): Detector( id: 1 ),
+        (2, 0): Detector( id: 2 ),
+        (3, 0): Detector( id: 3 ),
+        (4, 0): Detector( id: 4 ),
+        (5, 0): Detector( id: 5 )
     },
 
     tests: Tests(
-        lasers: [ Static((0, 5)) ],
-        detectors: [
-            Static((1, 0)),
-            Static((2, 0)),
-            Static((3, 0)),
-            Static((4, 0)),
-            Static((5, 0))
-        ],
+        lasers: [ 0 ],
+        detectors: [ 1, 2, 3, 4, 5 ],
 
         cases: [
             Event(

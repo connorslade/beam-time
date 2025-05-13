@@ -34,7 +34,7 @@ pub fn load_level_dir(dir: &Path) -> Vec<(PathBuf, BoardMeta)> {
         let meta = match Board::load_meta(&path) {
             Ok(meta) => meta,
             Err(err) => {
-                warn!("Failed to load meta for {:?}: {}", path, err);
+                warn!("Failed to load meta for {path:?}: {err}");
                 continue;
             }
         };

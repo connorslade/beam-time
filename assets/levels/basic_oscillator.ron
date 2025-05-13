@@ -8,16 +8,16 @@ Level(
         
         Instead of using P to start the simulation, use SPACE to step through each simulation tick one at a time.",
 
-    size: Some((6, 6)),
+    size: (6, 6),
     permanent: [ (5, 0) ],
     labels: { },
     tiles: {
-        (5, 0): Detector
+        (5, 0): Detector( id: 0 )
     },
 
     tests: Tests(
         lasers: [ ],
-        detectors: [ Static((5, 0)) ],
+        detectors: [ 0 ],
 
         cases: [
             Cycle(

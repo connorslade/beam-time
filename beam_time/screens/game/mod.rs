@@ -57,13 +57,16 @@ impl Screen for GameScreen {
         }
 
         if self.needs_init {
-            if let Some(size) = self.board.meta.size {
+            let pan = if let Some(size) = self.board.meta.size {
                 let tile_size = 16.0 * self.shared.scale * ctx.scale_factor;
                 let half_board = size.map(|x| x as f32) * tile_size / 2.0;
-                let pan = ctx.center() + Vector2::repeat(tile_size) - half_board;
-                self.shared.pan = pan;
-                self.shared.pan_goal = pan;
-            }
+                ctx.center() + Vector2::repeat(tile_size) - half_board
+            } else {
+                ctx.center()
+            };
+
+            self.shared.pan = pan;
+            self.shared.pan_goal = pan;
 
             self.needs_init = false;
         }

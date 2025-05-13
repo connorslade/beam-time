@@ -3,21 +3,21 @@ Level(
     name: "Edge Detectors",
     description: "On the rising-edge of the input signal, send a pulse to output R and send an output to output F on the falling-edge.",
 
-    size: Some((6, 6)),
+    size: (6, 6),
     permanent: [ (0, 5), (4, 0), (5, 0) ],
     labels: {
-        (4, 0): "Rise",
-        (5, 0): "Fall"
+        Dynamic(1): "Rise",
+        Dynamic(2): "Fall"
     },
     tiles: {
-        (0, 5): Emitter( rotation: Down, active: true ),
-        (4, 0): Detector,
-        (5, 0): Detector
+        (0, 5): Emitter( rotation: Down, active: true, id: 0 ),
+        (4, 0): Detector( id: 1 ),
+        (5, 0): Detector( id: 2 )
     },
 
     tests: Tests(
-        lasers: [ Static((0, 5)) ],
-        detectors: [ Static((4, 0)), Static((5, 0)) ], // RF
+        lasers: [ 0 ],
+        detectors: [ 1, 2 ], // RF
 
         checker: Basic,
         cases: [

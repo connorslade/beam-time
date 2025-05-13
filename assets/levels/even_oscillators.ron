@@ -3,22 +3,22 @@ Level(
     name: "Even Oscillators",
     description: "Build three oscillators with (from left to right) periods of 16, 12, and 8.\n\nThe initial pulses from each oscillator must all hit their corresponding detectors in the same tick.",
 
-    size: Some((6, 6)),
+    size: (6, 6),
     permanent: [ (3, 0), (4, 0), (5, 0) ],
     labels: {
-        (3, 0): "16",
-        (4, 0): "12",
-        (5, 0): "8"
+        Dynamic(0): "16",
+        Dynamic(1): "12",
+        Dynamic(2): "8"
     },
     tiles: {
-        (3, 0): Detector,
-        (4, 0): Detector,
-        (5, 0): Detector
+        (3, 0): Detector( id: 0 ),
+        (4, 0): Detector( id: 1 ),
+        (5, 0): Detector( id: 2 )
     },
 
     tests: Tests(
         lasers: [ ],
-        detectors: [ Static((3, 0)), Static((4, 0)), Static((5, 0)) ],
+        detectors: [ 0, 1, 2 ],
 
         cases: [
             Cycle(

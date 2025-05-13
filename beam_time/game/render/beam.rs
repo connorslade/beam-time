@@ -4,7 +4,7 @@ use engine::{
     assets::SpriteRef,
     drawable::sprite::Sprite,
     exports::nalgebra::Vector2,
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
 };
 
 use crate::{
@@ -68,21 +68,23 @@ impl BeamStateRender for BeamState {
                 BeamTile::Beam {
                     direction: Direction::Left | Direction::Right,
                     ..
-                } => ctx.draw(sprite(BEAM_FULL_HORIZONTAL)),
+                } => sprite(BEAM_FULL_HORIZONTAL).draw(ctx),
                 BeamTile::Beam {
                     direction: Direction::Up | Direction::Down,
                     ..
-                } => ctx.draw(sprite(BEAM_FULL_VERTICAL)),
+                } => sprite(BEAM_FULL_VERTICAL).draw(ctx),
                 BeamTile::CrossBeam { .. } => {
-                    ctx.draw(sprite(BEAM_FULL_HORIZONTAL));
-                    ctx.draw(sprite(BEAM_FULL_VERTICAL));
+                    sprite(BEAM_FULL_HORIZONTAL).draw(ctx);
+                    sprite(BEAM_FULL_VERTICAL).draw(ctx);
                 }
                 BeamTile::Mirror {
                     direction, powered, ..
                 } => {
                     for (idx, _) in powered.iter().enumerate().filter(|x| x.1.is_some()) {
                         let texture = MIRROR_TEXTURES[idx + direction as usize * 2];
-                        ctx.draw(sprite(texture).z_index(layer::LASER * (idx == 1) as i16));
+                        sprite(texture)
+                            .z_index(layer::LASER * (idx == 1) as i16)
+                            .draw(ctx);
                     }
                 }
                 BeamTile::Splitter {
@@ -90,7 +92,9 @@ impl BeamStateRender for BeamState {
                     powered: Some(powered),
                 } => {
                     let index = (powered as usize + direction as usize * 2) % 4;
-                    ctx.draw(sprite(SPLITTER_TEXTURES[index]).z_index(layer::LASER));
+                    sprite(SPLITTER_TEXTURES[index])
+                        .z_index(layer::LASER)
+                        .draw(ctx);
                 }
                 BeamTile::Delay {
                     powered,
@@ -98,7 +102,7 @@ impl BeamStateRender for BeamState {
                 } => {
                     for (idx, set) in [powered, last_powered].into_iter().enumerate() {
                         for dir in set.iter() {
-                            ctx.draw(sprite(HALF_BEAM[dir.opposite_if(idx > 0) as usize]))
+                            sprite(HALF_BEAM[dir.opposite_if(idx > 0) as usize]).draw(ctx);
                         }
                     }
                 }
@@ -111,7 +115,7 @@ impl BeamStateRender for BeamState {
                         } else {
                             layer::LASER
                         };
-                        ctx.draw(sprite(HALF_BEAM[dir as usize]).z_index(layer))
+                        sprite(HALF_BEAM[dir as usize]).z_index(layer).draw(ctx);
                     }
                 }
                 _ => {}

@@ -35,7 +35,7 @@ pub struct SettingsModal {}
 impl Screen for TitleScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         ctx.background(BACKGROUND_COLOR);
-        ctx.draw(Waterfall::new(&mut state.waterfall));
+        Waterfall::new(&mut state.waterfall).draw(ctx);
         self.setting_modal(state, ctx);
 
         // Replace with a settings button or smth

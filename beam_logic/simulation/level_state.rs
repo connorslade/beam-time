@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::level::{
     case::{EventType, TestCase},
-    Level, DEFAULT_LEVELS,
+    DynamicElementMap, Level, DEFAULT_LEVELS,
 };
 use common::map::Map;
 
@@ -14,6 +14,8 @@ use super::tile::BeamTile;
 
 pub struct LevelState {
     pub(super) level: Cow<'static, Level>,
+    dynamic_map: DynamicElementMap,
+
     pub test_case: usize,
     pub test_offset: usize,
 
@@ -33,9 +35,14 @@ pub enum LevelResult {
 }
 
 impl LevelState {
-    pub fn new(level: Cow<'static, Level>, test_offset: usize) -> Self {
+    pub fn new(
+        level: Cow<'static, Level>,
+        dynamic_map: DynamicElementMap,
+        test_offset: usize,
+    ) -> Self {
         Self {
             level,
+            dynamic_map,
             test_offset,
             ..Default::default()
         }
@@ -108,8 +115,8 @@ impl LevelState {
         let case = &tests.cases[idx];
 
         for (pos, state) in tests.lasers.iter().zip(case.lasers()) {
-            let pos = pos.into_pos();
-            if let BeamTile::Emitter { active, .. } = board.get_mut(pos) {
+            let pos = self.dynamic_map.position(*pos);
+            if let Some(BeamTile::Emitter { active, .. }) = pos.map(|x| board.get_mut(x)) {
                 *active = *state;
             }
         }
@@ -121,8 +128,8 @@ impl LevelState {
             .detectors
             .iter()
             .map(|pos| {
-                let pos = pos.into_pos();
-                board.get(pos).is_powered()
+                let pos = self.dynamic_map.position(*pos);
+                pos.map(|x| board.get(x).is_powered()).unwrap_or_default()
             })
             .collect()
     }
@@ -153,6 +160,7 @@ impl Default for LevelState {
     fn default() -> Self {
         Self {
             level: Cow::Borrowed(&DEFAULT_LEVELS[0]),
+            dynamic_map: Default::default(),
             test_case: 0,
             test_offset: 0,
             latency: 0,

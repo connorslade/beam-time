@@ -49,6 +49,7 @@ impl LevelPanel {
         let (margin, padding) = state.spacing(ctx);
         let width = tile_size * WIDTH as f32;
 
+        // idk maybe cache or smth — not that it really matters
         let price = price(board, level);
 
         let trackers @ [base, extended] = [memory_key!(), memory_key!()].map(LayoutTracker::new);

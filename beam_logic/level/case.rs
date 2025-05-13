@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use super::{ElementLocation, Level};
+use super::Level;
 
 type Bits = Vec<bool>;
 
@@ -25,8 +25,8 @@ pub enum TestCase {
 }
 
 pub struct CasePreview<'a, 'b> {
-    laser: (&'a [bool], &'b [ElementLocation]),
-    detector: (&'a [bool], &'b [ElementLocation]),
+    laser: (&'a [bool], &'b [u32]),
+    detector: (&'a [bool], &'b [u32]),
 }
 
 #[derive(Default, Clone, Copy, Debug, PartialEq, Eq, Deserialize)]
@@ -60,12 +60,12 @@ impl CasePreview<'_, '_> {
         self.detector.0.len() + self.laser.0.len()
     }
 
-    pub fn detector(&self) -> impl Iterator<Item = (&bool, &ElementLocation)> {
-        self.detector.0.iter().zip(self.detector.1.iter())
+    pub fn detector(&self) -> impl Iterator<Item = (&bool, u32)> {
+        self.detector.0.iter().zip(self.detector.1.iter().copied())
     }
 
-    pub fn laser(&self) -> impl Iterator<Item = (&bool, &ElementLocation)> {
-        self.laser.0.iter().zip(self.laser.1.iter())
+    pub fn laser(&self) -> impl Iterator<Item = (&bool, u32)> {
+        self.laser.0.iter().zip(self.laser.1.iter().copied())
     }
 }
 

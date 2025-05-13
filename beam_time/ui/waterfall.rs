@@ -58,12 +58,11 @@ impl Drawable for Waterfall<'_> {
         while i < tiles.len() {
             let tile = &mut tiles[i];
 
-            ctx.draw(
-                Sprite::new(tile.asset)
-                    .position(tile.pos, Anchor::Center)
-                    .scale(Vector2::repeat(4.0))
-                    .z_index(layer::TILE_BACKGROUND),
-            );
+            Sprite::new(tile.asset)
+                .position(tile.pos, Anchor::Center)
+                .scale(Vector2::repeat(4.0))
+                .z_index(layer::TILE_BACKGROUND)
+                .draw(ctx);
 
             tile.pos.y -= tile.vel * ctx.delta_time;
             if tile.pos.y < -tile_offset {

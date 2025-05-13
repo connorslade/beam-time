@@ -151,9 +151,11 @@ fn case_small(
             layout.nest(ctx, RowLayout::new(0.0), |ctx, layout| {
                 render_tiles(ctx, layout, 2.0, level, TILE_EMITTER_DOWN, preview.laser());
             });
+
             Sprite::new(HISTOGRAM_MARKER)
                 .scale(Vector2::repeat(2.0))
                 .layout(ctx, layout);
+
             layout.nest(ctx, RowLayout::new(0.0), |ctx, layout| {
                 render_tiles(ctx, layout, 2.0, level, TILE_DETECTOR, preview.detector());
             });
@@ -167,7 +169,7 @@ fn render_tiles<'a>(
     scale: f32,
     level: &Level,
     sprite: SpriteRef,
-    items: impl Iterator<Item = (&'a bool, &'a ElementLocation)>,
+    items: impl Iterator<Item = (&'a bool, u32)>,
 ) {
     let tile_label_offset = Vector2::repeat(8.0 * scale * ctx.scale_factor);
     let tile_label = |ctx: &mut GraphicsContext, pos| -> Box<dyn LayoutElement> {
@@ -179,7 +181,7 @@ fn render_tiles<'a>(
     };
 
     for (&input, tile) in items {
-        let label = tile_label(ctx, tile.into_pos());
+        let label = tile_label(ctx, ElementLocation::Dynamic(tile));
         let tile_sprite = Sprite::new(sprite)
             .uv_offset(Vector2::new(16 * input as i32, 0))
             .scale(Vector2::repeat(scale));

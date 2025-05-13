@@ -7,7 +7,7 @@ use engine::{
     color::Rgb,
     drawable::text::Text,
     exports::{nalgebra::Vector2, winit::event::MouseButton},
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
     memory_key,
 };
 use log::warn;
@@ -90,7 +90,7 @@ impl Screen for CampaignScreen {
                 }
             }
 
-            ctx.draw(text);
+            text.draw(ctx);
         }
     }
 

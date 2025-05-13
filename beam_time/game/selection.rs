@@ -66,12 +66,12 @@ impl Board {
                 .map(|pos| self.tiles.get(pos).price())
                 .sum::<u32>();
             let text = format!("{}x{} • ${}", size.x, size.y, price.separate_with_commas());
-            ctx.draw(
-                Text::new(UNDEAD_FONT, &text)
-                    .position(screen, Anchor::Center)
-                    .scale(Vector2::repeat(2.0))
-                    .color(Rgb::hex(0xe27285)),
-            );
+
+            Text::new(UNDEAD_FONT, &text)
+                .position(screen, Anchor::Center)
+                .scale(Vector2::repeat(2.0))
+                .color(Rgb::hex(0xe27285))
+                .draw(ctx);
         }
 
         if let (Some(selection), false) = (
@@ -118,17 +118,22 @@ impl Board {
             let mut old = Vec::new();
 
             for pos in this.selection.iter() {
-                let tile = self.tiles.get(*pos);
-                old.push((*pos, tile));
+                let mut tile = self.tiles.get(*pos);
+                if cut {
+                    old.push((*pos, tile));
+                    self.tiles.remove(*pos);
+                } else {
+                    tile = tile.generic();
+                }
 
                 if !tile.is_empty() {
                     list.push((*pos, tile));
                 }
-
-                cut.then(|| self.tiles.remove(*pos));
             }
 
-            self.transient.history.track_many(old);
+            if cut {
+                self.transient.history.track_many(old);
+            }
 
             let origin = shared
                 .screen_to_world_space(ctx, ctx.input.mouse)

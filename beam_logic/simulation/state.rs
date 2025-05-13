@@ -7,7 +7,10 @@ use common::{direction::Directions, map::Map, misc::in_bounds};
 use log::trace;
 use nalgebra::Vector2;
 
-use crate::{level::Level, tile::Tile};
+use crate::{
+    level::{DynamicElementMap, Level},
+    tile::Tile,
+};
 
 use super::{level_state::LevelState, tile::BeamTile};
 
@@ -21,15 +24,18 @@ impl BeamState {
     /// Creates a new BeamState from a Board by converting Tiles into their
     /// BeamTile counterparts.
     pub fn new(tiles: &Map<Tile>, level: Option<Cow<'static, Level>>, test: Option<usize>) -> Self {
-        let level = test.and_then(|o| level.map(|x| LevelState::new(x, o)));
+        let level = test
+            .and_then(|o| level.map(|x| LevelState::new(x, DynamicElementMap::from_map(tiles), o)));
 
         let board = tiles.map(|tile| match tile {
             Tile::Empty => BeamTile::Empty,
-            Tile::Emitter { rotation, active } => BeamTile::Emitter {
+            Tile::Emitter {
+                rotation, active, ..
+            } => BeamTile::Emitter {
                 direction: rotation,
                 active,
             },
-            Tile::Detector => BeamTile::Detector {
+            Tile::Detector { .. } => BeamTile::Detector {
                 powered: Directions::empty(),
             },
             Tile::Delay => BeamTile::Delay {
@@ -49,7 +55,7 @@ impl BeamState {
                 direction: rotation,
                 powered: Directions::empty(),
             },
-            Tile::Wall { .. } => BeamTile::Wall {
+            Tile::Wall => BeamTile::Wall {
                 powered: Directions::empty(),
             },
         });

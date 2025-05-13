@@ -3,7 +3,7 @@ use std::f32::consts::PI;
 use engine::{
     drawable::sprite::Sprite,
     exports::nalgebra::{Rotation2, Vector2},
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
 };
 use rand::{thread_rng, Rng};
 
@@ -73,11 +73,11 @@ impl Confetti {
 
             if particle.position.y < viewport.y + half_size {
                 let sprite = particle.sprite.clone();
-                ctx.draw(
-                    sprite
-                        .position(particle.position, Anchor::Center)
-                        .rotate(ctx.frame as f32 / 100.0 * particle.rotation, Anchor::Center),
-                );
+
+                sprite
+                    .position(particle.position, Anchor::Center)
+                    .rotate(ctx.frame as f32 / 100.0 * particle.rotation, Anchor::Center)
+                    .draw(ctx);
             }
 
             const GRAVITY: f32 = 400.0;

@@ -28,7 +28,8 @@ pub const MODAL_COLOR: Rgb<f32> = Rgb::hex(0xA6A6A6);
 pub const MODAL_BORDER_COLOR: Rgb<f32> = Rgb::hex(0x757575);
 
 pub mod layer {
-    pub const TILE_HOLDING: i16 = 6;
+    pub const TILE_HOLDING: i16 = 7;
+    pub const TILE_HOLDING_BACKGROUND: i16 = 6;
 
     pub const UI_OVERLAY: i16 = 5;
     pub const UI_ELEMENT: i16 = 4;
