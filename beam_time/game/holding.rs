@@ -1,13 +1,16 @@
-use beam_logic::tile::Tile;
+use beam_logic::{
+    level::{ElementLocation, Level},
+    tile::Tile,
+};
 use engine::{
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::{Anchor, Drawable, GraphicsContext},
 };
 
-use crate::{consts::layer, game::render::tile::TileAsset, util::key_events};
+use crate::{consts::layer, game::render::tile::TileAsset, ui::misc::tile_label, util::key_events};
 
 use super::shared_state::SharedState;
 
@@ -24,7 +27,12 @@ impl Holding {
         *self == Holding::None
     }
 
-    pub fn render(&mut self, ctx: &mut GraphicsContext, shared: &SharedState) {
+    pub fn render(
+        &mut self,
+        ctx: &mut GraphicsContext,
+        shared: &SharedState,
+        level: Option<&'static Level>,
+    ) {
         if ctx.input.mouse_down(MouseButton::Right) || ctx.input.key_pressed(KeyCode::KeyQ) {
             *self = Holding::None;
         }
@@ -43,12 +51,22 @@ impl Holding {
                     KeyCode::KeyE => *tile = tile.activate()
                 });
 
-                ctx.draw(
-                    tile.asset()
-                        .scale(Vector2::repeat(shared.scale))
-                        .position(ctx.input.mouse, Anchor::Center)
-                        .z_index(layer::TILE_HOLDING),
-                );
+                tile.asset()
+                    .scale(Vector2::repeat(shared.scale))
+                    .position(ctx.input.mouse, Anchor::Center)
+                    .z_index(layer::TILE_HOLDING)
+                    .draw(ctx);
+
+                if let Tile::Emitter { id: Some(id), .. } | Tile::Detector { id: Some(id) } = tile {
+                    if let Some(label) = level
+                        .map(|x| x.labels.get(&ElementLocation::Dynamic(*id)))
+                        .flatten()
+                    {
+                        tile_label(ctx, shared.scale, ctx.input.mouse, label)
+                            .z_index(layer::TILE_HOLDING)
+                            .draw(ctx);
+                    }
+                }
             }
             Holding::Paste(tiles) => {
                 key_events!(ctx, {

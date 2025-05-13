@@ -41,7 +41,9 @@ impl Board {
         let frame = state.frame();
 
         let shift_down = ctx.input.key_down(KeyCode::ShiftLeft);
-        self.transient.holding.render(ctx, shared);
+        self.transient
+            .holding
+            .render(ctx, shared, self.transient.level);
         self.update_selection(ctx, shared, sim);
         self.render_notes(ctx, state, shared);
 

@@ -115,8 +115,8 @@ impl LevelState {
         let case = &tests.cases[idx];
 
         for (pos, state) in tests.lasers.iter().zip(case.lasers()) {
-            let pos = self.dynamic_map.position(*pos).unwrap();
-            if let BeamTile::Emitter { active, .. } = board.get_mut(pos) {
+            let pos = self.dynamic_map.position(*pos);
+            if let Some(BeamTile::Emitter { active, .. }) = pos.map(|x| board.get_mut(x)) {
                 *active = *state;
             }
         }
@@ -128,8 +128,8 @@ impl LevelState {
             .detectors
             .iter()
             .map(|pos| {
-                let pos = self.dynamic_map.position(*pos).unwrap();
-                board.get(pos).is_powered()
+                let pos = self.dynamic_map.position(*pos);
+                pos.map(|x| board.get(x).is_powered()).unwrap_or_default()
             })
             .collect()
     }
