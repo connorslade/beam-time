@@ -13,6 +13,7 @@ use uuid::Uuid;
 use crate::tile::{Tile, TileType};
 
 pub mod case;
+pub mod tree;
 use case::TestCase;
 
 pub macro default_level {
@@ -68,6 +69,8 @@ pub struct Level {
     pub name: String,
     #[serde(deserialize_with = "unindent_string")]
     pub description: String,
+
+    pub parents: Vec<Uuid>,
 
     pub size: Option<Vector2<u32>>,
     pub permanent: HashSet<Vector2<i32>>,

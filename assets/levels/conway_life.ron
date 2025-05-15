@@ -2,6 +2,7 @@ Level(
     id: "f79d2928-aa91-44d8-ac3a-176e991b2c7a",
     name: "Conway's Game of Life",
     description: "todo: description",
+    parents: [ "ca887bfe-5c8c-425d-b414-265e6d8c909e" ],
 
     size: None,
     permanent: [ ],

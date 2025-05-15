@@ -7,7 +7,8 @@ Level(
         In these first few levels you will build up some basic binary logic gates. As simple as each of these gates are, when combined they can create very complicated behaviors, this game is running on the logic gates in your computer!
 
         If you don't already know about binary logic, it might not be a bad idea to do some research to be better prepared for the coming levels, or just figure it out as you go!",
-
+    parents: [ "3d01432a-228c-4cfd-9be3-407a796b49c8" ],
+    
     size: Some((6, 6)),
     permanent: [ (0, 5), (1, 5), (5, 0) ],
     labels: { },

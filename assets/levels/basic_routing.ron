@@ -7,7 +7,8 @@ Level(
         Click the mirror icon in the bottom left of the screen to pick one up, press R to rotate it, and place it down in the bottom left corner of the board.
         
         Press P to play the simulation, ESCAPE to go back to edit mode, then press T to run this levels test cases.",
-
+    parents: [ ], // this is the root level
+        
     size: (6, 6),
     permanent: [ (0, 5), (5, 0) ],
     labels: { },

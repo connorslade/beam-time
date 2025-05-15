@@ -7,6 +7,7 @@ Level(
         For this level, make the output alternate between the on and off states every four ticks, for a total cycle period of eight ticks.
         
         Instead of using P to start the simulation, use SPACE to step through each simulation tick one at a time.",
+    parents: [ "3d01432a-228c-4cfd-9be3-407a796b49c8" ],
 
     size: (6, 6),
     permanent: [ (5, 0) ],

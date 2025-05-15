@@ -2,6 +2,7 @@ Level(
     id: "52108765-b8d2-47cf-a0c7-36b3b73cc644",
     name: "Double It",
     description: "Double the numeric of the big-endian binary value.",
+    parents: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ],
 
     size: (8, 5),
     permanent: [

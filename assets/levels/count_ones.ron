@@ -2,6 +2,7 @@ Level(
     id: "b59c1a75-8d7a-4c91-bdd4-6831e3b1f41a",
     name: "Count Ones",
     description: "Output the number of active inputs in binary (big-endian) where the leftmost output represents four, the middle represents two and the rightmost represents one.",
+    parents: [ "ca887bfe-5c8c-425d-b414-265e6d8c909e" ],
 
     size: (20, 20),
     permanent: [

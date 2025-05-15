@@ -2,6 +2,7 @@ Level(
     id: "5b27a3dd-aa6a-492b-9727-147e5eb54d15",
     name: "Four Bit Not",
     description: "Invert the values of each of the inputs (NOT) and pass them to their corresponding output.",
+    parents: [ "52108765-b8d2-47cf-a0c7-36b3b73cc644" ],
 
     size: (8, 10),
     permanent: [

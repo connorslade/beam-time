@@ -9,6 +9,7 @@ pub struct PixelLine {
     a: Vector2<f32>,
     b: Vector2<f32>,
 
+    position: Vector2<f32>,
     color: Rgb<f32>,
     z_index: i16,
 }
@@ -18,9 +19,15 @@ impl PixelLine {
         Self {
             a,
             b,
+
+            position: Vector2::zeros(),
             color: Rgb::repeat(1.0),
             z_index: 0,
         }
+    }
+
+    pub fn position(self, position: Vector2<f32>) -> Self {
+        Self { position, ..self }
     }
 
     pub fn color(self, color: impl Into<Rgb<f32>>) -> Self {
@@ -55,7 +62,10 @@ impl Drawable for PixelLine {
 
         while x0 != x1 || y0 != y1 {
             Rectangle::new(Vector2::repeat(px))
-                .position(Vector2::new(x0, y0).map(|x| x as f32 * px), Anchor::Center)
+                .position(
+                    Vector2::new(x0, y0).map(|x| x as f32 * px) + self.position,
+                    Anchor::Center,
+                )
                 .color(self.color)
                 .z_index(self.z_index)
                 .draw(ctx);

@@ -5,7 +5,8 @@ Level(
         Enable the output when either of the inputs are active. There are two main ways to solve this level.
         
         The wall is there to keep you from just routing each input into a different side of the output.",
-
+    parents: [ "3d01432a-228c-4cfd-9be3-407a796b49c8" ],
+    
     size: (6, 6),
     permanent: [ (0, 5), (1, 5), (5, 0), (5, 1) ],
     labels: { },
