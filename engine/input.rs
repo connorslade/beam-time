@@ -8,11 +8,13 @@ use winit::{
 #[derive(Debug)]
 pub struct InputManager {
     pub(crate) window_size: Vector2<u32>,
+    pub scale_factor: f32,
     pub mouse: Vector2<f32>,
     pub mouse_delta: Vector2<f32>,
     pub scroll_delta: f32,
     /// Previous size
     pub resized: Option<Vector2<u32>>,
+    pub dpi_changed: Option<f32>,
 
     pub clicks_canceled: bool,
     pub mouse_down: Vec<MouseButton>,
@@ -26,10 +28,12 @@ impl InputManager {
     pub fn new(window_size: PhysicalSize<u32>) -> Self {
         Self {
             window_size: Vector2::new(window_size.width, window_size.height),
+            scale_factor: 1.0,
             mouse: Vector2::new(0.0, 0.0),
             mouse_delta: Vector2::new(0.0, 0.0),
             scroll_delta: 0.0,
             resized: None,
+            dpi_changed: None,
 
             clicks_canceled: false,
             mouse_down: Vec::new(),
@@ -98,8 +102,20 @@ impl InputManager {
             .any(|e| e.state == ElementState::Released && e.physical_key == key)
     }
 
+    pub fn resized(&self) -> bool {
+        self.resized.is_some()
+    }
+
+    pub fn dpi_changed(&self) -> bool {
+        self.dpi_changed.is_some()
+    }
+
     pub(crate) fn on_window_event(&mut self, window_event: &WindowEvent) {
         match window_event {
+            WindowEvent::ScaleFactorChanged { scale_factor, .. } => {
+                self.dpi_changed = Some(self.scale_factor);
+                self.scale_factor = *scale_factor as f32;
+            }
             WindowEvent::Resized(size) => {
                 self.resized = Some(self.window_size);
                 self.window_size = Vector2::new(size.width, size.height);
@@ -153,6 +169,7 @@ impl InputManager {
         self.mouse_delta = Vector2::new(0.0, 0.0);
         self.scroll_delta = 0.0;
         self.resized = None;
+        self.dpi_changed = None;
         self.clicks_canceled = false;
     }
 }

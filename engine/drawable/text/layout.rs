@@ -2,6 +2,7 @@ use nalgebra::Vector2;
 
 use crate::assets::font::{Character, FontDescriptor};
 
+#[derive(Clone)]
 pub struct TextLayout {
     pub chars: Vec<(Character, Vector2<f32>)>,
     pub size: Vector2<f32>,

@@ -44,8 +44,18 @@ pub struct GraphicsContext<'a> {
     pub frame: u64,
 }
 
+pub trait ReuseableDrawable {
+    fn draw(&self, ctx: &mut GraphicsContext);
+}
+
 pub trait Drawable {
     fn draw(self, ctx: &mut GraphicsContext);
+}
+
+impl<T: ReuseableDrawable> Drawable for T {
+    fn draw(self, ctx: &mut GraphicsContext) {
+        ReuseableDrawable::draw(&self, ctx);
+    }
 }
 
 #[derive(Debug, Copy, Clone)]

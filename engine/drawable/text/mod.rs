@@ -16,6 +16,7 @@ use layout::TextLayout;
 use super::RECTANGLE_POINTS;
 mod layout;
 
+#[derive(Clone)]
 pub struct Text {
     font: FontRef,
     text: String,
@@ -34,6 +35,7 @@ pub struct Text {
     layout: RefCell<Option<CachedLayout>>,
 }
 
+#[derive(Clone)]
 struct CachedLayout {
     /// Size of the text bounding box when using scale.
     base: Vector2<f32>,
