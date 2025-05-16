@@ -10,6 +10,7 @@ use crate::{
     render::shape::ShapeVertex,
 };
 
+#[derive(Clone)]
 pub struct Circle {
     position: Vector2<f32>,
     anchor: Anchor,

@@ -15,7 +15,7 @@ pub struct TreeItem {
     id: Uuid,
     pub text: Text,
 
-    pub width: f32, // todo make priv
+    width: f32,
     pub total_width: f32,
 
     pub offset: f32,

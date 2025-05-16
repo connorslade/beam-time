@@ -8,6 +8,7 @@ use crate::{
     render::shape::ShapeVertex,
 };
 
+#[derive(Clone)]
 pub struct Rectangle {
     position: Vector2<f32>,
     position_anchor: Anchor,

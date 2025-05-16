@@ -5,6 +5,7 @@ use crate::{
     layout::{bounds::Bounds2D, LayoutElement},
 };
 
+#[derive(Clone)]
 pub struct Spacer {
     bounds: Bounds2D,
 }

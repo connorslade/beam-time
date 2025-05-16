@@ -8,6 +8,7 @@ use crate::{
 
 use super::circle::Circle;
 
+#[derive(Clone)]
 pub struct Line {
     points: [Vector2<f32>; 2],
     thickness: f32,
@@ -16,6 +17,7 @@ pub struct Line {
     z_index: i16,
 }
 
+#[derive(Clone)]
 pub enum LineCap {
     Butt, // why is it called this
     Round,
