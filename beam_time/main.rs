@@ -27,7 +27,7 @@ mod util;
 use app::App;
 #[cfg(feature = "debug")]
 use screens::debug_overlay::DebugOverlay;
-use screens::{campaign_tree::CampaignScreen, Screens};
+use screens::{title::TitleScreen, Screens};
 use util::include_atlas;
 
 fn main() -> Result<()> {
@@ -49,8 +49,7 @@ fn main() -> Result<()> {
             let mut screens = Screens::new(vec![
                 #[cfg(feature = "debug")]
                 Box::new(DebugOverlay::default()),
-                // Box::new(TitleScreen::default()),
-                Box::new(CampaignScreen::new()),
+                Box::new(TitleScreen::default()),
             ]);
             screens.top().on_init(&mut app);
 

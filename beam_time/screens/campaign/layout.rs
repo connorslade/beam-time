@@ -12,7 +12,7 @@ pub struct TreeLayout {
 }
 
 pub struct TreeItem {
-    id: Uuid,
+    pub id: Uuid,
     pub text: Text,
     pub total_width: f32,
     pub children: Vec<usize>,

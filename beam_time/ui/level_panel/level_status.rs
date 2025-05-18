@@ -2,7 +2,9 @@ use std::f32::consts::PI;
 
 use thousands::Separable;
 
-use crate::{app::App, assets::UNDEAD_FONT, ui::components::histogram::Histogram};
+use crate::{
+    app::App, assets::UNDEAD_FONT, consts::ERROR_COLOR, ui::components::histogram::Histogram,
+};
 use beam_logic::{level::Level, simulation::level_state::LevelResult};
 use engine::{
     color::{OkLab, Rgb},
@@ -84,8 +86,10 @@ fn success(
                 .layout(ctx, layout);
 
             let Some(hist_data) = state.leaderboard.get_results(level.id) else {
+                Spacer::new_y(8.0 * ctx.scale_factor).layout(ctx, layout);
                 Text::new(UNDEAD_FONT, "Failed to load global leaderboard.")
                     .scale(Vector2::repeat(2.0))
+                    .color(ERROR_COLOR)
                     .layout(ctx, layout);
                 return;
             };
