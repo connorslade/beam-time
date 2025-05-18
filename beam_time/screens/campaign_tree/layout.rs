@@ -14,12 +14,13 @@ pub struct TreeLayout {
 pub struct TreeItem {
     id: Uuid,
     pub text: Text,
+    pub total_width: f32,
+    pub children: Vec<usize>,
 
     width: f32,
-    pub total_width: f32,
-
-    pub offset: f32,
-    pub children: Vec<usize>,
+    offset: f32,
+    parent_offset: f32,
+    parents: u32,
 }
 
 impl TreeLayout {
@@ -30,22 +31,22 @@ impl TreeLayout {
     pub fn generate(tree: &LevelTree, ctx: &mut GraphicsContext) -> Self {
         let mut rows = Vec::<Vec<TreeItem>>::new();
         let mut queue = VecDeque::new();
-        queue.push_back((uuid!("58fc60ca-3831-4f27-a29a-b4878a5dd68a"), Vec::new(), 0));
+        queue.push_back((uuid!("58fc60ca-3831-4f27-a29a-b4878a5dd68a"), None, 0));
 
-        while let Some((id, mut parent, depth)) = queue.pop_front() {
+        while let Some((id, parent, depth)) = queue.pop_front() {
             let level = tree.get(id).unwrap();
 
             if rows.len() <= depth {
                 rows.push(Vec::new());
             }
 
-            if let Some(x) = rows[depth].iter().position(|x| x.id == level.id) {
-                rows[depth][x].children.extend(parent);
+            let duplicate = rows[depth].iter().position(|x| x.id == level.id);
+            if let (Some(parent), Some(x)) = (parent, duplicate) {
+                let parent: &mut TreeItem = &mut rows[depth - 1][parent];
+                parent.children.push(x);
+                rows[depth][x].parents += 1;
                 continue;
             }
-
-            let first_child = rows.get(depth + 1).map(|x| x.len()).unwrap_or_default();
-            let child_count = tree.children(id).map(|x| x.len()).unwrap_or_default();
 
             let index = rows[depth].len();
             let text = Text::new(UNDEAD_FONT, &level.name).scale(Vector2::repeat(2.0));
@@ -54,14 +55,21 @@ impl TreeLayout {
                 width: text.size(ctx).x,
                 total_width: 0.0,
                 offset: 0.0,
-                children: (first_child..(first_child + child_count)).collect(),
+                parent_offset: 0.0,
+                parents: 0,
+                children: Vec::new(),
                 text,
             });
 
-            parent.push(index);
+            if let Some(parent) = parent {
+                let parent: &mut TreeItem = &mut rows[depth - 1][parent];
+                parent.children.push(index);
+                rows[depth][index].parents += 1;
+            }
+
             if let Some(children) = tree.children(id) {
                 for child in children {
-                    queue.push_back((*child, vec![index], depth + 1));
+                    queue.push_back((*child, Some(index), depth + 1));
                 }
             };
         }
@@ -88,10 +96,16 @@ fn propagate_widths(rows: &mut [Vec<TreeItem>], spacing: f32) {
         let (current_row, next_row) = (&mut current_row[depth], &next_row[0]);
 
         for item in current_row {
-            let mut width = (item.children.len().saturating_sub(1)) as f32 * spacing;
+            let mut width = 0.0;
+            let mut siblings = 0;
             for &child in &item.children {
-                width += next_row[child].total_width;
+                let child = &next_row[child];
+                siblings = child.parents;
+                width += child.total_width;
             }
+
+            width += (item.children.len().saturating_sub(1)) as f32 * spacing;
+            width /= siblings as f32;
 
             item.total_width = width.max(item.width);
         }
@@ -105,6 +119,7 @@ fn layout_items(rows: &mut [Vec<TreeItem>], spacing: f32) {
 
         for item in current_row {
             let mut acc = -item.total_width / 2.0;
+
             for &child in &item.children {
                 let child = &mut next_row[child];
 
@@ -122,8 +137,15 @@ fn propagate_offsets(rows: &mut [Vec<TreeItem>]) {
 
         for item in current_row {
             for &child in &item.children {
-                next_row[child].offset += item.offset;
+                let child = &mut next_row[child];
+                child.parent_offset += item.offset + item.parent_offset;
             }
         }
+    }
+}
+
+impl TreeItem {
+    pub fn offset(&self) -> f32 {
+        self.offset + self.parent_offset
     }
 }

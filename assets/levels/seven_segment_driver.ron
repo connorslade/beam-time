@@ -2,7 +2,7 @@ Level(
     id: "5f4538af-b393-4b62-8a53-70170b96915d",
     name: "Seven Segment Driver",
     description: "Create a seven segment display driver that takes an input number in the range [0, 9] and activates the correct segments to draw that number.",
-    parents: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ],
+    parents: [ ],
 
     size: (26, 26),
     permanent: [ (0, 16), (0, 17), (0, 18), (0, 19), (0, 20), (0, 21), (0, 22), (0, 23), (0, 24), (0, 25) ],

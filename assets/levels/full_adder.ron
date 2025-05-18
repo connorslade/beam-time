@@ -3,7 +3,7 @@ Level(
     name: "Full Adder",
     description: "
         You have already built a half-adder, which can add two bits, but you can't directly tile it to add multi bit-values. For that, you will need a *full adder*, which takes in two input bits and a carry in. It then adds all the bits and outputs a sum and carry bit.
-        
+
         By connecting a handful of these circuits, you can create a ripple-carry adder to add full binary numbers.",
     parents: [ "91d5f245-75e8-4d3e-8994-7dcbdcd70670" ],
 

@@ -3,13 +3,13 @@ Level(
     name: "Not Gate",
     description: "
         Enable the output only when the input is not active, and disable it only when the input is active. Effectively inverting the input.
-        
+
         For this level you will need to use two new (rotatable) components:
         • Galvo: Rotates the mirror it is facing when powered on its three other sides
         • Emitter: Emits a constant beam, but can be toggled by pressing E while hovering
-        
+
         This is the first level that has multiple test cases. Use the white arrow buttons below to scroll thought them.",
-    parents: [ "3d01432a-228c-4cfd-9be3-407a796b49c8" ],
+    parents: [ "d46980e0-b2d0-4102-ab95-8bdc16d00ca9" ],
 
     size: (6, 6),
     permanent: [ (0, 5), (5, 0) ],
