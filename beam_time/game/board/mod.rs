@@ -20,7 +20,7 @@ use super::{history::History, holding::Holding, selection::SelectionState};
 
 mod upgrade;
 
-pub const SAVE_VERSION: u32 = 4;
+pub const SAVE_VERSION: u32 = 5;
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct Board {
