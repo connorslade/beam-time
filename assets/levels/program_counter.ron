@@ -1,0 +1,80 @@
+Level(
+    id: "168cec38-0709-498a-9bc0-6a6251f672c1",
+    name: "Program Counter",
+    description: "
+        The Program Counter (PC) is a register in the CPU used to keep track of which instruction should be executed next. This means it must be able to increment by one after executing every instruction, and it must be writable for jumps.
+
+        Implement an 4-bit program counter that increments when 'Inc' is pulsed and copies the input to the memory cells when 'Set' is pulsed. 'Inc' and 'Set' will never both be on.",
+    parents: [ "fc3b280e-6a80-41d2-84d1-c8fa55a3946f" ],
+
+    size: None,
+    permanent: [ ],
+    labels: {
+        Dynamic(0): "8",
+        Dynamic(1): "4",
+        Dynamic(2): "2",
+        Dynamic(3): "1",
+
+        Dynamic(5): "Inc",
+        Dynamic(6): "Set",
+
+        Dynamic(7): "8",
+        Dynamic(8): "4",
+        Dynamic(9): "2",
+        Dynamic(10): "1",
+    },
+    tiles: {
+        (0, 0): Emitter( rotation: Down, active: false, id: 0 ),
+        (1, 0): Emitter( rotation: Down, active: false, id: 1 ),
+        (2, 0): Emitter( rotation: Down, active: false, id: 2 ),
+        (3, 0): Emitter( rotation: Down, active: false, id: 3 ),
+
+        (5, 0): Emitter( rotation: Down, active: false, id: 5 ),
+        (6, 0): Emitter( rotation: Down, active: false, id: 6 ),
+
+        (3, -6): Detector( id: 7 ),
+        (4, -6): Detector( id: 8 ),
+        (5, -6): Detector( id: 9 ),
+        (6, -6): Detector( id: 10 )
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2, 3, 5, 6 ],
+        detectors: [ 7, 8, 9, 10 ],
+
+        cases: [
+            Cycle(
+                lasers: [ false, false, false, false, false, false ],
+                detectors: [ [ false, false, false, false ] ],
+            ),
+            Cycle(
+                lasers: [ false, false, false, false, true, false ],
+                detectors: [ [ false, false, false, true ] ],
+            ),
+            Cycle(
+                lasers: [ false, false, false, false, false, false ],
+                detectors: [ [ false, false, false, true ] ],
+            ),
+            Cycle(
+                lasers: [ false, false, false, false, true, false ],
+                detectors: [ [ false, false, true, false ] ],
+            ),
+            Cycle(
+                lasers: [ false, false, false, false, false, false ],
+                detectors: [ [ false, false, true, false ] ],
+            ),
+            Cycle(
+                lasers: [ false, true, false, true, false, false ],
+                detectors: [ [ false, false, true, false ] ],
+            ),
+            Cycle(
+                lasers: [ false, true, false, true, false, true ],
+                detectors: [ [ false, true, true, true ] ],
+            ),
+            Cycle(
+                lasers: [ false, false, false, false, false, false ],
+                detectors: [ [ false, true, false, true ] ],
+            )
+        ]
+    )
+)

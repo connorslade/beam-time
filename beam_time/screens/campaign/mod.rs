@@ -88,7 +88,7 @@ impl Screen for CampaignScreen {
                 for child in item.children.iter() {
                     let offset = self.layout.rows[i + 1][*child].offset();
                     PixelLine::new(center, Vector2::new(offset, (i + 1) as f32 * spacing))
-                        .color(Rgb::repeat(0.5))
+                        .color(color.lerp(Rgb::repeat(0.0), 0.6))
                         .position(self.pan)
                         .draw(ctx);
                 }

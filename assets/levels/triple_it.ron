@@ -1,0 +1,71 @@
+Level(
+    id: "c04be8ac-0a2e-44c8-b82b-4f1ef2566244",
+    name: "Triple It",
+    description: "
+        Multiplication by powers of two can be easily evaluated with just bit shifts, but multiplying by other integers requires a bit shift followed by an addition.
+
+        Given the binary input number x, output the binary representation of three times x.
+    ",
+    parents: [ "52108765-b8d2-47cf-a0c7-36b3b73cc644" ],
+
+    size: None,
+    permanent: [ ],
+    labels: {
+        Dynamic(0): "128",
+        Dynamic(1): "64",
+        Dynamic(2): "32",
+        Dynamic(3): "16",
+        Dynamic(4): "8",
+        Dynamic(5): "4",
+        Dynamic(6): "2",
+        Dynamic(7): "1",
+
+        Dynamic(8): "128",
+        Dynamic(9): "64",
+        Dynamic(10): "32",
+        Dynamic(11): "16",
+        Dynamic(12): "8",
+        Dynamic(13): "4",
+        Dynamic(14): "2",
+        Dynamic(15): "1",
+    },
+    tiles: {
+        (0, 4): Emitter( rotation: Down, active: true, id: 0 ),
+        (1, 4): Emitter( rotation: Down, active: true, id: 1 ),
+        (2, 4): Emitter( rotation: Down, active: true, id: 2 ),
+        (3, 4): Emitter( rotation: Down, active: true, id: 3 ),
+        (4, 4): Emitter( rotation: Down, active: true, id: 4 ),
+        (5, 4): Emitter( rotation: Down, active: true, id: 5 ),
+        (6, 4): Emitter( rotation: Down, active: true, id: 6 ),
+        (7, 4): Emitter( rotation: Down, active: true, id: 7 ),
+
+        (0, 0): Detector( id: 8 ),
+        (1, 0): Detector( id: 9 ),
+        (2, 0): Detector( id: 10 ),
+        (3, 0): Detector( id: 11 ),
+        (4, 0): Detector( id: 12 ),
+        (5, 0): Detector( id: 13 ),
+        (6, 0): Detector( id: 14 ),
+        (7, 0): Detector( id: 15 ),
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
+        detectors: [ 8, 9, 10, 11, 12, 13, 14, 15 ],
+
+        cases: [
+            Cycle(
+                lasers: [ false, false, false, false, false, false, false, false ],
+                detectors: [ [ false, false, false, false, false, false, false, false ] ],
+            ),
+            Cycle(
+                lasers: [ false, false, false, false, false, false, false, true ],
+                detectors: [ [ false, false, false, false, false, false, true, true ] ],
+            ),
+            Cycle(
+                lasers: [ false, false, false, false, false, false, true, false ],
+                detectors: [ [ false, false, false, false, true, false, false, false ] ],
+            ),
+        ]
+    )
+)

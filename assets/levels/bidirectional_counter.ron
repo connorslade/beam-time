@@ -1,0 +1,63 @@
+Level(
+    id: "9dcb218d-c18c-4a7a-8979-9572322f5460",
+    name: "Bidirectional Counter",
+    description: "",
+    parents: [ "fc3b280e-6a80-41d2-84d1-c8fa55a3946f" ],
+
+    size: None,
+    permanent: [ ],
+    labels: {
+        Dynamic(0): "Inc",
+        Dynamic(1): "Dec",
+
+        Dynamic(2): "8",
+        Dynamic(3): "4",
+        Dynamic(4): "2",
+        Dynamic(5): "1",
+    },
+    tiles: {
+        (1, 0): Emitter( rotation: Down, active: false, id: 0 ),
+        (2, 0): Emitter( rotation: Down, active: false, id: 1 ),
+
+        (1, -6): Detector( id: 2 ),
+        (2, -6): Detector( id: 3 ),
+        (3, -6): Detector( id: 4 ),
+        (4, -6): Detector( id: 5 )
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1 ],
+        detectors: [ 2, 3, 4, 5 ],
+
+        cases: [
+            Cycle(
+                lasers: [ false, false ],
+                detectors: [ [ false, false, false, false ] ],
+            ),
+            Cycle(
+                lasers: [ true, false ],
+                detectors: [ [ false, false, false, true ] ],
+            ),
+            Cycle(
+                lasers: [ false, false ],
+                detectors: [ [ false, false, false, true ] ],
+            ),
+            Cycle(
+                lasers: [ true, false ],
+                detectors: [ [ false, false, true, false ] ],
+            ),
+            Cycle(
+                lasers: [ false, false ],
+                detectors: [ [ false, false, true, false ] ],
+            ),
+            Cycle(
+                lasers: [ false, true ],
+                detectors: [ [ false, false, false, true ] ],
+            ),
+            Cycle(
+                lasers: [ false, false ],
+                detectors: [ [ false, false, false, true ] ],
+            ),
+        ]
+    )
+)

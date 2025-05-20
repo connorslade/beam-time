@@ -1,12 +1,16 @@
 Level(
-    id: "3eb940dd-1f76-46c5-8aea-800ae0951364",
-    name: "XOR Gate",
-    description: "Turn the output on when exactly one of the inputs are on.",
-    parents: [ "1c9ddabc-8e4b-41a1-bc0c-e0623226e5c3", "70c52993-06c5-4812-8553-f321b33118b3", "cafeb123-66dc-4b04-b560-5cf80868cae4" ],
+    id: "70c52993-06c5-4812-8553-f321b33118b3",
+    name: "Imply Gate",
+    description: "The imply gate is capable of building a NAND gate, which can be used to build all other gates.",
+    parents: [ "d46980e0-b2d0-4102-ab95-8bdc16d00ca9" ],
 
-    size: (6, 6),
+    size: Some((6, 6)),
     permanent: [ (0, 5), (1, 5), (5, 0) ],
-    labels: { },
+    labels: {
+        Dynamic(0): "A",
+        Dynamic(1): "B"
+    },
+    disabled: [ ],
     tiles: {
         (0, 5): Emitter( rotation: Down, active: true, id: 0 ),
         (1, 5): Emitter( rotation: Down, active: true, id: 1 ),
@@ -20,7 +24,7 @@ Level(
         cases: [
             Cycle(
                 lasers: [ false, false ],
-                detectors: [ [ false ] ],
+                detectors: [ [ true ] ],
             ),
             Cycle(
                 lasers: [ false, true ],
@@ -28,11 +32,11 @@ Level(
             ),
             Cycle(
                 lasers: [ true, false ],
-                detectors: [ [ true ] ],
+                detectors: [ [ false ] ],
             ),
             Cycle(
                 lasers: [ true, true ],
-                detectors: [ [ false ] ],
+                detectors: [ [ true ] ],
             )
         ]
     )

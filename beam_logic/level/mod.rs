@@ -57,7 +57,12 @@ pub static DEFAULT_LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
         "counter.ron",
         "full_adder.ron",
         "count_ones.ron",
-        "conway_life.ron"
+        "conway_life.ron",
+        "seven_segment_driver.ron",
+        "imply_gate.ron",
+        "program_counter.ron",
+        "triple_it.ron",
+        "bidirectional_counter.ron"
     )
 });
 
