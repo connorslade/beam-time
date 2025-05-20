@@ -6,7 +6,7 @@ use crate::{
     app::App,
     assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B},
     consts::layer,
-    game::{holding::Holding, shared_state::SharedState},
+    game::{holding::Holding, pancam::Pancam},
     ui::misc::tile_label,
     util::key_events,
 };
@@ -30,23 +30,23 @@ impl Board {
         &mut self,
         ctx: &mut GraphicsContext,
         state: &App,
-        shared: &SharedState,
+        pancam: &Pancam,
         sim: &mut Option<BeamState>,
     ) {
         self.tick_autosave();
 
-        let tile_size = 16.0 * shared.scale * ctx.scale_factor;
+        let tile_size = 16.0 * pancam.scale * ctx.scale_factor;
         let half_tile = Vector2::repeat(tile_size / 2.0);
 
-        let tile_counts = shared.tile_counts(ctx.size());
+        let tile_counts = pancam.tile_counts(ctx.size());
         let frame = state.frame();
 
         let shift_down = ctx.input.key_down(KeyCode::ShiftLeft);
         self.transient
             .holding
-            .render(ctx, shared, self.transient.level);
-        self.update_selection(ctx, shared, sim);
-        self.render_notes(ctx, state, shared);
+            .render(ctx, pancam, self.transient.level);
+        self.update_selection(ctx, pancam, sim);
+        self.render_notes(ctx, state, pancam);
 
         if sim.is_none()
             && ctx.input.key_down(KeyCode::ControlLeft)
@@ -57,8 +57,8 @@ impl Board {
 
         for x in 0..tile_counts.x {
             for y in 0..tile_counts.y {
-                let render_pos = shared.render_pos(ctx, (x, y));
-                let pos = shared.tile_pos(ctx, (x, y));
+                let render_pos = pancam.render_pos(ctx, (x, y));
+                let pos = pancam.tile_pos(ctx, (x, y));
 
                 if let Some(size) = self.meta.size {
                     if pos.x < 0 || pos.y < 0 || pos.x as u32 >= size.x || pos.y as u32 >= size.y {
@@ -71,7 +71,7 @@ impl Board {
                     (render_pos - half_tile, render_pos + half_tile),
                 );
 
-                self.tile_selection(ctx, shared, hovered, pos, render_pos);
+                self.tile_selection(ctx, pancam, hovered, pos, render_pos);
 
                 let tile = self.tiles.get(pos);
                 let empty = tile.is_empty();
@@ -90,7 +90,7 @@ impl Board {
                     [DYNAMIC_TILE_A, DYNAMIC_TILE_B],
                 ][gridset_index][grid_color];
                 let grid = Sprite::new(grid_tile)
-                    .scale(Vector2::repeat(shared.scale))
+                    .scale(Vector2::repeat(pancam.scale))
                     .position(render_pos, Anchor::Center)
                     .z_index(layer::TILE_BACKGROUND);
 
@@ -99,7 +99,7 @@ impl Board {
                     .map(ElementLocation::Dynamic)
                     .unwrap_or(ElementLocation::Static(pos));
                 if let Some(label) = self.transient.level.and_then(|x| x.labels.get(&element)) {
-                    let label = tile_label(ctx, shared.scale, render_pos, label);
+                    let label = tile_label(ctx, pancam.scale, render_pos, label);
                     label.z_index(layer::OVERLAY).draw(ctx);
                 }
 
@@ -110,7 +110,7 @@ impl Board {
                         .unwrap_or_else(|| tile.asset());
 
                     let sprite = sprite
-                        .scale(Vector2::repeat(shared.scale))
+                        .scale(Vector2::repeat(pancam.scale))
                         .position(render_pos, Anchor::Center);
 
                     if ctx.input.key_pressed(KeyCode::KeyE) && hovered {

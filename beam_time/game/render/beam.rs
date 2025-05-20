@@ -15,11 +15,11 @@ use crate::{
         BEAM_SPLIT_RIGHT, BEAM_SPLIT_UP,
     },
     consts::{layer, HALF_BEAM},
-    game::shared_state::SharedState,
+    game::pancam::Pancam,
 };
 
 pub trait BeamStateRender {
-    fn render(&mut self, ctx: &mut GraphicsContext, state: &App, shared: &SharedState);
+    fn render(&mut self, ctx: &mut GraphicsContext, state: &App, pancam: &Pancam);
 }
 
 const MIRROR_TEXTURES: [SpriteRef; 4] = [
@@ -38,16 +38,16 @@ const SPLITTER_TEXTURES: [SpriteRef; 4] = [
 
 impl BeamStateRender for BeamState {
     /// Renders the beam over the board.
-    fn render(&mut self, ctx: &mut GraphicsContext, state: &App, shared: &SharedState) {
-        let half_tile = Vector2::repeat(ctx.scale_factor * shared.scale * 16.0 / 2.0);
+    fn render(&mut self, ctx: &mut GraphicsContext, state: &App, pancam: &Pancam) {
+        let half_tile = Vector2::repeat(ctx.scale_factor * pancam.scale * 16.0 / 2.0);
         let size = ctx.size() + half_tile;
 
-        let origin = shared.origin_tile(ctx);
+        let origin = pancam.origin_tile(ctx);
         let frame = state.frame() as u32;
 
         for (pos, tile) in self.board.iter() {
             let pos = pos + origin;
-            let render_pos = shared.render_pos(ctx, (pos.x as usize, pos.y as usize));
+            let render_pos = pancam.render_pos(ctx, (pos.x as usize, pos.y as usize));
 
             if render_pos.x < -half_tile.x
                 || render_pos.y < -half_tile.y
@@ -60,7 +60,7 @@ impl BeamStateRender for BeamState {
             let sprite = |texture: SpriteRef| {
                 Sprite::new(texture)
                     .uv_offset(Vector2::new(16 * frame as i32, 0))
-                    .scale(Vector2::repeat(shared.scale))
+                    .scale(Vector2::repeat(pancam.scale))
                     .position(render_pos, Anchor::Center)
             };
 

@@ -49,7 +49,7 @@ enum Operation {
 impl GameScreen {
     pub(super) fn note_edit_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         if self.note_edit.is_none() && ctx.input.consume_key_pressed(KeyCode::KeyN) {
-            let position = self.shared.screen_to_world_space(ctx, ctx.input.mouse);
+            let position = self.pancam.screen_to_world_space(ctx, ctx.input.mouse);
             let closest = closest_note(&self.board.notes, position);
             let closest_distance = closest.map(|x| x.1).unwrap_or(f32::MAX);
 

@@ -94,12 +94,14 @@ impl Text {
     pub fn scale(mut self, scale: Vector2<f32>) -> Self {
         self.scale = scale;
         self.dynamic_scale = scale;
+        self.invalidate_layout();
         self
     }
 
     pub fn dynamic_scale(mut self, scale: Vector2<f32>, anchor: Anchor) -> Self {
         self.dynamic_scale = scale;
         self.scale_anchor = anchor;
+        self.invalidate_layout(); // todo: i think
         self
     }
 

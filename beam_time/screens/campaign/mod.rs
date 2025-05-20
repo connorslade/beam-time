@@ -16,7 +16,10 @@ use uuid::Uuid;
 use crate::{
     app::App,
     consts::BACKGROUND_COLOR,
-    game::board::{Board, BoardMeta, LevelMeta},
+    game::{
+        board::{Board, BoardMeta, LevelMeta},
+        pancam::Pancam,
+    },
     ui::pixel_line::PixelLine,
     util::load_level_dir,
 };
@@ -29,7 +32,7 @@ use layout::TreeLayout;
 pub struct CampaignScreen {
     tree: LevelTree,
     layout: TreeLayout,
-    pan: Vector2<f32>,
+    pancam: Pancam,
 
     worlds: HashMap<Uuid, (PathBuf, BoardMeta)>,
 }
@@ -38,7 +41,7 @@ impl Screen for CampaignScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         ctx.background(BACKGROUND_COLOR);
 
-        self.pan += ctx.input.mouse_delta * ctx.input.mouse_down(MouseButton::Left) as u8 as f32;
+        self.pancam.update(state, ctx);
         let spacing = 64.0 * ctx.scale_factor;
 
         ctx.input
@@ -64,7 +67,7 @@ impl Screen for CampaignScreen {
                 let text = item
                     .text
                     .clone()
-                    .position(self.pan + center, Anchor::Center)
+                    .position(self.pancam.pan + center, Anchor::Center)
                     .color(color)
                     .z_index(1);
 
@@ -73,7 +76,7 @@ impl Screen for CampaignScreen {
                     let px = 2.0 * ctx.scale_factor;
                     ctx.set_cursor(CursorIcon::Pointer);
                     RectangleOutline::new(Vector2::new(size.x + px * 4.0, size.y + px * 4.0), 2.0)
-                        .position(self.pan + center, Anchor::Center)
+                        .position(self.pancam.pan + center, Anchor::Center)
                         .z_index(2)
                         .draw(ctx);
 
@@ -89,7 +92,7 @@ impl Screen for CampaignScreen {
                     let offset = self.layout.rows[i + 1][*child].offset();
                     PixelLine::new(center, Vector2::new(offset, (i + 1) as f32 * spacing))
                         .color(color.lerp(Rgb::repeat(0.0), 0.6))
-                        .position(self.pan)
+                        .position(self.pancam.pan)
                         .draw(ctx);
                 }
             }
@@ -143,7 +146,7 @@ impl Default for CampaignScreen {
         Self {
             tree,
             layout: TreeLayout::default(),
-            pan: Vector2::zeros(),
+            pancam: Pancam::default(),
 
             worlds: HashMap::new(),
         }

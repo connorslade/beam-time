@@ -17,7 +17,7 @@ use engine::{
 };
 use thousands::Separable;
 
-use super::{board::Board, holding::Holding, shared_state::SharedState};
+use super::{board::Board, holding::Holding, pancam::Pancam};
 
 #[derive(Default)]
 pub struct SelectionState {
@@ -32,13 +32,13 @@ impl Board {
     pub(super) fn update_selection(
         &mut self,
         ctx: &mut GraphicsContext,
-        shared: &SharedState,
+        pancam: &Pancam,
         sim: &mut Option<BeamState>,
     ) {
         let this = &mut self.transient.selection;
 
         this.working_selection = this.selection_start.map(|start| {
-            let end = shared
+            let end = pancam
                 .screen_to_world_space(ctx, ctx.input.mouse)
                 .map(|x| x.ceil() as i32);
 
@@ -57,7 +57,7 @@ impl Board {
         let in_level = self.transient.level.is_some();
         if let (Some((min, max)), false) = (this.working_selection, ctrl || alt || in_level) {
             let middle = ((min + max).map(|x| x as f32) - Vector2::repeat(1.0)) / 2.0;
-            let screen = shared.world_to_screen_space(ctx, middle);
+            let screen = pancam.world_to_screen_space(ctx, middle);
             // todo clip to screen?
 
             let size = max - min + Vector2::repeat(1);
@@ -135,7 +135,7 @@ impl Board {
                 self.transient.history.track_many(old);
             }
 
-            let origin = shared
+            let origin = pancam
                 .screen_to_world_space(ctx, ctx.input.mouse)
                 .map(|x| x.ceil() as i32);
             list.iter_mut().for_each(|(pos, _)| *pos -= origin);
@@ -155,7 +155,7 @@ impl Board {
     pub(super) fn tile_selection(
         &mut self,
         ctx: &mut GraphicsContext,
-        shared: &SharedState,
+        pancam: &Pancam,
         hovered: bool,
         pos: Vector2<i32>,
         render_pos: Vector2<f32>,
@@ -201,7 +201,7 @@ impl Board {
         };
 
         // Draw overlay_selection if the tile is in the selection and the direction is not
-        let px = ctx.scale_factor * shared.scale;
+        let px = ctx.scale_factor * pancam.scale;
         if in_selection(pos) {
             for dir in Direction::ALL {
                 let offset_point = dir.offset(pos);

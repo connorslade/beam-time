@@ -7,7 +7,7 @@ use rand::{seq::SliceRandom, thread_rng, Rng};
 use crate::game::achievements::award_campaign_achievements;
 use crate::{
     consts::BACKGROUND_COLOR,
-    game::{board::Board, render::beam::BeamStateRender, shared_state::SharedState},
+    game::{board::Board, pancam::Pancam, render::beam::BeamStateRender},
     ui::{confetti::Confetti, level_panel::LevelPanel, tile_picker::TilePicker},
     util::key_events,
     App,
@@ -31,7 +31,7 @@ mod note_edit_modal;
 mod paused_modal;
 
 pub struct GameScreen {
-    shared: SharedState,
+    pancam: Pancam,
     board: Board,
     beam: AsyncSimulationState,
 
@@ -53,20 +53,20 @@ impl Screen for GameScreen {
         self.note_edit_modal(state, ctx);
 
         if self.paused.is_none() && self.note_edit.is_none() {
-            self.shared.update(state, ctx);
+            self.pancam.update(state, ctx);
         }
 
         if self.needs_init {
             let pan = if let Some(size) = self.board.meta.size {
-                let tile_size = 16.0 * self.shared.scale * ctx.scale_factor;
+                let tile_size = 16.0 * self.pancam.scale * ctx.scale_factor;
                 let half_board = size.map(|x| x as f32) * tile_size / 2.0;
                 ctx.center() + Vector2::repeat(tile_size) - half_board
             } else {
                 ctx.center()
             };
 
-            self.shared.pan = pan;
-            self.shared.pan_goal = pan;
+            self.pancam.pan = pan;
+            self.pancam.pan_goal = pan;
 
             self.needs_init = false;
         }
@@ -110,7 +110,7 @@ impl Screen for GameScreen {
                 beam_state.tick();
             }
 
-            beam_state.render(ctx, state, &self.shared);
+            beam_state.render(ctx, state, &self.pancam);
 
             let level_result = beam_state.level.as_ref().and_then(|x| x.result);
             if let Some(result) = level_result {
@@ -158,7 +158,7 @@ impl Screen for GameScreen {
         self.confetti.render(ctx);
 
         self.board.transient.history.mark_clean();
-        self.board.render(ctx, state, &self.shared, &mut sim.beam);
+        self.board.render(ctx, state, &self.pancam, &mut sim.beam);
 
         if self.board.transient.history.is_dirty() {
             self.level_result = None;
@@ -175,7 +175,7 @@ impl Screen for GameScreen {
     }
 
     fn on_resize(&mut self, _state: &mut App, old_size: Vector2<f32>, new_size: Vector2<f32>) {
-        self.shared.on_resize(old_size, new_size);
+        self.pancam.on_resize(old_size, new_size);
     }
 
     fn on_destroy(&mut self) {
@@ -200,7 +200,7 @@ impl GameScreen {
             .map(|x| DEFAULT_LEVELS.iter().find(|y| y.id == x.id).unwrap());
 
         Self {
-            shared: SharedState::default(),
+            pancam: Pancam::default(),
             board,
             beam: AsyncSimulationState::new(),
 

@@ -9,7 +9,7 @@ use engine::{
 
 use crate::app::App;
 
-pub struct SharedState {
+pub struct Pancam {
     pub pan: Vector2<f32>,
     pub scale: f32,
     pub scale_goal: f32,
@@ -23,7 +23,7 @@ const PAN_KEYS: [(KeyCode, Vector2<f32>); 4] = [
     (KeyCode::KeyD, Vector2::new(-1.0, 0.0)),
 ];
 
-impl SharedState {
+impl Pancam {
     pub fn update(&mut self, state: &App, ctx: &mut GraphicsContext) {
         let mut delta_pan = Vector2::zeros();
 
@@ -103,7 +103,7 @@ impl SharedState {
     }
 }
 
-impl Default for SharedState {
+impl Default for Pancam {
     fn default() -> Self {
         Self {
             pan: Vector2::zeros(),

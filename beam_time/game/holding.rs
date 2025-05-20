@@ -16,7 +16,7 @@ use crate::{
     ui::misc::tile_label, util::key_events,
 };
 
-use super::shared_state::SharedState;
+use super::pancam::Pancam;
 
 #[derive(Default, Clone, PartialEq, Eq)]
 pub enum Holding {
@@ -34,7 +34,7 @@ impl Holding {
     pub fn render(
         &mut self,
         ctx: &mut GraphicsContext,
-        shared: &SharedState,
+        pancam: &Pancam,
         level: Option<&'static Level>,
     ) {
         if ctx.input.mouse_down(MouseButton::Right) || ctx.input.key_pressed(KeyCode::KeyQ) {
@@ -55,7 +55,7 @@ impl Holding {
                     KeyCode::KeyE => *tile = tile.activate()
                 });
 
-                render_tile(ctx, shared, &level, *tile, ctx.input.mouse);
+                render_tile(ctx, pancam, &level, *tile, ctx.input.mouse);
             }
             Holding::Paste(tiles) => {
                 key_events!(ctx, {
@@ -82,10 +82,10 @@ impl Holding {
                     }
                 });
 
-                let tile_size = 16.0 * shared.scale * ctx.scale_factor;
+                let tile_size = 16.0 * pancam.scale * ctx.scale_factor;
                 for (pos, tile) in tiles.iter() {
                     let render_pos = ctx.input.mouse + tile_size * pos.map(|x| x as f32);
-                    render_tile(ctx, shared, &level, *tile, render_pos);
+                    render_tile(ctx, pancam, &level, *tile, render_pos);
                 }
             }
         }
@@ -94,7 +94,7 @@ impl Holding {
 
 fn render_tile(
     ctx: &mut GraphicsContext,
-    shared: &SharedState,
+    shared: &Pancam,
     level: &Option<&'static Level>,
     tile: Tile,
     position: Vector2<f32>,

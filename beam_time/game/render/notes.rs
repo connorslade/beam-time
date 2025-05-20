@@ -9,13 +9,13 @@ use crate::{
     app::App,
     assets::{HISTOGRAM_MARKER, UNDEAD_FONT},
     consts::layer,
-    game::{board::Board, shared_state::SharedState},
+    game::{board::Board, pancam::Pancam},
 };
 
 impl Board {
-    pub fn render_notes(&mut self, ctx: &mut GraphicsContext, state: &App, shared: &SharedState) {
+    pub fn render_notes(&mut self, ctx: &mut GraphicsContext, state: &App, pancam: &Pancam) {
         for note in self.notes.iter() {
-            let pos = shared.world_to_screen_space(ctx, note.position);
+            let pos = pancam.world_to_screen_space(ctx, note.position);
 
             let (_, padding) = state.spacing(ctx);
             let mut root = RootLayout::new(pos, Anchor::BottomCenter);
@@ -29,7 +29,7 @@ impl Board {
                         .z_index(layer::OVERLAY)
                         .layout(ctx, layout);
 
-                    if shared.scale >= 6.0 && !note.body.is_empty() {
+                    if pancam.scale >= 6.0 && !note.body.is_empty() {
                         Text::new(UNDEAD_FONT, &note.body)
                             .max_width(16.0 * 20.0 * ctx.scale_factor)
                             .scale(Vector2::repeat(2.0))
