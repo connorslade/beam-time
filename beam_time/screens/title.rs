@@ -1,4 +1,4 @@
-use std::time::Instant;
+use std::{mem, time::Instant};
 
 use engine::{
     drawable::{spacer::Spacer, sprite::Sprite, text::Text},
@@ -30,7 +30,9 @@ pub struct TitleScreen {
     settings: Option<SettingsModal>,
 }
 
-pub struct SettingsModal {}
+pub struct SettingsModal {
+    working_scale: f32,
+}
 
 impl Screen for TitleScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
@@ -40,12 +42,14 @@ impl Screen for TitleScreen {
 
         // Replace with a settings button or smth
         if ctx.input.consume_key_pressed(KeyCode::KeyS) {
-            self.settings = Some(SettingsModal {});
+            self.settings = Some(SettingsModal {
+                working_scale: ctx.scale_factor,
+            });
         }
 
-        if self.settings.is_some() && ctx.input.consume_key_pressed(KeyCode::Escape) {
-            self.settings = None;
-        }
+        if ctx.input.consume_key_pressed(KeyCode::Escape)
+            && let Some(_settings) = mem::take(&mut self.settings)
+        {}
 
         // Title & copyright
         let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
@@ -99,7 +103,7 @@ impl Screen for TitleScreen {
 
 impl TitleScreen {
     fn setting_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        if let Some(ref _settings) = self.settings {
+        if let Some(settings) = &mut self.settings {
             let (margin, padding) = state.spacing(ctx);
             let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
                 .position(ctx.center(), Anchor::Center)
@@ -118,6 +122,7 @@ impl TitleScreen {
 
                     let mut slider_setting = |name, value: &mut f32, range: (f32, f32)| {
                         body(name).layout(ctx, layout);
+                        let mut out = false;
                         layout.nest(
                             ctx,
                             RowLayout::new(padding).justify(Justify::Center),
@@ -126,6 +131,7 @@ impl TitleScreen {
                                     .default(*value)
                                     .bounds(range.0, range.1);
                                 *value = slider.value(ctx);
+                                out = slider.is_dragging(ctx);
                                 slider.layout(ctx, layout);
 
                                 Text::new(UNDEAD_FONT, format!("{value:.2}"))
@@ -133,6 +139,7 @@ impl TitleScreen {
                                     .layout(ctx, layout);
                             },
                         );
+                        out
                     };
 
                     slider_setting(
@@ -146,6 +153,10 @@ impl TitleScreen {
                         &mut state.config.movement_speed,
                         (1000.0, 3000.0),
                     );
+
+                    if !slider_setting("UI Scale", &mut settings.working_scale, (0.5, 2.0)) {
+                        state.config.scale = settings.working_scale;
+                    }
                 });
             });
         }

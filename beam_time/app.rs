@@ -35,6 +35,7 @@ pub struct App {
 pub struct Config {
     pub zoom_sensitivity: f32,
     pub movement_speed: f32,
+    pub scale: f32,
 }
 
 impl App {
@@ -98,10 +99,12 @@ impl App {
         Ok(())
     }
 
-    pub fn on_tick(&mut self) {
+    pub fn on_tick(&mut self, ctx: &mut GraphicsContext) {
         #[cfg(feature = "steam")]
         self.steam.on_tick();
         self.leaderboard.tick();
+
+        ctx.scale_factor *= self.config.scale;
     }
 
     pub fn frame(&self) -> u8 {
@@ -130,6 +133,7 @@ impl Default for Config {
         Self {
             zoom_sensitivity: 0.08,
             movement_speed: 2000.0,
+            scale: 1.0,
         }
     }
 }

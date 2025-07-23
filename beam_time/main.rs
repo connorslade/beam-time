@@ -5,10 +5,7 @@ use std::mem;
 use anyhow::Result;
 use engine::{
     application::{Application, ApplicationArgs},
-    exports::winit::{
-        dpi::PhysicalSize,
-        window::{Icon, WindowAttributes},
-    },
+    exports::winit::window::{Icon, WindowAttributes},
 };
 use env_logger::WriteStyle;
 use log::LevelFilter;
@@ -41,8 +38,7 @@ fn main() -> Result<()> {
     Application::new(ApplicationArgs {
         window_attributes: WindowAttributes::default()
             .with_title("Beam Time")
-            .with_window_icon(Some(icon))
-            .with_inner_size(PhysicalSize::new(1920, 1080)),
+            .with_window_icon(Some(icon)),
         asset_constructor: Box::new(assets::init),
         resumed: Box::new(|| {
             let mut app = App::new();
@@ -54,7 +50,7 @@ fn main() -> Result<()> {
             screens.top().on_init(&mut app);
 
             Box::new(move |ctx| {
-                app.on_tick();
+                app.on_tick(ctx);
                 if let Some(old_size) = ctx.input.resized {
                     screens.on_resize(old_size.map(|x| x as f32), ctx.size(), &mut app);
                 }
