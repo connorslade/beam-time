@@ -50,7 +50,7 @@ fn main() -> Result<()> {
             screens.top().on_init(&mut app);
 
             Box::new(move |ctx| {
-                app.on_tick(ctx);
+                app.on_tick();
                 if let Some(old_size) = ctx.input.resized {
                     screens.on_resize(old_size.map(|x| x as f32), ctx.size(), &mut app);
                 }

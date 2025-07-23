@@ -30,9 +30,7 @@ pub struct TitleScreen {
     settings: Option<SettingsModal>,
 }
 
-pub struct SettingsModal {
-    working_scale: f32,
-}
+pub struct SettingsModal;
 
 impl Screen for TitleScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
@@ -42,9 +40,7 @@ impl Screen for TitleScreen {
 
         // Replace with a settings button or smth
         if ctx.input.consume_key_pressed(KeyCode::KeyS) {
-            self.settings = Some(SettingsModal {
-                working_scale: ctx.scale_factor,
-            });
+            self.settings = Some(SettingsModal);
         }
 
         if ctx.input.consume_key_pressed(KeyCode::Escape)
@@ -103,7 +99,7 @@ impl Screen for TitleScreen {
 
 impl TitleScreen {
     fn setting_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        if let Some(settings) = &mut self.settings {
+        if let Some(_settings) = &mut self.settings {
             let (margin, padding) = state.spacing(ctx);
             let modal = Modal::new(Vector2::new(ctx.center().x, 500.0))
                 .position(ctx.center(), Anchor::Center)
@@ -153,10 +149,6 @@ impl TitleScreen {
                         &mut state.config.movement_speed,
                         (1000.0, 3000.0),
                     );
-
-                    if !slider_setting("UI Scale", &mut settings.working_scale, (0.5, 2.0)) {
-                        state.config.scale = settings.working_scale;
-                    }
                 });
             });
         }

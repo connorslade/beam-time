@@ -87,7 +87,7 @@ impl Pancam {
     }
 
     pub fn tile_counts(&self, size: Vector2<f32>) -> Vector2<usize> {
-        (size / (16.0 * self.scale)).map(|x| x.ceil() as usize)
+        (size / (16.0 * self.scale)).map(|x| x.floor() as usize + 2)
     }
 
     pub fn tile_pos(&self, ctx: &GraphicsContext, (x, y): (usize, usize)) -> Vector2<i32> {
