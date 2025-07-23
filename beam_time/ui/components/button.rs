@@ -4,7 +4,10 @@ use engine::{
     assets::SpriteRef,
     color::Rgb,
     drawable::sprite::Sprite,
-    exports::{nalgebra::Vector2, winit::event::MouseButton},
+    exports::{
+        nalgebra::Vector2,
+        winit::{event::MouseButton, window::CursorIcon},
+    },
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{LayoutElement, bounds::Bounds2D, tracker::LayoutTracker},
     memory::MemoryKey,
@@ -88,6 +91,9 @@ impl Drawable for Button {
     fn draw(self, ctx: &mut GraphicsContext) {
         let tracker = LayoutTracker::new(self.key);
         let hover = tracker.hovered(ctx);
+        if hover {
+            ctx.set_cursor(CursorIcon::Pointer);
+        }
 
         let state = ctx.memory.get_or_insert(self.key, ButtonState::default());
         state.hover_time += ctx.delta_time * if hover { 1.0 } else { -1.0 };

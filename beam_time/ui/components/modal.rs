@@ -5,7 +5,7 @@ use common::direction::Direction;
 use engine::{
     color::Rgb,
     drawable::{shape::rectangle::Rectangle, spacer::Spacer, sprite::Sprite},
-    exports::nalgebra::Vector2,
+    exports::{nalgebra::Vector2, winit::window::CursorIcon},
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{
         Direction as LayoutDirection, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
@@ -16,7 +16,7 @@ use engine::{
 
 use crate::{
     assets::LEVEL_DROPDOWN_ARROW,
-    consts::{MODAL_BORDER_COLOR, MODAL_COLOR},
+    consts::{ACCENT_COLOR, MODAL_BORDER_COLOR, MODAL_COLOR},
     ui::misc::body,
 };
 
@@ -142,33 +142,28 @@ pub fn modal_buttons(
         let key = memory_key!(rotation);
         let tracker = LayoutTracker::new(key);
         let hover = tracker.hovered(ctx);
+        if hover {
+            ctx.set_cursor(CursorIcon::Pointer);
+        }
 
         let t = ctx.memory.get_or_insert(key, 0.0);
         *t += ctx.delta_time * if hover { 1.0 } else { -1.0 };
         *t = t.clamp(0.0, 0.1);
-        let scale = Vector2::repeat(2.0 + *t);
+        let color = Rgb::hex(0xFFFFFF).lerp(ACCENT_COLOR, *t / 0.1);
 
-        let direction = if rotation {
-            LayoutDirection::MinToMax
-        } else {
-            LayoutDirection::MaxToMin
-        };
-
+        let direction = [LayoutDirection::MaxToMin, LayoutDirection::MinToMax][rotation as usize];
         layout.nest(
             ctx,
             RowLayout::new(button_space)
                 .direction(direction)
                 .tracked(tracker),
             |ctx, layout| {
-                let anchors = [Anchor::CenterLeft, Anchor::CenterRight];
                 Sprite::new(LEVEL_DROPDOWN_ARROW)
                     .scale(Vector2::repeat(2.0))
-                    .dynamic_scale(scale, anchors[rotation as usize])
+                    .color(color)
                     .rotate(PI * rotation as u8 as f32, Anchor::Center)
                     .layout(ctx, layout);
-                body(text)
-                    .dynamic_scale(scale, anchors[(1 + rotation as usize) % 2])
-                    .layout(ctx, layout);
+                body(text).color(color).layout(ctx, layout);
             },
         );
 
