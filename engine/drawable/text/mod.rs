@@ -7,7 +7,7 @@ use crate::{
     assets::FontRef,
     color::Rgb,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{bounds::Bounds2D, Layout, LayoutElement},
+    layout::{Layout, LayoutElement, bounds::Bounds2D},
     render::sprite::GpuSprite,
 };
 

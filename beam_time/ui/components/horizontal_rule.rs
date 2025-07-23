@@ -3,7 +3,7 @@ use engine::{
     drawable::shape::rectangle::Rectangle,
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{bounds::Bounds2D, LayoutElement},
+    layout::{LayoutElement, bounds::Bounds2D},
 };
 
 pub struct HorizontalRule {

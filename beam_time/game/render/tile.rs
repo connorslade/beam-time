@@ -2,7 +2,7 @@ use beam_logic::{simulation::tile::BeamTile, tile::Tile};
 use engine::{drawable::sprite::Sprite, exports::nalgebra::Vector2};
 
 use crate::{
-    assets::{animated_sprite, TILE_DELAY, TILE_DETECTOR, TILE_MIRROR_A, TILE_MIRROR_B, TILE_WALL},
+    assets::{TILE_DELAY, TILE_DETECTOR, TILE_MIRROR_A, TILE_MIRROR_B, TILE_WALL, animated_sprite},
     consts::{EMITTER, GALVO, MIRROR, SPLITTER},
 };
 

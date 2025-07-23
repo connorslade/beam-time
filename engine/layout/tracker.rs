@@ -7,7 +7,7 @@ use crate::{
     memory_key,
 };
 
-use super::{bounds::Bounds2D, Layout, LayoutElement};
+use super::{Layout, LayoutElement, bounds::Bounds2D};
 
 #[derive(Clone, Copy)]
 pub struct LayoutTracker {

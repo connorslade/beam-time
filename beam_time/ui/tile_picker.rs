@@ -4,8 +4,8 @@ use thousands::Separable;
 use crate::{
     app::App,
     assets::{
-        animated_sprite, TILE_DELAY, TILE_DETECTOR, TILE_EMITTER_RIGHT, TILE_GALVO_RIGHT,
-        TILE_MIRROR_A, TILE_SPLITTER_A, TILE_WALL, UNDEAD_FONT,
+        TILE_DELAY, TILE_DETECTOR, TILE_EMITTER_RIGHT, TILE_GALVO_RIGHT, TILE_MIRROR_A,
+        TILE_SPLITTER_A, TILE_WALL, UNDEAD_FONT, animated_sprite,
     },
     consts::layer,
     game::{board::Board, holding::Holding, render::tile::TileAsset},

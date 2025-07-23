@@ -60,10 +60,10 @@ impl Board {
                 let render_pos = pancam.render_pos(ctx, (x, y));
                 let pos = pancam.tile_pos(ctx, (x, y));
 
-                if let Some(size) = self.meta.size {
-                    if pos.x < 0 || pos.y < 0 || pos.x as u32 >= size.x || pos.y as u32 >= size.y {
-                        continue;
-                    }
+                if let Some(size) = self.meta.size
+                    && (pos.x < 0 || pos.y < 0 || pos.x as u32 >= size.x || pos.y as u32 >= size.y)
+                {
+                    continue;
                 }
 
                 let hovered = in_bounds(
@@ -113,14 +113,13 @@ impl Board {
                         .scale(Vector2::repeat(pancam.scale))
                         .position(render_pos, Anchor::Center);
 
-                    if ctx.input.key_pressed(KeyCode::KeyE) && hovered {
-                        if let Some(sim) = sim {
-                            if let (BeamTile::Emitter { active, .. }, true) =
-                                (sim.board.get_mut(pos), sim.level.is_none())
-                            {
-                                *active ^= true;
-                            }
-                        }
+                    if ctx.input.key_pressed(KeyCode::KeyE)
+                        && hovered
+                        && let Some(sim) = sim
+                        && let (BeamTile::Emitter { active, .. }, true) =
+                            (sim.board.get_mut(pos), sim.level.is_none())
+                    {
+                        *active ^= true;
                     }
 
                     sprite.draw(ctx);

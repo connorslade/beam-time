@@ -4,9 +4,9 @@ use engine::{
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
 };
-use rand::{seq::SliceRandom, thread_rng, Rng};
+use rand::{Rng, seq::IndexedRandom};
 
-use crate::consts::{layer, TILES};
+use crate::consts::{TILES, layer};
 
 pub struct Waterfall<'a> {
     state: &'a mut WaterfallState,
@@ -39,7 +39,7 @@ impl Drawable for Waterfall<'_> {
     fn draw(self, ctx: &mut GraphicsContext) {
         let tiles = &mut self.state.tiles;
 
-        let mut rng = thread_rng();
+        let mut rng = rand::rng();
         let size = ctx.size();
         let tile_offset = 8.0 * 4.0 * ctx.scale_factor;
 
@@ -47,10 +47,10 @@ impl Drawable for Waterfall<'_> {
         while tiles.len() < 40 {
             let asset = *TILES.choose(&mut rng).unwrap();
             let pos = Vector2::new(
-                rng.gen::<f32>() * size.x,
-                (size.y + tile_offset) * if is_empty { rng.gen::<f32>() } else { 1.0 },
+                rng.random::<f32>() * size.x,
+                (size.y + tile_offset) * if is_empty { rng.random::<f32>() } else { 1.0 },
             );
-            let vel = rng.gen::<f32>() * 50.0 + 100.0;
+            let vel = rng.random::<f32>() * 50.0 + 100.0;
             tiles.push(FallingTile { asset, pos, vel });
         }
 

@@ -1,6 +1,6 @@
 use crate::{
     assets::UNDEAD_FONT,
-    consts::{layer, SELECTION_COLOR},
+    consts::{SELECTION_COLOR, layer},
     util::key_events,
 };
 use ahash::HashSet;

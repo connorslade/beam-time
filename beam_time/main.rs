@@ -27,7 +27,7 @@ mod util;
 use app::App;
 #[cfg(feature = "debug")]
 use screens::debug_overlay::DebugOverlay;
-use screens::{title::TitleScreen, Screens};
+use screens::{Screens, title::TitleScreen};
 use util::include_atlas;
 
 fn main() -> Result<()> {

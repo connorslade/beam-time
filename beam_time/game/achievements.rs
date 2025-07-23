@@ -1,5 +1,5 @@
 use beam_logic::level::Level;
-use uuid::{uuid, Uuid};
+use uuid::{Uuid, uuid};
 
 use crate::app::App;
 

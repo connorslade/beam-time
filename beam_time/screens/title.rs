@@ -5,24 +5,24 @@ use engine::{
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{
-        column::ColumnLayout, root::RootLayout, row::RowLayout, Justify, LayoutElement,
-        LayoutMethods,
+        Justify, LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout,
+        row::RowLayout,
     },
     memory_key,
 };
 
 use crate::{
+    App,
     assets::{ABOUT_BUTTON, CAMPAIGN_BUTTON, COPYRIGHT, SANDBOX_BUTTON, TITLE, UNDEAD_FONT},
-    consts::{layer, BACKGROUND_COLOR},
+    consts::{BACKGROUND_COLOR, layer},
     ui::{
         components::{button::Button, modal::Modal, slider::Slider},
         misc::body,
         waterfall::Waterfall,
     },
-    App,
 };
 
-use super::{about::AboutScreen, campaign::CampaignScreen, sandbox::SandboxScreen, Screen};
+use super::{Screen, about::AboutScreen, campaign::CampaignScreen, sandbox::SandboxScreen};
 
 pub struct TitleScreen {
     start_time: Instant,

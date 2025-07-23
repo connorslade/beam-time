@@ -5,7 +5,7 @@ use md5::Digest;
 #[cfg(windows)]
 pub fn get() -> u64 {
     use std::{
-        ffi::{c_void, CString},
+        ffi::{CString, c_void},
         mem,
         ptr::null_mut,
         time::Instant,
@@ -13,14 +13,14 @@ pub fn get() -> u64 {
 
     use uuid::Uuid;
     use windows::Win32::{
-        Foundation::{LocalFree, HANDLE},
+        Foundation::{HANDLE, LocalFree},
         Security::{
             Authorization::ConvertSidToStringSidA, GetLengthSid, GetSidSubAuthority,
-            GetSidSubAuthorityCount, GetTokenInformation, TokenUser, SID, TOKEN_QUERY, TOKEN_USER,
+            GetSidSubAuthorityCount, GetTokenInformation, SID, TOKEN_QUERY, TOKEN_USER, TokenUser,
         },
         System::Threading::{GetCurrentProcess, OpenProcessToken},
     };
-    use winreg::{enums::HKEY_LOCAL_MACHINE, RegKey};
+    use winreg::{RegKey, enums::HKEY_LOCAL_MACHINE};
 
     let mut hash = md5::Context::new();
 
@@ -89,7 +89,7 @@ pub fn get() -> u64 {
             .flatten()
     }
 
-    extern "C" {
+    unsafe extern "C" {
         /// Returns the real user ID of the calling process.
         fn getuid() -> u32;
     }

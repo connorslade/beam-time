@@ -1,5 +1,5 @@
 use engine::{
-    assets::{constructor::AssetConstructor, font::FontDescriptor, AudioRef, FontRef, SpriteRef},
+    assets::{AudioRef, FontRef, SpriteRef, constructor::AssetConstructor, font::FontDescriptor},
     define_refs,
     drawable::sprite::Sprite,
     exports::nalgebra::Vector2,

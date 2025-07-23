@@ -125,14 +125,14 @@ impl Board {
     }
 
     pub fn tick_autosave(&mut self) {
-        if let Some(path) = &self.transient.save_path {
-            if self.transient.last_save.elapsed() >= AUTOSAVE_INTERVAL {
-                trace!("Autosaving...");
-                self.transient.last_save = Instant::now();
-                // run async if causing issues
-                if let Err(err) = self.clone().save(path) {
-                    warn!("Autosave failure: {err}");
-                }
+        if let Some(path) = &self.transient.save_path
+            && self.transient.last_save.elapsed() >= AUTOSAVE_INTERVAL
+        {
+            trace!("Autosaving...");
+            self.transient.last_save = Instant::now();
+            // run async if causing issues
+            if let Err(err) = self.clone().save(path) {
+                warn!("Autosave failure: {err}");
             }
         }
     }

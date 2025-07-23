@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use ahash::{HashMap, HashMapExt};
-use beam_logic::level::{tree::LevelTree, Level, DEFAULT_LEVELS};
+use beam_logic::level::{DEFAULT_LEVELS, Level, tree::LevelTree};
 use engine::{
     color::Rgb,
     drawable::shape::rectangle_outline::RectangleOutline,
@@ -24,7 +24,7 @@ use crate::{
     util::load_level_dir,
 };
 
-use super::{game::GameScreen, Screen};
+use super::{Screen, game::GameScreen};
 
 mod layout;
 use layout::TreeLayout;

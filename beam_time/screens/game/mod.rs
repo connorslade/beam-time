@@ -1,16 +1,16 @@
 use std::{borrow::Cow, mem, path::PathBuf, time::Duration};
 
 use log::{info, warn};
-use rand::{seq::SliceRandom, thread_rng, Rng};
+use rand::{Rng, seq::SliceRandom};
 
 #[cfg(feature = "steam")]
 use crate::game::achievements::award_campaign_achievements;
 use crate::{
+    App,
     consts::BACKGROUND_COLOR,
     game::{board::Board, pancam::Pancam, render::beam::BeamStateRender},
     ui::{confetti::Confetti, level_panel::LevelPanel, tile_picker::TilePicker},
     util::key_events,
-    App,
 };
 use beam_logic::{
     level::DEFAULT_LEVELS,
@@ -229,13 +229,13 @@ fn create_confetti(confetti: &mut Confetti, ctx: &mut GraphicsContext) {
         Vector2::new(0.75, 0.3),
     ];
 
-    let mut rng = thread_rng();
+    let mut rng = rand::rng();
     points.shuffle(&mut rng);
 
     let randomness = ctx.size() * 0.25;
 
     for (i, center) in points.iter().enumerate() {
-        let offset_percent = Vector2::new(rng.gen(), rng.gen()) * 2.0 - Vector2::repeat(1.0);
+        let offset_percent = Vector2::new(rng.random(), rng.random()) * 2.0 - Vector2::repeat(1.0);
         let pos = center.component_mul(&ctx.size()) + randomness.component_mul(&offset_percent);
         confetti.emit(pos, 100, 0.2 * i as f32);
     }

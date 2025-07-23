@@ -4,16 +4,16 @@ use image::RgbaImage;
 use nalgebra::Vector2;
 use rodio::{Decoder, Source};
 use wgpu::{
-    util::{DeviceExt, TextureDataOrder},
     Device, Extent3d, Queue, TextureDescriptor, TextureDimension, TextureUsages,
+    util::{DeviceExt, TextureDataOrder},
 };
 
-use crate::{audio::AudioSource, TEXTURE_FORMAT};
+use crate::{TEXTURE_FORMAT, audio::AudioSource};
 
 use super::{
+    AudioRef, FontAsset, FontRef, SpriteAsset, SpriteRef,
     font::FontDescriptor,
     manager::{AssetManager, Texture},
-    AudioRef, FontAsset, FontRef, SpriteAsset, SpriteRef,
 };
 
 pub struct AssetConstructor {

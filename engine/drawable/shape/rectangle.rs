@@ -4,7 +4,7 @@ use crate::{
     color::Rgb,
     drawable::RECTANGLE_POINTS,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{bounds::Bounds2D, LayoutElement},
+    layout::{LayoutElement, bounds::Bounds2D},
     render::shape::ShapeVertex,
 };
 

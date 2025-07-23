@@ -2,7 +2,7 @@ use nalgebra::Vector2;
 
 use crate::{
     graphics_context::{Drawable, GraphicsContext},
-    layout::{bounds::Bounds2D, LayoutElement},
+    layout::{LayoutElement, bounds::Bounds2D},
 };
 
 #[derive(Default)]

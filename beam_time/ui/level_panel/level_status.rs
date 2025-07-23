@@ -12,12 +12,12 @@ use engine::{
     exports::nalgebra::Vector2,
     graphics_context::GraphicsContext,
     layout::{
-        column::ColumnLayout, container::Container, row::RowLayout, Direction, Justify, Layout,
-        LayoutElement, LayoutMethods,
+        Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
+        container::Container, row::RowLayout,
     },
 };
 
-use super::{horizontal_rule, LevelPanel};
+use super::{LevelPanel, horizontal_rule};
 
 impl LevelPanel {
     pub(super) fn level_status(

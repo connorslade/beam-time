@@ -6,7 +6,7 @@ use common::map::Map;
 use log::warn;
 use nalgebra::Vector2;
 use once_cell::sync::Lazy;
-use ron::{extensions::Extensions, Options};
+use ron::{Options, extensions::Extensions};
 use serde::{Deserialize, Deserializer};
 use uuid::Uuid;
 

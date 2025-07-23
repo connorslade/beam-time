@@ -14,7 +14,7 @@ use crate::{
         BEAM_REFLECT_UP_LEFT, BEAM_REFLECT_UP_RIGHT, BEAM_SPLIT_DOWN, BEAM_SPLIT_LEFT,
         BEAM_SPLIT_RIGHT, BEAM_SPLIT_UP,
     },
-    consts::{layer, HALF_BEAM},
+    consts::{HALF_BEAM, layer},
     game::pancam::Pancam,
 };
 

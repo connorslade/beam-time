@@ -1,5 +1,5 @@
 use common::consts::API_HMAC_KEY;
-use hmac::{digest::MacError, Hmac, Mac};
+use hmac::{Hmac, Mac, digest::MacError};
 use sha2::Sha256;
 
 pub fn hash(val: &[u8]) -> Vec<u8> {

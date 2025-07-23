@@ -80,7 +80,7 @@ impl AsyncSimulationState {
         Self { inner }
     }
 
-    pub fn get(&self) -> MutexGuard<InnerAsyncSimulationState> {
+    pub fn get(&self) -> MutexGuard<'_, InnerAsyncSimulationState> {
         self.inner.0.lock()
     }
 

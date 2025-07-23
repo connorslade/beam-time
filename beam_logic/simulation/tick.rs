@@ -5,7 +5,7 @@ use common::{
     map::Map,
 };
 
-use super::{state::BeamState, tile::BeamTile, MIRROR_REFLECTIONS};
+use super::{MIRROR_REFLECTIONS, state::BeamState, tile::BeamTile};
 
 // TODO: Update board in stages to avoid issues due to undefined update order?
 // - Delay

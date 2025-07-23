@@ -1,9 +1,9 @@
 use std::{io::Cursor, rc::Rc};
 
 use anyhow::Result;
-use rodio::{source::Buffered, Decoder, OutputStream, OutputStreamHandle, Source};
+use rodio::{Decoder, OutputStream, OutputStreamHandle, Source, source::Buffered};
 
-use crate::assets::{manager::AssetManager, AudioRef};
+use crate::assets::{AudioRef, manager::AssetManager};
 
 pub type AudioSource = Buffered<Decoder<Cursor<&'static [u8]>>>;
 
@@ -33,7 +33,7 @@ impl AudioManager {
         })
     }
 
-    pub fn builder(&self, audio_ref: AudioRef) -> AudioBuilder {
+    pub fn builder(&self, audio_ref: AudioRef) -> AudioBuilder<'_> {
         AudioBuilder {
             manager: self,
             audio: audio_ref,

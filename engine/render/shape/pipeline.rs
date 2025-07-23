@@ -6,7 +6,7 @@ use wgpu::{
     VertexBufferLayout, VertexFormat, VertexState, VertexStepMode,
 };
 
-use crate::{include_shader, DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT};
+use crate::{DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT, include_shader};
 
 pub const DEFAULT_BUFFER_SIZE: u64 = 1024;
 

@@ -8,7 +8,7 @@ use crate::{
     ui::misc::tile_label,
 };
 use beam_logic::{
-    level::{case::CasePreview, ElementLocation, Level},
+    level::{ElementLocation, Level, case::CasePreview},
     simulation::runtime::asynchronous::InnerAsyncSimulationState,
 };
 use engine::{
@@ -18,13 +18,13 @@ use engine::{
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::GraphicsContext,
     layout::{
-        column::ColumnLayout, container::Container, row::RowLayout, tracker::LayoutTracker,
-        Direction, Justify, Layout, LayoutElement, LayoutMethods,
+        Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
+        container::Container, row::RowLayout, tracker::LayoutTracker,
     },
     memory_key,
 };
 
-use super::{horizontal_rule, LevelPanel};
+use super::{LevelPanel, horizontal_rule};
 
 impl LevelPanel {
     pub(super) fn test_case(

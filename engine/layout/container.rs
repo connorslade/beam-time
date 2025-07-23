@@ -7,7 +7,7 @@ use crate::{
     render::{shape::ShapeVertex, sprite::GpuSprite},
 };
 
-use super::{bounds::Bounds2D, LayoutElement, SizedLayoutElement};
+use super::{LayoutElement, SizedLayoutElement, bounds::Bounds2D};
 
 #[derive(Default)]
 pub struct Container {

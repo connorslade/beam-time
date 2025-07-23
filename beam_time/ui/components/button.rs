@@ -6,7 +6,7 @@ use engine::{
     drawable::sprite::Sprite,
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{bounds::Bounds2D, tracker::LayoutTracker, LayoutElement},
+    layout::{LayoutElement, bounds::Bounds2D, tracker::LayoutTracker},
     memory::MemoryKey,
 };
 

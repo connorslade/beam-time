@@ -5,7 +5,7 @@ use wgpu::Color;
 use winit::window::Cursor;
 
 use crate::{
-    assets::{manager::AssetManager, SpriteRef},
+    assets::{SpriteRef, manager::AssetManager},
     audio::AudioManager,
     color::Rgb,
     input::InputManager,

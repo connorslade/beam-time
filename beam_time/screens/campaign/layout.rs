@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use beam_logic::level::tree::LevelTree;
 use engine::{drawable::text::Text, exports::nalgebra::Vector2, graphics_context::GraphicsContext};
-use uuid::{uuid, Uuid};
+use uuid::{Uuid, uuid};
 
 use crate::assets::UNDEAD_FONT;
 

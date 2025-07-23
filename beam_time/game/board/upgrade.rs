@@ -1,6 +1,6 @@
 use std::io::{Read, Seek, SeekFrom};
 
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use bincode::Options;
 use log::info;
 use serde::Deserialize;

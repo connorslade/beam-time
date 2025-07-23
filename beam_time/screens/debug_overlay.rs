@@ -6,7 +6,7 @@ use engine::{
     graphics_context::{Anchor, Drawable, GraphicsContext},
 };
 
-use crate::{assets::UNDEAD_FONT, consts::layer::OVERLAY, screens::Screen, App};
+use crate::{App, assets::UNDEAD_FONT, consts::layer::OVERLAY, screens::Screen};
 
 pub struct DebugOverlay {
     last_update: Instant,

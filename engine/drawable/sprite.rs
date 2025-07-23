@@ -4,7 +4,7 @@ use crate::{
     assets::{SpriteAsset, SpriteRef},
     color::Rgb,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{bounds::Bounds2D, LayoutElement},
+    layout::{LayoutElement, bounds::Bounds2D},
     render::sprite::GpuSprite,
 };
 

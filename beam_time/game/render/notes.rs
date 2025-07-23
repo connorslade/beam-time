@@ -2,7 +2,7 @@ use engine::{
     drawable::{sprite::Sprite, text::Text},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{column::ColumnLayout, root::RootLayout, Justify, LayoutElement, LayoutMethods},
+    layout::{Justify, LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout},
 };
 
 use crate::{

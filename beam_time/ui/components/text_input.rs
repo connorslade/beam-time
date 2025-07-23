@@ -14,7 +14,7 @@ use engine::{
         },
     },
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{bounds::Bounds2D, LayoutElement},
+    layout::{LayoutElement, bounds::Bounds2D},
     memory::{Memory, MemoryKey},
 };
 

@@ -11,7 +11,7 @@ use engine::{
     drawable::{spacer::Spacer, text::Text},
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, GraphicsContext},
-    layout::{column::ColumnLayout, tracker::LayoutTracker, Layout, LayoutElement, LayoutMethods},
+    layout::{Layout, LayoutElement, LayoutMethods, column::ColumnLayout, tracker::LayoutTracker},
     memory_key,
 };
 

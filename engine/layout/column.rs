@@ -3,8 +3,8 @@ use nalgebra::Vector2;
 use crate::graphics_context::GraphicsContext;
 
 use super::{
-    bounds::Bounds2D, container::Container, Direction, Justify, Layout, LayoutElement,
-    SizedLayoutElement,
+    Direction, Justify, Layout, LayoutElement, SizedLayoutElement, bounds::Bounds2D,
+    container::Container,
 };
 
 pub struct ColumnLayout {

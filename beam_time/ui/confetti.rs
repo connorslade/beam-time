@@ -5,7 +5,7 @@ use engine::{
     exports::nalgebra::{Rotation2, Vector2},
     graphics_context::{Anchor, Drawable, GraphicsContext},
 };
-use rand::{thread_rng, Rng};
+use rand::Rng;
 
 use crate::{assets::CONFETTI_PARTICLES, consts::layer};
 
@@ -29,21 +29,21 @@ impl Confetti {
     }
 
     pub fn emit(&mut self, position: Vector2<f32>, particles: u32, timer: f32) {
-        let mut rng = thread_rng();
+        let mut rng = rand::rng();
 
         for _ in 0..particles {
-            let color = rng.gen_range(0..3);
-            let style = rng.gen_range(0..2);
+            let color = rng.random_range(0..3);
+            let style = rng.random_range(0..2);
 
             let sprite = Sprite::new(CONFETTI_PARTICLES)
                 .uv_offset(3 * Vector2::new(color, style))
                 .scale(Vector2::repeat(4.0))
                 .z_index(layer::OVERLAY);
 
-            let angle = rng.gen_range(0.0..=2.0 * PI);
-            let strength = rng.gen::<f32>() * 400.0;
+            let angle = rng.random_range(0.0..=2.0 * PI);
+            let strength = rng.random::<f32>() * 400.0;
             let velocity = Rotation2::new(angle) * Vector2::x() * strength;
-            let rotation = (rng.gen::<f32>() * 2.0 - 1.0) * 3.0;
+            let rotation = (rng.random::<f32>() * 2.0 - 1.0) * 3.0;
 
             self.particles.push(Particle {
                 sprite,

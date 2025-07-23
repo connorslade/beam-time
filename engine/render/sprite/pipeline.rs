@@ -1,17 +1,18 @@
 use std::{collections::HashMap, rc::Rc};
 
 use wgpu::{
-    util::{BufferInitDescriptor, DeviceExt},
     BindGroup, BindGroupDescriptor, BindGroupEntry, BindingResource, BlendComponent, BlendState,
     Buffer, BufferDescriptor, BufferUsages, ColorTargetState, ColorWrites, CompareFunction,
     DepthBiasState, DepthStencilState, Device, FragmentState, MultisampleState,
     PipelineCompilationOptions, PipelineLayoutDescriptor, PrimitiveState, RenderPipeline,
     RenderPipelineDescriptor, StencilState, TextureViewDescriptor, VertexState,
+    util::{BufferInitDescriptor, DeviceExt},
 };
 
 use crate::{
-    assets::{manager::AssetManager, TextureRef},
-    include_shader, DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
+    DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
+    assets::{TextureRef, manager::AssetManager},
+    include_shader,
 };
 
 use super::consts::{

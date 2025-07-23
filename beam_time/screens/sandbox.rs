@@ -9,26 +9,26 @@ use engine::{
         winit::{event::MouseButton, keyboard::KeyCode, window::CursorIcon},
     },
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{column::ColumnLayout, LayoutElement, LayoutMethods},
+    layout::{LayoutElement, LayoutMethods, column::ColumnLayout},
     memory::MemoryKey,
     memory_key,
 };
 
 use crate::{
+    App,
     assets::{BACK_BUTTON, CREATE_BUTTON, LEVEL_DROPDOWN_ARROW, UNDEAD_FONT},
-    consts::{layer, ERROR_COLOR},
+    consts::{ERROR_COLOR, layer},
     game::board::{Board, BoardMeta},
     screens::game::GameScreen,
     ui::{
         components::{
             button::Button,
-            modal::{modal_buttons, Modal},
+            modal::{Modal, modal_buttons},
             text_input::TextInput,
         },
         misc::{body, font_scale, titled_screen},
     },
     util::load_level_dir,
-    App,
 };
 
 use super::Screen;

@@ -6,7 +6,7 @@ use wgpu::{BufferDescriptor, BufferUsages, Device, IndexFormat, Queue, RenderPas
 
 use crate::{assets::TextureRef, graphics_context::GraphicsContext};
 
-use super::{pipeline::SpriteRenderPipeline, GpuSprite};
+use super::{GpuSprite, pipeline::SpriteRenderPipeline};
 
 #[derive(NoUninit, Clone, Copy)]
 #[repr(C)]

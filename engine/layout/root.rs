@@ -2,7 +2,7 @@ use nalgebra::Vector2;
 
 use crate::graphics_context::{Anchor, Drawable, GraphicsContext};
 
-use super::{container::Container, Layout, LayoutElement, SizedLayoutElement};
+use super::{Layout, LayoutElement, SizedLayoutElement, container::Container};
 
 /// This is where all layout hierarchies start.
 pub struct RootLayout {

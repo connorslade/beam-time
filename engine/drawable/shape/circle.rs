@@ -6,7 +6,7 @@ use nalgebra::Vector2;
 use crate::{
     color::Rgb,
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{bounds::Bounds2D, LayoutElement},
+    layout::{LayoutElement, bounds::Bounds2D},
     render::shape::ShapeVertex,
 };
 

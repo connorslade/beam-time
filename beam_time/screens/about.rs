@@ -7,9 +7,9 @@ use engine::{
 use indoc::indoc;
 
 use crate::{
+    App,
     assets::{ALAGARD_FONT, UNDEAD_FONT},
     ui::misc::titled_screen,
-    App,
 };
 
 use super::Screen;

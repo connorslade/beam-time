@@ -5,8 +5,8 @@ use engine::{
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, GraphicsContext},
     layout::{
-        column::ColumnLayout, row::RowLayout, tracker::LayoutTracker, Direction, Layout,
-        LayoutElement, LayoutMethods,
+        Direction, Layout, LayoutElement, LayoutMethods, column::ColumnLayout, row::RowLayout,
+        tracker::LayoutTracker,
     },
     memory_key,
 };
@@ -18,7 +18,7 @@ use crate::{
     ui::{
         components::{
             button::Button,
-            modal::{modal_buttons, Modal},
+            modal::{Modal, modal_buttons},
         },
         misc::body,
     },

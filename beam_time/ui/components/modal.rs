@@ -8,8 +8,8 @@ use engine::{
     exports::nalgebra::Vector2,
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{
-        column::ColumnLayout, root::RootLayout, row::RowLayout, tracker::LayoutTracker,
-        Direction as LayoutDirection, Layout, LayoutElement, LayoutMethods,
+        Direction as LayoutDirection, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
+        root::RootLayout, row::RowLayout, tracker::LayoutTracker,
     },
     memory_key,
 };

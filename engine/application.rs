@@ -17,13 +17,13 @@ use winit::{
 };
 
 use crate::{
+    DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
     assets::{constructor::AssetConstructor, manager::AssetManager},
     audio::AudioManager,
     graphics_context::GraphicsContext,
     input::InputManager,
     memory::Memory,
     render::{shape::pipeline::ShapeRenderPipeline, sprite::pipeline::SpriteRenderPipeline},
-    DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
 };
 
 type Render = Box<dyn FnMut(&mut GraphicsContext)>;

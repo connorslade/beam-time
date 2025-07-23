@@ -1,6 +1,6 @@
 use bincode::{
-    config::{AllowTrailing, VarintEncoding, WithOtherIntEncoding, WithOtherTrailing},
     DefaultOptions, Options,
+    config::{AllowTrailing, VarintEncoding, WithOtherIntEncoding, WithOtherTrailing},
 };
 use once_cell::sync::Lazy;
 
