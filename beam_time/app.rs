@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf, time::Instant};
 
 use anyhow::Result;
 use common::user::UserId;
-use engine::graphics_context::GraphicsContext;
+use engine::{exports::nalgebra::Vector2, graphics_context::GraphicsContext};
 use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "steam")]
@@ -83,6 +83,11 @@ impl App {
         let padding = 10.0 * ctx.scale_factor;
 
         (margin, padding)
+    }
+
+    pub fn modal_size(&self, ctx: &GraphicsContext) -> Vector2<f32> {
+        let max_width = 800.0 * ctx.scale_factor;
+        Vector2::new(ctx.center().x.min(max_width), 250.0 * ctx.scale_factor)
     }
 
     pub fn debug(&mut self, _msg: impl Fn() -> String) {

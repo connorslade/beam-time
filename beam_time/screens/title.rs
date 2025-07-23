@@ -101,7 +101,7 @@ impl TitleScreen {
     fn setting_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         if let Some(_settings) = &mut self.settings {
             let (margin, padding) = state.spacing(ctx);
-            let modal = Modal::new(Vector2::new(ctx.center().x, 250.0 * ctx.scale_factor))
+            let modal = Modal::new(state.modal_size(ctx))
                 .position(ctx.center(), Anchor::Center)
                 .margin(margin)
                 .layer(layer::OVERLAY);
