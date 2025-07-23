@@ -1,4 +1,4 @@
-use std::{io::Cursor, thread, time::Duration};
+use std::{thread, time::Duration};
 
 use ahash::{HashMap, HashMapExt};
 use anyhow::{Context, Result};
@@ -6,7 +6,7 @@ use bincode::Options;
 use clone_macro::clone;
 use log::{trace, warn};
 use poll_promise::Promise;
-use ureq::{Agent, AgentBuilder};
+use ureq::Agent;
 use url::Url;
 use uuid::Uuid;
 
@@ -38,12 +38,13 @@ impl LeaderboardManager {
             let auth = hex::encode(hash(&body));
             let resp = client
                 .put(path.as_str())
-                .set("Authorization", &auth)
-                .set("Content-Length", body.len().to_string().as_str())
-                .send(Cursor::new(body))
+                .header("Authorization", &auth)
+                .header("Content-Length", body.len().to_string().as_str())
+                .send(&body)
                 .with_context(|| format!("Error publishing solution for {level}"))
-                .and_then(|x| {
-                    x.into_json::<LevelResult>()
+                .and_then(|mut x| {
+                    x.body_mut()
+                        .read_json::<LevelResult>()
                         .context("Error deserializing result")
                 });
 
@@ -67,7 +68,7 @@ impl LeaderboardManager {
         let promise = Promise::spawn_thread(
             "histogram_fetch",
             clone!([{ self.client } as client], move || {
-                Ok(client.get(path.as_str()).call()?.into_json()?)
+                Ok(client.get(path.as_str()).call()?.body_mut().read_json()?)
             }),
         );
 
@@ -109,10 +110,12 @@ fn results_path(level: Uuid) -> Url {
 impl Default for LeaderboardManager {
     fn default() -> Self {
         Self {
-            client: AgentBuilder::new()
-                .timeout(Duration::from_secs(15))
-                .user_agent(concat!("beam-time/", env!("CARGO_PKG_VERSION")))
-                .build(),
+            client: Agent::new_with_config(
+                Agent::config_builder()
+                    .timeout_global(Some(Duration::from_secs(15)))
+                    .user_agent(concat!("beam-time/", env!("CARGO_PKG_VERSION")))
+                    .build(),
+            ),
             requests: Vec::new(),
             cache: HashMap::new(),
         }
