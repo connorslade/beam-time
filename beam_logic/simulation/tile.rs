@@ -30,10 +30,10 @@ pub enum BeamTile {
     },
     Mirror {
         /// The direction the mirror is facing.
+        galvoed: Directions,
+        /// The direction the mirror was placed in.
         /// `0 => /`, `1 => \`
         direction: bool,
-        /// The direction the mirror was placed in.
-        original_direction: bool,
         /// Which direction the beam is coming from for each side.
         powered: [Option<Direction>; 2],
     },
@@ -74,11 +74,16 @@ impl BeamTile {
             } => direction.into(),
             Self::CrossBeam { directions } => directions.iter().copied().collect(),
             Self::Mirror {
-                direction, powered, ..
+                galvoed,
+                powered,
+                direction,
             } => powered
                 .iter()
                 .flatten()
-                .map(|&powered| MIRROR_REFLECTIONS[powered as usize].opposite_if(!direction))
+                .map(|&powered| {
+                    MIRROR_REFLECTIONS[powered as usize]
+                        .opposite_if(!(direction ^ galvoed.odd_count()))
+                })
                 .collect(),
             Self::Splitter {
                 direction,
@@ -92,14 +97,14 @@ impl BeamTile {
         }
     }
 
-    pub fn mirror_mut(&mut self) -> (bool, &mut bool, &mut [Option<Direction>; 2]) {
+    pub fn mirror_mut(&mut self) -> (bool, &mut Directions, &mut [Option<Direction>; 2]) {
         match self {
             Self::Mirror {
-                direction,
-                original_direction,
+                galvoed,
+                direction: original_direction,
                 powered,
                 ..
-            } => (*original_direction, direction, powered),
+            } => (*original_direction, galvoed, powered),
             _ => panic!(),
         }
     }

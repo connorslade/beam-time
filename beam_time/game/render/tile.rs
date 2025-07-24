@@ -46,12 +46,10 @@ impl BeamTileBaseSprite for BeamTile {
             BeamTile::Detector { powered } => animated_sprite(TILE_DETECTOR, powered.any(), frame),
             BeamTile::Delay { powered, .. } => animated_sprite(TILE_DELAY, powered.any(), frame),
             BeamTile::Mirror {
-                direction,
-                original_direction,
-                ..
+                galvoed, direction, ..
             } => animated_sprite(
-                [TILE_MIRROR_A, TILE_MIRROR_B][*direction as usize],
-                direction != original_direction,
+                [TILE_MIRROR_A, TILE_MIRROR_B][(direction ^ galvoed.odd_count()) as usize],
+                galvoed.any(),
                 frame,
             ),
             BeamTile::Galvo { direction, powered } if powered.any_but(direction.opposite()) => {

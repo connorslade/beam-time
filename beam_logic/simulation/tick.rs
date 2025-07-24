@@ -106,13 +106,15 @@ impl BeamState {
                 // because rotation state of the mirror has a top and
                 // bottom, which can each be powered independently.
                 BeamTile::Mirror {
-                    direction, powered, ..
+                    galvoed,
+                    powered,
+                    direction,
                 } => {
                     for (idx, powered) in powered.iter().enumerate() {
                         let Some(powered) = *powered else { continue };
 
-                        let direction =
-                            MIRROR_REFLECTIONS[powered as usize].opposite_if(!direction);
+                        let direction = MIRROR_REFLECTIONS[powered as usize]
+                            .opposite_if(!(direction ^ galvoed.odd_count()));
                         self.power(&mut working_board, pos, direction);
 
                         if self.source_gone(pos, powered) {
@@ -141,19 +143,21 @@ impl BeamState {
                     self.track_powered(working_board.get_mut(pos).directions_mut(), pos);
 
                     let BeamTile::Mirror {
-                        direction: mirror_direction,
-                        original_direction,
+                        galvoed,
                         powered: powered_sides,
+                        ..
                     } = working_board.get_mut(direction.offset(pos))
                     else {
                         continue;
                     };
 
-                    let desired_direction =
-                        *original_direction ^ powered.any_but(direction.opposite());
-                    if *mirror_direction != desired_direction {
-                        *mirror_direction = desired_direction;
+                    let opp_dir = direction.opposite();
+                    let new = powered.any_but(opp_dir);
 
+                    let changed = galvoed.contains(opp_dir) != new;
+                    galvoed.set(opp_dir, new);
+
+                    if changed {
                         // false => horizontal, true => vertical
                         let top_direction =
                             matches!(powered_sides[0], Some(Direction::Up | Direction::Down));
@@ -219,11 +223,11 @@ impl BeamState {
                 }
             }
             BeamTile::Mirror {
-                direction: dir,
+                galvoed,
                 powered,
-                ..
+                direction: mirror_direction,
             } => {
-                if *dir {
+                if *mirror_direction ^ galvoed.odd_count() {
                     powered[matches!(direction, Direction::Up | Direction::Right) as usize] =
                         Some(direction);
                 } else {

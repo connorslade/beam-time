@@ -43,8 +43,8 @@ impl BeamState {
                 last_powered: Directions::empty(),
             },
             Tile::Mirror { rotation } => BeamTile::Mirror {
+                galvoed: Directions::empty(),
                 direction: rotation,
-                original_direction: rotation,
                 powered: [None; 2],
             },
             Tile::Splitter { rotation } => BeamTile::Splitter {

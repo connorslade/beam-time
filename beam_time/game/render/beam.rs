@@ -78,10 +78,13 @@ impl BeamStateRender for BeamState {
                     sprite(BEAM_FULL_VERTICAL).draw(ctx);
                 }
                 BeamTile::Mirror {
-                    direction, powered, ..
+                    galvoed,
+                    powered,
+                    direction,
                 } => {
                     for (idx, _) in powered.iter().enumerate().filter(|x| x.1.is_some()) {
-                        let texture = MIRROR_TEXTURES[idx + direction as usize * 2];
+                        let dir = direction ^ galvoed.odd_count();
+                        let texture = MIRROR_TEXTURES[idx + dir as usize * 2];
                         sprite(texture)
                             .z_index(layer::LASER * (idx == 1) as i16)
                             .draw(ctx);

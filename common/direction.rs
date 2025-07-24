@@ -115,6 +115,11 @@ impl Directions {
         Self { inner: 0 }
     }
 
+    pub const fn set(&mut self, direction: Direction, active: bool) {
+        let bit = 1 << direction as u8;
+        self.inner = (self.inner & !bit) | (bit * active as u8);
+    }
+
     pub const fn contains(&self, direction: Direction) -> bool {
         self.inner & 1 << direction as u8 != 0
     }
@@ -125,6 +130,14 @@ impl Directions {
 
     pub const fn any_but(&self, direction: Direction) -> bool {
         self.inner & !(1 << direction as u8) != 0
+    }
+
+    pub const fn count(&self) -> u32 {
+        self.inner.count_ones()
+    }
+
+    pub const fn odd_count(&self) -> bool {
+        self.count() & 1 == 1
     }
 
     pub fn iter(self) -> impl Iterator<Item = Direction> {
