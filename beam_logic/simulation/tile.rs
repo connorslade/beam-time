@@ -39,7 +39,7 @@ pub enum BeamTile {
     },
     Splitter {
         direction: bool,
-        powered: Option<Direction>,
+        powered: Directions,
     },
     Galvo {
         direction: Direction,
@@ -58,7 +58,7 @@ impl BeamTile {
             }
             Self::Delay { last_powered, .. } => last_powered.any(),
             Self::Mirror { powered, .. } => powered[0].is_some() || powered[1].is_some(),
-            Self::Splitter { powered, .. } => powered.is_some(),
+            Self::Splitter { powered, .. } => powered.any(),
             _ => false,
         }
     }
@@ -81,17 +81,13 @@ impl BeamTile {
                 .iter()
                 .flatten()
                 .map(|&powered| {
-                    MIRROR_REFLECTIONS[powered as usize]
-                        .opposite_if(!(direction ^ galvoed.odd_count()))
+                    MIRROR_REFLECTIONS[powered as usize].opposite_if(!(direction ^ galvoed.any()))
                 })
                 .collect(),
-            Self::Splitter {
-                direction,
-                powered: Some(powered),
-            } => {
-                Directions::from(MIRROR_REFLECTIONS[*powered as usize].opposite_if(!*direction))
-                    | *powered
-            }
+            Self::Splitter { direction, powered } => powered
+                .iter()
+                .flat_map(|x| [MIRROR_REFLECTIONS[x as usize].opposite_if(!direction), x])
+                .collect::<Directions>(),
             Self::Delay { last_powered, .. } => *last_powered,
             _ => Directions::empty(),
         }
@@ -109,7 +105,7 @@ impl BeamTile {
         }
     }
 
-    pub fn splitter_mut(&mut self) -> &mut Option<Direction> {
+    pub fn splitter_mut(&mut self) -> &mut Directions {
         match self {
             Self::Splitter { powered, .. } => powered,
             _ => panic!(),

@@ -83,21 +83,20 @@ impl BeamStateRender for BeamState {
                     direction,
                 } => {
                     for (idx, _) in powered.iter().enumerate().filter(|x| x.1.is_some()) {
-                        let dir = direction ^ galvoed.odd_count();
+                        let dir = direction ^ galvoed.any();
                         let texture = MIRROR_TEXTURES[idx + dir as usize * 2];
                         sprite(texture)
                             .z_index(layer::LASER * (idx == 1) as i16)
                             .draw(ctx);
                     }
                 }
-                BeamTile::Splitter {
-                    direction,
-                    powered: Some(powered),
-                } => {
-                    let index = (powered as usize + direction as usize * 2) % 4;
-                    sprite(SPLITTER_TEXTURES[index])
-                        .z_index(layer::LASER)
-                        .draw(ctx);
+                BeamTile::Splitter { direction, powered } => {
+                    for powered in powered.iter() {
+                        let index = (powered as usize + direction as usize * 2) % 4;
+                        sprite(SPLITTER_TEXTURES[index])
+                            .z_index(layer::LASER)
+                            .draw(ctx);
+                    }
                 }
                 BeamTile::Delay {
                     powered,

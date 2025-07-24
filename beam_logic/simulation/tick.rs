@@ -114,7 +114,7 @@ impl BeamState {
                         let Some(powered) = *powered else { continue };
 
                         let direction = MIRROR_REFLECTIONS[powered as usize]
-                            .opposite_if(!(direction ^ galvoed.odd_count()));
+                            .opposite_if(!(direction ^ galvoed.any()));
                         self.power(&mut working_board, pos, direction);
 
                         if self.source_gone(pos, powered) {
@@ -125,16 +125,17 @@ impl BeamState {
                 // Splitters effectively act as mirrors that also pass the
                 // existing beam through. One difference is that they only
                 // take in one input beam at a time.
-                BeamTile::Splitter {
-                    direction,
-                    powered: Some(powered),
-                } => {
-                    let direction = MIRROR_REFLECTIONS[powered as usize].opposite_if(!direction);
-                    self.power(&mut working_board, pos, powered);
-                    self.power(&mut working_board, pos, direction);
+                BeamTile::Splitter { direction, powered } => {
+                    for powered in powered.iter() {
+                        let direction =
+                            MIRROR_REFLECTIONS[powered as usize].opposite_if(!direction);
+                        self.power(&mut working_board, pos, powered);
+                        self.power(&mut working_board, pos, direction);
 
-                    if self.source_gone(pos, powered) {
-                        *working_board.get_mut(pos).splitter_mut() = None;
+                        if self.source_gone(pos, powered) {
+                            let splitter = working_board.get_mut(pos).splitter_mut();
+                            splitter.set(powered, false);
+                        }
                     }
                 }
                 // Galvos change the rotation of the mirror they are
@@ -227,7 +228,7 @@ impl BeamState {
                 powered,
                 direction: mirror_direction,
             } => {
-                if *mirror_direction ^ galvoed.odd_count() {
+                if *mirror_direction ^ galvoed.any() {
                     powered[matches!(direction, Direction::Up | Direction::Right) as usize] =
                         Some(direction);
                 } else {
@@ -235,7 +236,7 @@ impl BeamState {
                         Some(direction);
                 }
             }
-            BeamTile::Splitter { powered, .. } if powered.is_none() => *powered = Some(direction),
+            BeamTile::Splitter { powered, .. } => *powered |= direction,
             BeamTile::Galvo {
                 powered,
                 direction: dir,

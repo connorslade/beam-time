@@ -49,7 +49,7 @@ impl BeamState {
             },
             Tile::Splitter { rotation } => BeamTile::Splitter {
                 direction: rotation,
-                powered: None,
+                powered: Directions::empty(),
             },
             Tile::Galvo { rotation } => BeamTile::Galvo {
                 direction: rotation,

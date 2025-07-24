@@ -136,10 +136,6 @@ impl Directions {
         self.inner.count_ones()
     }
 
-    pub const fn odd_count(&self) -> bool {
-        self.count() & 1 == 1
-    }
-
     pub fn iter(self) -> impl Iterator<Item = Direction> {
         Direction::ALL
             .into_iter()

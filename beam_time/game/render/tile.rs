@@ -48,17 +48,16 @@ impl BeamTileBaseSprite for BeamTile {
             BeamTile::Mirror {
                 galvoed, direction, ..
             } => animated_sprite(
-                [TILE_MIRROR_A, TILE_MIRROR_B][(direction ^ galvoed.odd_count()) as usize],
+                [TILE_MIRROR_A, TILE_MIRROR_B][(direction ^ galvoed.any()) as usize],
                 galvoed.any(),
                 frame,
             ),
             BeamTile::Galvo { direction, powered } if powered.any_but(direction.opposite()) => {
                 animated_sprite(GALVO[*direction as usize], true, frame)
             }
-            BeamTile::Splitter {
-                direction,
-                powered: Some(..),
-            } => animated_sprite(SPLITTER[*direction as usize], true, frame),
+            BeamTile::Splitter { direction, powered } if powered.any() => {
+                animated_sprite(SPLITTER[*direction as usize], true, frame)
+            }
             _ => return None,
         })
     }
