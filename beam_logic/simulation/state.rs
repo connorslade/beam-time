@@ -9,7 +9,6 @@ use nalgebra::Vector2;
 
 use crate::{
     level::{DynamicElementMap, Level},
-    simulation::acceleration::Acceleration,
     tile::Tile,
 };
 
@@ -17,7 +16,6 @@ use super::{level_state::LevelState, tile::BeamTile};
 
 pub struct BeamState {
     pub board: Map<BeamTile>,
-    pub acceleration: Acceleration,
     pub level: Option<LevelState>,
     pub bounds: (Vector2<i32>, Vector2<i32>),
 }
@@ -29,11 +27,9 @@ impl BeamState {
         let level = test
             .and_then(|o| level.map(|x| LevelState::new(x, DynamicElementMap::from_map(tiles), o)));
 
-        let mut acceleration = Acceleration::new();
         let mut bounds = (Vector2::repeat(i32::MAX), Vector2::repeat(i32::MIN));
 
         let board = tiles.map(|pos, tile| {
-            acceleration.track(tile.as_type(), pos);
             bounds.0.x = bounds.0.x.min(pos.x);
             bounds.0.y = bounds.0.y.min(pos.y);
             bounds.1.x = bounds.1.x.max(pos.x);
@@ -75,7 +71,6 @@ impl BeamState {
 
         let mut state = Self {
             board,
-            acceleration,
             level,
             bounds,
         };
