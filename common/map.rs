@@ -33,9 +33,9 @@ impl<T: Default + Copy + PartialEq> Map<T> {
         self.tiles.iter().map(|(&k, &v)| (k, v))
     }
 
-    pub fn map<U>(&self, f: impl Fn(T) -> U) -> Map<U> {
+    pub fn map<U>(&self, mut f: impl FnMut(Vector2<i32>, T) -> U) -> Map<U> {
         Map {
-            tiles: self.tiles.iter().map(|(&k, &v)| (k, f(v))).collect(),
+            tiles: self.tiles.iter().map(|(&k, &v)| (k, f(k, v))).collect(),
         }
     }
 }

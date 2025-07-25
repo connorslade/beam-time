@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use nalgebra::Vector2;
 
 use common::{
@@ -11,7 +13,12 @@ use super::{MIRROR_REFLECTIONS, state::BeamState, tile::BeamTile};
 // - Delay
 // - Mirror / Splitter
 // - Beam / Cross Beam
-// - Galvo / Emitter Detector
+// - Galvo / Emitter / Detector
+
+struct Working {
+    board: Map<BeamTile>,
+    new_beams: HashSet<Vector2<i32>>,
+}
 
 impl BeamState {
     pub fn tick(&mut self) {
@@ -27,80 +34,21 @@ impl BeamState {
             }
         }
 
-        // To avoid issues that would arise from modifying the board in place, a
-        // copy is made to store the new state.
-        let mut working_board = self.board.clone();
+        let mut working = Working {
+            board: self.board.clone(),
+            new_beams: HashSet::new(),
+        };
 
         // todo: maybe a better way to do this?
-        for (pos, tile) in self.board.iter() {
-            if let BeamTile::Delay { .. } = tile {
-                let (powered, last_powered) = working_board.get_mut(pos).delay_mut();
+        for &pos in self.acceleration.delay.iter() {
+            if let BeamTile::Delay { .. } = self.board.get(pos) {
+                let (powered, last_powered) = working.board.get_mut(pos).delay_mut();
                 *last_powered = *powered;
             }
         }
 
-        for (pos, tile) in self.board.iter() {
-            match tile {
-                BeamTile::Empty => {}
-                // Emitters send out a constant beam in the direction they
-                // are facing.
-                BeamTile::Emitter {
-                    direction,
-                    active: true,
-                } => {
-                    self.power(&mut working_board, pos, direction);
-                }
-                // A beam will send out power in the direction it is facing
-                // and will destroy itself if it is no longer receiving
-                // power from the opposite direction.
-                BeamTile::Beam {
-                    direction,
-                    distance,
-                } => {
-                    if distance == 255 {
-                        working_board.remove(pos);
-                        continue;
-                    }
-
-                    if self.source_gone(pos, direction) {
-                        if let BeamTile::CrossBeam { directions } = working_board.get(pos) {
-                            let index = directions.iter().position(|&x| x == direction).unwrap();
-                            let direction = directions[1 - index];
-
-                            let new_tile = BeamTile::Beam {
-                                direction,
-                                distance,
-                            };
-                            working_board.set(pos, new_tile);
-                        } else {
-                            working_board.remove(pos);
-                        }
-                    }
-
-                    self.power(&mut working_board, pos, direction);
-                }
-                // When two perpendicular beams meet, they form a crossbeam,
-                // which continues to propagate the beams in both
-                // directions. If either beam is lost, the crossbeam will
-                // turn into a beam in the remaining direction.
-                BeamTile::CrossBeam { directions } => {
-                    for (idx, &direction) in directions.iter().enumerate() {
-                        self.power(&mut working_board, pos, direction);
-
-                        if self.source_gone(pos, direction) {
-                            let tile = working_board.get_mut(pos);
-                            if let BeamTile::CrossBeam { .. } = tile {
-                                let direction = directions[1 - idx];
-                                *tile = BeamTile::Beam {
-                                    direction,
-                                    distance: 0,
-                                };
-                            } else {
-                                working_board.remove(pos);
-                            }
-                        }
-                    }
-                }
+        for &pos in self.acceleration.beam_modifier.iter() {
+            match self.board.get(pos) {
                 // Mirrors will reflect beams based on the
                 // MIRROR_REFLECTIONS table. Powered is an array of two
                 // because rotation state of the mirror has a top and
@@ -115,10 +63,10 @@ impl BeamState {
 
                         let direction = MIRROR_REFLECTIONS[powered as usize]
                             .opposite_if(!(direction ^ galvoed.any()));
-                        self.power(&mut working_board, pos, direction);
+                        self.power(&mut working, pos, direction);
 
                         if self.source_gone(pos, powered) {
-                            working_board.get_mut(pos).mirror_mut().2[idx] = None;
+                            working.board.get_mut(pos).mirror_mut().2[idx] = None;
                         }
                     }
                 }
@@ -129,25 +77,96 @@ impl BeamState {
                     for powered in powered.iter() {
                         let direction =
                             MIRROR_REFLECTIONS[powered as usize].opposite_if(!direction);
-                        self.power(&mut working_board, pos, powered);
-                        self.power(&mut working_board, pos, direction);
+                        self.power(&mut working, pos, powered);
+                        self.power(&mut working, pos, direction);
 
                         if self.source_gone(pos, powered) {
-                            let splitter = working_board.get_mut(pos).splitter_mut();
+                            let splitter = working.board.get_mut(pos).splitter_mut();
                             splitter.set(powered, false);
                         }
                     }
                 }
+
+                _ => {}
+            }
+        }
+
+        let mut old_beams = HashSet::new();
+        for &pos in self.acceleration.beam.iter() {
+            match self.board.get(pos) {
+                // A beam will send out power in the direction it is facing
+                // and will destroy itself if it is no longer receiving
+                // power from the opposite direction.
+                BeamTile::Beam {
+                    direction,
+                    distance,
+                } => {
+                    if distance == 255 {
+                        old_beams.insert(pos);
+                        working.board.remove(pos);
+                        continue;
+                    }
+
+                    if self.source_gone(pos, direction) {
+                        if let BeamTile::CrossBeam { directions } = working.board.get(pos) {
+                            let index = directions.iter().position(|&x| x == direction).unwrap();
+                            let direction = directions[1 - index];
+
+                            let new_tile = BeamTile::Beam {
+                                direction,
+                                distance,
+                            };
+                            working.board.set(pos, new_tile);
+                        } else {
+                            old_beams.insert(pos);
+                            working.board.remove(pos);
+                        }
+                    }
+
+                    self.power(&mut working, pos, direction);
+                }
+                // When two perpendicular beams meet, they form a crossbeam,
+                // which continues to propagate the beams in both
+                // directions. If either beam is lost, the crossbeam will
+                // turn into a beam in the remaining direction.
+                BeamTile::CrossBeam { directions } => {
+                    for (idx, &direction) in directions.iter().enumerate() {
+                        self.power(&mut working, pos, direction);
+
+                        if self.source_gone(pos, direction) {
+                            let tile = working.board.get_mut(pos);
+                            if let BeamTile::CrossBeam { .. } = tile {
+                                let direction = directions[1 - idx];
+                                *tile = BeamTile::Beam {
+                                    direction,
+                                    distance: 0,
+                                };
+                            } else {
+                                old_beams.insert(pos);
+                                working.board.remove(pos);
+                            }
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+        for pos in old_beams {
+            self.acceleration.beam.remove(&pos);
+        }
+
+        for &pos in self.acceleration.post.iter() {
+            match self.board.get(pos) {
                 // Galvos change the rotation of the mirror they are
                 // pointing into when powered by a beam.
                 BeamTile::Galvo { direction, powered } => {
-                    self.track_powered(working_board.get_mut(pos).directions_mut(), pos);
+                    self.track_powered(working.board.get_mut(pos).directions_mut(), pos);
 
                     let BeamTile::Mirror {
                         galvoed,
                         powered: powered_sides,
                         ..
-                    } = working_board.get_mut(direction.offset(pos))
+                    } = working.board.get_mut(direction.offset(pos))
                     else {
                         continue;
                     };
@@ -174,22 +193,31 @@ impl BeamState {
                         }
                     }
                 }
+                // Emitters send out a constant beam in the direction they
+                // are facing.
+                BeamTile::Emitter {
+                    direction,
+                    active: true,
+                } => {
+                    self.power(&mut working, pos, direction);
+                }
                 BeamTile::Delay { last_powered, .. } => {
                     for dir in last_powered.iter() {
-                        self.power(&mut working_board, pos, dir);
+                        self.power(&mut working, pos, dir);
                     }
 
-                    let (powered, _) = working_board.get_mut(pos).delay_mut();
+                    let (powered, _) = working.board.get_mut(pos).delay_mut();
                     self.track_powered(powered, pos);
                 }
                 BeamTile::Wall { .. } | BeamTile::Detector { .. } => {
-                    self.track_powered(working_board.get_mut(pos).directions_mut(), pos)
+                    self.track_powered(working.board.get_mut(pos).directions_mut(), pos)
                 }
                 _ => {}
             }
         }
 
-        self.board = working_board;
+        self.acceleration.beam.extend(working.new_beams);
+        self.board = working.board;
     }
 
     /// Checks if a given tile is providing power in the given direction.
@@ -207,18 +235,20 @@ impl BeamState {
     }
 
     /// Powers a tile in the given direction.
-    fn power(&self, working_board: &mut Map<BeamTile>, pos: Vector2<i32>, direction: Direction) {
+    fn power(&self, working: &mut Working, pos: Vector2<i32>, direction: Direction) {
         let pos = direction.offset(pos);
-        let tile = working_board.get_mut(pos);
+        let tile = working.board.get_mut(pos);
 
         match tile {
             BeamTile::Empty => {
+                working.new_beams.insert(pos);
                 *tile = BeamTile::Beam {
                     direction,
                     distance: 0,
                 }
             }
             BeamTile::Beam { direction: dir, .. } if dir.is_perpendicular(direction) => {
+                working.new_beams.insert(pos);
                 *tile = BeamTile::CrossBeam {
                     directions: [*dir, direction],
                 }

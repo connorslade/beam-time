@@ -1,5 +1,6 @@
 use common::direction::Direction;
 
+pub mod acceleration;
 pub mod level_state;
 pub mod runtime;
 pub mod state;

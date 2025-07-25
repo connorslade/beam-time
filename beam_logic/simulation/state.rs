@@ -9,6 +9,7 @@ use nalgebra::Vector2;
 
 use crate::{
     level::{DynamicElementMap, Level},
+    simulation::acceleration::Acceleration,
     tile::Tile,
 };
 
@@ -16,6 +17,7 @@ use super::{level_state::LevelState, tile::BeamTile};
 
 pub struct BeamState {
     pub board: Map<BeamTile>,
+    pub acceleration: Acceleration,
     pub level: Option<LevelState>,
     pub bounds: (Vector2<i32>, Vector2<i32>),
 }
@@ -27,49 +29,53 @@ impl BeamState {
         let level = test
             .and_then(|o| level.map(|x| LevelState::new(x, DynamicElementMap::from_map(tiles), o)));
 
-        let board = tiles.map(|tile| match tile {
-            Tile::Empty => BeamTile::Empty,
-            Tile::Emitter {
-                rotation, active, ..
-            } => BeamTile::Emitter {
-                direction: rotation,
-                active,
-            },
-            Tile::Detector { .. } => BeamTile::Detector {
-                powered: Directions::empty(),
-            },
-            Tile::Delay => BeamTile::Delay {
-                powered: Directions::empty(),
-                last_powered: Directions::empty(),
-            },
-            Tile::Mirror { rotation } => BeamTile::Mirror {
-                galvoed: Directions::empty(),
-                direction: rotation,
-                powered: [None; 2],
-            },
-            Tile::Splitter { rotation } => BeamTile::Splitter {
-                direction: rotation,
-                powered: Directions::empty(),
-            },
-            Tile::Galvo { rotation } => BeamTile::Galvo {
-                direction: rotation,
-                powered: Directions::empty(),
-            },
-            Tile::Wall => BeamTile::Wall {
-                powered: Directions::empty(),
-            },
-        });
-
+        let mut acceleration = Acceleration::new();
         let mut bounds = (Vector2::repeat(i32::MAX), Vector2::repeat(i32::MIN));
-        for (coord, _tile) in board.iter() {
-            bounds.0.x = bounds.0.x.min(coord.x);
-            bounds.0.y = bounds.0.y.min(coord.y);
-            bounds.1.x = bounds.1.x.max(coord.x);
-            bounds.1.y = bounds.1.y.max(coord.y);
-        }
+
+        let board = tiles.map(|pos, tile| {
+            acceleration.track(tile.as_type(), pos);
+            bounds.0.x = bounds.0.x.min(pos.x);
+            bounds.0.y = bounds.0.y.min(pos.y);
+            bounds.1.x = bounds.1.x.max(pos.x);
+            bounds.1.y = bounds.1.y.max(pos.y);
+
+            match tile {
+                Tile::Empty => BeamTile::Empty,
+                Tile::Emitter {
+                    rotation, active, ..
+                } => BeamTile::Emitter {
+                    direction: rotation,
+                    active,
+                },
+                Tile::Detector { .. } => BeamTile::Detector {
+                    powered: Directions::empty(),
+                },
+                Tile::Delay => BeamTile::Delay {
+                    powered: Directions::empty(),
+                    last_powered: Directions::empty(),
+                },
+                Tile::Mirror { rotation } => BeamTile::Mirror {
+                    galvoed: Directions::empty(),
+                    direction: rotation,
+                    powered: [None; 2],
+                },
+                Tile::Splitter { rotation } => BeamTile::Splitter {
+                    direction: rotation,
+                    powered: Directions::empty(),
+                },
+                Tile::Galvo { rotation } => BeamTile::Galvo {
+                    direction: rotation,
+                    powered: Directions::empty(),
+                },
+                Tile::Wall => BeamTile::Wall {
+                    powered: Directions::empty(),
+                },
+            }
+        });
 
         let mut state = Self {
             board,
+            acceleration,
             level,
             bounds,
         };

@@ -107,7 +107,7 @@ mod version_3 {
         fn from(value: Board) -> Self {
             super::Board {
                 meta: value.meta,
-                tiles: value.tiles.map(|x| x.into()),
+                tiles: value.tiles.map(|_, x| x.into()),
                 ..Default::default()
             }
         }
@@ -130,7 +130,7 @@ mod version_4 {
         fn from(value: Board) -> Self {
             super::Board {
                 meta: value.meta,
-                tiles: value.tiles.map(|x| x.into()),
+                tiles: value.tiles.map(|_, x| x.into()),
                 notes: value.notes,
                 ..Default::default()
             }
