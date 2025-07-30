@@ -1,6 +1,7 @@
 use std::{mem, time::Instant};
 
 use engine::{
+    color::Rgb,
     drawable::{spacer::Spacer, sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::{Anchor, Drawable, GraphicsContext},
@@ -16,7 +17,11 @@ use crate::{
     assets::{ABOUT_BUTTON, CAMPAIGN_BUTTON, COPYRIGHT, SANDBOX_BUTTON, TITLE, UNDEAD_FONT},
     consts::{BACKGROUND_COLOR, layer},
     ui::{
-        components::{button::Button, modal::Modal, slider::Slider},
+        components::{
+            button::{Button, ButtonEffects},
+            modal::Modal,
+            slider::Slider,
+        },
         misc::body,
         waterfall::Waterfall,
     },
@@ -79,7 +84,9 @@ impl Screen for TitleScreen {
                 Spacer::new_y(60.0 * ctx.scale_factor).layout(ctx, layout);
                 for (sprite, on_click) in buttons {
                     let key = memory_key!(sprite);
-                    let button = Button::new(sprite, key).scale(Vector2::repeat(4.0));
+                    let button = Button::new(sprite, key)
+                        .scale(Vector2::repeat(4.0))
+                        .aesthetic(ButtonEffects::Color | ButtonEffects::Arrows);
 
                     button
                         .is_clicked(ctx)

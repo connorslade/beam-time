@@ -91,10 +91,10 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, TITLE, (0, 0), (81, 20));
     assets.register_sprite(interface, COPYRIGHT, (0, 20), (30, 8));
     assets.register_sprite(interface, BACK_BUTTON, (43, 32), (26, 14));
-    assets.register_sprite(interface, SANDBOX_BUTTON, (0, 32), (42, 14));
-    assets.register_sprite(interface, CAMPAIGN_BUTTON, (72, 48), (49, 14));
+    assets.register_sprite(interface, SANDBOX_BUTTON, (4, 36), (34, 6));
+    assets.register_sprite(interface, CAMPAIGN_BUTTON, (76, 52), (41, 8));
     assets.register_sprite(interface, OPTIONS_BUTTON, (0, 48), (39, 14));
-    assets.register_sprite(interface, ABOUT_BUTTON, (40, 48), (31, 14));
+    assets.register_sprite(interface, ABOUT_BUTTON, (44, 52), (23, 6));
     assets.register_sprite(interface, CREATE_BUTTON, (70, 32), (35, 14));
 
     assets.register_sprite(interface, CONFETTI_PARTICLES, (0, 64), (3, 3));

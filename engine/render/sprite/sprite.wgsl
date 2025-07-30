@@ -19,7 +19,6 @@ struct VertexOutput {
     @location(3) clip: vec4<f32>,
 };
 
-
 @vertex
 fn vert(
     @builtin(vertex_index) index: u32,
@@ -56,10 +55,8 @@ fn vert(
 
 // Fragment Shader //
 
-@group(0) @binding(0)
-var texture: texture_2d<f32>;
-@group(0) @binding(1)
-var texture_sampler: sampler;
+@group(0) @binding(0) var texture: texture_2d<f32>;
+@group(0) @binding(1) var texture_sampler: sampler;
 
 @fragment
 fn frag(in: VertexOutput) -> @location(0) vec4<f32> {

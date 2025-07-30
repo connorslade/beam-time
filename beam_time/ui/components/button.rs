@@ -1,5 +1,6 @@
-use std::cell::RefCell;
+use std::{cell::RefCell, f32::consts::PI, mem};
 
+use bitflags::bitflags;
 use engine::{
     assets::SpriteRef,
     color::Rgb,
@@ -14,13 +15,14 @@ use engine::{
 };
 
 use crate::{
-    assets::{BUTTON_CLICK, BUTTON_HOVER},
+    assets::{BUTTON_CLICK, BUTTON_HOVER, LEVEL_DROPDOWN_ARROW},
     consts::ACCENT_COLOR,
 };
 
 pub struct Button {
     asset: SpriteRef,
     key: MemoryKey,
+    effects: ButtonEffects,
 
     color: Rgb<f32>,
     pos: Vector2<f32>,
@@ -30,8 +32,16 @@ pub struct Button {
     sprite: RefCell<Option<Sprite>>,
 }
 
+bitflags! {
+    pub struct ButtonEffects: u8 {
+        const Scale = 1;
+        const Color = 2;
+        const Arrows = 4;
+    }
+}
+
 #[derive(Default)]
-pub struct ButtonState {
+struct ButtonState {
     hover_time: f32,
     last_hovered: bool,
 }
@@ -41,6 +51,7 @@ impl Button {
         Self {
             asset,
             key,
+            effects: ButtonEffects::Scale,
 
             color: Rgb::new(1.0, 1.0, 1.0),
             pos: Vector2::zeros(),
@@ -48,6 +59,13 @@ impl Button {
             scale: Vector2::repeat(1.0),
 
             sprite: RefCell::new(None),
+        }
+    }
+
+    pub fn aesthetic(self, aesthetic: ButtonEffects) -> Self {
+        Self {
+            effects: aesthetic,
+            ..self
         }
     }
 
@@ -98,19 +116,9 @@ impl Drawable for Button {
         let state = ctx.memory.get_or_insert(self.key, ButtonState::default());
         state.hover_time += ctx.delta_time * if hover { 1.0 } else { -1.0 };
         state.hover_time = state.hover_time.clamp(0.0, 0.1);
+        let t = state.hover_time / 0.1;
 
-        let color = self.color.lerp(ACCENT_COLOR, state.hover_time / 0.1);
-        let scale = self.scale + Vector2::repeat(state.hover_time / 2.0).component_mul(&self.scale);
-
-        self.generate_sprite();
-        let sprite = self.sprite.take().unwrap();
-        let sprite = sprite
-            .position(self.pos, self.anchor)
-            .color(color)
-            .dynamic_scale(scale, Anchor::Center)
-            .tracked(tracker);
-
-        if hover && !state.last_hovered {
+        if hover && !mem::replace(&mut state.last_hovered, hover) {
             ctx.audio.builder(BUTTON_HOVER).with_gain(0.2).play_now();
         }
 
@@ -118,8 +126,37 @@ impl Drawable for Button {
             ctx.audio.builder(BUTTON_CLICK).play_now();
         }
 
-        state.last_hovered = hover;
-        sprite.draw(ctx);
+        self.generate_sprite();
+        let mut sprite = self.sprite.take().unwrap();
+        sprite = sprite.position(self.pos, self.anchor);
+
+        if self.effects.contains(ButtonEffects::Scale) {
+            let scale = self.scale + Vector2::repeat(t / 20.0).component_mul(&self.scale);
+            sprite = sprite.dynamic_scale(scale, Anchor::Center);
+        }
+
+        if self.effects.contains(ButtonEffects::Color) {
+            sprite = sprite.color(self.color.lerp(ACCENT_COLOR, t));
+        }
+
+        sprite.tracked(tracker).draw(ctx);
+
+        if self.effects.contains(ButtonEffects::Arrows) && hover {
+            let size = ctx.assets.get_sprite(self.asset).size;
+            let y_offset =
+                Vector2::y() * (size.y as f32 / 2.0 - 3.0) * self.scale.y * ctx.scale_factor;
+            let x_offset = Vector2::x() * size.x as f32 * self.scale.x * ctx.scale_factor;
+            let padding = Vector2::x() * (3.0 + t * 2.0) * self.scale.x * ctx.scale_factor;
+            Sprite::new(LEVEL_DROPDOWN_ARROW)
+                .scale(self.scale)
+                .position(self.pos + y_offset - padding, self.anchor)
+                .draw(ctx);
+            Sprite::new(LEVEL_DROPDOWN_ARROW)
+                .scale(self.scale)
+                .rotate(PI, Anchor::CenterLeft)
+                .position(self.pos + y_offset + x_offset + padding, self.anchor)
+                .draw(ctx);
+        }
     }
 }
 
