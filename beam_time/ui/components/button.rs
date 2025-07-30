@@ -1,4 +1,4 @@
-use std::{f32::consts::PI, mem};
+use std::mem;
 
 use bitflags::bitflags;
 use engine::{
@@ -14,7 +14,7 @@ use engine::{
 };
 
 use crate::{
-    assets::{BUTTON_CLICK, BUTTON_HOVER, LEVEL_DROPDOWN_ARROW},
+    assets::{BUTTON_CLICK, BUTTON_HOVER, LEFT_ARROW, RIGHT_ARROW},
     consts::ACCENT_COLOR,
 };
 
@@ -104,16 +104,16 @@ impl<T: ButtonContent + 'static> Drawable for Button<T> {
 
         let bounds = self.asset.bounds(ctx);
         if self.effects.contains(ButtonEffects::Arrows) && hover {
-            let padding = Vector2::x() * t * 2.0 * scale.x * ctx.scale_factor;
-            let base = Vector2::y() * (bounds.min.y + bounds.max.y) / 2.0;
+            let px = scale * ctx.scale_factor;
+            let padding = Vector2::x() * t * 2.0 * px.x;
+            let base = Vector2::y() * ((bounds.min.y + bounds.max.y) / 2.0 - px.y);
             let (x_min, x_max) = (Vector2::x() * bounds.min.x, Vector2::x() * bounds.max.x);
-            Sprite::new(LEVEL_DROPDOWN_ARROW)
+            Sprite::new(RIGHT_ARROW)
                 .scale(scale)
                 .position(base - padding + x_min, Anchor::CenterRight)
                 .draw(ctx);
-            Sprite::new(LEVEL_DROPDOWN_ARROW)
+            Sprite::new(LEFT_ARROW)
                 .scale(scale)
-                .rotate(PI, Anchor::Center)
                 .position(base + padding + x_max, Anchor::CenterLeft)
                 .draw(ctx);
         }

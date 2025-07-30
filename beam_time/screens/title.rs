@@ -79,7 +79,7 @@ impl Screen for TitleScreen {
         let buttons: [(_, fn(&mut App, &mut _)); _] = [
             ("Campaign", |s, _| s.push_screen(CampaignScreen::default())),
             ("Sandbox", |s, _| s.push_screen(SandboxScreen::default())),
-            ("Settings", |_, settings| *settings = Some(SettingsModal {})),
+            ("Options", |_, settings| *settings = Some(SettingsModal {})),
             ("About", |s, _| s.push_screen(AboutScreen::default())),
         ];
 
@@ -92,6 +92,7 @@ impl Screen for TitleScreen {
                     let key = memory_key!(name);
                     let button = Text::new(UNDEAD_FONT, name)
                         .scale(Vector2::repeat(4.0))
+                        .default_shadow()
                         .button(key)
                         .effects(ButtonEffects::Color | ButtonEffects::Arrows);
 
@@ -99,6 +100,7 @@ impl Screen for TitleScreen {
                         .is_clicked(ctx)
                         .then(|| on_click(state, &mut self.settings));
                     button.layout(ctx, layout);
+                    Spacer::new_y(5.0 * ctx.scale_factor - padding).layout(ctx, layout);
                 }
             },
         );

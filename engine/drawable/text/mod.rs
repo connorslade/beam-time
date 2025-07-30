@@ -22,6 +22,7 @@ pub struct Text {
     text: String,
     color: Rgb<f32>,
     max_width: f32,
+    shadow: Option<(Vector2<f32>, Rgb<f32>)>,
 
     pos: Vector2<f32>,
     clip: [Vector2<f32>; 2],
@@ -49,6 +50,7 @@ impl Text {
             font,
             text: text.to_string(),
             max_width: f32::MAX,
+            shadow: None,
 
             pos: Vector2::repeat(0.0),
             clip: [Vector2::zeros(), Vector2::repeat(f32::MAX)],
@@ -114,6 +116,16 @@ impl Text {
         let (x1, x2) = (a.x.min(b.x), a.x.max(b.x));
         let (y1, y2) = (a.y.min(b.y), a.y.max(b.y));
         self.clip = [Vector2::new(x1, y1), Vector2::new(x2, y2)];
+        self
+    }
+
+    pub fn shadow(mut self, offset: Vector2<f32>, color_mult: impl Into<Rgb<f32>>) -> Self {
+        self.shadow = Some((offset, color_mult.into()));
+        self
+    }
+
+    pub fn default_shadow(mut self) -> Self {
+        self.shadow = Some((Vector2::new(0.0, -self.scale.y), Rgb::repeat(0.35)));
         self
     }
 
@@ -224,14 +236,24 @@ impl Drawable for Text {
                 .map(|x| x.round())
                 + dynamic_scale_offset;
 
-            ctx.sprites.push(GpuSprite {
+            let gpu_sprite = GpuSprite {
                 texture: font.texture,
                 uv: [uv_a, uv_b],
                 points: RECTANGLE_POINTS.map(|x| pos + x.component_mul(&size)),
-                color: Rgb::new(self.color.r, self.color.g, self.color.b),
+                color: self.color,
                 z_index: self.z_index,
                 clip: self.clip,
-            });
+            };
+
+            if let Some((offset, color)) = self.shadow {
+                ctx.sprites.push(GpuSprite {
+                    points: gpu_sprite.points.map(|x| x + offset),
+                    color: gpu_sprite.color * color,
+                    ..gpu_sprite
+                });
+            }
+
+            ctx.sprites.push(gpu_sprite);
         }
     }
 }

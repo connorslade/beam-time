@@ -21,7 +21,7 @@ pub static LEADERBOARD_SERVER: Lazy<Url> =
     Lazy::new(|| Url::parse("http://localhost:8080/api/").unwrap());
 
 pub const BACKGROUND_COLOR: Rgb<f32> = Rgb::repeat(0.235);
-pub const ACCENT_COLOR: Rgb<f32> = Rgb::new(0.812, 0.306, 0.306);
+pub const ACCENT_COLOR: Rgb<f32> = Rgb::hex(0xE27285);
 pub const SELECTION_COLOR: Rgb<f32> = Rgb::hex(0xE27285);
 pub const ERROR_COLOR: Rgb<f32> = Rgb::hex(0xE43636);
 pub const MODAL_COLOR: Rgb<f32> = Rgb::hex(0xA6A6A6);
