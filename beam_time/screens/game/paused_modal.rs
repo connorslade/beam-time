@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use engine::{
-    drawable::spacer::Spacer,
+    drawable::{spacer::Spacer, sprite::Sprite},
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, GraphicsContext},
     layout::{
@@ -17,7 +17,7 @@ use crate::{
     consts::layer,
     ui::{
         components::{
-            button::Button,
+            button::ButtonExt,
             modal::{Modal, modal_buttons},
         },
         misc::body,
@@ -62,8 +62,9 @@ impl GameScreen {
                             |ctx, layout| {
                                 let tracker = LayoutTracker::new(memory_key!());
                                 trash = tracker.clicked(ctx, MouseButton::Left);
-                                Button::new(TRASH, memory_key!())
+                                Sprite::new(TRASH)
                                     .scale(Vector2::repeat(2.0))
+                                    .button(memory_key!())
                                     .tracked(tracker)
                                     .layout(ctx, layout);
                                 Spacer::new_x(layout.available().x).layout(ctx, layout);

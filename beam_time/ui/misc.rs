@@ -1,6 +1,6 @@
 use engine::{
     assets::FontRef,
-    drawable::text::Text,
+    drawable::{sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::{Anchor, Drawable, GraphicsContext},
     memory::MemoryKey,
@@ -36,9 +36,10 @@ pub fn titled_screen(
 
     if let Some(back) = back {
         let back_pos = Vector2::new(ctx.center().x, 10.0 + 28.0 * ctx.scale_factor);
-        let button = Button::new(BACK_BUTTON, back)
-            .pos(back_pos, Anchor::Center)
+        let sprite = Sprite::new(BACK_BUTTON)
+            .position(back_pos, Anchor::Center)
             .scale(Vector2::repeat(4.0));
+        let button = Button::new(back, sprite);
         button.is_clicked(ctx).then(|| state.pop_screen());
         button.draw(ctx);
     }

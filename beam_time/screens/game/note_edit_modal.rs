@@ -1,7 +1,7 @@
 use std::mem;
 
 use engine::{
-    drawable::spacer::Spacer,
+    drawable::{spacer::Spacer, sprite::Sprite},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
@@ -22,7 +22,7 @@ use crate::{
     consts::layer,
     game::board::Note,
     ui::{
-        components::{button::Button, modal::Modal, text_input::TextInput},
+        components::{button::ButtonExt, modal::Modal, text_input::TextInput},
         misc::body,
     },
 };
@@ -95,8 +95,9 @@ impl GameScreen {
                                 RowLayout::new(padding).direction(Direction::MaxToMin),
                                 |ctx, layout| {
                                     let tracker = LayoutTracker::new(memory_key!());
-                                    Button::new(TRASH, memory_key!())
+                                    Sprite::new(TRASH)
                                         .scale(Vector2::repeat(2.0))
+                                        .button(memory_key!())
                                         .tracked(tracker)
                                         .layout(ctx, layout);
                                     Spacer::new(Vector2::x() * layout.available().x)

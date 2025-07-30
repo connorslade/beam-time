@@ -1,10 +1,9 @@
-use std::{cell::RefCell, f32::consts::PI, mem};
+use std::{f32::consts::PI, mem};
 
 use bitflags::bitflags;
 use engine::{
-    assets::SpriteRef,
     color::Rgb,
-    drawable::sprite::Sprite,
+    drawable::{sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, window::CursorIcon},
@@ -19,17 +18,16 @@ use crate::{
     consts::ACCENT_COLOR,
 };
 
-pub struct Button {
-    asset: SpriteRef,
+pub struct Button<T: ButtonContent> {
+    asset: T,
     key: MemoryKey,
     effects: ButtonEffects,
+}
 
-    color: Rgb<f32>,
-    pos: Vector2<f32>,
-    anchor: Anchor,
-    scale: Vector2<f32>,
-
-    sprite: RefCell<Option<Sprite>>,
+#[derive(Default)]
+struct ButtonState {
+    hover_time: f32,
+    last_hovered: bool,
 }
 
 bitflags! {
@@ -40,46 +38,33 @@ bitflags! {
     }
 }
 
-#[derive(Default)]
-struct ButtonState {
-    hover_time: f32,
-    last_hovered: bool,
+pub trait ButtonContent: Drawable + LayoutElement {
+    fn position(self, position: Vector2<f32>, anchor: Anchor) -> Self;
+    fn dynamic_scale(self, scale: Vector2<f32>, anchor: Anchor) -> Self;
+    fn color(self, color: impl Into<Rgb<f32>>) -> Self;
+
+    fn get_scale(&self) -> Vector2<f32>;
+    fn get_color(&self) -> Rgb<f32>;
 }
 
-impl Button {
-    pub fn new(asset: SpriteRef, key: MemoryKey) -> Self {
+pub trait ButtonExt
+where
+    Self: ButtonContent + Sized,
+{
+    fn button(self, key: MemoryKey) -> Button<Self>;
+}
+
+impl<T: ButtonContent> Button<T> {
+    pub fn new(key: MemoryKey, asset: T) -> Self {
         Self {
             asset,
             key,
             effects: ButtonEffects::Scale,
-
-            color: Rgb::new(1.0, 1.0, 1.0),
-            pos: Vector2::zeros(),
-            anchor: Anchor::BottomLeft,
-            scale: Vector2::repeat(1.0),
-
-            sprite: RefCell::new(None),
         }
     }
 
-    pub fn aesthetic(self, aesthetic: ButtonEffects) -> Self {
-        Self {
-            effects: aesthetic,
-            ..self
-        }
-    }
-
-    pub fn pos(mut self, pos: Vector2<f32>, anchor: Anchor) -> Self {
-        self.invalidate_sprite();
-        self.pos = pos;
-        self.anchor = anchor;
-        self
-    }
-
-    pub fn scale(mut self, scale: Vector2<f32>) -> Self {
-        self.invalidate_sprite();
-        self.scale = scale;
-        self
+    pub fn effects(self, effects: ButtonEffects) -> Self {
+        Self { effects, ..self }
     }
 
     pub fn is_clicked(&self, ctx: &mut GraphicsContext) -> bool {
@@ -88,25 +73,8 @@ impl Button {
     }
 }
 
-impl Button {
-    fn invalidate_sprite(&self) {
-        self.sprite.replace(None);
-    }
-
-    fn generate_sprite(&self) {
-        if self.sprite.borrow().is_some() {
-            return;
-        }
-
-        let sprite = Sprite::new(self.asset)
-            .position(Vector2::zeros(), self.anchor)
-            .scale(self.scale);
-        self.sprite.replace(Some(sprite));
-    }
-}
-
-impl Drawable for Button {
-    fn draw(self, ctx: &mut GraphicsContext) {
+impl<T: ButtonContent + 'static> Drawable for Button<T> {
+    fn draw(mut self, ctx: &mut GraphicsContext) {
         let tracker = LayoutTracker::new(self.key);
         let hover = tracker.hovered(ctx);
         if hover {
@@ -126,54 +94,96 @@ impl Drawable for Button {
             ctx.audio.builder(BUTTON_CLICK).play_now();
         }
 
-        self.generate_sprite();
-        let mut sprite = self.sprite.take().unwrap();
-        sprite = sprite.position(self.pos, self.anchor);
-
+        let (scale, color) = (self.asset.get_scale(), self.asset.get_color());
         if self.effects.contains(ButtonEffects::Scale) {
-            let scale = self.scale + Vector2::repeat(t / 20.0).component_mul(&self.scale);
-            sprite = sprite.dynamic_scale(scale, Anchor::Center);
+            let scale = scale + Vector2::repeat(t / 20.0).component_mul(&scale);
+            self.asset = self.asset.dynamic_scale(scale, Anchor::Center);
         }
 
         if self.effects.contains(ButtonEffects::Color) {
-            sprite = sprite.color(self.color.lerp(ACCENT_COLOR, t));
+            self.asset = self.asset.color(color.lerp(ACCENT_COLOR, t));
         }
 
-        sprite.tracked(tracker).draw(ctx);
-
+        let bounds = self.asset.bounds(ctx);
         if self.effects.contains(ButtonEffects::Arrows) && hover {
-            let size = ctx.assets.get_sprite(self.asset).size;
-            let y_offset =
-                Vector2::y() * (size.y as f32 / 2.0 - 3.0) * self.scale.y * ctx.scale_factor;
-            let x_offset = Vector2::x() * size.x as f32 * self.scale.x * ctx.scale_factor;
-            let padding = Vector2::x() * (3.0 + t * 2.0) * self.scale.x * ctx.scale_factor;
+            let padding = Vector2::x() * t * 2.0 * scale.x * ctx.scale_factor;
+            let base = Vector2::y() * (bounds.min.y + bounds.max.y) / 2.0;
+            let (x_min, x_max) = (Vector2::x() * bounds.min.x, Vector2::x() * bounds.max.x);
             Sprite::new(LEVEL_DROPDOWN_ARROW)
-                .scale(self.scale)
-                .position(self.pos + y_offset - padding, self.anchor)
+                .scale(scale)
+                .position(base - padding + x_min, Anchor::CenterRight)
                 .draw(ctx);
             Sprite::new(LEVEL_DROPDOWN_ARROW)
-                .scale(self.scale)
-                .rotate(PI, Anchor::CenterLeft)
-                .position(self.pos + y_offset + x_offset + padding, self.anchor)
+                .scale(scale)
+                .rotate(PI, Anchor::Center)
+                .position(base + padding + x_max, Anchor::CenterLeft)
                 .draw(ctx);
         }
+
+        self.asset.tracked(tracker).draw(ctx);
     }
 }
 
-impl LayoutElement for Button {
+impl<T: ButtonContent + 'static> LayoutElement for Button<T> {
     fn translate(&mut self, distance: Vector2<f32>) {
-        self.pos += distance;
+        self.asset.translate(distance);
     }
 
     fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
-        self.generate_sprite();
-        let sprite = self.sprite.borrow();
-        let sprite = sprite.as_ref().unwrap();
-
-        sprite.bounds(ctx).translated(self.pos)
+        self.asset.bounds(ctx)
     }
 
     fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
         (*self).draw(ctx);
+    }
+}
+
+impl ButtonContent for Sprite {
+    fn position(self, position: Vector2<f32>, anchor: Anchor) -> Self {
+        self.position(position, anchor)
+    }
+
+    fn dynamic_scale(self, scale: Vector2<f32>, anchor: Anchor) -> Self {
+        self.dynamic_scale(scale, anchor)
+    }
+
+    fn color(self, color: impl Into<Rgb<f32>>) -> Self {
+        self.color(color)
+    }
+
+    fn get_scale(&self) -> Vector2<f32> {
+        self.get_scale()
+    }
+
+    fn get_color(&self) -> Rgb<f32> {
+        self.get_color()
+    }
+}
+
+impl ButtonContent for Text {
+    fn position(self, position: Vector2<f32>, anchor: Anchor) -> Self {
+        self.position(position, anchor)
+    }
+
+    fn dynamic_scale(self, scale: Vector2<f32>, anchor: Anchor) -> Self {
+        self.dynamic_scale(scale, anchor)
+    }
+
+    fn color(self, color: impl Into<Rgb<f32>>) -> Self {
+        self.color(color)
+    }
+
+    fn get_scale(&self) -> Vector2<f32> {
+        self.get_scale()
+    }
+
+    fn get_color(&self) -> Rgb<f32> {
+        self.get_color()
+    }
+}
+
+impl<T: ButtonContent + Sized> ButtonExt for T {
+    fn button(self, key: MemoryKey) -> Button<Self> {
+        Button::new(key, self)
     }
 }

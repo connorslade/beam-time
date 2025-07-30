@@ -14,10 +14,7 @@ use engine::{
 
 use crate::{
     app::App,
-    assets::{
-        CAMPAIGN_BUTTON, OPTIONS_BUTTON, SANDBOX_BUTTON, TILE_EMITTER_RIGHT, TILE_MIRROR_A,
-        UNDEAD_FONT,
-    },
+    assets::{TILE_EMITTER_RIGHT, TILE_MIRROR_A, UNDEAD_FONT},
     consts::{ACCENT_COLOR, EMITTER, GALVO, MIRROR},
 };
 
@@ -71,10 +68,7 @@ impl Screen for LayoutTestScreen {
             let mut root = RootLayout::new(ctx.center(), Anchor::Center);
             let mut column = ColumnLayout::new(padding).justify(Justify::Center);
 
-            for (i, button) in [CAMPAIGN_BUTTON, SANDBOX_BUTTON, OPTIONS_BUTTON]
-                .into_iter()
-                .enumerate()
-            {
+            for (i, button) in ["Campaign", "Sandbox", "Options"].into_iter().enumerate() {
                 let key = memory_key!(i);
                 let tracker = LayoutTracker::new(key);
                 let hovered = tracker.hovered(ctx);
@@ -84,7 +78,7 @@ impl Screen for LayoutTestScreen {
                 *t = (*t + dt).clamp(0.0, 0.1);
                 let color = Rgb::hex(0xFFFFFF).lerp(ACCENT_COLOR, *t / 0.1);
 
-                Sprite::new(button)
+                Text::new(UNDEAD_FONT, button)
                     .scale(Vector2::repeat(4.0))
                     .dynamic_scale(Vector2::repeat(4.0 + *t), Anchor::Center)
                     .color(color)

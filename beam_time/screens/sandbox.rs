@@ -22,7 +22,7 @@ use crate::{
     screens::game::GameScreen,
     ui::{
         components::{
-            button::Button,
+            button::ButtonExt,
             modal::{Modal, modal_buttons},
             text_input::TextInput,
         },
@@ -109,21 +109,23 @@ impl Screen for SandboxScreen {
         let half_width = (35 + 26 + 10) as f32 * ctx.scale_factor;
         let height = (10 + 28) as f32 * ctx.scale_factor;
 
-        let back_button = Button::new(BACK_BUTTON, memory_key!())
-            .pos(
+        let back_button = Sprite::new(BACK_BUTTON)
+            .position(
                 Vector2::new(ctx.center().x + half_width, height),
                 Anchor::Center,
             )
-            .scale(Vector2::repeat(4.0));
+            .scale(Vector2::repeat(4.0))
+            .button(memory_key!());
         back_button.is_clicked(ctx).then(|| state.pop_screen());
         back_button.draw(ctx);
 
-        let create_button = Button::new(CREATE_BUTTON, memory_key!())
-            .pos(
+        let create_button = Sprite::new(CREATE_BUTTON)
+            .position(
                 Vector2::new(ctx.center().x - half_width, height),
                 Anchor::Center,
             )
-            .scale(Vector2::repeat(4.0));
+            .scale(Vector2::repeat(4.0))
+            .button(memory_key!());
         if create_button.is_clicked(ctx) {
             self.create = Some(CreateModal {});
         }

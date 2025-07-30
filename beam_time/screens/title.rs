@@ -1,7 +1,6 @@
 use std::{mem, time::Instant};
 
 use engine::{
-    color::Rgb,
     drawable::{spacer::Spacer, sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::{Anchor, Drawable, GraphicsContext},
@@ -14,11 +13,11 @@ use engine::{
 
 use crate::{
     App,
-    assets::{ABOUT_BUTTON, CAMPAIGN_BUTTON, COPYRIGHT, SANDBOX_BUTTON, TITLE, UNDEAD_FONT},
+    assets::{COPYRIGHT, TITLE, UNDEAD_FONT},
     consts::{BACKGROUND_COLOR, layer},
     ui::{
         components::{
-            button::{Button, ButtonEffects},
+            button::{ButtonEffects, ButtonExt},
             modal::Modal,
             slider::Slider,
         },
@@ -43,11 +42,6 @@ impl Screen for TitleScreen {
         Waterfall::new(&mut state.waterfall).draw(ctx);
         self.setting_modal(state, ctx);
 
-        // Replace with a settings button or smth
-        if ctx.input.consume_key_pressed(KeyCode::KeyS) {
-            self.settings = Some(SettingsModal);
-        }
-
         if ctx.input.consume_key_pressed(KeyCode::Escape)
             && let Some(_settings) = mem::take(&mut self.settings)
         {}
@@ -70,11 +64,11 @@ impl Screen for TitleScreen {
         let mut root = RootLayout::new(ctx.center(), Anchor::Center);
         let (_, padding) = state.spacing(ctx);
 
-        #[allow(clippy::type_complexity)]
-        let buttons: [(_, fn() -> Box<dyn Screen>); 3] = [
-            (CAMPAIGN_BUTTON, || Box::new(CampaignScreen::default())),
-            (SANDBOX_BUTTON, || Box::new(SandboxScreen::default())),
-            (ABOUT_BUTTON, || Box::new(AboutScreen::default())),
+        let buttons: [(_, fn(&mut App, &mut _)); _] = [
+            ("Campaign", |s, _| s.push_screen(CampaignScreen::default())),
+            ("Sandbox", |s, _| s.push_screen(SandboxScreen::default())),
+            ("Settings", |_, settings| *settings = Some(SettingsModal {})),
+            ("About", |s, _| s.push_screen(AboutScreen::default())),
         ];
 
         root.nest(
@@ -82,15 +76,16 @@ impl Screen for TitleScreen {
             ColumnLayout::new(padding).justify(Justify::Center),
             |ctx, layout| {
                 Spacer::new_y(60.0 * ctx.scale_factor).layout(ctx, layout);
-                for (sprite, on_click) in buttons {
-                    let key = memory_key!(sprite);
-                    let button = Button::new(sprite, key)
+                for (name, on_click) in buttons {
+                    let key = memory_key!(name);
+                    let button = Text::new(UNDEAD_FONT, name)
                         .scale(Vector2::repeat(4.0))
-                        .aesthetic(ButtonEffects::Color | ButtonEffects::Arrows);
+                        .button(key)
+                        .effects(ButtonEffects::Color | ButtonEffects::Arrows);
 
                     button
                         .is_clicked(ctx)
-                        .then(|| state.push_boxed_screen(on_click()));
+                        .then(|| on_click(state, &mut self.settings));
                     button.layout(ctx, layout);
                 }
             },

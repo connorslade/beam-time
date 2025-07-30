@@ -132,6 +132,36 @@ impl Text {
 }
 
 impl Text {
+    pub fn get_position(&self) -> (Vector2<f32>, Anchor) {
+        (self.pos, self.position_anchor)
+    }
+
+    pub fn get_z_index(&self) -> i16 {
+        self.z_index
+    }
+
+    pub fn get_max_width(&self) -> f32 {
+        self.max_width
+    }
+
+    pub fn get_scale(&self) -> Vector2<f32> {
+        self.scale
+    }
+
+    pub fn get_dynamic_scale(&self) -> (Vector2<f32>, Anchor) {
+        (self.dynamic_scale, self.scale_anchor)
+    }
+
+    pub fn get_color(&self) -> Rgb<f32> {
+        self.color
+    }
+
+    pub fn get_clip(&self) -> [Vector2<f32>; 2] {
+        self.clip
+    }
+}
+
+impl Text {
     fn generate_layout(&self, ctx: &GraphicsContext) {
         if self.layout.borrow().is_some() {
             return;

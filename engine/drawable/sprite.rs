@@ -156,6 +156,40 @@ impl Sprite {
     }
 }
 
+impl Sprite {
+    pub fn get_z_index(&self) -> i16 {
+        self.z_index
+    }
+
+    pub fn get_color(&self) -> Rgb<f32> {
+        self.color
+    }
+
+    pub fn get_position(&self) -> (Vector2<f32>, Anchor) {
+        (self.position, self.position_anchor)
+    }
+
+    pub fn get_dynamic_scale(&self) -> (Vector2<f32>, Anchor) {
+        (self.dynamic_scale, self.scale_anchor)
+    }
+
+    pub fn get_scale(&self) -> Vector2<f32> {
+        self.scale
+    }
+
+    pub fn get_rotation(&self) -> f32 {
+        self.rotation
+    }
+
+    pub fn get_uv_offset(&self) -> Vector2<i32> {
+        self.uv_offset
+    }
+
+    pub fn get_clip(&self) -> [Vector2<f32>; 2] {
+        self.clip
+    }
+}
+
 impl Drawable for Sprite {
     fn draw(self, ctx: &mut GraphicsContext) {
         let asset = ctx.assets.get_sprite(self.texture);
