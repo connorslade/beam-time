@@ -2,7 +2,10 @@ use std::{mem, time::Instant};
 
 use engine::{
     drawable::{spacer::Spacer, sprite::Sprite, text::Text},
-    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
+    exports::{
+        nalgebra::Vector2,
+        winit::{event::MouseButton, keyboard::KeyCode},
+    },
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{
         Justify, LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout,
@@ -18,7 +21,7 @@ use crate::{
     ui::{
         components::{
             button::{ButtonEffects, ButtonExt},
-            modal::Modal,
+            modal::{Modal, modal_buttons},
             slider::Slider,
         },
         misc::body,
@@ -50,9 +53,15 @@ impl Screen for TitleScreen {
         let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
         let t = self.start_time.elapsed().as_secs_f32().sin() / 20.0;
 
+        let screen = ctx.size() / ctx.scale_factor;
+        let size = ctx.assets.get_sprite(TITLE).size;
+        let scale = (screen.x / size.x as f32 * 0.5)
+            .min(screen.y / size.y as f32 * 0.3)
+            .clamp(4.0, 15.0);
+
         Sprite::new(TITLE)
             .position(pos, Anchor::TopCenter)
-            .scale(Vector2::repeat(6.0))
+            .scale(Vector2::repeat(scale))
             .rotate(t, Anchor::Center)
             .draw(ctx);
 
@@ -61,7 +70,10 @@ impl Screen for TitleScreen {
             .scale(Vector2::repeat(2.0))
             .draw(ctx);
 
-        let mut root = RootLayout::new(ctx.center(), Anchor::Center);
+        let mut root = RootLayout::new(
+            Vector2::new(ctx.center().x, ctx.size().y * 0.45),
+            Anchor::Center,
+        );
         let (_, padding) = state.spacing(ctx);
 
         let buttons: [(_, fn(&mut App, &mut _)); _] = [
@@ -151,6 +163,10 @@ impl TitleScreen {
                         &mut state.config.movement_speed,
                         (1000.0, 3000.0),
                     );
+
+                    let clicking = ctx.input.mouse_down(MouseButton::Left);
+                    let (back, _) = modal_buttons(ctx, layout, size.x, ("Back", ""));
+                    (back && clicking).then(|| self.settings = None);
                 });
             });
         }

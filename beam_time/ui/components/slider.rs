@@ -1,7 +1,10 @@
 use common::misc::in_bounds;
 use engine::{
     drawable::{shape::rectangle::Rectangle, sprite::Sprite},
-    exports::{nalgebra::Vector2, winit::event::MouseButton},
+    exports::{
+        nalgebra::Vector2,
+        winit::{event::MouseButton, window::CursorIcon},
+    },
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{LayoutElement, bounds::Bounds2D},
     memory::{Memory, MemoryKey},
@@ -98,6 +101,7 @@ impl Drawable for Slider {
 
         let click = ctx.input.mouse_pressed(MouseButton::Left);
         let hovered = handle.is_hovered(ctx);
+        hovered.then(|| ctx.set_cursor(CursorIcon::Pointer));
 
         let state = self.state(ctx.memory);
         let size = Vector2::new(full_width, px * 6.0);

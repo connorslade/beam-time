@@ -138,13 +138,15 @@ pub fn modal_buttons(
     let button_space = ctx.scale_factor * 10.0;
     let body = body(width);
 
-    let button = |ctx: &mut GraphicsContext, layout: &mut RowLayout, text, rotation| {
+    let button = |ctx: &mut GraphicsContext, layout: &mut RowLayout, text: &str, rotation| {
+        if text.is_empty() {
+            return false;
+        }
+
         let key = memory_key!(rotation);
         let tracker = LayoutTracker::new(key);
         let hover = tracker.hovered(ctx);
-        if hover {
-            ctx.set_cursor(CursorIcon::Pointer);
-        }
+        hover.then(|| ctx.set_cursor(CursorIcon::Pointer));
 
         let t = ctx.memory.get_or_insert(key, 0.0);
         *t += ctx.delta_time * if hover { 1.0 } else { -1.0 };
