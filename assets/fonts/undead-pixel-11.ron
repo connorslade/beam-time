@@ -89,6 +89,7 @@ FontDescriptor(
         '•': (uv: (5, 28), size: (3, 4)),
         'µ': (uv: (9, 27), size: (4, 5), baseline_shift: -1),
         '⇒': (uv: (14, 27), size: (7, 5)),
+        '©': (uv: (22, 25), size: (6, 7), baseline_shift: -1),
     },
     unknown: (uv: (127, 22), size: (8, 10), baseline_shift: -2),
     height: 6,

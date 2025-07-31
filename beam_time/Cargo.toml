@@ -46,6 +46,7 @@ trash.workspace = true
 ureq.workspace = true
 url.workspace = true
 uuid.workspace = true
+webbrowser.workspace = true
 
 [target.'cfg(windows)'.dependencies]
 winreg.workspace = true

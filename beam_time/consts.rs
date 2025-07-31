@@ -1,6 +1,7 @@
 use std::time::Duration;
 
 use engine::{assets::SpriteRef, color::Rgb};
+use indoc::indoc;
 use once_cell::sync::Lazy;
 use url::Url;
 
@@ -17,6 +18,8 @@ pub const CONFIG_FILE: &str = "config.toml";
 pub const MAX_HISTORY: usize = 100;
 pub const AUTOSAVE_INTERVAL: Duration = Duration::from_secs(60 * 5);
 
+pub const AUTHOR_HOMEPAGE: &str = "https://connorcode.com";
+pub const GAME_HOMEPAGE: &str = "https://store.steampowered.com/app/3385920/Beam_Time";
 pub static LEADERBOARD_SERVER: Lazy<Url> =
     Lazy::new(|| Url::parse("http://localhost:8080/api/").unwrap());
 
@@ -26,6 +29,21 @@ pub const SELECTION_COLOR: Rgb<f32> = Rgb::hex(0xE27285);
 pub const ERROR_COLOR: Rgb<f32> = Rgb::hex(0xE43636);
 pub const MODAL_COLOR: Rgb<f32> = Rgb::hex(0xA6A6A6);
 pub const MODAL_BORDER_COLOR: Rgb<f32> = Rgb::hex(0x757575);
+
+pub const DESCRIPTION: &str = indoc! {"
+    Beam time is a logic puzzle about redirecting and splitting laser beams to create circuits. \
+    It's made with a custom GPU accelerated game engine, just because why not.
+
+    Special thanks to Brandon Li for creating the tile graphics. (aspiringLich on GitHub)
+
+    Source code is available online on my Github at https://github.com/connorslade/beam-time.
+
+    Assets Used:
+
+    • Alagard, Font by Hewett Tsoi
+    • Undead Pixel Light, Font by Not Jam
+    • Universal UI/Menu Soundpack, by Cyrex Studios
+"};
 
 pub mod layer {
     pub const TILE_HOLDING: i16 = 7;

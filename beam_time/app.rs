@@ -87,8 +87,12 @@ impl App {
     }
 
     pub fn modal_size(&self, ctx: &GraphicsContext) -> Vector2<f32> {
+        let min_width = 400.0 * ctx.scale_factor;
         let max_width = 800.0 * ctx.scale_factor;
-        Vector2::new(ctx.center().x.min(max_width), 250.0 * ctx.scale_factor)
+        Vector2::new(
+            ctx.center().x.clamp(min_width, max_width),
+            250.0 * ctx.scale_factor,
+        )
     }
 
     pub fn debug(&mut self, msg: impl Fn() -> String) {

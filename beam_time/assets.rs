@@ -18,9 +18,6 @@ define_refs! {
         BUTTON_CLICK
     },
     SpriteRef => {
-        TITLE,
-        COPYRIGHT,
-
         BACK_BUTTON,
         CREATE_BUTTON,
 
@@ -86,8 +83,6 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_audio(BUTTON_HOVER, include_asset!("sounds/button-click.mp3"));
 
     let interface = assets.register_atlas(include_atlas!("textures/interface.png"));
-    assets.register_sprite(interface, TITLE, (0, 0), (81, 20));
-    assets.register_sprite(interface, COPYRIGHT, (0, 20), (30, 8));
     assets.register_sprite(interface, BACK_BUTTON, (43, 32), (26, 14));
     assets.register_sprite(interface, CREATE_BUTTON, (70, 32), (35, 14));
 
