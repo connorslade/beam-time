@@ -22,9 +22,7 @@ pub mod ui;
 mod util;
 
 use app::App;
-#[cfg(feature = "debug")]
-use screens::debug_overlay::DebugOverlay;
-use screens::{Screens, title::TitleScreen};
+use screens::{Screens, debug_overlay::DebugOverlay, title::TitleScreen};
 use util::include_atlas;
 
 fn main() -> Result<()> {
@@ -43,13 +41,13 @@ fn main() -> Result<()> {
         resumed: Box::new(|| {
             let mut app = App::new();
             let mut screens = Screens::new(vec![
-                #[cfg(feature = "debug")]
                 Box::new(DebugOverlay::default()),
                 Box::new(TitleScreen::default()),
             ]);
             screens.top().on_init(&mut app);
 
             Box::new(move |ctx| {
+                ctx.set_vsync(app.config.vsync);
                 app.on_tick();
                 if let Some(old_size) = ctx.input.resized {
                     screens.on_resize(old_size.map(|x| x as f32), ctx.size(), &mut app);

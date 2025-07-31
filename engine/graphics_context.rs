@@ -5,6 +5,7 @@ use wgpu::Color;
 use winit::window::Cursor;
 
 use crate::{
+    application::State,
     assets::{SpriteRef, manager::AssetManager},
     audio::AudioManager,
     color::Rgb,
@@ -34,6 +35,8 @@ pub struct GraphicsContext<'a> {
     pub(crate) cursor: Cursor,
     /// Functions to run after main render function completes
     pub(crate) defer: Vec<DeferCallback>,
+    /// If vsync should be active next frame
+    pub(crate) vsync: bool,
 
     pub input: &'a mut InputManager,
     /// Current window scale_factor
@@ -77,17 +80,15 @@ pub enum Anchor {
 
 impl<'a> GraphicsContext<'a> {
     pub fn new(
-        assets: Rc<AssetManager>,
-        scale_factor: f32,
         input: &'a mut InputManager,
-        audio: &'a AudioManager,
         memory: &'a mut Memory,
+        state: &'a State,
         delta_time: f32,
-        frame: u64,
+        scale_factor: f32,
     ) -> Self {
         GraphicsContext {
-            assets,
-            audio,
+            assets: state.assets.clone(),
+            audio: &state.audio,
             memory,
             background: Rgb::new(0.0, 0.0, 0.0),
             sprites: Vec::new(),
@@ -97,7 +98,8 @@ impl<'a> GraphicsContext<'a> {
             input,
             scale_factor,
             delta_time,
-            frame,
+            frame: state.frame,
+            vsync: state.vsync,
         }
     }
 
@@ -146,6 +148,10 @@ impl<'a> GraphicsContext<'a> {
 
     pub fn set_cursor(&mut self, cursor: impl Into<Cursor>) {
         self.cursor = cursor.into();
+    }
+
+    pub fn set_vsync(&mut self, vsync: bool) {
+        self.vsync = vsync;
     }
 
     pub fn darken(&mut self, color: Rgb<f32>, below: i16) {

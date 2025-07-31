@@ -20,6 +20,7 @@ use crate::{
     DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
     assets::{constructor::AssetConstructor, manager::AssetManager},
     audio::AudioManager,
+    color::Rgb,
     graphics_context::GraphicsContext,
     input::InputManager,
     memory::Memory,
@@ -53,6 +54,7 @@ pub struct State<'a> {
     pub frame: u64,
     pub last_frame: Instant,
     pub last_cursor: Cursor,
+    pub vsync: bool,
 
     // Rendering stuff (pipelines & buffers)
     pub sprite_renderer: SpriteRenderPipeline,
@@ -130,6 +132,7 @@ impl ApplicationHandler for Application<'_> {
             frame: 0,
             last_frame: Instant::now(),
             last_cursor: Cursor::default(),
+            vsync: true,
         });
     }
 
@@ -154,29 +157,39 @@ impl ApplicationHandler for Application<'_> {
             WindowEvent::RedrawRequested => {
                 let gcx = &state.graphics;
 
+                let scale_factor = gcx.window.scale_factor() as f32;
                 let delta_time = state.last_frame.elapsed().as_secs_f32();
                 state.last_frame = Instant::now();
-
                 state.memory.garbage_collect();
-                let mut ctx = GraphicsContext::new(
-                    state.assets.clone(),
-                    gcx.window.scale_factor() as f32,
-                    &mut state.input,
-                    &state.audio,
-                    &mut state.memory,
+
+                // you would think there there would be a better way...
+                let mut ctx = GraphicsContext {
+                    assets: state.assets.clone(),
+                    audio: &state.audio,
+                    memory: &mut state.memory,
+                    background: Rgb::new(0.0, 0.0, 0.0),
+                    sprites: Vec::new(),
+                    shapes: Default::default(),
+                    cursor: Cursor::default(),
+                    defer: Vec::new(),
+                    input: &mut state.input,
+                    scale_factor,
                     delta_time,
-                    state.frame,
-                );
+                    frame: state.frame,
+                    vsync: state.vsync,
+                };
+
                 (state.render)(&mut ctx);
+                while let Some(defer) = ctx.defer.pop() {
+                    (defer)(&mut ctx);
+                }
+
+                let next_vsync = ctx.vsync;
                 state.frame = state.frame.wrapping_add(1);
 
                 if ctx.cursor != state.last_cursor {
                     gcx.window.set_cursor(ctx.cursor.clone());
                     state.last_cursor = mem::take(&mut ctx.cursor);
-                }
-
-                while let Some(defer) = ctx.defer.pop() {
-                    (defer)(&mut ctx);
                 }
 
                 state.sprite_renderer.prepare(&gcx.device, &gcx.queue, &ctx);
@@ -232,6 +245,11 @@ impl ApplicationHandler for Application<'_> {
 
                 state.input.on_frame_end();
                 gcx.window.request_redraw();
+
+                if state.vsync != next_vsync {
+                    state.vsync = next_vsync;
+                    self.resize_surface();
+                }
             }
             WindowEvent::Resized(size) => {
                 let (texture, depth) = create_textures(&state.graphics.device, size, samples);
@@ -261,6 +279,8 @@ impl<'a> Application<'a> {
     fn resize_surface(&mut self) {
         let state = self.state.as_mut().unwrap();
         let size = state.graphics.window.inner_size();
+        let present_mode = [PresentMode::AutoNoVsync, PresentMode::AutoVsync][state.vsync as usize];
+
         state.graphics.surface.configure(
             &state.graphics.device,
             &SurfaceConfiguration {
@@ -268,7 +288,7 @@ impl<'a> Application<'a> {
                 format: TEXTURE_FORMAT,
                 width: size.width,
                 height: size.height,
-                present_mode: PresentMode::AutoVsync,
+                present_mode,
                 desired_maximum_frame_latency: 1,
                 alpha_mode: CompositeAlphaMode::Opaque,
                 view_formats: vec![],

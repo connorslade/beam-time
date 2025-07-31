@@ -1,4 +1,4 @@
-use std::{alloc::Layout, mem, time::Instant};
+use std::{mem, time::Instant};
 
 use engine::{
     drawable::{spacer::Spacer, sprite::Sprite, text::Text},

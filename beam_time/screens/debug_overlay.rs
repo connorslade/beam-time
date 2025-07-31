@@ -15,8 +15,8 @@ pub struct DebugOverlay {
 }
 
 impl Screen for DebugOverlay {
-    fn pre_render(&mut self, _state: &mut App, ctx: &mut GraphicsContext) {
-        if ctx.input.key_down(KeyCode::Slash) {
+    fn pre_render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
+        if state.config.debug && ctx.input.key_down(KeyCode::Slash) {
             ctx.scale_factor = 1.0 + (ctx.scale_factor == 1.0) as u8 as f32;
         }
     }
@@ -29,15 +29,17 @@ impl Screen for DebugOverlay {
             self.last_update = Instant::now();
         }
 
-        if !state.config.debug {
-            return;
-        }
-
         let (fps, sprites, scale) = (self.last_frames, ctx.sprite_count(), ctx.scale_factor);
-        let text = format!(
-            "FPS: {fps}\nSprites: {sprites}\nScale: {scale:.1}\n{}",
-            state.debug.join("\n")
-        );
+        let text = if state.config.debug {
+            format!(
+                "FPS: {fps}\nSprites: {sprites}\nScale: {scale:.1}\n{}",
+                state.debug.join("\n")
+            )
+        } else if state.config.show_fps {
+            format!("FPS: {fps}")
+        } else {
+            String::new()
+        };
         state.debug.clear();
 
         let pos = ctx.size() - Vector2::new(10.0, 10.0) * scale;

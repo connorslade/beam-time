@@ -20,7 +20,6 @@ pub struct App {
 
     pub start: Instant,
     pub waterfall: WaterfallState,
-    #[cfg(feature = "debug")]
     pub debug: Vec<String>,
 
     pub config: Config,
@@ -69,7 +68,6 @@ impl App {
 
             start: Instant::now(),
             waterfall: WaterfallState::default(),
-            #[cfg(feature = "debug")]
             debug: Vec::new(),
 
             config,
@@ -93,9 +91,8 @@ impl App {
         Vector2::new(ctx.center().x.min(max_width), 250.0 * ctx.scale_factor)
     }
 
-    pub fn debug(&mut self, _msg: impl Fn() -> String) {
-        #[cfg(feature = "debug")]
-        self.debug.push(_msg());
+    pub fn debug(&mut self, msg: impl Fn() -> String) {
+        self.debug.push(msg());
     }
 
     pub fn save_config(&self) -> Result<()> {

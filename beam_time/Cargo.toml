@@ -9,7 +9,6 @@ path = "main.rs"
 
 [features]
 steam = ["steamworks"]
-debug = []
 layout_debug = ["engine/layout_debug"]
 
 [dependencies]

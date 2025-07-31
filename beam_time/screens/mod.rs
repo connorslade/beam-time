@@ -4,7 +4,6 @@ use crate::app::App;
 
 pub mod about;
 pub mod campaign;
-#[cfg(feature = "debug")]
 pub mod debug_overlay;
 pub mod game;
 pub mod layout_tests;
