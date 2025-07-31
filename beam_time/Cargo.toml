@@ -51,3 +51,7 @@ uuid.workspace = true
 [target.'cfg(windows)'.dependencies]
 winreg.workspace = true
 windows.workspace = true
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2-core-foundation.workspace = true
+objc2-io-kit.workspace = true

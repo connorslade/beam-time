@@ -104,6 +104,43 @@ pub fn get() -> u64 {
     digest_as_u64(hash.compute())
 }
 
+#[cfg(target_os = "macos")]
+pub fn get() -> u64 {
+    use std::{ffi::CString, hash::Hash};
+
+    use objc2_core_foundation::{CFString, kCFAllocatorDefault};
+    use objc2_io_kit::{
+        IORegistryEntryCreateCFProperty, IOServiceGetMatchingService, IOServiceMatching,
+        kIOMasterPortDefault,
+    };
+
+    let serial_number = unsafe {
+        let service = IOServiceMatching(c"IOPlatformExpertDevice".as_ptr()).unwrap();
+        let result =
+            IOServiceGetMatchingService(kIOMasterPortDefault, Some(service.as_opaque().into()));
+
+        let property = IORegistryEntryCreateCFProperty(
+            result,
+            Some(&CFString::from_str("IOPlatformSerialNumber")),
+            kCFAllocatorDefault,
+            0,
+        )
+        .unwrap();
+
+        property.downcast::<CFString>().unwrap().to_string()
+    };
+
+    unsafe extern "C" {
+        fn getuid() -> u32;
+    }
+
+    let mut hash = md5::Context::new();
+    hash.consume(serial_number);
+    hash.consume(unsafe { getuid() }.to_be_bytes());
+
+    digest_as_u64(hash.compute())
+}
+
 fn digest_as_u64(digest: Digest) -> u64 {
     // Assuming the entropy is evenly distributed throughout the hash digest,
     // just picking the first 8 bits should be fiiine.

@@ -27,6 +27,8 @@ itertools = "0.14.0"
 log = "0.4.27"
 md5 = "0.7.0"
 nalgebra = { version = "0.33.2", features = ["serde-serialize", "bytemuck"] }
+objc2-core-foundation = "0.3.1"
+objc2-io-kit = "0.3.1"
 once_cell = "1.21.3"
 ordered-float = "5.0.0"
 parking_lot = "0.12.4"

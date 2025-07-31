@@ -84,12 +84,16 @@ impl ApplicationHandler for Application<'_> {
         let window_size = window.inner_size();
 
         let instance = Instance::new(InstanceDescriptor::default());
-        let adapter =
-            pollster::block_on(instance.request_adapter(&RequestAdapterOptions::default()))
-                .context("Failed to create adapter")
-                .unwrap();
-
         let surface = instance.create_surface(window.clone()).unwrap();
+
+        let adapter = pollster::block_on(instance.request_adapter(&RequestAdapterOptions {
+            force_fallback_adapter: false,
+            compatible_surface: Some(&surface),
+            ..Default::default()
+        }))
+        .context("Failed to create adapter")
+        .unwrap();
+
         let (device, queue) = pollster::block_on(adapter.request_device(
             &DeviceDescriptor {
                 label: None,
@@ -233,6 +237,8 @@ impl ApplicationHandler for Application<'_> {
                 let (texture, depth) = create_textures(&state.graphics.device, size, samples);
                 state.texture = texture;
                 state.depth_texture = depth;
+                // On MacOS you need to manually request a redraw on window resize
+                state.graphics.window.request_redraw();
                 self.resize_surface();
             }
             _ => (),
