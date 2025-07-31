@@ -1,10 +1,10 @@
-use std::path::PathBuf;
+use std::{f32::consts::TAU, path::PathBuf};
 
 use ahash::{HashMap, HashMapExt};
 use beam_logic::level::{DEFAULT_LEVELS, Level, tree::LevelTree};
 use engine::{
     color::Rgb,
-    drawable::shape::rectangle_outline::RectangleOutline,
+    drawable::{shape::rectangle_outline::RectangleOutline, sprite::Sprite},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode, window::CursorIcon},
@@ -15,6 +15,7 @@ use uuid::Uuid;
 
 use crate::{
     app::App,
+    assets::CHECK,
     consts::BACKGROUND_COLOR,
     game::{
         board::{Board, BoardMeta, LevelMeta},
@@ -40,6 +41,7 @@ pub struct CampaignScreen {
 impl Screen for CampaignScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         ctx.background(BACKGROUND_COLOR);
+        let t = state.start.elapsed().as_secs_f32();
 
         self.pancam.update(state, ctx);
         let spacing = 64.0 * ctx.scale_factor;
@@ -57,19 +59,25 @@ impl Screen for CampaignScreen {
 
             for item in row {
                 let world = self.worlds.get(&item.id);
-                let color = if world.map(|(_, meta)| meta.is_solved()) == Some(true) {
-                    Rgb::hex(0x8fd032)
-                } else {
-                    Rgb::hex(0xFFFFFF)
-                };
+                let solved = world.map(|(_, meta)| meta.is_solved()) == Some(true);
 
                 let center = offset + Vector2::x() * item.offset();
                 let text = item
                     .text
                     .clone()
                     .position(self.pancam.pan + center, Anchor::Center)
-                    .color(color)
-                    .z_index(1);
+                    .z_index(1)
+                    .default_shadow();
+
+                if solved {
+                    let size = text.size(ctx);
+                    let offset = Vector2::new(size.x / 2.0 + 9.0 * ctx.scale_factor, size.y / 2.0);
+                    Sprite::new(CHECK)
+                        .position(self.pancam.pan + center + offset, Anchor::Center)
+                        .scale(Vector2::repeat(3.0))
+                        .z_index(2)
+                        .draw(ctx);
+                }
 
                 if text.is_hovered(ctx) {
                     let size = text.size(ctx);
@@ -90,10 +98,21 @@ impl Screen for CampaignScreen {
 
                 for child in item.children.iter() {
                     let offset = self.layout.rows[i + 1][*child].offset();
-                    PixelLine::new(center, Vector2::new(offset, (i + 1) as f32 * spacing))
-                        .color(color.lerp(Rgb::repeat(0.0), 0.6))
-                        .position(self.pancam.pan)
-                        .draw(ctx);
+                    let (_, shapes) = ctx.draw_callback(|ctx| {
+                        PixelLine::new(center, Vector2::new(offset, (i + 1) as f32 * spacing))
+                            .color(Rgb::repeat(0.6))
+                            .position(self.pancam.pan)
+                            .draw(ctx)
+                    });
+
+                    if !solved {
+                        continue;
+                    }
+
+                    for (idx, shape) in shapes.iter_mut().enumerate() {
+                        let frac = (idx as f32 / 200.0 * TAU * 3.0 - t * 5.0).sin() / 2.0 + 0.5;
+                        shape.color = Rgb::hex(0xe43636).lerp(Rgb::repeat(0.0), frac * 0.5);
+                    }
                 }
             }
         }

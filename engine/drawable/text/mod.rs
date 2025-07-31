@@ -247,7 +247,7 @@ impl Drawable for Text {
 
             if let Some((offset, color)) = self.shadow {
                 ctx.sprites.push(GpuSprite {
-                    points: gpu_sprite.points.map(|x| x + offset),
+                    points: gpu_sprite.points.map(|x| x + offset * ctx.scale_factor),
                     color: gpu_sprite.color * color,
                     ..gpu_sprite
                 });

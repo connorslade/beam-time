@@ -64,7 +64,7 @@ impl Drawable for Waterfall<'_> {
                 .z_index(layer::TILE_BACKGROUND)
                 .draw(ctx);
 
-            tile.pos.y -= tile.vel * ctx.delta_time;
+            tile.pos.y -= tile.vel * ctx.delta_time * ctx.scale_factor;
             if tile.pos.y < -tile_offset {
                 tiles.remove(i);
             } else {

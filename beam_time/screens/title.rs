@@ -66,7 +66,10 @@ impl Screen for TitleScreen {
             .draw(ctx);
 
         Sprite::new(COPYRIGHT)
-            .position(Vector2::new(ctx.size().x - 10.0, 10.0), Anchor::BottomRight)
+            .position(
+                Vector2::x() * ctx.size().x - Vector2::new(10.0, -10.0) * ctx.scale_factor,
+                Anchor::BottomRight,
+            )
             .scale(Vector2::repeat(2.0))
             .draw(ctx);
 
