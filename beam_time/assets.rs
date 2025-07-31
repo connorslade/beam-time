@@ -33,6 +33,7 @@ define_refs! {
         TRASH,
         SLIDER_HANDLE,
         CHECK,
+        CHECKBOX,
 
         EMPTY_TILE_A,
         EMPTY_TILE_B,
@@ -99,6 +100,7 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, TRASH, (32, 72), (7, 8));
     assets.register_sprite(interface, SLIDER_HANDLE, (40, 74), (4, 6));
     assets.register_sprite(interface, CHECK, (32, 64), (5, 5));
+    assets.register_sprite(interface, CHECKBOX, (38, 64), (6, 6));
 
     let tiles = assets.register_atlas(include_atlas!("textures/tilemap.png"));
     assets.register_sprite(tiles, EMPTY_TILE_A, (0, 288), (16, 16));

@@ -35,6 +35,9 @@ pub struct App {
 pub struct Config {
     pub zoom_sensitivity: f32,
     pub movement_speed: f32,
+    pub vsync: bool,
+    pub show_fps: bool,
+    pub debug: bool,
 }
 
 impl App {
@@ -135,6 +138,9 @@ impl Default for Config {
         Self {
             zoom_sensitivity: 0.08,
             movement_speed: 2000.0,
+            vsync: true,
+            show_fps: false,
+            debug: false,
         }
     }
 }

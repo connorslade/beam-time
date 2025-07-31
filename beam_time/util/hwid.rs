@@ -68,6 +68,12 @@ pub fn get() -> u64 {
     digest_as_u64(hash.compute())
 }
 
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+unsafe extern "C" {
+    /// Returns the real user ID of the calling process.
+    fn getuid() -> u32;
+}
+
 // See http://0pointer.de/blog/projects/ids.html for info on linux hardware and
 // software IDs. I am using both a hardware id and a user ID to each user on
 // each machine should have different IDs.
@@ -87,11 +93,6 @@ pub fn get() -> u64 {
             })
             .next()
             .flatten()
-    }
-
-    unsafe extern "C" {
-        /// Returns the real user ID of the calling process.
-        fn getuid() -> u32;
     }
 
     let mut hash = md5::Context::new();
@@ -129,10 +130,6 @@ pub fn get() -> u64 {
 
         property.downcast::<CFString>().unwrap().to_string()
     };
-
-    unsafe extern "C" {
-        fn getuid() -> u32;
-    }
 
     let mut hash = md5::Context::new();
     hash.consume(serial_number);

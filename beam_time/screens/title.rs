@@ -1,4 +1,4 @@
-use std::{mem, time::Instant};
+use std::{alloc::Layout, mem, time::Instant};
 
 use engine::{
     drawable::{spacer::Spacer, sprite::Sprite, text::Text},
@@ -21,6 +21,7 @@ use crate::{
     ui::{
         components::{
             button::{ButtonEffects, ButtonExt},
+            checkbox::checkbox,
             modal::{Modal, modal_buttons},
             slider::Slider,
         },
@@ -130,44 +131,51 @@ impl TitleScreen {
                 let body = body(size.x);
 
                 root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
-                    body("Settings")
+                    body("Options")
                         .scale(Vector2::repeat(4.0))
                         .layout(ctx, layout);
                     Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
 
-                    let mut slider_setting = |name, value: &mut f32, range: (f32, f32)| {
-                        body(name).layout(ctx, layout);
-                        let mut out = false;
-                        layout.nest(
-                            ctx,
-                            RowLayout::new(padding).justify(Justify::Center),
-                            |ctx, layout| {
-                                let slider = Slider::new(memory_key!(name))
-                                    .default(*value)
-                                    .bounds(range.0, range.1);
-                                *value = slider.value(ctx);
-                                out = slider.is_dragging(ctx);
-                                slider.layout(ctx, layout);
+                    layout.nest(ctx, RowLayout::new(padding * 4.0), |ctx, layout| {
+                        layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+                            checkbox(ctx, layout, &mut state.config.vsync, "Use VSync");
+                            checkbox(ctx, layout, &mut state.config.show_fps, "Show FPS");
+                            checkbox(ctx, layout, &mut state.config.debug, "Debug Mode");
+                        });
 
-                                Text::new(UNDEAD_FONT, format!("{value:.2}"))
-                                    .scale(Vector2::repeat(2.0))
-                                    .layout(ctx, layout);
-                            },
-                        );
-                        out
-                    };
+                        layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+                            let mut slider_setting = |name, value: &mut f32, range: (f32, f32)| {
+                                body(name).layout(ctx, layout);
+                                layout.nest(
+                                    ctx,
+                                    RowLayout::new(padding).justify(Justify::Center),
+                                    |ctx, layout| {
+                                        let slider = Slider::new(memory_key!(name))
+                                            .default(*value)
+                                            .bounds(range.0, range.1);
+                                        *value = slider.value(ctx);
+                                        slider.layout(ctx, layout);
 
-                    slider_setting(
-                        "Zoom Sensitivity",
-                        &mut state.config.zoom_sensitivity,
-                        (0.0, 2.0),
-                    );
+                                        Text::new(UNDEAD_FONT, format!("{value:.2}"))
+                                            .scale(Vector2::repeat(2.0))
+                                            .layout(ctx, layout);
+                                    },
+                                );
+                            };
 
-                    slider_setting(
-                        "Movement Speed",
-                        &mut state.config.movement_speed,
-                        (1000.0, 3000.0),
-                    );
+                            slider_setting(
+                                "Zoom Sensitivity",
+                                &mut state.config.zoom_sensitivity,
+                                (0.0, 2.0),
+                            );
+
+                            slider_setting(
+                                "Movement Speed",
+                                &mut state.config.movement_speed,
+                                (1000.0, 3000.0),
+                            );
+                        });
+                    });
 
                     let clicking = ctx.input.mouse_down(MouseButton::Left);
                     let (back, _) = modal_buttons(ctx, layout, size.x, ("Back", ""));

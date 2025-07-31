@@ -29,6 +29,10 @@ impl Screen for DebugOverlay {
             self.last_update = Instant::now();
         }
 
+        if !state.config.debug {
+            return;
+        }
+
         let (fps, sprites, scale) = (self.last_frames, ctx.sprite_count(), ctx.scale_factor);
         let text = format!(
             "FPS: {fps}\nSprites: {sprites}\nScale: {scale:.1}\n{}",
