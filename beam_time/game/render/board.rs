@@ -33,7 +33,7 @@ impl Board {
         pancam: &Pancam,
         sim: &mut Option<BeamState>,
     ) {
-        self.tick_autosave();
+        self.tick_autosave(state);
 
         let tile_size = 16.0 * pancam.scale * ctx.scale_factor;
         let half_tile = Vector2::repeat(tile_size / 2.0);

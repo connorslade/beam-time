@@ -46,7 +46,7 @@ impl Drawable for Waterfall {
         let state = memory.get_or_insert_with(self.key, WaterfallState::default);
 
         let logical_area = size.x * size.y / ctx.scale_factor.powi(2);
-        let count = (logical_area.sqrt() / 25.0) as usize;
+        let count = (logical_area.sqrt() / 30.0) as usize;
 
         let tiles = &mut state.tiles;
         let is_empty = tiles.is_empty();

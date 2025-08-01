@@ -123,11 +123,18 @@ impl Screen for CampaignScreen {
         self.worlds.clear();
 
         let campaign = state.data_dir.join("campaign");
-        if campaign.exists() {
-            for (path, meta) in load_level_dir(&campaign) {
-                let Some(level) = meta.level else { continue };
-                self.worlds.insert(level.id, (path, meta));
-            }
+        if !campaign.exists() {
+            return;
+        }
+
+        for (path, meta) in load_level_dir(&campaign) {
+            let Some(level) = meta.level else { continue };
+            self.worlds.insert(level.id, (path, meta));
+        }
+
+        #[cfg(feature = "steam")]
+        if self.all_solved() {
+            state.steam.award_achievement("campaign_complete");
         }
     }
 }
@@ -157,6 +164,17 @@ impl CampaignScreen {
                 .with_extension("bin");
             state.push_screen(GameScreen::new(board, path));
         }
+    }
+
+    #[cfg(feature = "steam")]
+    pub fn all_solved(&self) -> bool {
+        for level in self.worlds.values() {
+            if !level.1.is_solved() {
+                return false;
+            }
+        }
+
+        true
     }
 }
 

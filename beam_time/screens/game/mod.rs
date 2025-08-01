@@ -56,7 +56,7 @@ impl Screen for GameScreen {
             self.pancam.update(state, ctx);
         }
 
-        if self.needs_init {
+        if mem::take(&mut self.needs_init) {
             let pan = if let Some(size) = self.board.meta.size {
                 let tile_size = 16.0 * self.pancam.scale * ctx.scale_factor;
                 let half_board = size.map(|x| x as f32) * tile_size / 2.0;
@@ -67,19 +67,11 @@ impl Screen for GameScreen {
 
             self.pancam.pan = pan;
             self.pancam.pan_goal = pan;
-
-            self.needs_init = false;
         }
 
         let shift = ctx.input.key_down(KeyCode::ShiftLeft);
         key_events!(ctx, {
-            KeyCode::Digit0 => {
-                if shift {
-                    self.tps = f32::MAX;
-                } else {
-                    self.tps = 20.0;
-                }
-            },
+            KeyCode::Digit0 => self.tps = [20.0, f32::MAX][shift as usize],
             KeyCode::Equal => self.tps += 5.0,
             KeyCode::Minus => self.tps -= 5.0
         });

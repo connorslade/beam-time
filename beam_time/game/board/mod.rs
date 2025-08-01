@@ -13,6 +13,8 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::consts::AUTOSAVE_INTERVAL;
+#[cfg(feature = "steam")]
+use crate::{app::App, game::achievements::award_sandbox_playtime_achievements};
 use beam_logic::{level::Level, tile::Tile};
 use common::{consts::BINCODE_OPTIONS, map::Map};
 
@@ -124,10 +126,18 @@ impl Board {
         self.transient.level.map(|x| x.permanent.contains(pos)) == Some(true)
     }
 
-    pub fn tick_autosave(&mut self) {
+    #[cfg(feature = "steam")]
+    pub fn total_playtime(&self) -> u64 {
+        self.meta.playtime + self.transient.open_timestamp.elapsed().as_secs()
+    }
+
+    pub fn tick_autosave(&mut self, _app: &App) {
         if let Some(path) = &self.transient.save_path
             && self.transient.last_save.elapsed() >= AUTOSAVE_INTERVAL
         {
+            #[cfg(feature = "steam")]
+            award_sandbox_playtime_achievements(_app, self.total_playtime());
+
             trace!("Autosaving...");
             self.transient.last_save = Instant::now();
             // run async if causing issues

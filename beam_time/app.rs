@@ -85,7 +85,7 @@ impl App {
         let min_width = 400.0 * ctx.scale_factor;
         let max_width = 800.0 * ctx.scale_factor;
         Vector2::new(
-            ctx.center().x.clamp(min_width, max_width),
+            (ctx.size().x * 0.75).clamp(min_width, max_width),
             250.0 * ctx.scale_factor,
         )
     }
