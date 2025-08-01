@@ -102,6 +102,14 @@ impl InputManager {
             .any(|e| e.state == ElementState::Released && e.physical_key == key)
     }
 
+    pub fn delta_size(&self) -> Vector2<f32> {
+        if let Some(resized) = self.resized {
+            self.window_size.map(|x| x as f32) - resized.map(|x| x as f32)
+        } else {
+            Vector2::zeros()
+        }
+    }
+
     pub fn resized(&self) -> bool {
         self.resized.is_some()
     }

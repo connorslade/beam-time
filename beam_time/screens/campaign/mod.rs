@@ -61,7 +61,7 @@ impl Screen for CampaignScreen {
                 let world = self.worlds.get(&item.id);
                 let solved = world.map(|(_, meta)| meta.is_solved()) == Some(true);
 
-                let center = offset + Vector2::x() * item.offset();
+                let center = offset + Vector2::x() * item.offset() + ctx.center();
                 let text = item
                     .text
                     .clone()
@@ -99,7 +99,8 @@ impl Screen for CampaignScreen {
                 for child in item.children.iter() {
                     let offset = self.layout.rows[i + 1][*child].offset();
                     let (_, shapes) = ctx.draw_callback(|ctx| {
-                        PixelLine::new(center, Vector2::new(offset, (i + 1) as f32 * spacing))
+                        let end = Vector2::new(offset, (i + 1) as f32 * spacing) + ctx.center();
+                        PixelLine::new(center, end)
                             .color(Rgb::repeat(0.6))
                             .position(self.pancam.pan)
                             .draw(ctx)
@@ -109,6 +110,7 @@ impl Screen for CampaignScreen {
                         continue;
                     }
 
+                    // epic laser beam effect
                     for (idx, shape) in shapes.chunks_mut(4).enumerate() {
                         let frac = (idx as f32 / 50.0 * TAU * 3.0 - t * 5.0).sin() / 2.0 + 0.5;
                         let color = Rgb::hex(0xe43636).lerp(Rgb::repeat(0.0), frac * 0.5);

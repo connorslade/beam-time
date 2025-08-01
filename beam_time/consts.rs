@@ -36,7 +36,7 @@ pub const DESCRIPTION: &str = indoc! {"
     Thank you to everyone that pushed me to actually finish this project ♥. \
     Special thanks to Brandon Li (aspiringLich on GitHub) for creating the tile graphics, you do not want to see what the game looked like before.
 
-    Source code for the custom engine, leaderboard server, and the game itself is available on Github at @connorslade/beam-time.
+    This is not an open source project, however the source code for the custom engine, leaderboard server, and the game itself is available on Github at @connorslade/beam-time.
 
     Assets Used:
       • Alagard, Font by Hewett Tsoi

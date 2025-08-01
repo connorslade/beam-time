@@ -112,7 +112,11 @@ impl Modal {
 
         for sprite in sprites {
             sprite.z_index += self.layer + 1;
-            sprite.clip = clip_bounds;
+            let [min, max] = &mut sprite.clip;
+            min.x = min.x.max(clip_bounds[0].x);
+            min.y = min.y.max(clip_bounds[0].y);
+            max.x = max.x.min(clip_bounds[1].x);
+            max.y = max.y.min(clip_bounds[1].y);
         }
 
         for vert in shapes {

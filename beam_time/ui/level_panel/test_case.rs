@@ -24,7 +24,7 @@ use engine::{
     memory_key,
 };
 
-use super::{LevelPanel, horizontal_rule};
+use super::LevelPanel;
 
 impl LevelPanel {
     pub(super) fn test_case(
@@ -49,7 +49,6 @@ impl LevelPanel {
         };
 
         let scale = Vector2::repeat(4.0);
-        horizontal_rule(ctx, layout);
 
         layout.nest(
             ctx,

@@ -131,12 +131,12 @@ impl Board {
         self.meta.playtime + self.transient.open_timestamp.elapsed().as_secs()
     }
 
-    pub fn tick_autosave(&mut self, _app: &App) {
+    pub fn tick_autosave(&mut self, #[cfg(feature = "steam")] app: &App) {
         if let Some(path) = &self.transient.save_path
             && self.transient.last_save.elapsed() >= AUTOSAVE_INTERVAL
         {
             #[cfg(feature = "steam")]
-            award_sandbox_playtime_achievements(_app, self.total_playtime());
+            award_sandbox_playtime_achievements(app, self.total_playtime());
 
             trace!("Autosaving...");
             self.transient.last_save = Instant::now();

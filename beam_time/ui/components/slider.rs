@@ -58,7 +58,7 @@ impl Slider {
         ctx.memory
             .get::<SliderState>(self.key)
             .map(|x| x.t * (max - min) + min)
-            .unwrap_or(min)
+            .unwrap_or(self.default)
     }
 
     pub fn is_dragging(&self, ctx: &GraphicsContext) -> bool {
