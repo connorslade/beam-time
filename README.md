@@ -1,11 +1,13 @@
-# Beam Time
+<img src="https://github.com/user-attachments/assets/7a7d112f-d1fe-4ebc-9871-f0752f28a168" />
+
+---
 
 Beam time is a logic puzzle where you redirect and split laser beams to create digital circuits.
 It's still very unfinished, but I plan to publish it on steam when completed.
 Its made with a custom GPU accelerated game engine, just because why not.
 
 Here is an example solution for the XOR level.
-This screen recording is a bit out of date, but I don't feel like retaking it.
+This screen recording is really out of date, but I don't feel like retaking it.
 
 ![beam-time](https://files.connorcode.com/Video/beam_time_gto8PLdFqu.gif)
 
@@ -19,7 +21,8 @@ In the future I want to build a programmable computer within the sandbox.
 
 ![beam_time_USDkpuxkMO](https://github.com/user-attachments/assets/cdd9012a-4f53-487b-9c96-7de6b85262ec)
 
-## Controls
+<details>
+<summary>Controls</summary>
 
 Use WASD or middle mouse + drag to pan and scroll to zoom.
 
@@ -43,3 +46,5 @@ Use WASD or middle mouse + drag to pan and scroll to zoom.
 | <kbd>-</kbd>                  | Decrease simulation speed                       |
 | <kbd>0</kbd>                  | Reset simulation speed                          |
 | <kbd>Shift</kbd>+<kbd>0</kbd> | Max simulation speed                            |
+
+</details>
