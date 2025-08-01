@@ -75,7 +75,7 @@ impl Screen for CampaignScreen {
                     Sprite::new(CHECK)
                         .position(self.pancam.pan + center + offset, Anchor::Center)
                         .scale(Vector2::repeat(3.0))
-                        .z_index(2)
+                        .z_index(3)
                         .draw(ctx);
                 }
 
@@ -109,9 +109,10 @@ impl Screen for CampaignScreen {
                         continue;
                     }
 
-                    for (idx, shape) in shapes.iter_mut().enumerate() {
-                        let frac = (idx as f32 / 200.0 * TAU * 3.0 - t * 5.0).sin() / 2.0 + 0.5;
-                        shape.color = Rgb::hex(0xe43636).lerp(Rgb::repeat(0.0), frac * 0.5);
+                    for (idx, shape) in shapes.chunks_mut(4).enumerate() {
+                        let frac = (idx as f32 / 50.0 * TAU * 3.0 - t * 5.0).sin() / 2.0 + 0.5;
+                        let color = Rgb::hex(0xe43636).lerp(Rgb::repeat(0.0), frac * 0.5);
+                        shape.iter_mut().for_each(|x| x.color = color);
                     }
                 }
             }

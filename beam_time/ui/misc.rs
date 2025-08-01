@@ -32,6 +32,7 @@ pub fn titled_screen(
     Text::new(ALAGARD_FONT, title)
         .position(pos, Anchor::TopCenter)
         .scale(Vector2::repeat(6.0))
+        .default_shadow()
         .draw(ctx);
 
     if let Some(back) = back {

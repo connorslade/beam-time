@@ -1,5 +1,3 @@
-use std::mem;
-
 use bitflags::bitflags;
 use engine::{
     color::Rgb,
@@ -84,9 +82,10 @@ impl<T: ButtonContent + 'static> Drawable for Button<T> {
         state.hover_time = state.hover_time.clamp(0.0, 0.1);
         let t = state.hover_time / 0.1;
 
-        if hover && !mem::replace(&mut state.last_hovered, hover) {
+        if hover && !state.last_hovered {
             ctx.audio.builder(BUTTON_HOVER).with_gain(0.2).play_now();
         }
+        state.last_hovered = hover;
 
         if hover && ctx.input.mouse_pressed(MouseButton::Left) {
             ctx.audio.builder(BUTTON_CLICK).play_now();

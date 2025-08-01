@@ -2,6 +2,7 @@ use std::collections::VecDeque;
 
 use beam_logic::level::tree::LevelTree;
 use engine::{drawable::text::Text, exports::nalgebra::Vector2, graphics_context::GraphicsContext};
+use ordered_float::OrderedFloat;
 use uuid::{Uuid, uuid};
 
 use crate::assets::UNDEAD_FONT;
@@ -14,8 +15,10 @@ pub struct TreeLayout {
 pub struct TreeItem {
     pub id: Uuid,
     pub text: Text,
-    pub total_width: f32,
     pub children: Vec<usize>,
+
+    pub downstream_width: Vec<f32>,
+    pub height: u32,
 
     width: f32,
     offset: f32,
@@ -53,7 +56,8 @@ impl TreeLayout {
             rows[depth].push(TreeItem {
                 id: level.id,
                 width: text.size(ctx).x,
-                total_width: 0.0,
+                downstream_width: Vec::new(),
+                height: 1,
                 offset: 0.0,
                 parent_offset: 0.0,
                 parents: 0,
@@ -84,10 +88,11 @@ impl TreeLayout {
 }
 
 fn propagate_widths(rows: &mut [Vec<TreeItem>], spacing: f32) {
-    for depth in (0..rows.len()).rev() {
+    let row_count = rows.len();
+    for depth in (0..row_count).rev() {
         if depth + 1 == rows.len() {
             for item in rows[depth].iter_mut() {
-                item.total_width = item.width;
+                item.downstream_width.push(item.width);
             }
             continue;
         }
@@ -96,18 +101,22 @@ fn propagate_widths(rows: &mut [Vec<TreeItem>], spacing: f32) {
         let (current_row, next_row) = (&mut current_row[depth], &next_row[0]);
 
         for item in current_row {
-            let mut width = 0.0;
-            let mut siblings = 0;
+            let height = row_count - depth;
+            let mut max_height = 0;
+            let mut downstream = vec![0.0; height];
+            downstream[0] = item.width;
+            downstream[1] = spacing * (item.children.len().saturating_sub(1)) as f32;
+
             for &child in &item.children {
                 let child = &next_row[child];
-                siblings = child.parents;
-                width += child.total_width;
+                max_height = max_height.max(child.height);
+                for (idx, val) in child.downstream_width.iter().enumerate() {
+                    downstream[idx + 1] += val;
+                }
             }
 
-            width += (item.children.len().saturating_sub(1)) as f32 * spacing;
-            width /= siblings as f32;
-
-            item.total_width = width.max(item.width);
+            item.height += max_height;
+            item.downstream_width = downstream;
         }
     }
 }
@@ -118,13 +127,21 @@ fn layout_items(rows: &mut [Vec<TreeItem>], spacing: f32) {
         let (current_row, next_row) = (&current_row[depth], &mut next_row[0]);
 
         for item in current_row {
-            let mut acc = -item.total_width / 2.0;
+            let mut acc = 0.0;
+
+            for (idx, &child) in item.children.iter().enumerate() {
+                next_row[child].offset = acc;
+
+                if idx + 1 < item.children.len() {
+                    let a = next_row[item.children[idx + 1]].width(next_row[child].height) / 2.0;
+                    let b = next_row[child].width(next_row[item.children[idx + 1]].height) / 2.0;
+                    acc += a + b + spacing;
+                }
+            }
 
             for &child in &item.children {
                 let child = &mut next_row[child];
-
-                child.offset = acc + child.total_width / 2.0;
-                acc += child.total_width + spacing;
+                child.offset -= acc / 2.0;
             }
         }
     }
@@ -147,5 +164,16 @@ fn propagate_offsets(rows: &mut [Vec<TreeItem>]) {
 impl TreeItem {
     pub fn offset(&self) -> f32 {
         self.offset + self.parent_offset
+    }
+
+    pub fn width(&self, depth: u32) -> f32 {
+        self.downstream_width
+            .iter()
+            .take(depth as usize)
+            .copied()
+            .map(OrderedFloat)
+            .max()
+            .unwrap()
+            .0
     }
 }
