@@ -18,7 +18,7 @@ use engine::{
 use crate::{
     App,
     assets::{ALAGARD_FONT, UNDEAD_FONT},
-    consts::{AUTHOR_HOMEPAGE, BACKGROUND_COLOR, DESCRIPTION, GAME_HOMEPAGE, layer},
+    consts::{AUTHOR_HOMEPAGE, BACKGROUND_COLOR, DESCRIPTION, GAME_HOMEPAGE, WATERFALL, layer},
     ui::{
         components::{
             button::{ButtonEffects, ButtonExt},
@@ -50,7 +50,7 @@ impl Screen for TitleScreen {
         let (margin, padding) = state.spacing(ctx);
 
         ctx.background(BACKGROUND_COLOR);
-        Waterfall::new(&mut state.waterfall).draw(ctx);
+        Waterfall::new(WATERFALL).draw(ctx);
         self.modals(state, ctx);
 
         ctx.input
@@ -139,10 +139,6 @@ impl Screen for TitleScreen {
         );
 
         root.draw(ctx);
-    }
-
-    fn on_resize(&mut self, state: &mut App, _old_size: Vector2<f32>, _size: Vector2<f32>) {
-        state.waterfall.reset();
     }
 }
 

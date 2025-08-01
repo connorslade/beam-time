@@ -7,10 +7,7 @@ use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "steam")]
 use crate::steam::Steam;
-use crate::{
-    consts::CONFIG_FILE, leaderboard::LeaderboardManager, screens::Screen,
-    ui::waterfall::WaterfallState,
-};
+use crate::{consts::CONFIG_FILE, leaderboard::LeaderboardManager, screens::Screen};
 
 pub struct App {
     pub id: UserId,
@@ -19,7 +16,6 @@ pub struct App {
     pub leaderboard: LeaderboardManager,
 
     pub start: Instant,
-    pub waterfall: WaterfallState,
     pub debug: Vec<String>,
 
     pub config: Config,
@@ -67,7 +63,6 @@ impl App {
             leaderboard: LeaderboardManager::default(),
 
             start: Instant::now(),
-            waterfall: WaterfallState::default(),
             debug: Vec::new(),
 
             config,

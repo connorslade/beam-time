@@ -9,7 +9,7 @@ use engine::{
 use crate::{
     app::App,
     assets::{ALAGARD_FONT, BACK_BUTTON, UNDEAD_FONT},
-    consts::BACKGROUND_COLOR,
+    consts::{BACKGROUND_COLOR, WATERFALL},
 };
 
 use super::{components::button::Button, waterfall::Waterfall};
@@ -20,13 +20,12 @@ pub fn titled_screen(
     back: Option<MemoryKey>,
     title: &str,
 ) -> Vector2<f32> {
-    ctx.input.resized.is_some().then(|| state.waterfall.reset());
     ctx.input
         .key_pressed(KeyCode::Escape)
         .then(|| state.pop_screen());
 
     ctx.background(BACKGROUND_COLOR);
-    Waterfall::new(&mut state.waterfall).draw(ctx);
+    Waterfall::new(WATERFALL).draw(ctx);
 
     let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
     Text::new(ALAGARD_FONT, title)

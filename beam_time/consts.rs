@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use engine::{assets::SpriteRef, color::Rgb};
+use engine::{assets::SpriteRef, color::Rgb, memory::MemoryKey, memory_key};
 use indoc::indoc;
 use once_cell::sync::Lazy;
 use url::Url;
@@ -31,18 +31,17 @@ pub const MODAL_COLOR: Rgb<f32> = Rgb::hex(0xA6A6A6);
 pub const MODAL_BORDER_COLOR: Rgb<f32> = Rgb::hex(0x757575);
 
 pub const DESCRIPTION: &str = indoc! {"
-    Beam time is a logic puzzle about redirecting and splitting laser beams to create circuits. \
-    It's made with a custom GPU accelerated game engine, just because why not.
+    Beam time is a logic puzzle game where you redirect and split laser beams to create digital circuits.
 
-    Special thanks to Brandon Li for creating the tile graphics. (aspiringLich on GitHub)
+    Thank you to everyone that pushed me to actually finish this project ♥. \
+    Special thanks to Brandon Li (aspiringLich on GitHub) for creating the tile graphics, you do not want to see what the game looked like before.
 
-    Source code is available online on my Github at https://github.com/connorslade/beam-time.
+    Source code for the custom engine, leaderboard server, and the game itself is available on Github at @connorslade/beam-time.
 
     Assets Used:
-
-    • Alagard, Font by Hewett Tsoi
-    • Undead Pixel Light, Font by Not Jam
-    • Universal UI/Menu Soundpack, by Cyrex Studios
+      • Alagard, Font by Hewett Tsoi
+      • Undead Pixel Light, Font by Not Jam
+      • Universal UI/Menu Soundpack, by Cyrex Studios
 "};
 
 pub mod layer {
@@ -60,16 +59,15 @@ pub mod layer {
     pub const TILE_BACKGROUND: i16 = -3;
 }
 
-pub const TILES: [SpriteRef; 9] = [
-    TILE_MIRROR_A,
-    TILE_MIRROR_B,
-    TILE_SPLITTER_A,
-    TILE_SPLITTER_B,
-    TILE_WALL,
-    TILE_GALVO_UP,
-    TILE_EMITTER_UP,
-    TILE_DETECTOR,
-    TILE_DELAY,
+pub const WATERFALL: MemoryKey = memory_key!();
+pub const TILES: &[&[SpriteRef]] = &[
+    &MIRROR,
+    &SPLITTER,
+    &[TILE_WALL],
+    &GALVO,
+    &EMITTER,
+    &[TILE_DETECTOR],
+    &[TILE_DELAY],
 ];
 
 pub const GALVO: [SpriteRef; 4] = [
