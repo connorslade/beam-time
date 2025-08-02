@@ -30,6 +30,14 @@ pub const ERROR_COLOR: Rgb<f32> = Rgb::hex(0xE43636);
 pub const MODAL_COLOR: Rgb<f32> = Rgb::hex(0xA6A6A6);
 pub const MODAL_BORDER_COLOR: Rgb<f32> = Rgb::hex(0x757575);
 
+pub const KEYBINDS: &[(&str, &str)] = &[
+    ("T", "Runs test cases"),
+    ("P", "Starts simulation"),
+    ("R", "Rotates current tile"),
+    ("Q", "Copy hovered tile"),
+    ("E", "Toggle hovered emitter"),
+];
+
 pub const DESCRIPTION: &str = indoc! {"
     Beam time is a logic puzzle game where you redirect and split laser beams to create digital circuits.
 

@@ -4,17 +4,18 @@ use engine::{
     drawable::spacer::Spacer,
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, GraphicsContext},
-    layout::{Layout, LayoutElement, LayoutMethods, column::ColumnLayout, row::RowLayout},
+    layout::{Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout, row::RowLayout},
     memory_key,
 };
 
 use crate::{
     app::App,
-    consts::{ERROR_COLOR, layer},
+    consts::{ERROR_COLOR, KEYBINDS, layer},
     ui::{
         components::{
             button::{ButtonEffects, ButtonExt},
             horizontal_rule::Rule,
+            key::Key,
             modal::{Modal, modal_buttons},
             slider::Slider,
         },
@@ -55,17 +56,31 @@ impl GameScreen {
 
                     layout.nest(
                         ctx,
-                        RowLayout::new(16.0 * ctx.scale_factor),
+                        RowLayout::new(24.0 * ctx.scale_factor),
                         |ctx, layout| {
                             layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+                                Spacer::new_y(-padding / 2.0).layout(ctx, layout);
+
                                 let playtime = self.board.meta.playtime
                                     + self.board.transient.open_timestamp.elapsed().as_secs();
                                 let playtime = format!("Playtime: {}", human_duration(playtime));
                                 body(&playtime).layout(ctx, layout);
 
                                 Spacer::new_y(padding).layout(ctx, layout);
-                                body("Simulation Speed").layout(ctx, layout);
-                                Slider::new(memory_key!()).layout(ctx, layout);
+                                body("Simulation Speed (TPS)").layout(ctx, layout);
+                                layout.nest(
+                                    ctx,
+                                    RowLayout::new(padding).justify(Justify::Center),
+                                    |ctx, layout| {
+                                        let slider = Slider::new(memory_key!())
+                                            .bounds(1.0, 100.0)
+                                            .default(self.tps);
+                                        self.tps = slider.value(ctx);
+                                        slider.layout(ctx, layout);
+
+                                        body(&format!("{:.0}", self.tps)).layout(ctx, layout);
+                                    },
+                                );
 
                                 Spacer::new_y(padding / 2.0).layout(ctx, layout);
                                 let trash_button = body("Delete World")
@@ -79,13 +94,25 @@ impl GameScreen {
                             Rule::vertical(layout.available().y - 6.0 * ctx.scale_factor - padding)
                                 .layout(ctx, layout);
 
-                            layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
-                                body("Controls")
-                                    .scale(Vector2::repeat(3.0))
-                                    .layout(ctx, layout);
+                            layout.nest(ctx, ColumnLayout::new(padding / 2.0), |ctx, layout| {
+                                Spacer::new_y(0.0).layout(ctx, layout);
 
-                                body("T - Runs test cases\nP - Starts simulation\nSpace - Steps through the simulation\nQ - Copy hovered tile\nE - Toggle hovered emitter\nR - Rotates current tile")
+                                body("Use WASD or middle mouse + drag to pan and scroll to zoom.")
                                     .layout(ctx, layout);
+                                Spacer::new_y(padding / 2.0).layout(ctx, layout);
+
+                                let skip = self.board.transient.level.is_none() as usize;
+                                for (key, desc) in KEYBINDS.iter().skip(skip) {
+                                    layout.nest(
+                                        ctx,
+                                        RowLayout::new(padding / 2.0).justify(Justify::Center),
+                                        |ctx, layout| {
+                                            Key::new(key).scale(2.0).layout(ctx, layout);
+                                            body("-").layout(ctx, layout);
+                                            body(desc).layout(ctx, layout);
+                                        },
+                                    );
+                                }
                             });
                         },
                     );
