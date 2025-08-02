@@ -148,7 +148,7 @@ impl LevelPanel {
 
         let tracker = LayoutTracker::new(memory_key!());
         if let Some(bounds) = tracker.bounds(ctx) {
-            let desired = (-bounds.height() - padding) * self.collapsed as u8 as f32 - padding;
+            let desired = (-bounds.height() - padding * 2.0) * self.collapsed as u8 as f32;
 
             let offset = ctx.memory.get_or_insert(memory_key!(), 0.0);
             let last_offset = *offset;

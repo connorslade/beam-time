@@ -52,20 +52,21 @@ impl Layout for ColumnLayout {
     fn layout(&mut self, ctx: &mut GraphicsContext, element: Box<dyn LayoutElement>) {
         let mut element = SizedLayoutElement::new(ctx, element);
         let height = element.bounds.height();
+        let padding = self.padding * element.wants_padding() as u8 as f32;
 
         match self.direction {
             Direction::MinToMax => {
                 self.origin.y -= height;
                 element.translate(self.origin);
-                self.origin.y -= self.padding;
+                self.origin.y -= padding;
             }
             Direction::MaxToMin => {
                 element.translate(self.origin);
-                self.origin.y += height + self.padding;
+                self.origin.y += height + padding;
             }
         }
 
-        self.available.y -= height + self.padding;
+        self.available.y -= height + padding;
         self.container.insert(element);
     }
 

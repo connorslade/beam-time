@@ -53,20 +53,21 @@ impl Layout for RowLayout {
     fn layout(&mut self, ctx: &mut GraphicsContext, element: Box<dyn LayoutElement>) {
         let mut element = SizedLayoutElement::new(ctx, element);
         let width = element.bounds.width();
+        let padding = self.padding * element.wants_padding() as u8 as f32;
 
         match self.direction {
             Direction::MinToMax => {
                 element.translate(self.origin);
-                self.origin.x += width + self.padding;
+                self.origin.x += width + padding;
             }
             Direction::MaxToMin => {
                 self.origin.x -= width;
                 element.translate(self.origin);
-                self.origin.x -= self.padding;
+                self.origin.x -= padding;
             }
         }
 
-        self.available.x -= width + self.padding;
+        self.available.x -= width + padding;
         self.container.insert(element);
     }
 

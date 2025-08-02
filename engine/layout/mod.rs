@@ -7,6 +7,7 @@ use bounds::Bounds2D;
 pub mod bounds;
 pub mod column;
 pub mod container;
+pub mod convenience;
 pub mod root;
 pub mod row;
 pub mod tracker;
@@ -19,6 +20,12 @@ pub trait LayoutElement {
     fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D;
     /// Draws the element.
     fn draw(self: Box<Self>, ctx: &mut GraphicsContext);
+
+    /// If this elements wants the layout to add some padding between it and the
+    /// next element. True by default.
+    fn wants_padding(&self) -> bool {
+        true
+    }
 
     /// Add the element to some other layout.
     fn layout(self, ctx: &mut GraphicsContext, layout: &mut dyn Layout)
@@ -70,6 +77,7 @@ pub trait LayoutMethods: Layout {
 pub struct SizedLayoutElement {
     pub element: Box<dyn LayoutElement>,
     pub bounds: Bounds2D,
+    pub padding: bool,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -87,8 +95,11 @@ pub enum Direction {
 
 impl SizedLayoutElement {
     pub fn new(ctx: &mut GraphicsContext, element: Box<dyn LayoutElement>) -> Self {
-        let bounds = element.bounds(ctx);
-        Self { element, bounds }
+        Self {
+            bounds: element.bounds(ctx),
+            padding: element.wants_padding(),
+            element,
+        }
     }
 }
 
@@ -116,5 +127,9 @@ impl LayoutElement for SizedLayoutElement {
 
     fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
         self.element.draw(ctx);
+    }
+
+    fn wants_padding(&self) -> bool {
+        self.padding
     }
 }
