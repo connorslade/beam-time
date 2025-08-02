@@ -29,7 +29,7 @@ use engine::{
 };
 
 use super::components::{
-    horizontal_rule::HorizontalRule,
+    horizontal_rule::Rule,
     modal::{Modal, ModalSides},
 };
 
@@ -190,7 +190,7 @@ fn price(board: &Board, level: &Level) -> (u32, usize) {
 
 fn horizontal_rule(ctx: &mut GraphicsContext, layout: &mut ColumnLayout) {
     let margin = 12.0 * ctx.scale_factor;
-    HorizontalRule::new(layout.available().x + margin * 2.0)
+    Rule::horizontal(layout.available().x + margin * 2.0)
         .position(Vector2::x() * -margin)
         .margin(margin / 2.0)
         .layout(ctx, layout);

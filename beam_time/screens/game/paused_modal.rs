@@ -1,24 +1,22 @@
 use std::time::Duration;
 
 use engine::{
-    drawable::{spacer::Spacer, sprite::Sprite},
+    drawable::spacer::Spacer,
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::{Anchor, GraphicsContext},
-    layout::{
-        Direction, Layout, LayoutElement, LayoutMethods, column::ColumnLayout, row::RowLayout,
-        tracker::LayoutTracker,
-    },
+    layout::{Layout, LayoutElement, LayoutMethods, column::ColumnLayout, row::RowLayout},
     memory_key,
 };
 
 use crate::{
     app::App,
-    assets::TRASH,
-    consts::layer,
+    consts::{ERROR_COLOR, layer},
     ui::{
         components::{
-            button::ButtonExt,
+            button::{ButtonEffects, ButtonExt},
+            horizontal_rule::Rule,
             modal::{Modal, modal_buttons},
+            slider::Slider,
         },
         misc::body,
     },
@@ -53,29 +51,44 @@ impl GameScreen {
                         None => format!("Sandbox: {}", self.board.meta.name),
                     };
 
-                    layout.nest(ctx, RowLayout::new(padding), |ctx, layout| {
-                        body(&name).scale(Vector2::repeat(4.0)).layout(ctx, layout);
+                    body(&name).scale(Vector2::repeat(4.0)).layout(ctx, layout);
 
-                        layout.nest(
-                            ctx,
-                            RowLayout::new(padding).direction(Direction::MaxToMin),
-                            |ctx, layout| {
-                                let tracker = LayoutTracker::new(memory_key!());
-                                trash = tracker.clicked(ctx, MouseButton::Left);
-                                Sprite::new(TRASH)
-                                    .scale(Vector2::repeat(2.0))
+                    layout.nest(
+                        ctx,
+                        RowLayout::new(16.0 * ctx.scale_factor),
+                        |ctx, layout| {
+                            layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+                                let playtime = self.board.meta.playtime
+                                    + self.board.transient.open_timestamp.elapsed().as_secs();
+                                let playtime = format!("Playtime: {}", human_duration(playtime));
+                                body(&playtime).layout(ctx, layout);
+
+                                Spacer::new_y(padding).layout(ctx, layout);
+                                body("Simulation Speed").layout(ctx, layout);
+                                Slider::new(memory_key!()).layout(ctx, layout);
+
+                                Spacer::new_y(padding / 2.0).layout(ctx, layout);
+                                let trash_button = body("Delete World")
+                                    .color(ERROR_COLOR)
                                     .button(memory_key!())
-                                    .tracked(tracker)
-                                    .layout(ctx, layout);
-                                Spacer::new_x(layout.available().x).layout(ctx, layout);
-                            },
-                        );
-                    });
+                                    .effects(ButtonEffects::Color);
+                                trash = trash_button.is_clicked(ctx);
+                                trash_button.layout(ctx, layout);
+                            });
 
-                    let playtime = self.board.meta.playtime
-                        + self.board.transient.open_timestamp.elapsed().as_secs();
-                    let playtime = format!("Playtime: {}", human_duration(playtime));
-                    body(&playtime).layout(ctx, layout);
+                            Rule::vertical(layout.available().y - 6.0 * ctx.scale_factor - padding)
+                                .layout(ctx, layout);
+
+                            layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+                                body("Controls")
+                                    .scale(Vector2::repeat(3.0))
+                                    .layout(ctx, layout);
+
+                                body("T - Runs test cases\nP - Starts simulation\nSpace - Steps through the simulation\nQ - Copy hovered tile\nE - Toggle hovered emitter\nR - Rotates current tile")
+                                    .layout(ctx, layout);
+                            });
+                        },
+                    );
 
                     let clicking = ctx.input.mouse_down(MouseButton::Left);
                     let (exit, resume) = modal_buttons(ctx, layout, size.x, ("Exit", "Resume"));

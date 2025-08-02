@@ -6,17 +6,34 @@ use engine::{
     layout::{LayoutElement, bounds::Bounds2D},
 };
 
-pub struct HorizontalRule {
+pub struct Rule {
     position: Vector2<f32>,
+    direction: RuleDirection,
     width: f32,
     margin: f32,
     z_index: i16,
 }
 
-impl HorizontalRule {
-    pub fn new(width: f32) -> Self {
+enum RuleDirection {
+    Horizontal,
+    Vertical,
+}
+
+impl Rule {
+    pub fn horizontal(width: f32) -> Self {
         Self {
             width,
+            direction: RuleDirection::Horizontal,
+            position: Vector2::zeros(),
+            margin: 0.0,
+            z_index: 0,
+        }
+    }
+
+    pub fn vertical(height: f32) -> Self {
+        Self {
+            width: height,
+            direction: RuleDirection::Vertical,
             position: Vector2::zeros(),
             margin: 0.0,
             z_index: 0,
@@ -36,13 +53,16 @@ impl HorizontalRule {
     }
 }
 
-impl Drawable for HorizontalRule {
+impl Drawable for Rule {
     fn draw(self, ctx: &mut GraphicsContext) {
         let px = 4.0 * ctx.scale_factor;
         let dots = (self.width / px / 2.0) as u32;
 
         for i in 0..dots {
-            let offset = Vector2::new(px * 2.0 * i as f32, self.margin);
+            let offset = match self.direction {
+                RuleDirection::Horizontal => Vector2::new(px * 2.0 * i as f32, self.margin),
+                RuleDirection::Vertical => Vector2::new(self.margin, px * 2.0 * i as f32),
+            };
             Rectangle::new(Vector2::repeat(px))
                 .position(self.position + offset, Anchor::BottomLeft)
                 .color(Rgb::repeat(0.459))
@@ -52,13 +72,17 @@ impl Drawable for HorizontalRule {
     }
 }
 
-impl LayoutElement for HorizontalRule {
+impl LayoutElement for Rule {
     fn translate(&mut self, distance: Vector2<f32>) {
         self.position += distance;
     }
 
     fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
-        let size = Vector2::new(self.width, 4.0 * ctx.scale_factor + self.margin * 2.0);
+        let parallel = 4.0 * ctx.scale_factor + self.margin * 2.0;
+        let size = match self.direction {
+            RuleDirection::Horizontal => Vector2::new(self.width, parallel),
+            RuleDirection::Vertical => Vector2::new(parallel, self.width),
+        };
         Bounds2D::new(self.position, self.position + size)
     }
 
