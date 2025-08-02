@@ -48,3 +48,14 @@ Use WASD or middle mouse + drag to pan and scroll to zoom.
 | <kbd>Shift</kbd>+<kbd>0</kbd> | Max simulation speed                            |
 
 </details>
+
+<details>
+<summary>Publishing to Steam</summary>
+
+I have already forgotten how to do this like twice since starting this project, so I'm just going to write it down for next time...
+
+In the steamworks app data admin page, go to steam pipe › builds then click on 'show older builds'.
+This will give the option to upload builds from a zip.
+The zip should contain the beam_time executable along with the shared library for the current platform.
+
+</details>

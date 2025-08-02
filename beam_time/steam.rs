@@ -1,23 +1,23 @@
 use anyhow::Result;
 use log::{trace, warn};
-use steamworks::{Client, SingleClient};
+use steamworks::Client;
 
 use crate::consts::STEAM_ID;
 
 pub struct Steam {
     client: Client,
-    sync: SingleClient,
 }
 
 impl Steam {
     pub fn init() -> Result<Self> {
-        let (client, sync) = Client::init_app(STEAM_ID)?;
-        client.user_stats().request_current_stats();
-        Ok(Self { client, sync })
+        let client = Client::init_app(STEAM_ID)?;
+        let user_id = client.user().steam_id().raw();
+        client.user_stats().request_user_stats(user_id);
+        Ok(Self { client })
     }
 
     pub fn on_tick(&mut self) {
-        self.sync.run_callbacks();
+        self.client.run_callbacks();
     }
 
     pub fn user_id(&self) -> u64 {
