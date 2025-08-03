@@ -14,7 +14,7 @@ use engine::{
 
 use crate::assets::{TOGGLE_ACTIVE, TOGGLE_INACTIVE, UNDEAD_FONT};
 
-struct Checkbox {
+struct Toggle {
     value: bool,
 
     position: Vector2<f32>,
@@ -23,7 +23,7 @@ struct Checkbox {
     z_index: i16,
 }
 
-impl Checkbox {
+impl Toggle {
     pub fn new(value: bool) -> Self {
         Self {
             value,
@@ -35,7 +35,7 @@ impl Checkbox {
     }
 }
 
-impl Drawable for Checkbox {
+impl Drawable for Toggle {
     fn draw(self, ctx: &mut GraphicsContext) {
         let sprite = [TOGGLE_INACTIVE, TOGGLE_ACTIVE][self.value as usize];
         Sprite::new(sprite)
@@ -46,7 +46,7 @@ impl Drawable for Checkbox {
     }
 }
 
-impl LayoutElement for Checkbox {
+impl LayoutElement for Toggle {
     fn translate(&mut self, distance: Vector2<f32>) {
         self.position += distance;
     }
@@ -61,7 +61,7 @@ impl LayoutElement for Checkbox {
     }
 }
 
-pub fn checkbox<L: Layout + LayoutElement + 'static>(
+pub fn toggle<L: Layout + LayoutElement + 'static>(
     ctx: &mut GraphicsContext,
     layout: &mut L,
     value: &mut bool,
@@ -78,7 +78,7 @@ pub fn checkbox<L: Layout + LayoutElement + 'static>(
             .justify(Justify::Center)
             .tracked(tracker),
         |ctx, layout| {
-            Checkbox::new(*value).layout(ctx, layout);
+            Toggle::new(*value).layout(ctx, layout);
             Text::new(UNDEAD_FONT, name)
                 .scale(Vector2::repeat(2.0))
                 .layout(ctx, layout);

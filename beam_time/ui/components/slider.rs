@@ -1,16 +1,20 @@
 use common::misc::in_bounds;
 use engine::{
-    drawable::{shape::rectangle::Rectangle, sprite::Sprite},
+    drawable::{shape::rectangle::Rectangle, sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, window::CursorIcon},
     },
     graphics_context::{Anchor, Drawable, GraphicsContext},
-    layout::{LayoutElement, bounds::Bounds2D},
+    layout::{Justify, Layout, LayoutElement, LayoutMethods, bounds::Bounds2D, row::RowLayout},
     memory::{Memory, MemoryKey},
+    memory_key,
 };
 
-use crate::{assets::SLIDER_HANDLE, consts::MODAL_BORDER_COLOR};
+use crate::{
+    assets::{SLIDER_HANDLE, UNDEAD_FONT},
+    consts::MODAL_BORDER_COLOR,
+};
 
 pub struct Slider {
     position: Vector2<f32>,
@@ -134,4 +138,30 @@ impl LayoutElement for Slider {
     fn draw(self: Box<Self>, ctx: &mut GraphicsContext) {
         (*self).draw(ctx);
     }
+}
+
+pub fn slider<L: Layout + LayoutElement + 'static>(
+    (ctx, layout): (&mut GraphicsContext, &mut L),
+    name: &str,
+    value: &mut f32,
+    range: (f32, f32),
+) {
+    Text::new(UNDEAD_FONT, name)
+        .scale(Vector2::repeat(2.0))
+        .layout(ctx, layout);
+    layout.nest(
+        ctx,
+        RowLayout::new(10.0 * ctx.scale_factor).justify(Justify::Center),
+        |ctx, layout| {
+            let slider = Slider::new(memory_key!(name))
+                .default(*value)
+                .bounds(range.0, range.1);
+            *value = slider.value(ctx);
+            slider.layout(ctx, layout);
+
+            Text::new(UNDEAD_FONT, format!("{value:.2}"))
+                .scale(Vector2::repeat(2.0))
+                .layout(ctx, layout);
+        },
+    );
 }

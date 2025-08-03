@@ -34,7 +34,7 @@ impl Drawable for Key {
             .scale(Vector2::repeat(self.scale))
             .draw(ctx);
 
-        let center = self.pos + Vector2::new(4.0, 6.0) * self.scale * ctx.scale_factor;
+        let center = self.pos + Vector2::new(4.5, 6.0) * self.scale * ctx.scale_factor;
         Text::new(UNDEAD_FONT, self.text)
             .position(center, Anchor::Center)
             .scale(Vector2::repeat(self.scale))

@@ -9,7 +9,7 @@ use engine::{
     },
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{
-        Justify, LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout,
+        Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout,
         row::RowLayout,
     },
     memory_key,
@@ -22,9 +22,10 @@ use crate::{
     ui::{
         components::{
             button::{ButtonEffects, ButtonExt},
-            checkbox::checkbox,
+            horizontal_rule::Rule,
             modal::{Modal, modal_buttons},
-            slider::Slider,
+            slider::slider,
+            toggle::toggle,
         },
         misc::body,
         waterfall::Waterfall,
@@ -168,44 +169,35 @@ impl TitleScreen {
                     .layout(ctx, layout);
                 Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
 
-                layout.nest(ctx, RowLayout::new(padding * 4.0), |ctx, layout| {
+                layout.nest(ctx, RowLayout::new(padding * 2.4), |ctx, layout| {
                     layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
-                        checkbox(ctx, layout, &mut state.config.vsync, "Use VSync");
-                        checkbox(ctx, layout, &mut state.config.show_fps, "Show FPS");
-                        checkbox(ctx, layout, &mut state.config.debug, "Debug Mode");
+                        toggle(ctx, layout, &mut state.config.vsync, "Use VSync");
+                        toggle(ctx, layout, &mut state.config.show_fps, "Show FPS");
+
+                        Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
+                        slider((ctx, layout), "Max Framerate", &mut 0.0, (10.0, 250.0));
                     });
 
+                    Rule::vertical(layout.available().y - 6.0 * ctx.scale_factor - padding)
+                        .layout(ctx, layout);
+
                     layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
-                        let mut slider_setting = |name, value: &mut f32, range: (f32, f32)| {
-                            body(name).layout(ctx, layout);
-                            layout.nest(
-                                ctx,
-                                RowLayout::new(padding).justify(Justify::Center),
-                                |ctx, layout| {
-                                    let slider = Slider::new(memory_key!(name))
-                                        .default(*value)
-                                        .bounds(range.0, range.1);
-                                    *value = slider.value(ctx);
-                                    slider.layout(ctx, layout);
-
-                                    Text::new(UNDEAD_FONT, format!("{value:.2}"))
-                                        .scale(Vector2::repeat(2.0))
-                                        .layout(ctx, layout);
-                                },
-                            );
-                        };
-
-                        slider_setting(
+                        slider(
+                            (ctx, layout),
                             "Zoom Sensitivity",
                             &mut state.config.zoom_sensitivity,
                             (0.0, 2.0),
                         );
 
-                        slider_setting(
+                        slider(
+                            (ctx, layout),
                             "Movement Speed",
                             &mut state.config.movement_speed,
                             (1000.0, 3000.0),
                         );
+
+                        Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
+                        toggle(ctx, layout, &mut state.config.debug, "Debug Mode");
                     });
                 });
 

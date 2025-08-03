@@ -30,11 +30,14 @@ impl BeamState {
         let mut working = self.board.clone();
 
         for (pos, tile) in self.board.iter() {
+            if let BeamTile::Delay { .. } = tile {
+                let (powered, last_powered) = working.get_mut(pos).delay_mut();
+                *last_powered = *powered;
+            }
+        }
+
+        for (pos, tile) in self.board.iter() {
             match tile {
-                BeamTile::Delay { .. } => {
-                    let (powered, last_powered) = working.get_mut(pos).delay_mut();
-                    *last_powered = *powered;
-                }
                 // Mirrors will reflect beams based on the
                 // MIRROR_REFLECTIONS table. Powered is an array of two
                 // because rotation state of the mirror has a top and
@@ -179,14 +182,6 @@ impl BeamState {
                     active: true,
                 } => {
                     self.power(&mut working, pos, direction);
-                }
-                BeamTile::Delay { last_powered, .. } => {
-                    for dir in last_powered.iter() {
-                        self.power(&mut working, pos, dir);
-                    }
-
-                    let (powered, _) = working.get_mut(pos).delay_mut();
-                    self.track_powered(powered, pos);
                 }
                 BeamTile::Wall { .. } | BeamTile::Detector { .. } => {
                     self.track_powered(working.get_mut(pos).directions_mut(), pos)
