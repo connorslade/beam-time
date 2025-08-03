@@ -25,14 +25,15 @@ define_refs! {
         BIG_RIGHT_ARROW,
         LEFT_ARROW,
         RIGHT_ARROW,
-        LEVEL_DROPDOWN_ARROW,
+        BACK_ARROW,
         HISTOGRAM_MARKER,
         TRASH,
         SLIDER_HANDLE,
         CHECK,
-        CHECKBOX,
         COLLAPSE,
         KEYBOARD_BUTTON,
+        TOGGLE_ACTIVE,
+        TOGGLE_INACTIVE,
 
         EMPTY_TILE_A,
         EMPTY_TILE_B,
@@ -92,14 +93,15 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, BIG_RIGHT_ARROW, (16, 64), (11, 9));
     assets.register_sprite(interface, LEFT_ARROW, (16, 74), (3, 6));
     assets.register_sprite(interface, RIGHT_ARROW, (20, 74), (3, 6));
-    assets.register_sprite(interface, LEVEL_DROPDOWN_ARROW, (28, 65), (3, 6));
+    assets.register_sprite(interface, BACK_ARROW, (28, 73), (3, 5));
     assets.register_sprite(interface, HISTOGRAM_MARKER, (24, 76), (5, 4));
     assets.register_sprite(interface, TRASH, (32, 72), (7, 8));
     assets.register_sprite(interface, SLIDER_HANDLE, (40, 74), (4, 6));
     assets.register_sprite(interface, CHECK, (32, 64), (5, 5));
-    assets.register_sprite(interface, CHECKBOX, (38, 64), (6, 6));
     assets.register_sprite(interface, COLLAPSE, (16, 81), (5, 6));
     assets.register_sprite(interface, KEYBOARD_BUTTON, (23, 80), (9, 11));
+    assets.register_sprite(interface, TOGGLE_ACTIVE, (33, 87), (8, 5));
+    assets.register_sprite(interface, TOGGLE_INACTIVE, (33, 81), (8, 5));
 
     let tiles = assets.register_atlas(include_atlas!("textures/tilemap.png"));
     assets.register_sprite(tiles, EMPTY_TILE_A, (0, 288), (16, 16));

@@ -84,7 +84,6 @@ impl Screen for GameScreen {
 
         if sim.beam.is_none() && ctx.input.key_pressed(KeyCode::Escape) {
             self.paused = self.paused.is_none().then_some(PausedModal {});
-            // ctx.pop_screen();
         }
 
         let space_pressed = ctx.input.key_pressed(KeyCode::Space);

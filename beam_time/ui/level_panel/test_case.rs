@@ -5,7 +5,7 @@ use crate::{
         BIG_RIGHT_ARROW, HISTOGRAM_MARKER, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR,
         TILE_EMITTER_DOWN, UNDEAD_FONT,
     },
-    ui::misc::tile_label,
+    ui::{level_panel::horizontal_rule, misc::tile_label},
 };
 use beam_logic::{
     level::{ElementLocation, Level, case::CasePreview},
@@ -49,6 +49,7 @@ impl LevelPanel {
         };
 
         let scale = Vector2::repeat(4.0);
+        horizontal_rule(ctx, layout);
 
         layout.nest(
             ctx,

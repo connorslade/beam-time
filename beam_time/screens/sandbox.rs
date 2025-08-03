@@ -1,4 +1,4 @@
-use std::{f32::consts::PI, path::PathBuf};
+use std::path::PathBuf;
 
 use common::misc::in_bounds;
 use engine::{
@@ -16,7 +16,7 @@ use engine::{
 
 use crate::{
     App,
-    assets::{BACK_BUTTON, CREATE_BUTTON, LEVEL_DROPDOWN_ARROW, UNDEAD_FONT},
+    assets::{BACK_BUTTON, CREATE_BUTTON, UNDEAD_FONT},
     consts::{ERROR_COLOR, layer},
     game::board::{Board, BoardMeta},
     screens::game::GameScreen,
@@ -38,7 +38,6 @@ pub struct SandboxScreen {
     world_dir: PathBuf,
     worlds: Vec<(PathBuf, BoardMeta)>,
 
-    dropdown_angle: f32,
     create: Option<CreateModal>,
 }
 
@@ -65,8 +64,7 @@ impl Screen for SandboxScreen {
                 let pos =
                     ctx.center() + Vector2::new(0.0, total_height / 2.0 - line_spacing * i as f32);
 
-                let text = format!("{} . . . . . . . . . . .", meta.name);
-                let mut text = Text::new(UNDEAD_FONT, &text)
+                let mut text = Text::new(UNDEAD_FONT, &meta.name)
                     .position(pos, Anchor::Center)
                     .scale(Vector2::repeat(SCALE));
 
@@ -82,27 +80,6 @@ impl Screen for SandboxScreen {
                 }
 
                 text.draw(ctx);
-
-                let dropdown = Sprite::new(LEVEL_DROPDOWN_ARROW)
-                    .scale(Vector2::repeat(4.0))
-                    .position(
-                        pos + Vector2::new(
-                            size.x / 2.0 + 16.0 * ctx.scale_factor,
-                            -4.0 * ctx.scale_factor,
-                        ),
-                        Anchor::CenterLeft,
-                    )
-                    .rotate(-self.dropdown_angle, Anchor::Center);
-
-                self.dropdown_angle =
-                    if in_bounds(ctx.input.mouse, (pos - size / 2.0, pos + size / 2.0)) {
-                        self.dropdown_angle + (PI / 2.0) * ctx.delta_time * 4.0
-                    } else {
-                        self.dropdown_angle - (PI / 2.0) * ctx.delta_time * 4.0
-                    }
-                    .clamp(0.0, PI / 2.0);
-
-                dropdown.draw(ctx);
             }
         }
 

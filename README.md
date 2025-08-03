@@ -11,7 +11,7 @@ It's your job to use some combination of mirrors, beam splitters, delay gates, a
 
 Here are all seven in-game components from left to right: emitter, galvo (rotates the mirror it’s facing when powered with a beam), splitter, mirror, delay, wall, detector. With just these few components, It's possible to perform any computation.
 
-![Tiles](https://github.com/user-attachments/assets/be140531-560b-491c-be93-ba8bf985dddd)
+![Tiles](https://github.com/user-attachments/assets/5a59ce18-30b6-4d62-b6ce-6b04fc648a01)
 
 The game also features a sandbox mode where you can build whatever you want.
 Below is an implementation of the one-dimensional elementary cellular automaton [Rule 30](https://en.wikipedia.org/wiki/Rule_30).

@@ -12,7 +12,7 @@ use engine::{
     memory_key,
 };
 
-use crate::assets::{CHECK, CHECKBOX, UNDEAD_FONT};
+use crate::assets::{TOGGLE_ACTIVE, TOGGLE_INACTIVE, UNDEAD_FONT};
 
 struct Checkbox {
     value: bool,
@@ -37,20 +37,12 @@ impl Checkbox {
 
 impl Drawable for Checkbox {
     fn draw(self, ctx: &mut GraphicsContext) {
-        Sprite::new(CHECKBOX)
+        let sprite = [TOGGLE_INACTIVE, TOGGLE_ACTIVE][self.value as usize];
+        Sprite::new(sprite)
             .position(self.position, self.anchor)
             .scale(Vector2::repeat(self.scale))
             .z_index(self.z_index)
             .draw(ctx);
-
-        if self.value {
-            let px = self.scale * ctx.scale_factor;
-            Sprite::new(CHECK)
-                .position(self.position + Vector2::repeat(px), self.anchor)
-                .scale(Vector2::repeat(self.scale))
-                .z_index(self.z_index)
-                .draw(ctx);
-        }
     }
 }
 
@@ -60,7 +52,7 @@ impl LayoutElement for Checkbox {
     }
 
     fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
-        let size = Vector2::repeat(6.0) * self.scale * ctx.scale_factor;
+        let size = Vector2::new(8.0, 5.0) * self.scale * ctx.scale_factor;
         Bounds2D::new(Vector2::zeros(), size).translated(self.position)
     }
 

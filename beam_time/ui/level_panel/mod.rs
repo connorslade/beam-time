@@ -169,7 +169,6 @@ impl LevelPanel {
         }
 
         desc.tracked(tracker).layout(ctx, layout);
-        horizontal_rule(ctx, layout);
     }
 }
 

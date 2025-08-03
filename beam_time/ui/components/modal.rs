@@ -15,7 +15,7 @@ use engine::{
 };
 
 use crate::{
-    assets::LEVEL_DROPDOWN_ARROW,
+    assets::BACK_ARROW,
     consts::{ACCENT_COLOR, MODAL_BORDER_COLOR, MODAL_COLOR},
     ui::misc::body,
 };
@@ -164,7 +164,7 @@ pub fn modal_buttons(
                 .direction(direction)
                 .tracked(tracker),
             |ctx, layout| {
-                Sprite::new(LEVEL_DROPDOWN_ARROW)
+                Sprite::new(BACK_ARROW)
                     .scale(Vector2::repeat(2.0))
                     .color(color)
                     .rotate(PI * rotation as u8 as f32, Anchor::Center)
