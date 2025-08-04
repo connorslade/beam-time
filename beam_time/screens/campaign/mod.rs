@@ -10,12 +10,13 @@ use engine::{
         winit::{event::MouseButton, keyboard::KeyCode, window::CursorIcon},
     },
     graphics_context::{Anchor, Drawable, GraphicsContext},
+    layout::{LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout},
 };
 use uuid::Uuid;
 
 use crate::{
     app::App,
-    assets::{ALAGARD_FONT, CHECK},
+    assets::{ALAGARD_FONT, CHECK, UNDEAD_FONT},
     consts::BACKGROUND_COLOR,
     game::{
         board::{Board, BoardMeta, LevelMeta},
@@ -43,16 +44,31 @@ impl Screen for CampaignScreen {
         ctx.background(BACKGROUND_COLOR);
         let t = state.start.elapsed().as_secs_f32();
 
+        let (_, padding) = state.spacing(ctx);
+        let spacing = 64.0 * ctx.scale_factor;
+
         let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
-        Text::new(ALAGARD_FONT, "Campaign")
-            .position(pos, Anchor::TopCenter)
-            .scale(Vector2::repeat(6.0))
-            .z_index(4)
-            .default_shadow()
-            .draw(ctx);
+        let mut root = RootLayout::new(pos, Anchor::TopCenter);
+        root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+            Text::new(ALAGARD_FONT, "Campaign")
+                .scale(Vector2::repeat(6.0))
+                .z_index(4)
+                .default_shadow()
+                .layout(ctx, layout);
+
+            let percent = self.solved_count() as f32 / self.tree.count() as f32 * 100.0;
+            Text::new(UNDEAD_FONT, format!("{percent:.0}% Complete"))
+                .scale(Vector2::repeat(2.0))
+                .position(Vector2::x() * padding, Anchor::BottomLeft)
+                .z_index(4)
+                .default_shadow()
+                .layout(ctx, layout);
+        });
+
+        root.draw(ctx);
 
         self.pancam.update(state, ctx);
-        let spacing = 64.0 * ctx.scale_factor;
+        self.pancam.pan.y = 0.0;
 
         ctx.input
             .key_pressed(KeyCode::Escape)
@@ -62,15 +78,16 @@ impl Screen for CampaignScreen {
             self.layout = TreeLayout::generate(&self.tree, ctx);
         }
 
+        let origin = Vector2::new(ctx.center().x, spacing);
         for (i, row) in self.layout.rows.iter().enumerate() {
-            let offset = Vector2::y() * i as f32 * spacing;
+            let offset = origin + Vector2::y() * i as f32 * spacing;
 
             for item in row {
                 let available = self.is_available(item.id);
                 let world = self.worlds.get(&item.id);
                 let solved = world.map(|(_, meta)| meta.is_solved()) == Some(true);
 
-                let center = offset + Vector2::x() * item.offset() + ctx.center();
+                let center = offset + Vector2::x() * item.offset();
                 let text = item.text.clone();
                 let text = text
                     .position(self.pancam.pan + center, Anchor::Center)
@@ -107,11 +124,22 @@ impl Screen for CampaignScreen {
                 for child in item.children.iter() {
                     let offset = self.layout.rows[i + 1][*child].offset();
                     let (_, shapes) = ctx.draw_callback(|ctx| {
-                        let end = Vector2::new(offset, (i + 1) as f32 * spacing) + ctx.center();
-                        PixelLine::new(center, end)
+                        let end = origin + Vector2::new(offset, (i + 1) as f32 * spacing);
+                        let mid = (center + end) / 2.0;
+
+                        // todo: like optimize this or smth
+                        PixelLine::new(center, Vector2::new(center.x, mid.y))
                             .color(Rgb::repeat(0.6))
                             .position(self.pancam.pan)
-                            .draw(ctx)
+                            .draw(ctx);
+                        PixelLine::new(Vector2::new(center.x, mid.y), Vector2::new(end.x, mid.y))
+                            .color(Rgb::repeat(0.6))
+                            .position(self.pancam.pan)
+                            .draw(ctx);
+                        PixelLine::new(Vector2::new(end.x, mid.y), end)
+                            .color(Rgb::repeat(0.6))
+                            .position(self.pancam.pan)
+                            .draw(ctx);
                     });
 
                     if !solved {
@@ -192,6 +220,10 @@ impl CampaignScreen {
         parents.is_empty()
     }
 
+    fn solved_count(&self) -> usize {
+        self.worlds.values().filter(|(_, x)| !x.is_solved()).count()
+    }
+
     #[cfg(feature = "steam")]
     fn all_solved(&self) -> bool {
         for level in self.worlds.values() {
@@ -200,7 +232,7 @@ impl CampaignScreen {
             }
         }
 
-        true
+        !self.worlds.is_empty()
     }
 }
 

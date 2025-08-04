@@ -136,6 +136,10 @@ impl Level {
         let ron = Options::default().with_default_extension(Extensions::IMPLICIT_SOME);
         Ok(ron.from_bytes(slice)?)
     }
+
+    pub fn is_dynamic(&self, id: u32) -> bool {
+        self.tests.detectors.contains(&id) || self.tests.lasers.contains(&id)
+    }
 }
 
 impl DynamicElementMap {

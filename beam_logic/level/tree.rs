@@ -38,4 +38,8 @@ impl LevelTree {
     pub fn children(&self, parent: Uuid) -> Option<&Vec<Uuid>> {
         self.tree.get(&parent)
     }
+
+    pub fn count(&self) -> usize {
+        self.map.len()
+    }
 }

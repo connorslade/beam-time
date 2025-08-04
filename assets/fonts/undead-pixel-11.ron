@@ -86,6 +86,7 @@ FontDescriptor(
         '#': (uv: (110, 18), size: (5, 6)),
         '@': (uv: (116, 18), size: (5, 6)),
         '+': (uv: (122, 19), size: (3, 4)),
+        '%': (uv: (126, 17), size: (3, 6)),
 
         '🔒': (uv: (0, 25), size: (4, 6)),
         '•': (uv: (5, 28), size: (3, 4)),
@@ -94,7 +95,7 @@ FontDescriptor(
         '©': (uv: (22, 25), size: (6, 7), baseline_shift: -1),
         '♥': (uv: (29, 26), size: (7, 6))
     },
-    unknown: (uv: (127, 22), size: (8, 10), baseline_shift: -2),
+    unknown: (uv: (132, 22), size: (8, 10), baseline_shift: -2),
     height: 6,
     leading: 3,
     space_width: 3,
