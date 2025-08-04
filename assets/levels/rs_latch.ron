@@ -2,7 +2,7 @@ Level(
     id: "f4444a1c-d2a8-4a7a-b311-ec39322c1776",
     name: "RS Latch",
     description: "Create a latch that turns on when input S is active and resets when input R is.",
-    parents: [ "6ac2dff9-0ac7-4df7-9c1a-c7cb1c3dfbe6" ],
+    parents: [ "86456173-e27c-4918-ae11-ef5a36147037" ], // ← synchronization
 
     size: (6, 6),
     permanent: [ (0, 5), (1, 5), (5, 0) ],

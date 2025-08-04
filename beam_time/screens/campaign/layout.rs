@@ -115,8 +115,8 @@ fn propagate_widths(rows: &mut [Vec<TreeItem>], spacing: f32) {
                 }
             }
 
-            // let max = downstream.iter().copied().map(OrderedFloat).max().unwrap();
-            // downstream[0] = downstream[0].max(*max / 2.0);
+            let max = downstream.iter().copied().map(OrderedFloat).max().unwrap();
+            downstream[0] = downstream[0].max(*max / 2.0);
             item.height += max_height;
             item.downstream_width = downstream;
         }

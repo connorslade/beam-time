@@ -2,7 +2,7 @@ Level(
     id: "d1d080f7-06c4-421d-9125-dceadc5b6f32",
     name: "Even Oscillators",
     description: "Build three oscillators with (from left to right) periods of 16, 12, and 8.\n\nThe initial pulses from each oscillator must all hit their corresponding detectors in the same tick.",
-    parents: [ "86456173-e27c-4918-ae11-ef5a36147037" ],
+    parents: [ "aa28086a-564e-46d3-9233-894c157d92fe" ], // ← basic_oscillator
 
     size: (6, 6),
     permanent: [ (3, 0), (4, 0), (5, 0) ],

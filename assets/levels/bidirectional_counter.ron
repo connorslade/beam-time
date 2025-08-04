@@ -2,7 +2,7 @@ Level(
     id: "9dcb218d-c18c-4a7a-8979-9572322f5460",
     name: "Bidirectional Counter",
     description: "",
-    parents: [ "fc3b280e-6a80-41d2-84d1-c8fa55a3946f" ],
+    parents: [ "fc3b280e-6a80-41d2-84d1-c8fa55a3946f" ], // ← counter
 
     size: None,
     permanent: [ ],

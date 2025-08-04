@@ -6,7 +6,7 @@ Level(
 
         The parity of a bit-string is 1 if there is an even number of 1s in the string, and 0 if there is an odd number of 1s.
         ",
-    parents: [ ],
+    parents: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ], // ← xor_gate
 
     size: None,
     permanent: [ ],

@@ -1,8 +1,8 @@
 Level(
-    id: "2052ed73-edaf-45b7-8f2f-43993d558ff4",
-    name: "Adder",
+    id: "597b1d3d-0441-460f-870d-ed77749a07d7",
+    name: "Adder Subtractor",
     description: "",
-    parents: [ "52108765-b8d2-47cf-a0c7-36b3b73cc644" ], // ← double_it
+    parents: [ "ca887bfe-5c8c-425d-b414-265e6d8c909e" ], // ← full_adder
 
     size: None,
     permanent: [ ],
@@ -16,16 +16,11 @@ Level(
         Dynamic(6): "2",
         Dynamic(7): "1",
 
-        Dynamic(8): "128",
-        Dynamic(9): "64",
-        Dynamic(10): "32",
-        Dynamic(11): "16",
-        Dynamic(12): "8",
-        Dynamic(13): "4",
-        Dynamic(14): "2",
-        Dynamic(15): "1",
+        Dynamic(8): "4",
+        Dynamic(9): "2",
+        Dynamic(10): "1",
     },
-    disabled: [ Detector, Delay ],
+    disabled: [ ],
     tiles: {
         (0, 4): Emitter( rotation: Down, active: true, id: 0 ),
         (1, 4): Emitter( rotation: Down, active: true, id: 1 ),
@@ -38,23 +33,13 @@ Level(
 
         (0, 0): Detector( id: 8 ),
         (1, 0): Detector( id: 9 ),
-        (2, 0): Detector( id: 10 ),
-        (3, 0): Detector( id: 11 ),
-        (4, 0): Detector( id: 12 ),
-        (5, 0): Detector( id: 13 ),
-        (6, 0): Detector( id: 14 ),
-        (7, 0): Detector( id: 15 ),
+        (2, 0): Detector( id: 10 )
     },
 
     tests: Tests(
         lasers: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
-        detectors: [ 8, 9, 10, 11, 12, 13, 14, 15 ],
+        detectors: [ 8, 9, 10 ],
 
-        cases: [
-            Cycle(
-                lasers: [ false, false, false, false, false, false, false, false ],
-                detectors: [ [ false, false, false, false, false, false, false, false ] ],
-            )
-        ]
+        cases: [ ]
     )
 )

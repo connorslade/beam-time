@@ -47,6 +47,7 @@ impl Screen for CampaignScreen {
         Text::new(ALAGARD_FONT, "Campaign")
             .position(pos, Anchor::TopCenter)
             .scale(Vector2::repeat(6.0))
+            .z_index(4)
             .default_shadow()
             .draw(ctx);
 

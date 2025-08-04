@@ -1,0 +1,42 @@
+Level(
+    id: "2bf07b89-a458-45f9-a65c-7fe416870323",
+    name: "Paralel to Serial",
+    description: "",
+    parents: [ "fe48e117-1114-417a-b72b-d80c239797c9" ], // ← shift_register
+
+    size: None,
+    permanent: [ ],
+    labels: {
+        Dynamic(0): "d1",
+        Dynamic(1): "d2",
+        Dynamic(2): "d3",
+        Dynamic(3): "d4",
+        Dynamic(4): "d5",
+        Dynamic(5): "d6",
+        Dynamic(6): "d7",
+        Dynamic(7): "d8",
+
+        Dynamic(8): "OUT",
+        Dynamic(9): "CLK",
+    },
+    tiles: {
+        (0, 5): Emitter( rotation: Down, active: true, id: 0 ),
+        (1, 5): Emitter( rotation: Down, active: true, id: 1 ),
+        (2, 5): Emitter( rotation: Down, active: true, id: 2 ),
+        (3, 5): Emitter( rotation: Down, active: true, id: 3 ),
+        (4, 5): Emitter( rotation: Down, active: true, id: 4 ),
+        (5, 5): Emitter( rotation: Down, active: true, id: 5 ),
+        (6, 5): Emitter( rotation: Down, active: true, id: 6 ),
+        (7, 5): Emitter( rotation: Down, active: true, id: 7 ),
+
+        (0, 0): Detector( id: 8 ),
+        (1, 0): Detector( id: 9 ),
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
+        detectors: [ 8, 9 ],
+
+        cases: [ ]
+    )
+)

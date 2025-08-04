@@ -2,7 +2,7 @@ Level(
     id: "6ac2dff9-0ac7-4df7-9c1a-c7cb1c3dfbe6",
     name: "T Flip Flop",
     description: "When the input is enabled (rising edge) the output value should be toggled. The output should be disabled by default.",
-    parents: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ],
+    parents: [ "f4444a1c-d2a8-4a7a-b311-ec39322c1776" ], // ← rs_latch
 
     size: (6, 6),
     permanent: [ (0, 5), (5, 0) ],

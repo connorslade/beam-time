@@ -1,0 +1,36 @@
+Level(
+    id: "ea9291be-554b-451f-9699-b2f410c02af1",
+    name: "Grey Encode",
+    description: "",
+    parents: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ], // ← xor_gate
+
+    size: None,
+    permanent: [ ],
+    labels: { },
+    tiles: {
+        (0, 9): Emitter( rotation: Down, active: true, id: 0 ),
+        (1, 9): Emitter( rotation: Down, active: true, id: 1 ),
+        (2, 9): Emitter( rotation: Down, active: true, id: 2 ),
+        (3, 9): Emitter( rotation: Down, active: true, id: 3 ),
+        (4, 9): Emitter( rotation: Down, active: true, id: 4 ),
+        (5, 9): Emitter( rotation: Down, active: true, id: 5 ),
+        (6, 9): Emitter( rotation: Down, active: true, id: 6 ),
+        (7, 9): Emitter( rotation: Down, active: true, id: 7 ),
+
+        (0, 0): Detector( id: 8 ),
+        (1, 0): Detector( id: 9 ),
+        (2, 0): Detector( id: 10 ),
+        (3, 0): Detector( id: 11 ),
+        (4, 0): Detector( id: 12 ),
+        (5, 0): Detector( id: 13 ),
+        (6, 0): Detector( id: 14 ),
+        (7, 0): Detector( id: 15 ),
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
+        detectors: [ 8, 9, 10, 11, 12, 13, 14, 15 ],
+
+        cases: [ ]
+    )
+)

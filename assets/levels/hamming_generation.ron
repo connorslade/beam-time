@@ -2,7 +2,7 @@ Level(
     id: "a2f4358f-b86e-45da-b4cb-23c5819a79e7",
     name: "Hamming Generation",
     description: "",
-    parents: [ ],
+    parents: [ "c98218bd-937b-4a60-a94c-a51d677c61b1" ], // ← parity_bit
 
     size: None,
     permanent: [ ],

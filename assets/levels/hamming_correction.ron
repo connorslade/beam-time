@@ -2,7 +2,7 @@ Level(
     id: "12beb169-a85c-4235-98eb-3851864a61f8",
     name: "Hamming Correction",
     description: "",
-    parents: [ "a2f4358f-b86e-45da-b4cb-23c5819a79e7" ],
+    parents: [ "a2f4358f-b86e-45da-b4cb-23c5819a79e7" ], // ← hamming_generation
 
     size: None,
     permanent: [ ],
@@ -33,7 +33,7 @@ Level(
         (0, 0): Detector( id: 7 ),
         (1, 0): Detector( id: 8 ),
         (2, 0): Detector( id: 9 ),
-        (3, 0): Detector( id: 10 )
+        (3, 0): Detector( id: 10 ),
         (5, 0): Detector( id: 11 )
     },
 

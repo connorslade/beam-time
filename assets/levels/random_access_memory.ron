@@ -1,0 +1,61 @@
+Level(
+    id: "bb524613-e8d0-4d29-b61a-ec30b9accd90",
+    name: "Random Access Memory",
+    description: "",
+    parents: [ "f36846af-910b-4aec-8ed0-7e3deca17251" ], // ← read_only_memory
+
+    size: None,
+    permanent: [ ],
+    labels: {
+        Dynamic(0): "a4",
+        Dynamic(1): "a2",
+        Dynamic(2): "a1",
+
+        Dynamic(3): "MODE",
+        Dynamic(4): "ENBL",
+
+        Dynamic(5): "d128",
+        Dynamic(6): "d64",
+        Dynamic(7): "d32",
+        Dynamic(8): "d16",
+        Dynamic(9): "d8",
+        Dynamic(10): "d4",
+        Dynamic(11): "d2",
+        Dynamic(12): "d1",
+
+    },
+    disabled: [ ],
+    tiles: {
+        (0, 5): Emitter( rotation: Down, active: false, id: 0 ),
+        (1, 5): Emitter( rotation: Down, active: false, id: 1 ),
+        (2, 5): Emitter( rotation: Down, active: false, id: 2 ),
+
+        (4, 5): Emitter( rotation: Down, active: false, id: 3 ),
+        (5, 5): Emitter( rotation: Down, active: false, id: 4 ),
+
+        (7, 5): Emitter( rotation: Down, active: false, id: 5 ),
+        (8, 5): Emitter( rotation: Down, active: false, id: 6 ),
+        (9, 5): Emitter( rotation: Down, active: false, id: 7 ),
+        (10, 5): Emitter( rotation: Down, active: false, id: 8 ),
+        (11, 5): Emitter( rotation: Down, active: false, id: 9 ),
+        (12, 5): Emitter( rotation: Down, active: false, id: 10 ),
+        (13, 5): Emitter( rotation: Down, active: false, id: 11 ),
+        (14, 5): Emitter( rotation: Down, active: false, id: 12 ),
+
+        (0, 0): Detector( id: 13 ),
+        (1, 0): Detector( id: 14 ),
+        (2, 0): Detector( id: 15 ),
+        (3, 0): Detector( id: 16 ),
+        (4, 0): Detector( id: 17 ),
+        (5, 0): Detector( id: 18 ),
+        (6, 0): Detector( id: 19 ),
+        (7, 0): Detector( id: 20 )
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ],
+        detectors: [ 13, 14, 15, 16, 17, 18, 19, 20 ],
+
+        cases: [ ]
+    )
+)

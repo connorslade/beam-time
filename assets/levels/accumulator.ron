@@ -2,7 +2,7 @@ Level(
     id: "ab666a1a-4f8a-4bdb-97db-451d279dfe6a",
     name: "Accumulator",
     description: "",
-    parents: [ "2052ed73-edaf-45b7-8f2f-43993d558ff4" ],
+    parents: [ "2052ed73-edaf-45b7-8f2f-43993d558ff4" ], // ← adder
 
     size: None,
     permanent: [ ],

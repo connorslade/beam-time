@@ -6,7 +6,7 @@ Level(
 
         Given the binary input number x, output the binary representation of three times x.
     ",
-    parents: [ "52108765-b8d2-47cf-a0c7-36b3b73cc644" ],
+    parents: [ "2052ed73-edaf-45b7-8f2f-43993d558ff4" ], // ← adder
 
     size: None,
     permanent: [ ],
