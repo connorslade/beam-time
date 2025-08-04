@@ -91,6 +91,7 @@ fn success(
                     .scale(Vector2::repeat(2.0))
                     .color(ERROR_COLOR)
                     .layout(ctx, layout);
+                Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
                 return;
             };
 

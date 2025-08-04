@@ -1,0 +1,46 @@
+Level(
+    id: "12beb169-a85c-4235-98eb-3851864a61f8",
+    name: "Hamming Correction",
+    description: "",
+    parents: [ "a2f4358f-b86e-45da-b4cb-23c5819a79e7" ],
+
+    size: None,
+    permanent: [ ],
+    labels: {
+        Dynamic(0): "p1",
+        Dynamic(1): "p2",
+        Dynamic(2): "d1",
+        Dynamic(3): "p3",
+        Dynamic(4): "d2",
+        Dynamic(5): "d3",
+        Dynamic(6): "d4",
+
+        Dynamic(7): "d1",
+        Dynamic(8): "d2",
+        Dynamic(9): "d3",
+        Dynamic(10): "d4",
+        Dynamic(11): "E"
+    },
+    tiles: {
+        (0, 5): Emitter( rotation: Down, active: true, id: 0 ),
+        (1, 5): Emitter( rotation: Down, active: true, id: 1 ),
+        (2, 5): Emitter( rotation: Down, active: true, id: 2 ),
+        (3, 5): Emitter( rotation: Down, active: true, id: 3 ),
+        (4, 5): Emitter( rotation: Down, active: true, id: 4 ),
+        (5, 5): Emitter( rotation: Down, active: true, id: 5 ),
+        (6, 5): Emitter( rotation: Down, active: true, id: 6 ),
+
+        (0, 0): Detector( id: 7 ),
+        (1, 0): Detector( id: 8 ),
+        (2, 0): Detector( id: 9 ),
+        (3, 0): Detector( id: 10 )
+        (5, 0): Detector( id: 11 )
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2, 3, 4, 5, 6 ],
+        detectors: [ 7, 8, 9, 10, 11 ],
+
+        cases: [ ]
+    )
+)

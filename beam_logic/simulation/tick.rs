@@ -183,6 +183,14 @@ impl BeamState {
                 } => {
                     self.power(&mut working, pos, direction);
                 }
+                BeamTile::Delay { last_powered, .. } => {
+                    for dir in last_powered.iter() {
+                        self.power(&mut working, pos, dir);
+                    }
+
+                    let (powered, _) = working.get_mut(pos).delay_mut();
+                    self.track_powered(powered, pos);
+                }
                 BeamTile::Wall { .. } | BeamTile::Detector { .. } => {
                     self.track_powered(working.get_mut(pos).directions_mut(), pos)
                 }

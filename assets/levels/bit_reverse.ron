@@ -13,7 +13,7 @@ Level(
         (7, 0), (8, 0), (9, 0), (10, 0), (11, 0), (12, 0), (13, 0), (14, 0)
     ],
     labels: {
-        Dynamic(1): "MSb",
+        Dynamic(0): "MSb",
         Dynamic(7): "LSb",
 
         Dynamic(8): "LSb",

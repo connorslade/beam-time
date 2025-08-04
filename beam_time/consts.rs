@@ -33,13 +33,14 @@ pub const MODAL_BORDER_COLOR: Rgb<f32> = Rgb::hex(0x757575);
 pub const KEYBINDS: &[(&str, &str)] = &[
     ("T", "Runs test cases"),
     ("P", "Starts simulation"),
-    ("R", "Rotates current tile"),
+    ("R", "Rotates the held or hovered tile"),
     ("Q", "Copy hovered tile"),
-    ("E", "Toggle hovered emitter"),
+    ("E", "Toggle the held or hovered emitter"),
 ];
 
 pub const DESCRIPTION: &str = indoc! {"
-    Beam time is a logic puzzle game where you redirect and split laser beams to create digital circuits.
+    Beam time is a logic puzzle game where you redirect and split laser beams to create digital circuits. \
+    Through the campaign, you will explore logic gates, oscillators, latches, counters, adders, memory, and more.
 
     Thank you to everyone that pushed me to actually finish this project ♥. \
     Special thanks to Brandon Li (aspiringLich on GitHub) for creating the tile graphics, you do not want to see what the game looked like before.

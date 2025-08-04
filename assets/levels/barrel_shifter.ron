@@ -1,0 +1,63 @@
+Level(
+    id: "e69ddcf2-be60-46aa-8964-e818c107154b",
+    name: "Barrel Shifter",
+    description: "",
+    parents: [ ],
+
+    size: None,
+    permanent: [ ],
+    labels: {
+        Dynamic(0): "d128",
+        Dynamic(1): "d64",
+        Dynamic(2): "d32",
+        Dynamic(3): "d16",
+        Dynamic(4): "d8",
+        Dynamic(5): "d4",
+        Dynamic(6): "d2",
+        Dynamic(7): "d1",
+
+        Dynamic(8): "s4",
+        Dynamic(9): "s2",
+        Dynamic(10): "s1",
+
+        Dynamic(11): "128",
+        Dynamic(12): "64",
+        Dynamic(13): "32",
+        Dynamic(14): "16",
+        Dynamic(15): "8",
+        Dynamic(16): "4",
+        Dynamic(17): "2",
+        Dynamic(18): "1",
+    },
+    disabled: [ Detector, Delay ],
+    tiles: {
+        (0, 4): Emitter( rotation: Down, active: true, id: 0 ),
+        (1, 4): Emitter( rotation: Down, active: true, id: 1 ),
+        (2, 4): Emitter( rotation: Down, active: true, id: 2 ),
+        (3, 4): Emitter( rotation: Down, active: true, id: 3 ),
+        (4, 4): Emitter( rotation: Down, active: true, id: 4 ),
+        (5, 4): Emitter( rotation: Down, active: true, id: 5 ),
+        (6, 4): Emitter( rotation: Down, active: true, id: 6 ),
+        (7, 4): Emitter( rotation: Down, active: true, id: 7 ),
+
+        (9, 4): Emitter( rotation: Down, active: true, id: 8 ),
+        (10, 4): Emitter( rotation: Down, active: true, id: 9 ),
+        (11, 4): Emitter( rotation: Down, active: true, id: 10 ),
+
+        (0, 0): Detector( id: 11 ),
+        (1, 0): Detector( id: 12 ),
+        (2, 0): Detector( id: 13 ),
+        (3, 0): Detector( id: 14 ),
+        (4, 0): Detector( id: 15 ),
+        (5, 0): Detector( id: 16 ),
+        (6, 0): Detector( id: 17 ),
+        (7, 0): Detector( id: 18 ),
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
+        detectors: [ 11, 12, 13, 14, 15, 16, 17, 18 ],
+
+        cases: [ ]
+    )
+)

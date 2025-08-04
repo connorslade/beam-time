@@ -1,0 +1,76 @@
+Level(
+    id: "898fede9-9bb5-455e-9671-4671d2bbdae3",
+    name: "Multiplier",
+    description: "",
+    parents: [ "ab666a1a-4f8a-4bdb-97db-451d279dfe6a" ],
+
+    size: None,
+    permanent: [ ],
+    labels: {
+        Dynamic(0): "a128",
+        Dynamic(1): "a64",
+        Dynamic(2): "a32",
+        Dynamic(3): "a16",
+        Dynamic(4): "a8",
+        Dynamic(5): "a4",
+        Dynamic(6): "a2",
+        Dynamic(7): "a1",
+
+        Dynamic(8): "b128",
+        Dynamic(9): "b64",
+        Dynamic(10): "b32",
+        Dynamic(11): "b16",
+        Dynamic(12): "b8",
+        Dynamic(13): "b4",
+        Dynamic(14): "b2",
+        Dynamic(15): "b1",
+
+        Dynamic(16): "128",
+        Dynamic(17): "64",
+        Dynamic(18): "32",
+        Dynamic(19): "16",
+        Dynamic(20): "8",
+        Dynamic(21): "4",
+        Dynamic(22): "2",
+        Dynamic(23): "1",
+    },
+    disabled: [ ],
+    tiles: {
+        (0, 4): Emitter( rotation: Down, active: true, id: 0 ),
+        (1, 4): Emitter( rotation: Down, active: true, id: 1 ),
+        (2, 4): Emitter( rotation: Down, active: true, id: 2 ),
+        (3, 4): Emitter( rotation: Down, active: true, id: 3 ),
+        (4, 4): Emitter( rotation: Down, active: true, id: 4 ),
+        (5, 4): Emitter( rotation: Down, active: true, id: 5 ),
+        (6, 4): Emitter( rotation: Down, active: true, id: 6 ),
+        (7, 4): Emitter( rotation: Down, active: true, id: 7 ),
+
+        (9, 4): Emitter( rotation: Down, active: true, id: 8 ),
+        (10, 4): Emitter( rotation: Down, active: true, id: 9 ),
+        (11, 4): Emitter( rotation: Down, active: true, id: 10 ),
+        (12, 4): Emitter( rotation: Down, active: true, id: 11 ),
+        (13, 4): Emitter( rotation: Down, active: true, id: 12 ),
+        (14, 4): Emitter( rotation: Down, active: true, id: 13 ),
+        (15, 4): Emitter( rotation: Down, active: true, id: 14 ),
+        (16, 4): Emitter( rotation: Down, active: true, id: 15 ),
+
+        (0, 0): Detector( id: 16 ),
+        (1, 0): Detector( id: 17 ),
+        (2, 0): Detector( id: 18 ),
+        (3, 0): Detector( id: 19 ),
+        (4, 0): Detector( id: 20 ),
+        (5, 0): Detector( id: 21 ),
+        (6, 0): Detector( id: 22 ),
+        (7, 0): Detector( id: 23 ),
+    },
+
+    tests: Tests(
+        lasers: [
+            0, 1, 2, 3, 4, 5, 6, 7,
+            8, 9, 10, 11, 12, 13, 14, 15
+        ],
+        detectors: [ 16, 17, 18, 19, 20, 21, 22, 23 ],
+
+        cases: [ ]
+    )
+)

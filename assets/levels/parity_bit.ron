@@ -1,0 +1,69 @@
+Level(
+    id: "c98218bd-937b-4a60-a94c-a51d677c61b1",
+    name: "Parity Bit",
+    description: "
+        In the real world data transmission is not completely reliable. There are many failure modes that can occur, including bit-flips (which are the simplest to protect against).
+
+        The parity of a bit-string is 1 if there is an even number of 1s in the string, and 0 if there is an odd number of 1s.
+        ",
+    parents: [ ],
+
+    size: None,
+    permanent: [ ],
+    labels: {
+        Dynamic(0): "64",
+        Dynamic(1): "32",
+        Dynamic(2): "16",
+        Dynamic(3): "8",
+        Dynamic(4): "4",
+        Dynamic(5): "2",
+        Dynamic(6): "1",
+
+        Dynamic(7): "P",
+    },
+    disabled: [ Detector, Delay ],
+    tiles: {
+        (0, 4): Emitter( rotation: Down, active: true, id: 0 ),
+        (1, 4): Emitter( rotation: Down, active: true, id: 1 ),
+        (2, 4): Emitter( rotation: Down, active: true, id: 2 ),
+        (3, 4): Emitter( rotation: Down, active: true, id: 3 ),
+        (4, 4): Emitter( rotation: Down, active: true, id: 4 ),
+        (5, 4): Emitter( rotation: Down, active: true, id: 5 ),
+        (6, 4): Emitter( rotation: Down, active: true, id: 6 ),
+        (8, 4): Emitter( rotation: Down, active: true, id: 7 ),
+
+        (0, 0): Detector( id: 8 ),
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
+        detectors: [ 8 ],
+
+        cases: [
+            Cycle( lasers: [ false, true,  false, false, false, false, false, false ], detectors: [ [ false ] ] ),
+            Cycle( lasers: [ false, true,  false, false, false, true,  true,  true  ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ false, false, true,  true,  false, false, true,  true  ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ false, false, false, true,  false, false, true,  true  ], detectors: [ [ false ] ] ),
+            Cycle( lasers: [ false, true,  true,  true,  false, true,  true,  true  ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ false, false, true,  false, true,  false, true,  true  ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ false, true,  false, false, false, false, true,  false ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ false, false, true,  true,  false, true,  true,  true  ], detectors: [ [ false ] ] ),
+            Cycle( lasers: [ false, false, false, true,  false, true,  false, true  ], detectors: [ [ false ] ] ),
+            Cycle( lasers: [ false, true,  true,  false, true,  true,  false, false ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ false, true,  true,  false, true,  true,  true,  true  ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ false, false, false, false, true,  true,  false, false ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ false, true,  false, true,  true,  true,  true,  false ], detectors: [ [ false ] ] ),
+            Cycle( lasers: [ false, false, true,  false, false, false, true,  false ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ false, true,  true,  false, true,  false, false, true  ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ false, true,  false, true,  true,  false, false, false ], detectors: [ [ false ] ] ),
+        ]
+    )
+)
+
+// Cases generated with:
+// let mut rng = rand::rng();
+// for _ in 0..16 {
+//     let x = rng.random::<i8>().abs();
+//     let p = x.count_ones() % 2 == 0;
+//     println!("{x:0>8b} → {}", p as u8);
+// }

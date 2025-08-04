@@ -1,0 +1,44 @@
+Level(
+    id: "acacce88-9c84-4f5c-ad98-caa2d0c48593",
+    name: "Large Multiplexer",
+    description: "",
+    parents: [ "321e6dc9-4be6-4624-9f37-3b84f799f6a0" ],
+
+    size: None,
+    permanent: [ ],
+    labels: {
+        Dynamic(0): "000",
+        Dynamic(1): "001",
+        Dynamic(2): "010",
+        Dynamic(3): "011",
+        Dynamic(4): "100",
+        Dynamic(5): "101",
+        Dynamic(6): "110",
+        Dynamic(7): "111",
+
+        Dynamic(8): "A",
+        Dynamic(9): "B",
+        Dynamic(10): "C"
+    },
+    tiles: {
+        (1, 5): Emitter( rotation: Down, active: true, id: 0 ),
+        (2, 5): Emitter( rotation: Down, active: true, id: 1 ),
+        (3, 5): Emitter( rotation: Down, active: true, id: 2 ),
+        (4, 5): Emitter( rotation: Down, active: true, id: 3 ),
+        (5, 5): Emitter( rotation: Down, active: true, id: 4 ),
+        (6, 5): Emitter( rotation: Down, active: true, id: 5 ),
+        (7, 5): Emitter( rotation: Down, active: true, id: 6 ),
+        (8, 5): Emitter( rotation: Down, active: true, id: 7 ),
+        (9, 5): Emitter( rotation: Down, active: true, id: 8 ),
+        (10, 5): Emitter( rotation: Down, active: true, id: 9 ),
+        (11, 5): Emitter( rotation: Down, active: true, id: 10 ),
+        (5, 0): Detector( id: 11 )
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
+        detectors: [ 11 ],
+
+        cases: [ ]
+    )
+)

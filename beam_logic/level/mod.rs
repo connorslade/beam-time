@@ -62,7 +62,18 @@ pub static DEFAULT_LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
         "imply_gate.ron",
         "program_counter.ron",
         "triple_it.ron",
-        "bidirectional_counter.ron"
+        "bidirectional_counter.ron",
+        "one_tick_clock.ron",
+        "accumulator.ron",
+        "adder.ron",
+        "another_or_gate.ron",
+        "twos_complement.ron",
+        "parity_bit.ron",
+        "large_multiplexer.ron",
+        "hamming_generation.ron",
+        "hamming_correction.ron",
+        "barrel_shifter.ron",
+        "multiplier.ron"
     )
 });
 

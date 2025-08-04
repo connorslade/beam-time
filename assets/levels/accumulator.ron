@@ -1,0 +1,62 @@
+Level(
+    id: "ab666a1a-4f8a-4bdb-97db-451d279dfe6a",
+    name: "Accumulator",
+    description: "",
+    parents: [ "2052ed73-edaf-45b7-8f2f-43993d558ff4" ],
+
+    size: None,
+    permanent: [ ],
+    labels: {
+        Dynamic(0): "128",
+        Dynamic(1): "64",
+        Dynamic(2): "32",
+        Dynamic(3): "16",
+        Dynamic(4): "8",
+        Dynamic(5): "4",
+        Dynamic(6): "2",
+        Dynamic(7): "1",
+        Dynamic(16): "Enable",
+
+        Dynamic(8): "128",
+        Dynamic(9): "64",
+        Dynamic(10): "32",
+        Dynamic(11): "16",
+        Dynamic(12): "8",
+        Dynamic(13): "4",
+        Dynamic(14): "2",
+        Dynamic(15): "1",
+    },
+    disabled: [ Detector, Delay ],
+    tiles: {
+        (0, 4): Emitter( rotation: Down, active: true, id: 0 ),
+        (1, 4): Emitter( rotation: Down, active: true, id: 1 ),
+        (2, 4): Emitter( rotation: Down, active: true, id: 2 ),
+        (3, 4): Emitter( rotation: Down, active: true, id: 3 ),
+        (4, 4): Emitter( rotation: Down, active: true, id: 4 ),
+        (5, 4): Emitter( rotation: Down, active: true, id: 5 ),
+        (6, 4): Emitter( rotation: Down, active: true, id: 6 ),
+        (7, 4): Emitter( rotation: Down, active: true, id: 7 ),
+        (9, 4): Emitter( rotation: Down, active: true, id: 16 ),
+
+        (0, 0): Detector( id: 8 ),
+        (1, 0): Detector( id: 9 ),
+        (2, 0): Detector( id: 10 ),
+        (3, 0): Detector( id: 11 ),
+        (4, 0): Detector( id: 12 ),
+        (5, 0): Detector( id: 13 ),
+        (6, 0): Detector( id: 14 ),
+        (7, 0): Detector( id: 15 ),
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2, 3, 4, 5, 6, 7, 16 ],
+        detectors: [ 8, 9, 10, 11, 12, 13, 14, 15 ],
+
+        cases: [
+            Cycle(
+                lasers: [ false, false, false, false, false, false, false, false, false ],
+                detectors: [ [ false, false, false, false, false, false, false, false ] ],
+            )
+        ]
+    )
+)

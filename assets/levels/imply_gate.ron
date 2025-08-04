@@ -2,7 +2,7 @@ Level(
     id: "70c52993-06c5-4812-8553-f321b33118b3",
     name: "Imply Gate",
     description: "The imply gate is capable of building a NAND gate, which can be used to build all other gates.",
-    parents: [ "d46980e0-b2d0-4102-ab95-8bdc16d00ca9" ],
+    parents: [ "cafeb123-66dc-4b04-b560-5cf80868cae4" ],
 
     size: Some((6, 6)),
     permanent: [ (0, 5), (1, 5), (5, 0) ],

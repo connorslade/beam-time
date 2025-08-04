@@ -1,0 +1,44 @@
+Level(
+    id: "a2f4358f-b86e-45da-b4cb-23c5819a79e7",
+    name: "Hamming Generation",
+    description: "",
+    parents: [ ],
+
+    size: None,
+    permanent: [ ],
+    labels: {
+        Dynamic(0): "d1",
+        Dynamic(1): "d2",
+        Dynamic(2): "d3",
+        Dynamic(3): "d4",
+
+        Dynamic(4): "p1",
+        Dynamic(5): "p2",
+        Dynamic(6): "d1",
+        Dynamic(7): "p3",
+        Dynamic(8): "d2",
+        Dynamic(9): "d3",
+        Dynamic(10): "d4"
+    },
+    tiles: {
+        (1, 5): Emitter( rotation: Down, active: true, id: 0 ),
+        (2, 5): Emitter( rotation: Down, active: true, id: 1 ),
+        (3, 5): Emitter( rotation: Down, active: true, id: 2 ),
+        (4, 5): Emitter( rotation: Down, active: true, id: 3 ),
+
+        (0, 0): Detector( id: 4 ),
+        (1, 0): Detector( id: 5 ),
+        (2, 0): Detector( id: 6 ),
+        (3, 0): Detector( id: 7 ),
+        (4, 0): Detector( id: 8 ),
+        (5, 0): Detector( id: 9 ),
+        (6, 0): Detector( id: 10 ),
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2, 3 ],
+        detectors: [ 4, 5, 6, 7, 8, 9, 10 ],
+
+        cases: [ ]
+    )
+)

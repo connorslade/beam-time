@@ -1,0 +1,84 @@
+Level(
+    id: "92488235-9149-4595-aee4-e591acb013e7",
+    name: "Two's Complement",
+    description: "
+        So far we have only worked with the binary representation of positive integers, but there is actually a clever way to represent negative integers that allows adding them with the same adder circuit you already designed.
+        
+        All you have to do to convert a positive integer to a negative (in two's complement) is flip all of the bits, then add one.
+        ",
+    parents: [ "2052ed73-edaf-45b7-8f2f-43993d558ff4" ],
+
+    size: None,
+    permanent: [ ],
+    labels: {
+        Dynamic(0): "128",
+        Dynamic(1): "64",
+        Dynamic(2): "32",
+        Dynamic(3): "16",
+        Dynamic(4): "8",
+        Dynamic(5): "4",
+        Dynamic(6): "2",
+        Dynamic(7): "1",
+
+        Dynamic(8): "128",
+        Dynamic(9): "64",
+        Dynamic(10): "32",
+        Dynamic(11): "16",
+        Dynamic(12): "8",
+        Dynamic(13): "4",
+        Dynamic(14): "2",
+        Dynamic(15): "1",
+    },
+    disabled: [ ],
+    tiles: {
+        (0, 4): Emitter( rotation: Down, active: true,  id: 0 ),
+        (1, 4): Emitter( rotation: Down, active: true,  id: 1 ),
+        (2, 4): Emitter( rotation: Down, active: true,  id: 2 ),
+        (3, 4): Emitter( rotation: Down, active: true,  id: 3 ),
+        (4, 4): Emitter( rotation: Down, active: true,  id: 4 ),
+        (5, 4): Emitter( rotation: Down, active: true,  id: 5 ),
+        (6, 4): Emitter( rotation: Down, active: true,  id: 6 ),
+        (7, 4): Emitter( rotation: Down, active: true,  id: 7 ),
+        (9, 4): Emitter( rotation: Down, active: true,  id: 16 ),
+
+        (0, 0): Detector( id: 8 ),
+        (1, 0): Detector( id: 9 ),
+        (2, 0): Detector( id: 10 ),
+        (3, 0): Detector( id: 11 ),
+        (4, 0): Detector( id: 12 ),
+        (5, 0): Detector( id: 13 ),
+        (6, 0): Detector( id: 14 ),
+        (7, 0): Detector( id: 15 ),
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
+        detectors: [ 8, 9, 10, 11, 12, 13, 14, 15 ],
+
+        cases: [
+            Cycle( lasers: [ false, true,  true,  false, true,  false, true,  false ], detectors: [ [true,  false, false, true,  false, true,  true,  false ] ] ),
+            Cycle( lasers: [ false, false, true,  true,  false, true,  true,  false ], detectors: [ [true,  true,  false, false, true,  false, true,  false ] ] ),
+            Cycle( lasers: [ false, false, false, true,  false, true,  true,  true  ], detectors: [ [true,  true,  true,  false, true,  false, false, true  ] ] ),
+            Cycle( lasers: [ false, true,  false, false, true,  true,  true,  true  ], detectors: [ [true,  false, true,  true,  false, false, false, true  ] ] ),
+            Cycle( lasers: [ false, true,  true,  false, true,  true,  false, false ], detectors: [ [true,  false, false, true,  false, true,  false, false ] ] ),
+            Cycle( lasers: [ false, false, false, true,  false, false, true,  true  ], detectors: [ [true,  true,  true,  false, true,  true,  false, true  ] ] ),
+            Cycle( lasers: [ false, false, false, false, true,  false, true,  true  ], detectors: [ [true,  true,  true,  true,  false, true,  false, true  ] ] ),
+            Cycle( lasers: [ false, true,  false, false, true,  false, false, true  ], detectors: [ [true,  false, true,  true,  false, true,  true,  true  ] ] ),
+            Cycle( lasers: [ false, false, true,  false, true,  true,  true,  false ], detectors: [ [true,  true,  false, true,  false, false, true,  false ] ] ),
+            Cycle( lasers: [ false, true,  true,  true,  true,  true,  false, false ], detectors: [ [true,  false, false, false, false, true,  false, false ] ] ),
+            Cycle( lasers: [ false, true,  false, false, false, false, true,  false ], detectors: [ [true,  false, true,  true,  true,  true,  true,  false ] ] ),
+            Cycle( lasers: [ false, false, false, true,  true,  false, true,  false ], detectors: [ [true,  true,  true,  false, false, true,  true,  false ] ] ),
+            Cycle( lasers: [ false, false, true,  false, true,  false, true,  true  ], detectors: [ [true,  true,  false, true,  false, true,  false, true  ] ] ),
+            Cycle( lasers: [ false, false, true,  true,  false, false, true,  true  ], detectors: [ [true,  true,  false, false, true,  true,  false, true  ] ] ),
+            Cycle( lasers: [ false, false, true,  false, true,  true,  true,  false ], detectors: [ [true,  true,  false, true,  false, false, true,  false ] ] ),
+            Cycle( lasers: [ false, false, false, true,  false, false, true,  false ], detectors: [ [true,  true,  true,  false, true,  true,  true,  false ] ] )
+        ]
+    )
+)
+
+// Cases generated with:
+// let mut rng = rand::rng();
+// for _ in 0..16 {
+//     let x = rng.random::<i8>().abs();
+//     println!("{x:0>8b} → {:0>8b}", -x as i8);
+// }

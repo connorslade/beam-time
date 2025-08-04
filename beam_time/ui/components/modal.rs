@@ -1,4 +1,7 @@
-use std::{f32::consts::PI, mem};
+use std::{
+    f32::consts::{FRAC_PI_2, PI},
+    mem,
+};
 
 use bitflags::bitflags;
 use common::direction::Direction;
@@ -15,7 +18,7 @@ use engine::{
 };
 
 use crate::{
-    assets::BACK_ARROW,
+    assets::HISTOGRAM_MARKER,
     consts::{ACCENT_COLOR, MODAL_BORDER_COLOR, MODAL_COLOR},
     ui::misc::body,
 };
@@ -164,10 +167,10 @@ pub fn modal_buttons(
                 .direction(direction)
                 .tracked(tracker),
             |ctx, layout| {
-                Sprite::new(BACK_ARROW)
+                Sprite::new(HISTOGRAM_MARKER)
                     .scale(Vector2::repeat(2.0))
                     .color(color)
-                    .rotate(PI * rotation as u8 as f32, Anchor::Center)
+                    .rotate(PI * rotation as u8 as f32 + FRAC_PI_2, Anchor::Center)
                     .layout(ctx, layout);
                 body(text).color(color).layout(ctx, layout);
             },

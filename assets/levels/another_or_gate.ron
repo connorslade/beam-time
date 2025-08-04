@@ -1,16 +1,13 @@
 Level(
-    id: "d46980e0-b2d0-4102-ab95-8bdc16d00ca9",
-    name: "Or Gate",
-    description: "
-        Enable the output when either of the inputs are active.
-        
-        The wall is there to keep you from just routing each input into a different side of the output.",
-    parents: [ "3d01432a-228c-4cfd-9be3-407a796b49c8" ],
+    id: "b7ee4ec1-4b9d-46d6-99a6-dd136384304e",
+    name: "Another Or Gate",
+    description: "There are two main ways to build OR gates, knowing how to build both will help you compact your cuircuits.",
+    parents: [ "d46980e0-b2d0-4102-ab95-8bdc16d00ca9" ],
 
     size: (6, 6),
     permanent: [ (0, 5), (1, 5), (5, 0), (5, 1) ],
     labels: { },
-    disabled: [ Detector, Delay, Splitter ],
+    disabled: [ Detector, Delay, Galvo ],
     tiles: {
         (0, 5): Emitter( rotation: Down, active: true, id: 0 ),
         (1, 5): Emitter( rotation: Down, active: true, id: 1 ),

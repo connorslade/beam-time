@@ -4,7 +4,7 @@ use ahash::{HashMap, HashMapExt};
 use beam_logic::level::{DEFAULT_LEVELS, Level, tree::LevelTree};
 use engine::{
     color::Rgb,
-    drawable::{shape::rectangle_outline::RectangleOutline, sprite::Sprite},
+    drawable::{shape::rectangle_outline::RectangleOutline, sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode, window::CursorIcon},
@@ -15,7 +15,7 @@ use uuid::Uuid;
 
 use crate::{
     app::App,
-    assets::CHECK,
+    assets::{ALAGARD_FONT, CHECK},
     consts::BACKGROUND_COLOR,
     game::{
         board::{Board, BoardMeta, LevelMeta},
@@ -43,6 +43,13 @@ impl Screen for CampaignScreen {
         ctx.background(BACKGROUND_COLOR);
         let t = state.start.elapsed().as_secs_f32();
 
+        let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
+        Text::new(ALAGARD_FONT, "Campaign")
+            .position(pos, Anchor::TopCenter)
+            .scale(Vector2::repeat(6.0))
+            .default_shadow()
+            .draw(ctx);
+
         self.pancam.update(state, ctx);
         let spacing = 64.0 * ctx.scale_factor;
 
@@ -58,13 +65,13 @@ impl Screen for CampaignScreen {
             let offset = Vector2::y() * i as f32 * spacing;
 
             for item in row {
+                let available = self.is_available(item.id);
                 let world = self.worlds.get(&item.id);
                 let solved = world.map(|(_, meta)| meta.is_solved()) == Some(true);
 
                 let center = offset + Vector2::x() * item.offset() + ctx.center();
-                let text = item
-                    .text
-                    .clone()
+                let text = item.text.clone();
+                let text = text
                     .position(self.pancam.pan + center, Anchor::Center)
                     .z_index(1)
                     .default_shadow();
@@ -79,7 +86,7 @@ impl Screen for CampaignScreen {
                         .draw(ctx);
                 }
 
-                if text.is_hovered(ctx) {
+                if (available || state.config.debug) && text.is_hovered(ctx) {
                     let size = text.size(ctx);
                     let px = 2.0 * ctx.scale_factor;
                     ctx.set_cursor(CursorIcon::Pointer);
@@ -168,8 +175,24 @@ impl CampaignScreen {
         }
     }
 
+    fn is_available(&self, id: Uuid) -> bool {
+        let Some(parents) = self.tree.get(id).map(|x| &x.parents) else {
+            return false;
+        };
+
+        for id in parents {
+            if let Some((_, meta)) = self.worlds.get(id)
+                && meta.is_solved()
+            {
+                return true;
+            }
+        }
+
+        parents.is_empty()
+    }
+
     #[cfg(feature = "steam")]
-    pub fn all_solved(&self) -> bool {
+    fn all_solved(&self) -> bool {
         for level in self.worlds.values() {
             if !level.1.is_solved() {
                 return false;
