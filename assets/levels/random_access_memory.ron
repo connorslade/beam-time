@@ -5,21 +5,30 @@ Level(
     parents: [ "f36846af-910b-4aec-8ed0-7e3deca17251" ], // ← read_only_memory
 
     labels: {
-        Dynamic(0): "a4",
-        Dynamic(1): "a2",
-        Dynamic(2): "a1",
+        Dynamic(0): "A4",
+        Dynamic(1): "A2",
+        Dynamic(2): "A1",
 
         Dynamic(3): "MODE",
         Dynamic(4): "ENBL",
 
-        Dynamic(5): "d128",
-        Dynamic(6): "d64",
-        Dynamic(7): "d32",
-        Dynamic(8): "d16",
-        Dynamic(9): "d8",
-        Dynamic(10): "d4",
-        Dynamic(11): "d2",
-        Dynamic(12): "d1",
+        Dynamic(5): "128",
+        Dynamic(6): "64",
+        Dynamic(7): "32",
+        Dynamic(8): "16",
+        Dynamic(9): "8",
+        Dynamic(10): "4",
+        Dynamic(11): "2",
+        Dynamic(12): "1",
+
+        Dynamic(5): "128",
+        Dynamic(6): "64",
+        Dynamic(7): "32",
+        Dynamic(8): "16",
+        Dynamic(9): "8",
+        Dynamic(10): "4",
+        Dynamic(11): "2",
+        Dynamic(12): "1",
 
     },
     tiles: {

@@ -9,10 +9,10 @@ use engine::{
 use crate::{
     app::App,
     assets::{ALAGARD_FONT, BACK_BUTTON, UNDEAD_FONT},
-    consts::{BACKGROUND_COLOR, WATERFALL},
+    consts::BACKGROUND_COLOR,
 };
 
-use super::{components::button::Button, waterfall::Waterfall};
+use super::components::button::Button;
 
 pub fn titled_screen(
     state: &mut App,
@@ -25,7 +25,6 @@ pub fn titled_screen(
         .then(|| state.pop_screen());
 
     ctx.background(BACKGROUND_COLOR);
-    Waterfall::new(WATERFALL).draw(ctx);
 
     let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
     Text::new(ALAGARD_FONT, title)

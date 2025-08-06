@@ -2,7 +2,7 @@ Level(
     id: "3eb940dd-1f76-46c5-8aea-800ae0951364",
     name: "XOR Gate",
     description: "Turn the output on when exactly one of the inputs are on.",
-    parents: [ "1c9ddabc-8e4b-41a1-bc0c-e0623226e5c3" ],
+    parents: [ "1c9ddabc-8e4b-41a1-bc0c-e0623226e5c3" ], // ← and_gate
 
     size: (6, 6),
     permanent: [ (0, 5), (1, 5), (5, 0) ],

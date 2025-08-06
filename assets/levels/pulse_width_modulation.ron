@@ -1,0 +1,34 @@
+Level(
+    id: "72e79fe9-ae4e-4366-a98a-5aaaf7bb584f",
+    name: "Pulse-width modulation",
+    description: "Make an oscilator with a variable frequency. The input gives the number of ticks to be on, then off before repeating.",
+    parents: [ "d1d080f7-06c4-421d-9125-dceadc5b6f32" ], // ← even_oscillators
+
+    labels: {
+        Dynamic(0): "4",
+        Dynamic(1): "2",
+        Dynamic(2): "1",
+    },
+    tiles: {
+        (0, 5): Emitter( rotation: Down, active: false, id: 0 ),
+        (1, 5): Emitter( rotation: Down, active: false, id: 1 ),
+        (2, 5): Emitter( rotation: Down, active: false, id: 2 ),
+
+        (0, 0): Detector( id: 3 ),
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2 ],
+        detectors: [ 3 ],
+
+        cases: [
+            Cycle( lasers: [ true,  true,  false ], detectors: [ [ false ], [ false ], [ false ], [ false ], [ false ], [ false ], [ true  ], [ true  ], [ true  ], [ true  ], [ true  ], [ true  ] ] ),
+            Cycle( lasers: [ true,  false, true  ], detectors: [ [ false ], [ false ], [ false ], [ false ], [ false ], [ true  ], [ true  ], [ true  ], [ true  ], [ true  ] ] ),
+            Cycle( lasers: [ false, true,  true  ], detectors: [ [ false ], [ false ], [ false ], [ true  ], [ true  ], [ true  ] ] ),
+            Cycle( lasers: [ false, false, true  ], detectors: [ [ false ], [ true  ] ] ),
+            Cycle( lasers: [ true,  false, false ], detectors: [ [ false ], [ false ], [ false ], [ false ], [ true  ], [ true  ], [ true  ], [ true  ] ] ),
+            Cycle( lasers: [ false, true,  false ], detectors: [ [ false ], [ false ], [ true  ], [ true  ] ] ),
+            Cycle( lasers: [ true,  true,  true  ], detectors: [ [ false ], [ false ], [ false ], [ false ], [ false ], [ false ], [ false ], [ true  ], [ true  ], [ true  ], [ true  ], [ true  ], [ true  ], [ true  ] ] ),
+        ]
+    )
+)

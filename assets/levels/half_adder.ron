@@ -2,7 +2,7 @@ Level(
     id: "91d5f245-75e8-4d3e-8994-7dcbdcd70670",
     name: "Half Adder",
     description: "Enable the leftmost output when both inputs are active and enable the rightmost output when exactly one of the inputs are active.\n\nThis circuit is known as a half-adder and is a fundamental component of binary adding circuits.",
-    parents: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ],
+    parents: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ], // ← xor_gate
 
     size: (6, 6),
     permanent: [ (0, 5), (1, 5), (4, 0), (5, 0) ],

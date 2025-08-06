@@ -1,27 +1,30 @@
 Level(
     id: "898fede9-9bb5-455e-9671-4671d2bbdae3",
     name: "Multiplier",
-    description: "",
+    description: "
+        Multiply the two 8-bit inputs.
+        
+        The resulting value will never overflow (be greater than 255).",
     parents: [ "ab666a1a-4f8a-4bdb-97db-451d279dfe6a" ], // ← accumulator
 
     labels: {
-        Dynamic(0): "a128",
-        Dynamic(1): "a64",
-        Dynamic(2): "a32",
-        Dynamic(3): "a16",
-        Dynamic(4): "a8",
-        Dynamic(5): "a4",
-        Dynamic(6): "a2",
-        Dynamic(7): "a1",
+        Dynamic(0): "A128",
+        Dynamic(1): "A64",
+        Dynamic(2): "A32",
+        Dynamic(3): "A16",
+        Dynamic(4): "A8",
+        Dynamic(5): "A4",
+        Dynamic(6): "A2",
+        Dynamic(7): "A1",
 
-        Dynamic(8): "b128",
-        Dynamic(9): "b64",
-        Dynamic(10): "b32",
-        Dynamic(11): "b16",
-        Dynamic(12): "b8",
-        Dynamic(13): "b4",
-        Dynamic(14): "b2",
-        Dynamic(15): "b1",
+        Dynamic(8): "B128",
+        Dynamic(9): "B64",
+        Dynamic(10): "B32",
+        Dynamic(11): "B16",
+        Dynamic(12): "B8",
+        Dynamic(13): "B4",
+        Dynamic(14): "B2",
+        Dynamic(15): "B1",
 
         Dynamic(16): "128",
         Dynamic(17): "64",
@@ -32,7 +35,6 @@ Level(
         Dynamic(22): "2",
         Dynamic(23): "1",
     },
-    disabled: [ ],
     tiles: {
         (0, 4): Emitter( rotation: Down, active: true, id: 0 ),
         (1, 4): Emitter( rotation: Down, active: true, id: 1 ),
@@ -69,6 +71,15 @@ Level(
         ],
         detectors: [ 16, 17, 18, 19, 20, 21, 22, 23 ],
 
-        cases: [ ]
+        cases: [
+            Cycle( lasers: [ false, false, true,  true,  true,  true,  false, false, false, false, false, false, false, false, false, true  ], detectors: [ [ false, true,  true,  false, true,  false, false, true  ] ] ),
+            Cycle( lasers: [ true,  false, false, false, false, false, true,  true,  false, false, false, false, false, false, false, false ], detectors: [ [ false, false, false, false, true,  true,  true,  false ] ] ),
+            Cycle( lasers: [ false, false, true,  false, false, false, false, false, false, false, false, false, false, false, true,  true  ], detectors: [ [ false, true,  true,  false, false, false, false, false ] ] ),
+            Cycle( lasers: [ false, true,  false, false, true,  false, false, true,  false, false, false, false, false, false, false, true  ], detectors: [ [ false, true,  true,  true,  true,  false, true,  false ] ] ),
+            Cycle( lasers: [ false, false, true,  true,  true,  true,  false, true,  false, false, false, false, false, false, false, false ], detectors: [ [ false, false, false, true,  false, false, true,  true  ] ] ),
+            Cycle( lasers: [ false, true,  true,  false, true,  true,  true,  true,  false, false, false, false, false, false, false, false ], detectors: [ [ false, false, false, true,  true,  false, false, false ] ] ),
+            Cycle( lasers: [ true,  false, false, true,  false, true,  false, false, false, false, false, false, false, false, false, true  ], detectors: [ [ true,  true,  false, false, false, false, false, false ] ] ),
+            Cycle( lasers: [ true,  false, false, true,  true,  false, false, true,  false, false, false, false, false, false, false, true  ], detectors: [ [ true,  false, true,  false, false, true,  false, false ] ] ),
+        ]
     )
 )

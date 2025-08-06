@@ -1,21 +1,25 @@
 Level(
     id: "2bf07b89-a458-45f9-a65c-7fe416870323",
     name: "Paralel to Serial",
-    description: "",
+    description: "
+        Instead of taking in one data bit at a time and shifting them into memory, create a shift register that takes in the innitial values of d1-d8 and sends each bit to the output (OUT) on each clock (CLK) pulse.
+        
+        The data values stay constant through the entire run",
     parents: [ "fe48e117-1114-417a-b72b-d80c239797c9" ], // ← shift_register
 
     labels: {
-        Dynamic(0): "d1",
-        Dynamic(1): "d2",
-        Dynamic(2): "d3",
-        Dynamic(3): "d4",
-        Dynamic(4): "d5",
-        Dynamic(5): "d6",
-        Dynamic(6): "d7",
-        Dynamic(7): "d8",
+        Dynamic(0): "D1",
+        Dynamic(1): "D2",
+        Dynamic(2): "D3",
+        Dynamic(3): "D4",
+        Dynamic(4): "D5",
+        Dynamic(5): "D6",
+        Dynamic(6): "D7",
+        Dynamic(7): "D8",
 
-        Dynamic(8): "OUT",
-        Dynamic(9): "CLK",
+        Dynamic(8): "CLK",
+
+        Dynamic(9): "OUT",
     },
     tiles: {
         (0, 5): Emitter( rotation: Down, active: true, id: 0 ),
@@ -27,14 +31,33 @@ Level(
         (6, 5): Emitter( rotation: Down, active: true, id: 6 ),
         (7, 5): Emitter( rotation: Down, active: true, id: 7 ),
 
-        (0, 0): Detector( id: 8 ),
-        (1, 0): Detector( id: 9 ),
+        (9, 5): Emitter( rotation: Down, active: true, id: 8 ),
+
+        (0, 0): Detector( id: 9 ),
     },
 
     tests: Tests(
-        lasers: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
-        detectors: [ 8, 9 ],
+        lasers: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ],
+        detectors: [ 9 ],
 
-        cases: [ ]
+        hidden: [ 2, 4, 6, 8, 10, 12, 14 ],
+        cases: [
+            Cycle( lasers: [ true, true, true, false, false, true, false, true, false ], detectors: [ [ false ] ] ),
+            Cycle( lasers: [ true, true, true, false, false, true, false, true, true  ], detectors: [ [ true  ] ] ),
+            /* HIDDEN */  Cycle( lasers: [ true, true, true, false, false, true, false, true, false ], detectors: [ ] ),
+            Cycle( lasers: [ true, true, true, false, false, true, false, true, true  ], detectors: [ [ true  ] ] ),
+            /* HIDDEN */  Cycle( lasers: [ true, true, true, false, false, true, false, true, false ], detectors: [ ] ),
+            Cycle( lasers: [ true, true, true, false, false, true, false, true, true  ], detectors: [ [ true  ] ] ),
+            /* HIDDEN */  Cycle( lasers: [ true, true, true, false, false, true, false, true, false ], detectors: [ ] ),
+            Cycle( lasers: [ true, true, true, false, false, true, false, true, true  ], detectors: [ [ false ] ] ),
+            /* HIDDEN */  Cycle( lasers: [ true, true, true, false, false, true, false, true, false ], detectors: [ ] ),
+            Cycle( lasers: [ true, true, true, false, false, true, false, true, true  ], detectors: [ [ false ] ] ),
+            /* HIDDEN */  Cycle( lasers: [ true, true, true, false, false, true, false, true, false ], detectors: [ ] ),
+            Cycle( lasers: [ true, true, true, false, false, true, false, true, true  ], detectors: [ [ true  ] ] ),
+            /* HIDDEN */  Cycle( lasers: [ true, true, true, false, false, true, false, true, false ], detectors: [ ] ),
+            Cycle( lasers: [ true, true, true, false, false, true, false, true, true  ], detectors: [ [ false ] ] ),
+            /* HIDDEN */  Cycle( lasers: [ true, true, true, false, false, true, false, true, false ], detectors: [ ] ),
+            Cycle( lasers: [ true, true, true, false, false, true, false, true, true  ], detectors: [ [ true  ] ] ),
+        ]
     )
 )

@@ -1,0 +1,69 @@
+Level(
+    id: "fff0fee3-8c27-4230-bc9c-eb49156dd50e",
+    name: "Comparator",
+    description: "Given two 8-bit input values, A and B, compare them and return the result. Either A>B, A=B, or A<B.",
+    parents: [ "eaab5121-8a05-49fd-8f6b-e364dd34bf48" ], // ← find_first_set
+
+    labels: {
+        Dynamic(0): "A128",
+        Dynamic(1): "A64",
+        Dynamic(2): "A32",
+        Dynamic(3): "A16",
+        Dynamic(4): "A8",
+        Dynamic(5): "A4",
+        Dynamic(6): "A2",
+        Dynamic(7): "A1",
+
+        Dynamic(8): "B128",
+        Dynamic(9): "B64",
+        Dynamic(10): "B32",
+        Dynamic(11): "B16",
+        Dynamic(12): "B8",
+        Dynamic(13): "B4",
+        Dynamic(14): "B2",
+        Dynamic(15): "B1",
+
+        Dynamic(16): "A>B",
+        Dynamic(17): "A=B",
+        Dynamic(18): "A<B",
+    },
+    tiles: {
+        (0, 5): Emitter( rotation: Down, active: false, id: 0 ),
+        (1, 5): Emitter( rotation: Down, active: false, id: 1 ),
+        (2, 5): Emitter( rotation: Down, active: false, id: 2 ),
+        (3, 5): Emitter( rotation: Down, active: false, id: 3 ),
+        (4, 5): Emitter( rotation: Down, active: false, id: 4 ),
+        (5, 5): Emitter( rotation: Down, active: false, id: 5 ),
+        (6, 5): Emitter( rotation: Down, active: false, id: 6 ),
+        (7, 5): Emitter( rotation: Down, active: false, id: 7 ),
+
+        (9, 5): Emitter( rotation: Down, active: false, id: 8 ),
+        (10, 5): Emitter( rotation: Down, active: false, id: 9 ),
+        (11, 5): Emitter( rotation: Down, active: false, id: 10 ),
+        (12, 5): Emitter( rotation: Down, active: false, id: 11 ),
+        (13, 5): Emitter( rotation: Down, active: false, id: 12 ),
+        (14, 5): Emitter( rotation: Down, active: false, id: 13 ),
+        (15, 5): Emitter( rotation: Down, active: false, id: 14 ),
+        (16, 5): Emitter( rotation: Down, active: false, id: 15 ),
+
+        (0, 0): Detector( id: 16 ),
+        (1, 0): Detector( id: 17 ),
+        (2, 0): Detector( id: 18 ),
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ],
+        detectors: [ 16, 17, 18 ],
+
+        cases: [
+            Cycle( lasers: [ false, true,  false, true,  true,  false, false, true,  false, false, true,  true,  false, false, true,  false ], detectors: [ [ true,  false, false ] ] ),
+            Cycle( lasers: [ false, false, true,  true,  false, false, true,  false, false, false, true,  true,  false, false, true,  false ], detectors: [ [ false, true,  false ] ] ),
+            Cycle( lasers: [ true,  true,  true,  true,  false, true,  true,  false, false, false, false, true,  false, false, true,  false ], detectors: [ [ true,  false, false ] ] ),
+            Cycle( lasers: [ true,  true,  true,  true,  false, true,  false, true,  true,  true,  false, true,  false, false, true,  true  ], detectors: [ [ true,  false, false ] ] ),
+            Cycle( lasers: [ false, true,  false, false, false, false, false, true,  true,  true,  false, true,  true,  false, false, true  ], detectors: [ [ false, false, true  ] ] ),
+            Cycle( lasers: [ false, false, true,  false, true,  true,  true,  true,  false, false, false, false, true,  false, false, false ], detectors: [ [ true,  false, false ] ] ),
+            Cycle( lasers: [ false, false, false, false, true,  true,  false, false, true,  true,  false, false, true,  false, true,  false ], detectors: [ [ false, false, true  ] ] ),
+            Cycle( lasers: [ true,  true,  true,  true,  true,  true,  true,  false, true,  false, true,  true,  true,  false, false, true  ], detectors: [ [ true,  false, false ] ] ),
+        ]
+    )
+)

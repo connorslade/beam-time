@@ -2,7 +2,7 @@ Level(
     id: "ea9291be-554b-451f-9699-b2f410c02af1",
     name: "Grey Encode",
     description: "",
-    parents: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ], // ← xor_gate
+    parents: [ "45052dc5-0d3a-449d-b153-19a608ae52f1" ], // ← binary_decoder
 
     tiles: {
         (0, 9): Emitter( rotation: Down, active: true, id: 0 ),

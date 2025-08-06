@@ -1,0 +1,51 @@
+Level(
+    id: "45052dc5-0d3a-449d-b153-19a608ae52f1",
+    name: "Binary Decoder",
+    description: "Decode the value of the given 3-bit binary input.",
+    parents: [ "91d5f245-75e8-4d3e-8994-7dcbdcd70670" ], // ← half_adder
+
+    labels: {
+        Dynamic(0): "4",
+        Dynamic(1): "2",
+        Dynamic(2): "1",
+
+        Dynamic(3): "0",
+        Dynamic(4): "1",
+        Dynamic(5): "2",
+        Dynamic(6): "3",
+        Dynamic(7): "4",
+        Dynamic(8): "5",
+        Dynamic(9): "6",
+        Dynamic(10): "7",
+    },
+    tiles: {
+        (0, 4): Emitter( rotation: Down, active: false, id: 0 ),
+        (1, 4): Emitter( rotation: Down, active: false, id: 1 ),
+        (2, 4): Emitter( rotation: Down, active: false, id: 2 ),
+
+        (0, 0): Detector( id: 3 ),
+        (1, 0): Detector( id: 4 ),
+        (2, 0): Detector( id: 5 ),
+        (3, 0): Detector( id: 6 ),
+        (4, 0): Detector( id: 7 ),
+        (5, 0): Detector( id: 8 ),
+        (6, 0): Detector( id: 9 ),
+        (7, 0): Detector( id: 10 ),
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2 ],
+        detectors: [ 3, 4, 5, 6, 7, 8, 9, 10 ],
+
+        cases: [
+            Cycle( lasers: [ false, false, false ], detectors: [ [ true,  false, false, false, false, false, false, false ] ] ),
+            Cycle( lasers: [ false, false, true  ], detectors: [ [ false, true,  false, false, false, false, false, false ] ] ),
+            Cycle( lasers: [ false, true,  false ], detectors: [ [ false, false, true,  false, false, false, false, false ] ] ),
+            Cycle( lasers: [ false, true,  true  ], detectors: [ [ false, false, false, true,  false, false, false, false ] ] ),
+            Cycle( lasers: [ true,  false, false ], detectors: [ [ false, false, false, false, true,  false, false, false ] ] ),
+            Cycle( lasers: [ true,  false, true  ], detectors: [ [ false, false, false, false, false, true,  false, false ] ] ),
+            Cycle( lasers: [ true,  true,  false ], detectors: [ [ false, false, false, false, false, false, true,  false ] ] ),
+            Cycle( lasers: [ true,  true,  true  ], detectors: [ [ false, false, false, false, false, false, false, true  ] ] ),
+        ]
+    )
+)
