@@ -136,6 +136,10 @@ impl LevelState {
 }
 
 fn equivalent_cycles(long: &[Vec<bool>], short: &[Vec<bool>]) -> bool {
+    if short.is_empty() {
+        return true;
+    }
+
     if short.len() > long.len() || !long.len().is_multiple_of(short.len()) {
         return false;
     }

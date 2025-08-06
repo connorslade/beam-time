@@ -2,9 +2,9 @@ Level(
     id: "c98218bd-937b-4a60-a94c-a51d677c61b1",
     name: "Parity Bit",
     description: "
-        In the real world data transmission is not completely reliable. There are many failure modes that can occur, including bit-flips (which are the simplest to protect against).
-
-        The parity of a bit-string is 1 if there is an even number of 1s in the string, and 0 if there is an odd number of 1s.
+        In the real world data transmission is not completely reliable. There are many failure modes that can occur, including bit-flips (which are the simplest to protect against). The parity of a bit-string is the evenness or oddness of the number of set bits.
+        
+        For this level all the parity bits (P) haven been chosen to make the parity of all 8 bits (data and P) even. Send an output if the parity of the input is even (a bit-flip is not detected).
         ",
     parents: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ], // ← xor_gate
 
@@ -21,7 +21,7 @@ Level(
 
         Dynamic(7): "P",
     },
-    disabled: [ Detector, Delay ],
+    disabled: [ ],
     tiles: {
         (0, 4): Emitter( rotation: Down, active: true, id: 0 ),
         (1, 4): Emitter( rotation: Down, active: true, id: 1 ),

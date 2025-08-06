@@ -152,6 +152,7 @@ fn case_small(
                 render_tiles(ctx, layout, 2.0, level, TILE_EMITTER_DOWN, preview.laser());
             });
 
+            Spacer::new_y(8.0 * ctx.scale_factor).layout(ctx, layout);
             Sprite::new(HISTOGRAM_MARKER)
                 .scale(Vector2::repeat(2.0))
                 .layout(ctx, layout);
@@ -174,7 +175,7 @@ fn render_tiles<'a>(
     let tile_label_offset = Vector2::repeat(8.0 * scale * ctx.scale_factor);
     let tile_label = |ctx: &mut GraphicsContext, pos| -> Box<dyn LayoutElement> {
         if let Some(label) = level.labels.get(&pos) {
-            Box::new(tile_label(ctx, scale, tile_label_offset, label).z_index(1))
+            Box::new(tile_label(ctx, scale, tile_label_offset, label))
         } else {
             Box::new(DummyDrawable::new())
         }
@@ -185,6 +186,6 @@ fn render_tiles<'a>(
         let tile_sprite = Sprite::new(sprite)
             .uv_offset(Vector2::new(16 * input as i32, 0))
             .scale(Vector2::repeat(scale));
-        Container::of(ctx, [label, Box::new(tile_sprite)]).layout(ctx, layout);
+        Container::of(ctx, [Box::new(tile_sprite), label]).layout(ctx, layout);
     }
 }

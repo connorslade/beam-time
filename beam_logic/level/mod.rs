@@ -96,9 +96,13 @@ pub struct Level {
 
     pub parents: Vec<Uuid>,
 
+    #[serde(default)]
     pub size: Option<Vector2<u32>>,
+    #[serde(default)]
     pub permanent: HashSet<Vector2<i32>>,
+    #[serde(default)]
     pub labels: HashMap<ElementLocation, String>,
+    #[serde(default)]
     pub disabled: Option<HashSet<TileType>>,
 
     pub tiles: Map<Tile>,
@@ -111,6 +115,8 @@ pub struct Tests {
     pub lasers: Vec<u32>,
     pub detectors: Vec<u32>,
 
+    #[serde(default)]
+    pub hidden: Vec<u32>,
     pub cases: Vec<TestCase>,
 }
 

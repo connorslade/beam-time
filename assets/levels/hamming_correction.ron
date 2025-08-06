@@ -1,7 +1,13 @@
 Level(
     id: "12beb169-a85c-4235-98eb-3851864a61f8",
     name: "Hamming Correction",
-    description: "",
+    description: "
+        Given the four data and three parity bits, as encoded by your Hamming Generation level solution, output the error corrected data bits and send a signal to E if an error was corrected. At most one bit flip will be present.
+        
+        Also here are the parity bit defintions again (⊕ for XOR).
+        p1 = d1 ⊕ d2 ⊕ d4
+        p2 = d1 ⊕ d3 ⊕ d4
+        p3 = d2 ⊕ d3 ⊕ d4",
     parents: [ "a2f4358f-b86e-45da-b4cb-23c5819a79e7" ], // ← hamming_generation
 
     size: None,
@@ -41,6 +47,41 @@ Level(
         lasers: [ 0, 1, 2, 3, 4, 5, 6 ],
         detectors: [ 7, 8, 9, 10, 11 ],
 
-        cases: [ ]
+        cases: [
+            Cycle( lasers: [ false, false, true,  false, true,  true,  true  ], detectors: [ [ true,  true,  true,  true,  true  ] ] ),
+            Cycle( lasers: [ true,  false, false, true,  true,  false, false ], detectors: [ [ false, true,  false, false, false ] ] ),
+            Cycle( lasers: [ false, false, true,  false, false, true,  false ], detectors: [ [ true,  false, true,  false, true  ] ] ),
+            Cycle( lasers: [ false, false, false, false, false, false, false ], detectors: [ [ false, false, false, false, false ] ] ),
+            Cycle( lasers: [ true,  false, true,  false, false, true,  true  ], detectors: [ [ true,  false, true,  true,  true  ] ] ),
+            Cycle( lasers: [ false, false, true,  false, true,  true,  false ], detectors: [ [ true,  true,  true,  false, false ] ] ),
+            Cycle( lasers: [ false, false, false, true,  true,  true,  true  ], detectors: [ [ false, true,  true,  true,  false ] ] ),
+            Cycle( lasers: [ false, true,  false, true,  false, true,  false ], detectors: [ [ false, false, true,  false, false ] ] ),
+            Cycle( lasers: [ false, false, false, true,  false, true,  true  ], detectors: [ [ false, false, true,  true,  true  ] ] ),
+            Cycle( lasers: [ false, false, true,  false, false, false, false ], detectors: [ [ true,  false, false, false, true  ] ] ),
+            Cycle( lasers: [ true,  true,  false, true,  true,  false, true  ], detectors: [ [ false, true,  false, true,  true  ] ] ),
+            Cycle( lasers: [ false, true,  true,  false, false, false, true  ], detectors: [ [ true,  false, false, true,  true  ] ] ),
+            Cycle( lasers: [ true,  true,  false, false, false, false, false ], detectors: [ [ false, false, false, false, true  ] ] ),
+            Cycle( lasers: [ false, true,  false, true,  false, true,  true  ], detectors: [ [ false, false, true,  true,  true  ] ] ),
+            Cycle( lasers: [ false, true,  true,  true,  true,  false, true  ], detectors: [ [ true,  true,  false, true,  true  ] ] ),
+            Cycle( lasers: [ false, false, true,  true,  true,  true,  true  ], detectors: [ [ true,  true,  true,  true,  true  ] ] ),
+        ]
     )
 )
+
+// Generated with the following code:
+// let mut rng = rand::rng();
+// for _ in 0..16 {
+//     let [mut d1, mut d2, mut d3, mut d4]: [bool; 4] = [rng.random(), rng.random(), rng.random(), rng.random()];
+//     let (p1, p2, p3) = (d1 ^ d2 ^ d4, d1 ^ d3 ^ d4, d2 ^ d3 ^ d4);
+//     let error = rng.random_range(0..5);
+//     match error {
+//         0 => d1 ^= true,
+//         1 => d2 ^= true,
+//         2 => d3 ^= true,
+//         3 => d4 ^= true,
+//         _ => {}
+//     }
+    
+//     let (p1, p2, d1, p3, d2, d3, d4) = (p1 as u8, p2 as u8, d1 as u8, p3 as u8, d2 as u8, d3 as u8, d4 as u8);
+//     println!("{p1}{p2}{d1}{p3}{d2}{d3}{d4} → {d1}{d2}{d3}{d4}{}", (error != 4) as u8);
+// }

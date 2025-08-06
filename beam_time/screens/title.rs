@@ -9,8 +9,8 @@ use engine::{
     },
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{
-        Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout,
-        row::RowLayout,
+        Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
+        root::RootLayout, row::RowLayout,
     },
     memory_key,
 };
@@ -230,9 +230,27 @@ impl TitleScreen {
             let body = body(size.x);
 
             root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
-                body("About")
-                    .scale(Vector2::repeat(4.0))
-                    .layout(ctx, layout);
+                layout.nest(
+                    ctx,
+                    RowLayout::new(0.0).justify(Justify::Center),
+                    |ctx, layout| {
+                        body("About")
+                            .scale(Vector2::repeat(4.0))
+                            .layout(ctx, layout);
+                        layout.nest(
+                            ctx,
+                            RowLayout::new(0.0).direction(Direction::MaxToMin),
+                            |ctx, layout| {
+                                layout.nest(ctx, RowLayout::new(padding), |ctx, layout| {
+                                    body("General").layout(ctx, layout);
+                                    body("•").layout(ctx, layout);
+                                    body("Controls").layout(ctx, layout);
+                                });
+                                Spacer::new_x(layout.available().x).layout(ctx, layout);
+                            },
+                        );
+                    },
+                );
                 Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
 
                 description.layout(ctx, layout);

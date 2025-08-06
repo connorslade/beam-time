@@ -1,7 +1,11 @@
 Level(
-    id: "597b1d3d-0441-460f-870d-ed77749a07d7",
-    name: "Adder Subtractor",
-    description: "",
+    id: "eaab5121-8a05-49fd-8f6b-e364dd34bf48",
+    name: "Find First Set",
+    description: "
+        Return the index or position (starting with zero) of the least significant bit set to one. This is equivalent to counting the number of trailing zeros.
+        
+        You can assume every test case will have at least one bit set.
+        ",
     parents: [ "ca887bfe-5c8c-425d-b414-265e6d8c909e" ], // ← full_adder
 
     size: None,
@@ -40,6 +44,31 @@ Level(
         lasers: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
         detectors: [ 8, 9, 10 ],
 
-        cases: [ ]
+        cases: [
+            Cycle( lasers: [ false, false, false, false, true,  true,  false, true  ], detectors: [ [ false, false, false ] ] ),
+            Cycle( lasers: [ true,  false, false, false, false, false, false, false ], detectors: [ [ true,  true,  true  ] ] ),
+            Cycle( lasers: [ true,  false, true,  true,  false, false, false, false ], detectors: [ [ true,  false, false ] ] ),
+            Cycle( lasers: [ true,  false, false, true,  false, false, false, false ], detectors: [ [ true,  false, false ] ] ),
+            Cycle( lasers: [ true,  true,  false, false, true,  false, false, false ], detectors: [ [ false, true,  true  ] ] ),
+            Cycle( lasers: [ true,  true,  true,  false, true,  true,  true,  false ], detectors: [ [ false, false, true  ] ] ),
+            Cycle( lasers: [ true,  false, false, false, false, false, false, false ], detectors: [ [ true,  true,  true  ] ] ),
+            Cycle( lasers: [ true,  true,  false, false, false, false, false, false ], detectors: [ [ true,  true,  false ] ] ),
+            Cycle( lasers: [ false, false, true,  true,  true,  true,  false, true  ], detectors: [ [ false, false, false ] ] ),
+            Cycle( lasers: [ true,  true,  false, false, false, false, false, false ], detectors: [ [ true,  true,  false ] ] ),
+            Cycle( lasers: [ true,  true,  false, true,  true,  false, false, false ], detectors: [ [ false, true,  true  ] ] ),
+            Cycle( lasers: [ true,  false, false, false, false, false, false, false ], detectors: [ [ true,  true,  true  ] ] ),
+            Cycle( lasers: [ true,  false, true,  false, false, false, false, false ], detectors: [ [ true,  false, true  ] ] ),
+            Cycle( lasers: [ false, true,  false, false, false, false, true,  false ], detectors: [ [ false, false, true  ] ] ),
+            Cycle( lasers: [ true,  true,  true,  true,  false, false, false, false ], detectors: [ [ true,  false, false ] ] ),
+            Cycle( lasers: [ false, true,  true,  true,  false, true,  false, false ], detectors: [ [ false, true,  false ] ] ),
+        ]
     )
 )
+
+// Generated with the following code:
+// let mut rng = rand::rng();
+// for _ in 0..16 {
+//     let trailing = rng.random_range(0..8);
+//     let x = rng.random::<u8>() & !((1 << trailing) - 1);
+//     println!("{x:0>8b} → {:0>3b}", x.trailing_zeros());
+// }

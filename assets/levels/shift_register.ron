@@ -1,14 +1,23 @@
 Level(
     id: "fe48e117-1114-417a-b72b-d80c239797c9",
     name: "Shift Register",
-    description: "",
+    description: "A shift register is a circuit that stores and shifts data bits in a sequential manner. Every time a clock (CLK) pulse is sent, the current data (DAT) value should be stored in the first output. The previous value of the first output should be stored in the second output, and so on. Effectively shifting all the bits over.",
     parents: [ "46c56d9a-fda5-4876-aaa7-de80a7fcc710" ], // ← gated_d_latch
 
     size: None,
     permanent: [ ],
     labels: {
-        Dynamic(0): "Val",
-        Dynamic(1): "Enable",
+        Dynamic(0): "DAT",
+        Dynamic(1): "CLK",
+
+        Dynamic(2): "1",
+        Dynamic(3): "2",
+        Dynamic(4): "3",
+        Dynamic(5): "4",
+        Dynamic(6): "5",
+        Dynamic(7): "6",
+        Dynamic(8): "7",
+        Dynamic(9): "8",
     },
     tiles: {
         (0, 5): Emitter( rotation: Down, active: true, id: 0 ),
@@ -28,6 +37,26 @@ Level(
         lasers: [ 0, 1 ],
         detectors: [ 2, 3, 4, 5, 6, 7, 8, 9 ],
 
-        cases: [ ]
+        hidden: [ 3, 5, 7, 9, 11, 13, 15, 17 ],
+        cases: [
+            Cycle( lasers: [ false, false ], detectors: [ [ false, false, false, false, false, false, false, false ] ] ),
+            Cycle( lasers: [ true,  false ], detectors: [ [ false, false, false, false, false, false, false, false ] ] ),
+            Cycle( lasers: [ true,  true  ], detectors: [ [ true,  false, false, false, false, false, false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ true,  false ], detectors: [ ] ),
+            Cycle( lasers: [ false, true  ], detectors: [ [ false, true,  false, false, false, false, false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false ], detectors: [ ] ),
+            Cycle( lasers: [ false, true  ], detectors: [ [ false, false, true,  false, false, false, false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false ], detectors: [ ] ),
+            Cycle( lasers: [ true,  true  ], detectors: [ [ true,  false, false, true,  false, false, false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ true,  false ], detectors: [ ] ),
+            Cycle( lasers: [ true,  true  ], detectors: [ [ true,  true,  false, false, true,  false, false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ true,  false ], detectors: [ ] ),
+            Cycle( lasers: [ false, true  ], detectors: [ [ false, true,  true,  false, false, true,  false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false ], detectors: [ ] ),
+            Cycle( lasers: [ true,  true  ], detectors: [ [ true,  false, true,  true,  false, false, true,  false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ true,  false ], detectors: [ ] ),
+            Cycle( lasers: [ true,  true  ], detectors: [ [ true,  true,  false, true,  true,  false, false, true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ true,  false ], detectors: [ ] ),
+        ]
     )
 )
