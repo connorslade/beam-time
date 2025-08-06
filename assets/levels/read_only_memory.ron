@@ -17,8 +17,6 @@ Level(
         (0, 15), (1, 15),
         (16, 0), (17, 0), (18, 0), (19, 0), (20, 0), (21, 0), (22, 0), (23, 0)
     ],
-    labels: { },
-    disabled: [ ],
     tiles: {
         (0, 15): Emitter( rotation: Down, active: false, id: 0 ),
         (1, 15): Emitter( rotation: Down, active: false, id: 1 ),
@@ -38,22 +36,10 @@ Level(
         detectors: [ 2, 3, 4, 5, 6, 7, 8, 9 ],
 
         cases: [
-            Cycle(
-                lasers: [ false, false ],
-                detectors: [ [ false, false, false, true, false, true, false, false ] ],
-            ),
-            Cycle(
-                lasers: [ false, true ],
-                detectors: [ [ true, true, true, false, true, true, true, false ] ],
-            ),
-            Cycle(
-                lasers: [ true, false ],
-                detectors: [ [ true, false, false, false, true, true, true, true ] ],
-            ),
-            Cycle(
-                lasers: [ true, true ],
-                detectors: [ [ false, true, false, false, true, true, true, true ] ],
-            )
+            Cycle( lasers: [ false, false ], detectors: [ [ false, false, false, true,  false, true,  false, false ] ] ),
+            Cycle( lasers: [ false, true  ], detectors: [ [ true,  true,  true,  false, true,  true,  true,  false ] ] ),
+            Cycle( lasers: [ true,  false ], detectors: [ [ true,  false, false, false, true,  true,  true,  true  ] ] ),
+            Cycle( lasers: [ true,  true  ], detectors: [ [ false, true,  false, false, true,  true,  true,  true  ] ] ),
         ]
     )
 )

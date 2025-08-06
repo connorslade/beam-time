@@ -10,8 +10,6 @@ Level(
         p3 = d2 ⊕ d3 ⊕ d4",
     parents: [ "a2f4358f-b86e-45da-b4cb-23c5819a79e7" ], // ← hamming_generation
 
-    size: None,
-    permanent: [ ],
     labels: {
         Dynamic(0): "p1",
         Dynamic(1): "p2",

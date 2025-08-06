@@ -8,8 +8,6 @@ Level(
         ",
     parents: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ], // ← xor_gate
 
-    size: None,
-    permanent: [ ],
     labels: {
         Dynamic(0): "64",
         Dynamic(1): "32",
@@ -21,7 +19,6 @@ Level(
 
         Dynamic(7): "P",
     },
-    disabled: [ ],
     tiles: {
         (0, 4): Emitter( rotation: Down, active: true, id: 0 ),
         (1, 4): Emitter( rotation: Down, active: true, id: 1 ),

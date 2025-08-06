@@ -4,8 +4,6 @@ Level(
     description: "",
     parents: [ "ab666a1a-4f8a-4bdb-97db-451d279dfe6a" ], // ← accumulator
 
-    size: None,
-    permanent: [ ],
     labels: {
         Dynamic(0): "a128",
         Dynamic(1): "a64",

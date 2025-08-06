@@ -4,8 +4,6 @@ Level(
     description: "",
     parents: [ "52108765-b8d2-47cf-a0c7-36b3b73cc644" ], // ← double_it
 
-    size: None,
-    permanent: [ ],
     labels: {
         Dynamic(0): "128",
         Dynamic(1): "64",
@@ -25,7 +23,6 @@ Level(
         Dynamic(14): "2",
         Dynamic(15): "1",
     },
-    disabled: [ Detector, Delay ],
     tiles: {
         (0, 4): Emitter( rotation: Down, active: true, id: 0 ),
         (1, 4): Emitter( rotation: Down, active: true, id: 1 ),

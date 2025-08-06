@@ -9,7 +9,6 @@ Level(
         (0, 4), (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4), (7, 4),
         (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0)
     ],
-    labels: { },
     tiles: {
         (0, 4): Emitter( rotation: Down, active: true, id: 0 ),
         (1, 4): Emitter( rotation: Down, active: true, id: 1 ),
@@ -35,78 +34,24 @@ Level(
         detectors: [ 8, 9, 10, 11, 12, 13, 14, 15 ],
 
         cases: [
-            Cycle(
-                lasers: [ false, false, false, false, false, false, false, false ],
-                detectors: [ [ false, false, false, false, false, false, false, false ] ]
-            ),
-            Cycle(
-                lasers: [ true, true, false, false, true, true, true, false ],
-                detectors: [ [ true, false, false, true, true, true, false, false ] ]
-            ),
-            Cycle(
-                lasers: [ false, true, false, false, true, true, false, true  ],
-                detectors: [ [ true, false, false, true, true, false, true, false ] ]
-            ),
-            Cycle(
-                lasers: [ true, true, false, false, false, false, true, false ],
-                detectors: [ [ true, false, false, false, false, true, false, false ] ]
-            ),
-            Cycle(
-                lasers: [ true, false, false, true, false, false, false, false ],
-                detectors: [ [ false, false, true, false, false, false, false, false ] ]
-            ),
-            Cycle(
-                lasers: [ true, false, true, true, false, false, true, true  ],
-                detectors: [ [ false, true, true, false, false, true, true, false ] ]
-            ),
-            Cycle(
-                lasers: [ false, true, false, false, true, true, true, true  ],
-                detectors: [ [ true, false, false, true, true, true, true, false ] ]
-            ),
-            Cycle(
-                lasers: [ true, false, true, true, true, true, true, true  ],
-                detectors: [ [ false, true, true, true, true, true, true, false ] ]
-            ),
-            Cycle(
-                lasers: [ true, true, true, false, true, true, true, true  ],
-                detectors: [ [ true, true, false, true, true, true, true, false ] ]
-            ),
-            Cycle(
-                lasers: [ false, true, true, false, true, false, true, false ],
-                detectors: [ [ true, true, false, true, false, true, false, false ] ]
-            ),
-            Cycle(
-                lasers: [ true, false, false, false, false, false, true, true  ],
-                detectors: [ [ false, false, false, false, false, true, true, false ] ]
-            ),
-            Cycle(
-                lasers: [ false, true, false, true, false, false, true, false ],
-                detectors: [ [ true, false, true, false, false, true, false, false ] ]
-            ),
-            Cycle(
-                lasers: [ false, true, false, true, true, true, true, true  ],
-                detectors: [ [ true, false, true, true, true, true, true, false ] ]
-            ),
-            Cycle(
-                lasers: [ true, false, false, false, true, true, false, true  ],
-                detectors: [ [ false, false, false, true, true, false, true, false ] ]
-            ),
-            Cycle(
-                lasers: [ true, true, false, true, false, false, true, true  ],
-                detectors: [ [ true, false, true, false, false, true, true, false ] ]
-            ),
-            Cycle(
-                lasers: [ false, false, true, false, false, false, false, true  ],
-                detectors: [ [ false, true, false, false, false, false, true, false ] ]
-            ),
-            Cycle(
-                lasers: [ false, false, false, true, false, true, true, true  ],
-                detectors: [ [ false, false, true, false, true, true, true, false ] ]
-            ),
-            Cycle(
-                lasers: [ true, true, true, true, true, true, true, true  ],
-                detectors: [ [ true, true, true, true, true, true, true, false ] ]
-            ),
+            Cycle( lasers: [ false, false, false, false, false, false, false, false ], detectors: [ [ false, false, false, false, false, false, false, false ] ] ),
+            Cycle( lasers: [ true,  true,  false, false, true,  true,  true,  false ], detectors: [ [ true,  false, false, true,  true,  true,  false, false ] ] ),
+            Cycle( lasers: [ false, true,  false, false, true,  true,  false, true  ], detectors: [ [ true,  false, false, true,  true,  false, true,  false ] ] ),
+            Cycle( lasers: [ true,  true,  false, false, false, false, true,  false ], detectors: [ [ true,  false, false, false, false, true,  false, false ] ] ),
+            Cycle( lasers: [ true,  false, false, true,  false, false, false, false ], detectors: [ [ false, false, true,  false, false, false, false, false ] ] ),
+            Cycle( lasers: [ true,  false, true,  true,  false, false, true,  true  ], detectors: [ [ false, true,  true,  false, false, true,  true,  false ] ] ),
+            Cycle( lasers: [ false, true,  false, false, true,  true,  true,  true  ], detectors: [ [ true,  false, false, true,  true,  true,  true,  false ] ] ),
+            Cycle( lasers: [ true,  false, true,  true,  true,  true,  true,  true  ], detectors: [ [ false, true,  true,  true,  true,  true,  true,  false ] ] ),
+            Cycle( lasers: [ true,  true,  true,  false, true,  true,  true,  true  ], detectors: [ [ true,  true,  false, true,  true,  true,  true,  false ] ] ),
+            Cycle( lasers: [ false, true,  true,  false, true,  false, true,  false ], detectors: [ [ true,  true,  false, true,  false, true,  false, false ] ] ),
+            Cycle( lasers: [ true,  false, false, false, false, false, true,  true  ], detectors: [ [ false, false, false, false, false, true,  true,  false ] ] ),
+            Cycle( lasers: [ false, true,  false, true,  false, false, true,  false ], detectors: [ [ true,  false, true,  false, false, true,  false, false ] ] ),
+            Cycle( lasers: [ false, true,  false, true,  true,  true,  true,  true  ], detectors: [ [ true,  false, true,  true,  true,  true,  true,  false ] ] ),
+            Cycle( lasers: [ true,  false, false, false, true,  true,  false, true  ], detectors: [ [ false, false, false, true,  true,  false, true,  false ] ] ),
+            Cycle( lasers: [ true,  true,  false, true,  false, false, true,  true  ], detectors: [ [ true,  false, true,  false, false, true,  true,  false ] ] ),
+            Cycle( lasers: [ false, false, true,  false, false, false, false, true  ], detectors: [ [ false, true,  false, false, false, false, true,  false ] ] ),
+            Cycle( lasers: [ false, false, false, true,  false, true,  true,  true  ], detectors: [ [ false, false, true,  false, true,  true,  true,  false ] ] ),
+            Cycle( lasers: [ true,  true,  true,  true,  true,  true,  true,  true  ], detectors: [ [ true,  true,  true,  true,  true,  true,  true,  false ] ] ),
         ]
     )
 )

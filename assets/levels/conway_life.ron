@@ -4,8 +4,6 @@ Level(
     description: "todo: description",
     parents: [ "b59c1a75-8d7a-4c91-bdd4-6831e3b1f41a" ], // ← count_ones
 
-    size: None,
-    permanent: [ ],
     labels: {
         Dynamic(0): "8",
         Dynamic(1): "4",
@@ -28,30 +26,12 @@ Level(
         detectors: [ 6 ],
 
         cases: [
-            Cycle(
-                lasers: [ false, true, false, false, false ],
-                detectors: [ [ false ] ],
-            ),
-            Cycle(
-                lasers: [ false, false, true, false, true ],
-                detectors: [ [ true ] ],
-            ),
-            Cycle(
-                lasers: [ false, false, false, true, false ],
-                detectors: [ [ false ] ],
-            ),
-            Cycle(
-                lasers: [ false, false, true, true, true ],
-                detectors: [ [ true ] ],
-            ),
-            Cycle(
-                lasers: [ false, true, true, false, false ],
-                detectors: [ [ false ] ],
-            ),
-            Cycle(
-                lasers: [ false, true, true, true, false ],
-                detectors: [ [ false ] ],
-            )
+            Cycle( lasers: [ false, true,  false, false, false ], detectors: [ [ false ] ] ),
+            Cycle( lasers: [ false, false, true,  false, true  ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ false, false, false, true,  false ], detectors: [ [ false ] ] ),
+            Cycle( lasers: [ false, false, true,  true,  true  ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ false, true,  true,  false, false ], detectors: [ [ false ] ] ),
+            Cycle( lasers: [ false, true,  true,  true,  false ], detectors: [ [ false ] ] ),
         ]
     )
 )

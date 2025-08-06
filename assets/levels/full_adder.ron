@@ -35,38 +35,14 @@ Level(
         detectors: [ 3, 4 ],
 
         cases: [
-            Cycle(
-                lasers: [ false, false, false ],
-                detectors: [ [ false, false ] ]
-            ),
-            Cycle(
-                lasers: [ false, false, true ],
-                detectors: [ [ true, false ] ]
-            ),
-            Cycle(
-                lasers: [ false, true, false ],
-                detectors: [ [ true, false ] ]
-            ),
-            Cycle(
-                lasers: [ false, true, true ],
-                detectors: [ [ false, true ] ]
-            ),
-            Cycle(
-                lasers: [ true, false, false ],
-                detectors: [ [ true, false ] ]
-            ),
-            Cycle(
-                lasers: [ true, false, true ],
-                detectors: [ [ false, true ] ]
-            ),
-            Cycle(
-                lasers: [ true, true, false ],
-                detectors: [ [ false, true ] ]
-            ),
-            Cycle(
-                lasers: [ true, true, true ],
-                detectors: [ [ true, true ] ]
-            ),
+            Cycle( lasers: [ false, false, false ], detectors: [ [ false, false ] ] ),
+            Cycle( lasers: [ false, false, true  ], detectors: [ [ true,  false ] ] ),
+            Cycle( lasers: [ false, true,  false ], detectors: [ [ true,  false ] ] ),
+            Cycle( lasers: [ false, true,  true  ], detectors: [ [ false, true  ] ] ),
+            Cycle( lasers: [ true,  false, false ], detectors: [ [ true,  false ] ] ),
+            Cycle( lasers: [ true,  false, true  ], detectors: [ [ false, true  ] ] ),
+            Cycle( lasers: [ true,  true,  false ], detectors: [ [ false, true  ] ] ),
+            Cycle( lasers: [ true,  true,  true  ], detectors: [ [ true,  true  ] ] ),
         ]
     )
 )

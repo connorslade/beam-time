@@ -4,9 +4,6 @@ Level(
     description: "",
     parents: [ "ea9291be-554b-451f-9699-b2f410c02af1" ], // ← grey_encode
 
-    size: None,
-    permanent: [ ],
-    labels: { },
     tiles: {
         (0, 9): Emitter( rotation: Down, active: true, id: 0 ),
         (1, 9): Emitter( rotation: Down, active: true, id: 1 ),

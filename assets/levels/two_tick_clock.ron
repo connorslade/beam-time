@@ -6,7 +6,6 @@ Level(
 
     size: (6, 6),
     permanent: [ (5, 0) ],
-    labels: { },
     tiles: {
         (5, 0): Detector( id: 0 )
     },
@@ -16,10 +15,7 @@ Level(
         detectors: [ 0 ],
 
         cases: [
-            Cycle(
-                lasers: [ ],
-                detectors: [ [ false ], [ false ], [ true ], [ true ] ]
-            )
+            Cycle( lasers: [ ], detectors: [ [ false ], [ false ], [ true ], [ true ] ] )
         ]
     )
 )

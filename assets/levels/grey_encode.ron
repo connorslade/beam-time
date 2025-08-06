@@ -4,9 +4,6 @@ Level(
     description: "",
     parents: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ], // ← xor_gate
 
-    size: None,
-    permanent: [ ],
-    labels: { },
     tiles: {
         (0, 9): Emitter( rotation: Down, active: true, id: 0 ),
         (1, 9): Emitter( rotation: Down, active: true, id: 1 ),

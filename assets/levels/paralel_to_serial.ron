@@ -4,8 +4,6 @@ Level(
     description: "",
     parents: [ "fe48e117-1114-417a-b72b-d80c239797c9" ], // ← shift_register
 
-    size: None,
-    permanent: [ ],
     labels: {
         Dynamic(0): "d1",
         Dynamic(1): "d2",

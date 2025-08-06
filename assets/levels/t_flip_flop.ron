@@ -6,7 +6,6 @@ Level(
 
     size: (6, 6),
     permanent: [ (0, 5), (5, 0) ],
-    labels: { },
     tiles: {
         (0, 5): Emitter( rotation: Down, active: true, id: 0 ),
         (5, 0): Detector( id: 1 )
@@ -17,26 +16,11 @@ Level(
         detectors: [ 1 ],
 
         cases: [
-            Cycle(
-                lasers: [ false ],
-                detectors: [ [ false ] ],
-            ),
-            Cycle(
-                lasers: [ true ],
-                detectors: [ [ true ] ],
-            ),
-            Cycle(
-                lasers: [ false ],
-                detectors: [ [ true ] ],
-            ),
-            Cycle(
-                lasers: [ true ],
-                detectors: [ [ false ] ],
-            ),
-            Cycle(
-                lasers: [ false ],
-                detectors: [ [ false ] ],
-            ),
+            Cycle( lasers: [ false ], detectors: [ [ false ] ], ),
+            Cycle( lasers: [ true  ], detectors: [ [ true  ] ], ),
+            Cycle( lasers: [ false ], detectors: [ [ true  ] ], ),
+            Cycle( lasers: [ true  ], detectors: [ [ false ] ], ),
+            Cycle( lasers: [ false ], detectors: [ [ false ] ], ),
         ]
     )
 )

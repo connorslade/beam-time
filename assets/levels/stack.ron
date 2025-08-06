@@ -30,9 +30,7 @@ Level(
         Dynamic(15): "4",
         Dynamic(16): "2",
         Dynamic(17): "1",
-
     },
-    disabled: [ ],
     tiles: {
         (0, 5): Emitter( rotation: Down, active: false, id: 0 ),
         (1, 5): Emitter( rotation: Down, active: false, id: 1 ),

@@ -8,8 +8,6 @@ Level(
     ",
     parents: [ "2052ed73-edaf-45b7-8f2f-43993d558ff4" ], // ← adder
 
-    size: None,
-    permanent: [ ],
     labels: {
         Dynamic(0): "128",
         Dynamic(1): "64",
@@ -54,18 +52,9 @@ Level(
         detectors: [ 8, 9, 10, 11, 12, 13, 14, 15 ],
 
         cases: [
-            Cycle(
-                lasers: [ false, false, false, false, false, false, false, false ],
-                detectors: [ [ false, false, false, false, false, false, false, false ] ],
-            ),
-            Cycle(
-                lasers: [ false, false, false, false, false, false, false, true ],
-                detectors: [ [ false, false, false, false, false, false, true, true ] ],
-            ),
-            Cycle(
-                lasers: [ false, false, false, false, false, false, true, false ],
-                detectors: [ [ false, false, false, false, true, false, false, false ] ],
-            ),
+            Cycle( lasers: [ false, false, false, false, false, false, false, false ], detectors: [ [ false, false, false, false, false, false, false, false ] ] ),
+            Cycle( lasers: [ false, false, false, false, false, false, false, true  ], detectors: [ [ false, false, false, false, false, false, true,  true  ] ] ),
+            Cycle( lasers: [ false, false, false, false, false, false, true,  false ], detectors: [ [ false, false, false, false, true,  false, false, false ] ] ),
         ]
     )
 )

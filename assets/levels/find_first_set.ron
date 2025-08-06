@@ -8,8 +8,6 @@ Level(
         ",
     parents: [ "ca887bfe-5c8c-425d-b414-265e6d8c909e" ], // ← full_adder
 
-    size: None,
-    permanent: [ ],
     labels: {
         Dynamic(0): "128",
         Dynamic(1): "64",
@@ -24,7 +22,6 @@ Level(
         Dynamic(9): "2",
         Dynamic(10): "1",
     },
-    disabled: [ ],
     tiles: {
         (0, 4): Emitter( rotation: Down, active: true, id: 0 ),
         (1, 4): Emitter( rotation: Down, active: true, id: 1 ),

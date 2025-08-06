@@ -7,8 +7,6 @@ Level(
         Implement an 4-bit program counter that increments when 'Inc' is pulsed and copies the input to the memory cells when 'Set' is pulsed. 'Inc' and 'Set' will never both be on.",
     parents: [ "fc3b280e-6a80-41d2-84d1-c8fa55a3946f" ], // ← counter
 
-    size: None,
-    permanent: [ ],
     labels: {
         Dynamic(0): "8",
         Dynamic(1): "4",
@@ -43,38 +41,14 @@ Level(
         detectors: [ 7, 8, 9, 10 ],
 
         cases: [
-            Cycle(
-                lasers: [ false, false, false, false, false, false ],
-                detectors: [ [ false, false, false, false ] ],
-            ),
-            Cycle(
-                lasers: [ false, false, false, false, true, false ],
-                detectors: [ [ false, false, false, true ] ],
-            ),
-            Cycle(
-                lasers: [ false, false, false, false, false, false ],
-                detectors: [ [ false, false, false, true ] ],
-            ),
-            Cycle(
-                lasers: [ false, false, false, false, true, false ],
-                detectors: [ [ false, false, true, false ] ],
-            ),
-            Cycle(
-                lasers: [ false, false, false, false, false, false ],
-                detectors: [ [ false, false, true, false ] ],
-            ),
-            Cycle(
-                lasers: [ false, true, false, true, false, false ],
-                detectors: [ [ false, false, true, false ] ],
-            ),
-            Cycle(
-                lasers: [ false, true, false, true, false, true ],
-                detectors: [ [ false, true, true, true ] ],
-            ),
-            Cycle(
-                lasers: [ false, false, false, false, false, false ],
-                detectors: [ [ false, true, false, true ] ],
-            )
+            Cycle( lasers: [ false, false, false, false, false, false ], detectors: [ [ false, false, false, false ] ] ),
+            Cycle( lasers: [ false, false, false, false, true,  false ], detectors: [ [ false, false, false, true  ] ] ),
+            Cycle( lasers: [ false, false, false, false, false, false ], detectors: [ [ false, false, false, true  ] ] ),
+            Cycle( lasers: [ false, false, false, false, true,  false ], detectors: [ [ false, false, true,  false ] ] ),
+            Cycle( lasers: [ false, false, false, false, false, false ], detectors: [ [ false, false, true,  false ] ] ),
+            Cycle( lasers: [ false, true,  false, true,  false, false ], detectors: [ [ false, false, true,  false ] ] ),
+            Cycle( lasers: [ false, true,  false, true,  false, true  ], detectors: [ [ false, true,  true,  true  ] ] ),
+            Cycle( lasers: [ false, false, false, false, false, false ], detectors: [ [ false, true,  false, true  ] ] ),
         ]
     )
 )

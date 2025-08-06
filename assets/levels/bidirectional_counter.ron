@@ -4,8 +4,6 @@ Level(
     description: "",
     parents: [ "fc3b280e-6a80-41d2-84d1-c8fa55a3946f" ], // ← counter
 
-    size: None,
-    permanent: [ ],
     labels: {
         Dynamic(0): "Inc",
         Dynamic(1): "Dec",
@@ -30,34 +28,13 @@ Level(
         detectors: [ 2, 3, 4, 5 ],
 
         cases: [
-            Cycle(
-                lasers: [ false, false ],
-                detectors: [ [ false, false, false, false ] ],
-            ),
-            Cycle(
-                lasers: [ true, false ],
-                detectors: [ [ false, false, false, true ] ],
-            ),
-            Cycle(
-                lasers: [ false, false ],
-                detectors: [ [ false, false, false, true ] ],
-            ),
-            Cycle(
-                lasers: [ true, false ],
-                detectors: [ [ false, false, true, false ] ],
-            ),
-            Cycle(
-                lasers: [ false, false ],
-                detectors: [ [ false, false, true, false ] ],
-            ),
-            Cycle(
-                lasers: [ false, true ],
-                detectors: [ [ false, false, false, true ] ],
-            ),
-            Cycle(
-                lasers: [ false, false ],
-                detectors: [ [ false, false, false, true ] ],
-            ),
+            Cycle( lasers: [ false, false ], detectors: [ [ false, false, false, false ] ] ),
+            Cycle( lasers: [ true,  false ], detectors: [ [ false, false, false, true  ] ] ),
+            Cycle( lasers: [ false, false ], detectors: [ [ false, false, false, true  ] ] ),
+            Cycle( lasers: [ true,  false ], detectors: [ [ false, false, true,  false ] ] ),
+            Cycle( lasers: [ false, false ], detectors: [ [ false, false, true,  false ] ] ),
+            Cycle( lasers: [ false, true  ], detectors: [ [ false, false, false, true  ] ] ),
+            Cycle( lasers: [ false, false ], detectors: [ [ false, false, false, true  ] ] ),
         ]
     )
 )

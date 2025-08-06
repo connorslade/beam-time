@@ -4,8 +4,6 @@ Level(
     description: "",
     parents: [ "f36846af-910b-4aec-8ed0-7e3deca17251" ], // ← read_only_memory
 
-    size: None,
-    permanent: [ ],
     labels: {
         Dynamic(0): "a4",
         Dynamic(1): "a2",
@@ -24,7 +22,6 @@ Level(
         Dynamic(12): "d1",
 
     },
-    disabled: [ ],
     tiles: {
         (0, 5): Emitter( rotation: Down, active: false, id: 0 ),
         (1, 5): Emitter( rotation: Down, active: false, id: 1 ),

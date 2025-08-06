@@ -22,22 +22,10 @@ Level(
         detectors: [ 2, 3 ],
 
         cases: [
-            Cycle(
-                lasers: [ false, false ],
-                detectors: [ [ false, false ] ],
-            ),
-            Cycle(
-                lasers: [ false, true ],
-                detectors: [ [ false, true ] ],
-            ),
-            Cycle(
-                lasers: [ true, false ],
-                detectors: [ [ false, true ] ],
-            ),
-            Cycle(
-                lasers: [ true, true ],
-                detectors: [ [ true, false ] ],
-            )
+            Cycle( lasers: [ false, false ], detectors: [ [ false, false ] ] ),
+            Cycle( lasers: [ false, true  ], detectors: [ [ false, true  ] ] ),
+            Cycle( lasers: [ true,  false ], detectors: [ [ false, true  ] ] ),
+            Cycle( lasers: [ true,  true  ], detectors: [ [ true,  false ] ] ),
         ]
     )
 )

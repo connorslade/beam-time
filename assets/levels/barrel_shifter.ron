@@ -4,8 +4,6 @@ Level(
     description: "",
     parents: [ ],
 
-    size: None,
-    permanent: [ ],
     labels: {
         Dynamic(0): "d128",
         Dynamic(1): "d64",
@@ -29,7 +27,6 @@ Level(
         Dynamic(17): "2",
         Dynamic(18): "1",
     },
-    disabled: [ Detector, Delay ],
     tiles: {
         (0, 4): Emitter( rotation: Down, active: true, id: 0 ),
         (1, 4): Emitter( rotation: Down, active: true, id: 1 ),
