@@ -9,6 +9,7 @@ use winit::{
 pub struct InputManager {
     pub(crate) window_size: Vector2<u32>,
     pub scale_factor: f32,
+    pub close: bool,
     pub mouse: Vector2<f32>,
     pub mouse_delta: Vector2<f32>,
     pub scroll_delta: f32,
@@ -29,6 +30,7 @@ impl InputManager {
         Self {
             window_size: Vector2::new(window_size.width, window_size.height),
             scale_factor: 1.0,
+            close: false,
             mouse: Vector2::new(0.0, 0.0),
             mouse_delta: Vector2::new(0.0, 0.0),
             scroll_delta: 0.0,
@@ -120,6 +122,7 @@ impl InputManager {
 
     pub(crate) fn on_window_event(&mut self, window_event: &WindowEvent) {
         match window_event {
+            WindowEvent::CloseRequested => self.close = true,
             WindowEvent::ScaleFactorChanged { scale_factor, .. } => {
                 self.dpi_changed = Some(self.scale_factor);
                 self.scale_factor = *scale_factor as f32;

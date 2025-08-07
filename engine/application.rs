@@ -153,7 +153,6 @@ impl ApplicationHandler for Application<'_> {
 
         state.input.on_window_event(&event);
         match event {
-            WindowEvent::CloseRequested => event_loop.exit(),
             WindowEvent::RedrawRequested => {
                 let gcx = &state.graphics;
 
@@ -246,6 +245,7 @@ impl ApplicationHandler for Application<'_> {
                 state.input.on_frame_end();
                 gcx.window.request_redraw();
 
+                state.input.close.then(|| event_loop.exit());
                 if state.vsync != next_vsync {
                     state.vsync = next_vsync;
                     self.resize_surface();

@@ -56,6 +56,8 @@ fn main() -> Result<()> {
                 screens.render(ctx, &mut app);
                 screens.pop_n(mem::take(&mut app.close_screens), &mut app);
                 screens.extend(mem::take(&mut app.new_screens), &mut app);
+
+                ctx.input.close.then(|| screens.destroy(&mut app));
             })
         }),
         ..Default::default()

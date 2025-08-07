@@ -39,4 +39,11 @@ impl Steam {
             warn!("Error pushing achievements to server");
         }
     }
+
+    pub fn rich_presence(&self, value: Option<&str>) {
+        let friends = self.client.friends();
+        if !friends.set_rich_presence("status", value) {
+            warn!("Failed to set rich presence");
+        }
+    }
 }

@@ -160,6 +160,14 @@ impl Screen for GameScreen {
     }
 
     fn on_init(&mut self, state: &mut App) {
+        #[cfg(feature = "steam")]
+        if let Some(level) = self.board.transient.level {
+            let text = format!("In a level: {}.", level.name);
+            state.steam.rich_presence(Some(&text));
+        } else {
+            state.steam.rich_presence(Some("In a sandbox world."));
+        }
+
         if let Some(level) = self.board.transient.level {
             state.leaderboard.fetch_results(level.id);
         }
@@ -169,7 +177,10 @@ impl Screen for GameScreen {
         self.pancam.on_resize(old_size, new_size);
     }
 
-    fn on_destroy(&mut self) {
+    fn on_destroy(&mut self, _state: &mut App) {
+        #[cfg(feature = "steam")]
+        _state.steam.rich_presence(None);
+
         let board = mem::take(&mut self.board);
         let trash = board.transient.trash;
         board.save(&self.save_file).unwrap();
