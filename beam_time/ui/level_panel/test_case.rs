@@ -93,7 +93,7 @@ impl LevelPanel {
                                     .layout(ctx, layout);
                             };
 
-                        let digits = preview.elements().ilog10() as usize + 1;
+                        let digits = level.tests.visible_count().ilog10() as usize + 1;
                         let width = (digits * 4 + digits - 1) as f32 * 4.0 * ctx.scale_factor;
                         button(ctx, layout, RIGHT_ARROW, true);
                         layout.nest(

@@ -16,6 +16,7 @@ pub struct InputManager {
     /// Previous size
     pub resized: Option<Vector2<u32>>,
     pub dpi_changed: Option<f32>,
+    pub focus_change: Option<bool>,
 
     pub clicks_canceled: bool,
     pub mouse_down: Vec<MouseButton>,
@@ -36,6 +37,7 @@ impl InputManager {
             scroll_delta: 0.0,
             resized: None,
             dpi_changed: None,
+            focus_change: None,
 
             clicks_canceled: false,
             mouse_down: Vec::new(),
@@ -120,9 +122,14 @@ impl InputManager {
         self.dpi_changed.is_some()
     }
 
+    pub fn just_focused(&self) -> bool {
+        self.focus_change == Some(true)
+    }
+
     pub(crate) fn on_window_event(&mut self, window_event: &WindowEvent) {
         match window_event {
             WindowEvent::CloseRequested => self.close = true,
+            WindowEvent::Focused(focused) => self.focus_change = Some(*focused),
             WindowEvent::ScaleFactorChanged { scale_factor, .. } => {
                 self.dpi_changed = Some(self.scale_factor);
                 self.scale_factor = *scale_factor as f32;
@@ -182,5 +189,6 @@ impl InputManager {
         self.resized = None;
         self.dpi_changed = None;
         self.clicks_canceled = false;
+        self.focus_change = None;
     }
 }

@@ -11,8 +11,8 @@ use engine::{
     exports::{nalgebra::Vector2, winit::window::CursorIcon},
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{
-        Direction as LayoutDirection, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
-        root::RootLayout, row::RowLayout, tracker::LayoutTracker,
+        Direction as LayoutDirection, Layout, LayoutElement, LayoutMethods, bounds::Bounds2D,
+        column::ColumnLayout, root::RootLayout, row::RowLayout, tracker::LayoutTracker,
     },
     memory_key,
 };
@@ -111,26 +111,28 @@ impl Modal {
             root.draw(ctx);
         });
 
-        let clip_bounds = [pos - Vector2::new(0.0, self.size.y), pos + self.size];
+        let bounds = Bounds2D::new(pos - Vector2::new(0.0, self.size.y), pos + self.size);
 
         for sprite in sprites {
             sprite.z_index += self.layer + 1;
             let [min, max] = &mut sprite.clip;
-            min.x = min.x.max(clip_bounds[0].x);
-            min.y = min.y.max(clip_bounds[0].y);
-            max.x = max.x.min(clip_bounds[1].x);
-            max.y = max.y.min(clip_bounds[1].y);
+            min.x = min.x.max(bounds.min.x);
+            min.y = min.y.max(bounds.min.y);
+            max.x = max.x.min(bounds.max.x);
+            max.y = max.y.min(bounds.max.y);
         }
 
         for vert in shapes {
             vert.z_index = vert.z_index.max(self.layer + 1);
-            *vert = vert.clip(clip_bounds);
+            *vert = vert.clip([bounds.min, bounds.max]);
         }
 
         if self.popup {
             ctx.defer(move |ctx| ctx.darken(Rgb::repeat(0.5), self.layer));
 
             ctx.input.cancel_hover();
+            ctx.input.cancel_clicks();
+        } else if bounds.contains(ctx.input.mouse) {
             ctx.input.cancel_clicks();
         }
     }

@@ -15,7 +15,7 @@ use beam_logic::{
     simulation::{level_state::LevelResult, runtime::asynchronous::InnerAsyncSimulationState},
 };
 use engine::{
-    drawable::{spacer::Spacer, sprite::Sprite, text::Text},
+    drawable::{dummy::DummyDrawable, spacer::Spacer, sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, window::CursorIcon},
@@ -23,7 +23,7 @@ use engine::{
     graphics_context::{Anchor, GraphicsContext},
     layout::{
         Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
-        row::RowLayout, tracker::LayoutTracker,
+        convenience::NoPaddingExt, row::RowLayout, tracker::LayoutTracker,
     },
     memory_key,
 };
@@ -77,7 +77,7 @@ impl LevelPanel {
         self.height = exp_decay(self.height, height, 10.0, ctx.delta_time);
 
         let position = Vector2::new(4.0 * ctx.scale_factor, ctx.size().y);
-        let dummy = || Spacer::new_y(-padding);
+        let dummy = || DummyDrawable::new().no_padding();
         Modal::new(Vector2::new(width, self.height + padding))
             .position(position, Anchor::TopLeft)
             .layer(layer::UI_BACKGROUND)
