@@ -1,5 +1,6 @@
 use std::f32::consts::PI;
 
+use rand::{Rng, rng};
 use thousands::Separable;
 
 use crate::{
@@ -15,9 +16,21 @@ use engine::{
         Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
         container::Container, row::RowLayout,
     },
+    memory_key,
 };
 
 use super::{LevelPanel, horizontal_rule};
+
+const CONGRATS: &[&str] = &[
+    "Nice work!",
+    "Amazing!",
+    "Excellent!",
+    "Great job!",
+    "Well done!",
+    "Fantastic!",
+    "Impressive!",
+    "Brilliant!",
+];
 
 impl LevelPanel {
     pub(super) fn level_status(
@@ -52,8 +65,12 @@ fn success(
     (price, latency): (u32, u32),
 ) {
     let now = state.start.elapsed().as_secs_f32();
+    let congrat = *ctx
+        .memory
+        .get_or_insert_with(memory_key!(), || rng().random_range(0..CONGRATS.len()));
     let text = format!(
-        "Nice work! Your solution costs ${} and has a total latency of {latency} ticks.",
+        "{} Your solution costs ${} and has a total latency of {latency} ticks.",
+        CONGRATS[congrat],
         price.separate_with_commas()
     );
 

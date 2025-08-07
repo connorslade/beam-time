@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use beam_logic::simulation::{state::BeamState, tile::BeamTile};
 use common::direction::Direction;
 use engine::{

@@ -175,7 +175,7 @@ fn render_tiles<'a>(
     let tile_label_offset = Vector2::repeat(8.0 * scale * ctx.scale_factor);
     let tile_label = |ctx: &mut GraphicsContext, pos| -> Box<dyn LayoutElement> {
         if let Some(label) = level.labels.get(&pos) {
-            Box::new(tile_label(ctx, scale, tile_label_offset, label))
+            Box::new(tile_label(ctx, scale, tile_label_offset, label).z_index(1))
         } else {
             Box::new(DummyDrawable::new())
         }

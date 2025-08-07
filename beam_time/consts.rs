@@ -54,10 +54,12 @@ pub const DESCRIPTION: &str = indoc! {"
 "};
 
 pub mod layer {
-    pub const TILE_HOLDING: i16 = 7;
-    pub const TILE_HOLDING_BACKGROUND: i16 = 6;
+    pub const TILE_HOLDING: i16 = 8;
+    pub const TILE_HOLDING_BACKGROUND: i16 = 7;
 
-    pub const UI_OVERLAY: i16 = 5;
+    // Jumps to 6 to allow for one layer between UI elements and the pause modal
+    // to render tile labels
+    pub const UI_OVERLAY: i16 = 6;
     pub const UI_ELEMENT: i16 = 4;
     pub const UI_BACKGROUND: i16 = 3;
 
