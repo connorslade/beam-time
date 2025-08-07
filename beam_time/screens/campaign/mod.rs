@@ -1,7 +1,7 @@
 use std::{f32::consts::TAU, path::PathBuf};
 
 use ahash::{HashMap, HashMapExt};
-use beam_logic::level::{DEFAULT_LEVELS, Level, tree::LevelTree};
+use beam_logic::level::{Level, default::DEFAULT_LEVELS, tree::LevelTree};
 use engine::{
     color::Rgb,
     drawable::{shape::rectangle_outline::RectangleOutline, sprite::Sprite, text::Text},

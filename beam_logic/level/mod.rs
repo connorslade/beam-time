@@ -3,9 +3,7 @@ use std::{fs::File, path::PathBuf};
 use ahash::{HashMap, HashMapExt, HashSet};
 use anyhow::Result;
 use common::map::Map;
-use log::warn;
 use nalgebra::Vector2;
-use once_cell::sync::Lazy;
 use ron::{Options, extensions::Extensions};
 use serde::{Deserialize, Deserializer};
 use uuid::Uuid;
@@ -13,81 +11,9 @@ use uuid::Uuid;
 use crate::tile::{Tile, TileType};
 
 pub mod case;
+pub mod default;
 pub mod tree;
 use case::TestCase;
-
-pub macro default_level {
-    ($name:expr) => {
-        Level::load_slice(include_bytes!(concat!("../../assets/levels/", $name)))
-    },
-    ($($name:expr),* $(,)?) => {{
-        let mut out = Vec::new();
-        $(
-            match default_level!($name) {
-                Ok(x) => out.push(x),
-                Err(err) => warn!("Error loading level `{}`: {err}", $name)
-            };
-        )*
-        return out;
-    }}
-}
-
-pub static DEFAULT_LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
-    default_level!(
-        "accumulator.ron",
-        "adder.ron",
-        "adder_subtractor.ron",
-        "and_gate.ron",
-        "another_or_gate.ron",
-        "barrel_shifter.ron",
-        "basic_oscillator.ron",
-        "basic_routing.ron",
-        "bidirectional_counter.ron",
-        "binary_decoder.ron",
-        "binary_encoder.ron",
-        "bit_reverse.ron",
-        "comparator.ron",
-        "conway_life.ron",
-        "count_ones.ron",
-        "counter.ron",
-        "double_it.ron",
-        "edge_detectors.ron",
-        "even_oscillators.ron",
-        "find_first_set.ron",
-        "four_bit_not.ron",
-        "full_adder.ron",
-        "gated_d_latch.ron",
-        "grey_decode.ron",
-        "grey_encode.ron",
-        "half_adder.ron",
-        "hamming_correction.ron",
-        "hamming_generation.ron",
-        "imply_gate.ron",
-        "large_multiplexer.ron",
-        "multiplier.ron",
-        "not_gate.ron",
-        "one_tick_clock.ron",
-        "or_gate.ron",
-        "paralel_to_serial.ron",
-        "parity_bit.ron",
-        "program_counter.ron",
-        "pulse_width_modulation.ron",
-        "random_access_memory.ron",
-        "read_only_memory.ron",
-        "rs_latch.ron",
-        "seven_segment_driver.ron",
-        "shift_register.ron",
-        "slightly_less_basic_routing.ron",
-        "stack.ron",
-        "synchronization.ron",
-        "t_flip_flop.ron",
-        "triple_it.ron",
-        "two_tick_clock.ron",
-        "two_way_multiplexer.ron",
-        "twos_complement.ron",
-        "xor_gate.ron",
-    )
-});
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Level {
@@ -118,10 +44,25 @@ pub struct Level {
 pub struct Tests {
     pub lasers: Vec<u32>,
     pub detectors: Vec<u32>,
+    #[serde(default)]
+    pub display: Option<DisplayConfig>,
 
     #[serde(default)]
-    pub hidden: Vec<u32>,
+    pub hidden: HashSet<u32>,
     pub cases: Vec<TestCase>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct DisplayConfig {
+    #[serde(default)]
+    pub emitter_breaks: HashSet<u32>,
+    #[serde(default)]
+    pub emitter_spaces: HashSet<u32>,
+
+    #[serde(default)]
+    pub detector_breaks: HashSet<u32>,
+    #[serde(default)]
+    pub detector_spaces: HashSet<u32>,
 }
 
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, Deserialize)]
@@ -133,6 +74,12 @@ pub enum ElementLocation {
 #[derive(Default)]
 pub struct DynamicElementMap {
     inner: HashMap<u32, Vector2<i32>>,
+}
+
+#[derive(Clone, Copy)]
+pub enum LevelIo {
+    Emitter,
+    Detector,
 }
 
 impl Level {
@@ -164,6 +111,46 @@ impl DynamicElementMap {
         }
 
         Self { inner }
+    }
+}
+
+impl Tests {
+    pub fn visible_count(&self) -> usize {
+        self.cases.len() - self.hidden.len()
+    }
+
+    pub fn get_visible(&self, idx: usize) -> &TestCase {
+        let mut active = 0;
+
+        for (i, case) in self.cases.iter().enumerate() {
+            if !self.hidden.contains(&(i as u32)) {
+                if active == idx {
+                    return case;
+                }
+
+                active += 1;
+            }
+        }
+
+        panic!()
+    }
+}
+
+impl DisplayConfig {
+    pub fn do_break(&self, io: LevelIo, idx: usize) -> bool {
+        let idx = idx as u32;
+        match io {
+            LevelIo::Emitter => self.emitter_breaks.contains(&idx),
+            LevelIo::Detector => self.detector_breaks.contains(&idx),
+        }
+    }
+
+    pub fn do_space(&self, io: LevelIo, idx: usize) -> bool {
+        let idx = idx as u32;
+        match io {
+            LevelIo::Emitter => self.emitter_spaces.contains(&idx),
+            LevelIo::Detector => self.detector_spaces.contains(&idx),
+        }
     }
 }
 

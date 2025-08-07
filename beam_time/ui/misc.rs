@@ -69,7 +69,7 @@ pub fn tile_label(
     let offset = scale * ctx.scale_factor;
     let offset = Vector2::new(6.5 * offset, -7.5 * offset);
     Text::new(UNDEAD_FONT, label)
-        .scale(Vector2::repeat(scale / 2.0))
+        .scale(Vector2::repeat((scale / 2.0).max(ctx.scale_factor * 0.75)))
         .position(pos + offset, Anchor::BottomRight)
 }
 

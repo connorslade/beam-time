@@ -13,7 +13,7 @@ use crate::{
     util::key_events,
 };
 use beam_logic::{
-    level::DEFAULT_LEVELS,
+    level::default::DEFAULT_LEVELS,
     simulation::{
         level_state::LevelResult, runtime::asynchronous::AsyncSimulationState, state::BeamState,
     },

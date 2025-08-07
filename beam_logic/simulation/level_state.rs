@@ -5,8 +5,9 @@ use log::trace;
 use serde::{Deserialize, Serialize};
 
 use crate::level::{
-    DEFAULT_LEVELS, DynamicElementMap, Level,
+    DynamicElementMap, Level,
     case::{EventType, TestCase},
+    default::DEFAULT_LEVELS,
 };
 use common::map::Map;
 

@@ -8,11 +8,10 @@ use crate::{
     ui::{level_panel::horizontal_rule, misc::tile_label},
 };
 use beam_logic::{
-    level::{ElementLocation, Level, case::CasePreview},
+    level::{ElementLocation, Level, LevelIo as Io, case::CasePreview},
     simulation::runtime::asynchronous::InnerAsyncSimulationState,
 };
 use engine::{
-    assets::SpriteRef,
     color::Rgb,
     drawable::{dummy::DummyDrawable, spacer::Spacer, sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::event::MouseButton},
@@ -37,12 +36,12 @@ impl LevelPanel {
         let sim_level = sim.beam.as_ref().and_then(|x| x.level.as_ref());
         let is_test = sim_level.is_some();
         let case_idx = if let Some(sim_level) = sim_level {
-            (sim_level.test_case + sim_level.test_offset) % level.tests.cases.len()
+            (sim_level.test_case + sim_level.test_offset) % level.tests.visible_count()
         } else {
             self.case
         };
 
-        let case = &level.tests.cases[case_idx];
+        let case = level.tests.get_visible(case_idx);
         let Some(preview) = case.preview(level) else {
             DummyDrawable::new().layout(ctx, layout);
             return;
@@ -74,7 +73,7 @@ impl LevelPanel {
                                 let clicking = ctx.input.mouse_pressed(MouseButton::Left);
 
                                 let disabled = (!direction && self.case == 0)
-                                    || (direction && self.case + 1 == level.tests.cases.len())
+                                    || (direction && self.case + 1 == level.tests.visible_count())
                                     || is_test;
 
                                 let inc = (hovered && !disabled && clicking) as usize;
@@ -129,13 +128,13 @@ fn case_big(
     level: &Level,
     preview: &CasePreview<'_, '_>,
 ) {
-    render_tiles(ctx, layout, 4.0, level, TILE_EMITTER_DOWN, preview.laser());
+    render_tiles(ctx, layout, 4.0, level, Io::Emitter, preview.laser());
 
     Sprite::new(BIG_RIGHT_ARROW)
         .scale(Vector2::repeat(4.0))
         .layout(ctx, layout);
 
-    render_tiles(ctx, layout, 4.0, level, TILE_DETECTOR, preview.detector());
+    render_tiles(ctx, layout, 4.0, level, Io::Detector, preview.detector());
 }
 
 fn case_small(
@@ -148,28 +147,24 @@ fn case_small(
         ctx,
         ColumnLayout::new(0.0).justify(Justify::Center),
         |ctx, layout| {
-            layout.nest(ctx, RowLayout::new(0.0), |ctx, layout| {
-                render_tiles(ctx, layout, 2.0, level, TILE_EMITTER_DOWN, preview.laser());
-            });
+            render_tiles(ctx, layout, 2.0, level, Io::Emitter, preview.laser());
 
             Spacer::new_y(8.0 * ctx.scale_factor).layout(ctx, layout);
             Sprite::new(HISTOGRAM_MARKER)
                 .scale(Vector2::repeat(2.0))
                 .layout(ctx, layout);
 
-            layout.nest(ctx, RowLayout::new(0.0), |ctx, layout| {
-                render_tiles(ctx, layout, 2.0, level, TILE_DETECTOR, preview.detector());
-            });
+            render_tiles(ctx, layout, 2.0, level, Io::Detector, preview.detector());
         },
     );
 }
 
-fn render_tiles<'a>(
+fn render_tiles<'a, T: Layout>(
     ctx: &mut GraphicsContext,
-    layout: &mut RowLayout,
+    layout: &mut T,
     scale: f32,
     level: &Level,
-    sprite: SpriteRef,
+    io_type: Io,
     items: impl Iterator<Item = (&'a bool, u32)>,
 ) {
     let tile_label_offset = Vector2::repeat(8.0 * scale * ctx.scale_factor);
@@ -181,11 +176,28 @@ fn render_tiles<'a>(
         }
     };
 
-    for (&input, tile) in items {
+    let sprite = [TILE_DETECTOR, TILE_EMITTER_DOWN][matches!(io_type, Io::Emitter) as usize];
+    let (mut column, mut row) = (ColumnLayout::new(0.0), RowLayout::new(0.0));
+
+    for (idx, (&input, tile)) in items.enumerate() {
         let label = tile_label(ctx, ElementLocation::Dynamic(tile));
         let tile_sprite = Sprite::new(sprite)
             .uv_offset(Vector2::new(16 * input as i32, 0))
             .scale(Vector2::repeat(scale));
-        Container::of(ctx, [Box::new(tile_sprite), label]).layout(ctx, layout);
+        Container::of(ctx, [Box::new(tile_sprite), label]).layout(ctx, &mut row);
+
+        if let Some(config) = &level.tests.display {
+            if config.do_space(io_type, idx) {
+                Spacer::new_x(16.0 * scale).layout(ctx, &mut row);
+            }
+
+            if config.do_break(io_type, idx) {
+                row.layout(ctx, &mut column);
+                row = RowLayout::new(0.0);
+            }
+        }
     }
+
+    row.layout(ctx, &mut column);
+    column.layout(ctx, layout);
 }

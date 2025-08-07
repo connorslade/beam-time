@@ -3,7 +3,7 @@ Level(
     name: "Parity Bit",
     description: "
         In the real world data transmission is not completely reliable. There are many failure modes that can occur, including bit-flips (which are the simplest to protect against). The parity of a bit-string is the evenness or oddness of the number of set bits.
-        
+
         For this level all the parity bits (P) haven been chosen to make the parity of all 8 bits (data and P) even. Send an output if the parity of the input is even (a bit-flip is not detected).
         ",
     parents: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ], // ← xor_gate
@@ -34,6 +34,8 @@ Level(
 
     tests: Tests(
         lasers: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
+        display: DisplayConfig( laser_spaces: [ 6 ] ),
+
         detectors: [ 8 ],
 
         cases: [
