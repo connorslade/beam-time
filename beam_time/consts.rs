@@ -1,7 +1,6 @@
 use std::time::Duration;
 
 use engine::{assets::SpriteRef, color::Rgb, memory::MemoryKey, memory_key};
-use indoc::indoc;
 use once_cell::sync::Lazy;
 use url::Url;
 
@@ -37,21 +36,6 @@ pub const KEYBINDS: &[(&str, &str)] = &[
     ("Q", "Copy hovered tile"),
     ("E", "Toggle the held or hovered emitter"),
 ];
-
-pub const DESCRIPTION: &str = indoc! {"
-    Beam time is a logic puzzle game where you redirect and split laser beams to create digital circuits. \
-    Through the campaign, you will explore logic gates, oscillators, latches, counters, adders, memory, and more.
-
-    Thank you to everyone that pushed me to actually finish this project ♥. \
-    Special thanks to Brandon Li (aspiringLich on GitHub) for creating the tile graphics, you do not want to see what the game looked like before.
-
-    This is not an open source project, however the source code for the custom engine, leaderboard server, and the game itself is available on Github at @connorslade/beam-time.
-
-    Assets Used:
-      • Alagard, Font by Hewett Tsoi
-      • Undead Pixel Light, Font by Not Jam
-      • Universal UI/Menu Soundpack, by Cyrex Studios
-"};
 
 pub mod layer {
     pub const TILE_HOLDING: i16 = 8;

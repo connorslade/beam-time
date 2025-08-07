@@ -30,6 +30,14 @@ impl Memory {
         self.entries.get(&key).map(|x| x.downcast_ref().unwrap())
     }
 
+    pub fn get_mut<T: 'static>(&mut self, key: MemoryKey) -> Option<&mut T> {
+        let key = Self::key::<T>(key);
+        self.accessed.borrow_mut().insert(key);
+        self.entries
+            .get_mut(&key)
+            .map(|x| x.downcast_mut().unwrap())
+    }
+
     pub fn get_or_insert<T: 'static>(&mut self, key: MemoryKey, fallback: T) -> &mut T {
         let key = Self::key::<T>(key);
         self.accessed.borrow_mut().insert(key);

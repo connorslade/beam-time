@@ -9,8 +9,8 @@ use engine::{
     },
     graphics_context::{Anchor, Drawable, GraphicsContext},
     layout::{
-        Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
-        root::RootLayout, row::RowLayout,
+        Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout,
+        row::RowLayout,
     },
     memory_key,
 };
@@ -18,7 +18,7 @@ use engine::{
 use crate::{
     App,
     assets::{ALAGARD_FONT, UNDEAD_FONT},
-    consts::{AUTHOR_HOMEPAGE, BACKGROUND_COLOR, DESCRIPTION, GAME_HOMEPAGE, WATERFALL, layer},
+    consts::{AUTHOR_HOMEPAGE, BACKGROUND_COLOR, GAME_HOMEPAGE, WATERFALL, layer},
     ui::{
         components::{
             button::{ButtonEffects, ButtonExt},
@@ -33,6 +33,8 @@ use crate::{
 };
 
 use super::{Screen, campaign::CampaignScreen, sandbox::SandboxScreen};
+
+mod about;
 
 pub struct TitleScreen {
     modal: ActiveModal,
@@ -200,60 +202,6 @@ impl TitleScreen {
                         toggle(ctx, layout, &mut state.config.debug, "Debug Mode");
                     });
                 });
-
-                let clicking = ctx.input.mouse_down(MouseButton::Left);
-                let (back, _) = modal_buttons(ctx, layout, size.x, ("Back", ""));
-                (back && clicking).then(|| self.modal = ActiveModal::None);
-            });
-        });
-    }
-
-    fn about_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        let (margin, padding) = state.spacing(ctx);
-        let desired_size = state.modal_size(ctx);
-
-        let description = Text::new(UNDEAD_FONT, DESCRIPTION)
-            .max_width(desired_size.x - margin * 2.0)
-            .scale(Vector2::repeat(2.0));
-        let height = description.size(ctx).y;
-
-        let modal = Modal::new(Vector2::new(
-            desired_size.x,
-            height + 100.0 * ctx.scale_factor,
-        ))
-        .position(ctx.center(), Anchor::Center)
-        .margin(margin)
-        .layer(layer::OVERLAY);
-
-        let size = modal.inner_size();
-        modal.draw(ctx, |ctx, root| {
-            let body = body(size.x);
-
-            root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
-                layout.nest(
-                    ctx,
-                    RowLayout::new(0.0).justify(Justify::Center),
-                    |ctx, layout| {
-                        body("About")
-                            .scale(Vector2::repeat(4.0))
-                            .layout(ctx, layout);
-                        layout.nest(
-                            ctx,
-                            RowLayout::new(0.0).direction(Direction::MaxToMin),
-                            |ctx, layout| {
-                                layout.nest(ctx, RowLayout::new(padding), |ctx, layout| {
-                                    body("General").layout(ctx, layout);
-                                    body("•").layout(ctx, layout);
-                                    body("Controls").layout(ctx, layout);
-                                });
-                                Spacer::new_x(layout.available().x).layout(ctx, layout);
-                            },
-                        );
-                    },
-                );
-                Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
-
-                description.layout(ctx, layout);
 
                 let clicking = ctx.input.mouse_down(MouseButton::Left);
                 let (back, _) = modal_buttons(ctx, layout, size.x, ("Back", ""));
