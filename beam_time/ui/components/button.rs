@@ -69,6 +69,11 @@ impl<T: ButtonContent> Button<T> {
         let hovered = LayoutTracker::new(self.key).hovered(ctx);
         hovered && ctx.input.mouse_pressed(MouseButton::Left)
     }
+
+    pub fn on_click(self, ctx: &mut GraphicsContext, callback: impl FnOnce()) -> Self {
+        self.is_clicked(ctx).then(callback);
+        self
+    }
 }
 
 impl<T: ButtonContent + 'static> Drawable for Button<T> {

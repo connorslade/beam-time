@@ -95,10 +95,6 @@ macro_rules! memory_key {
         $crate::memory::MemoryKey::new(concat!(file!(), line!(), column!()))
     };
     ($($ctx:expr),+) => {
-        {
-            let mut key = memory_key!();
-            $(key = key.context($ctx);)+
-            key
-        }
+        memory_key!()$(.context($ctx))+
     };
 }

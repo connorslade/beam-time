@@ -61,8 +61,7 @@ impl GameScreen {
                             layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
                                 Spacer::new_y(-padding / 2.0).layout(ctx, layout);
 
-                                let playtime = self.board.meta.playtime
-                                    + self.board.transient.open_timestamp.elapsed().as_secs();
+                                let playtime = self.board.total_playtime();
                                 let playtime = format!("Playtime: {}", human_duration(playtime));
                                 body(&playtime).layout(ctx, layout);
 

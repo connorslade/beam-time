@@ -74,6 +74,7 @@ impl App {
     }
 
     /// => (Margin, Padding)
+    #[inline(always)]
     pub fn spacing(&self, ctx: &mut GraphicsContext) -> (f32, f32) {
         let margin = 16.0 * ctx.scale_factor;
         let padding = 10.0 * ctx.scale_factor;

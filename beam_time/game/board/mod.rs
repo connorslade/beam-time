@@ -126,7 +126,6 @@ impl Board {
         self.transient.level.map(|x| x.permanent.contains(pos)) == Some(true)
     }
 
-    #[cfg(feature = "steam")]
     pub fn total_playtime(&self) -> u64 {
         self.meta.playtime + self.transient.open_timestamp.elapsed().as_secs()
     }

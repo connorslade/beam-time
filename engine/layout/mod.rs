@@ -72,6 +72,24 @@ pub trait LayoutMethods: Layout {
         ui(ctx, &mut layout);
         self.layout(ctx, Box::new(layout));
     }
+
+    fn show<T>(
+        mut self,
+        ctx: &mut GraphicsContext,
+        layout: &mut T,
+        ui: impl FnOnce(&mut GraphicsContext, &mut Self),
+    ) where
+        Self: LayoutElement + Sized + 'static,
+        T: Layout + LayoutElement + 'static,
+    {
+        let available = self.available();
+        if available.x == 0.0 && available.y == 0.0 {
+            self.sized(layout.available());
+        }
+
+        ui(ctx, &mut self);
+        layout.layout(ctx, Box::new(self));
+    }
 }
 
 pub struct SizedLayoutElement {
