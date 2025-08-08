@@ -2,8 +2,7 @@ use beam_logic::simulation::{state::BeamState, tile::BeamTile};
 use common::direction::Direction;
 use engine::{
     assets::SpriteRef,
-    drawable::sprite::Sprite,
-    drawable::{Anchor, Drawable},
+    drawable::{Anchor, Drawable, sprite::Sprite},
     exports::nalgebra::Vector2,
     graphics_context::GraphicsContext,
 };
@@ -15,8 +14,8 @@ use crate::{
         BEAM_REFLECT_UP_LEFT, BEAM_REFLECT_UP_RIGHT, BEAM_SPLIT_DOWN, BEAM_SPLIT_LEFT,
         BEAM_SPLIT_RIGHT, BEAM_SPLIT_UP,
     },
-    consts::{HALF_BEAM, layer},
-    game::pancam::Pancam,
+    consts::layer,
+    game::{pancam::Pancam, render::tile::HALF_BEAM},
 };
 
 pub trait BeamStateRender {
@@ -65,18 +64,24 @@ impl BeamStateRender for BeamState {
                     .position(render_pos, Anchor::Center)
             };
 
+            // Play animation in reverse if beam is traveling in a direction
+            // opposite to the animation frames
+            let beam = |direction: Direction| {
+                let texture = match direction {
+                    Direction::Left | Direction::Right => BEAM_FULL_HORIZONTAL,
+                    Direction::Up | Direction::Down => BEAM_FULL_VERTICAL,
+                };
+                let frame = match direction {
+                    Direction::Left | Direction::Down => 2 - frame,
+                    Direction::Right | Direction::Up => frame,
+                };
+                sprite(texture).uv_offset(Vector2::new(16 * frame as i32, 0))
+            };
+
             match tile {
-                BeamTile::Beam {
-                    direction: Direction::Left | Direction::Right,
-                    ..
-                } => sprite(BEAM_FULL_HORIZONTAL).draw(ctx),
-                BeamTile::Beam {
-                    direction: Direction::Up | Direction::Down,
-                    ..
-                } => sprite(BEAM_FULL_VERTICAL).draw(ctx),
-                BeamTile::CrossBeam { .. } => {
-                    sprite(BEAM_FULL_HORIZONTAL).draw(ctx);
-                    sprite(BEAM_FULL_VERTICAL).draw(ctx);
+                BeamTile::Beam { direction, .. } => beam(direction).draw(ctx),
+                BeamTile::CrossBeam { directions } => {
+                    directions.iter().for_each(|&x| beam(x).draw(ctx))
                 }
                 BeamTile::Mirror {
                     galvoed,

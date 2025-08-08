@@ -10,9 +10,20 @@ use engine::{
 use rand::{Rng, seq::IndexedRandom};
 
 use crate::{
-    assets::animated_sprite,
-    consts::{TILES, layer},
+    assets::{TILE_DELAY, TILE_DETECTOR, TILE_WALL, animated_sprite},
+    consts::layer,
+    game::render::tile::{EMITTER, GALVO, MIRROR, SPLITTER},
 };
+
+const TILES: &[&[SpriteRef]] = &[
+    &MIRROR,
+    &SPLITTER,
+    &[TILE_WALL],
+    &GALVO,
+    &EMITTER,
+    &[TILE_DETECTOR],
+    &[TILE_DELAY],
+];
 
 pub struct Waterfall {
     key: MemoryKey,

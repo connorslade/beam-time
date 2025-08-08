@@ -3,9 +3,7 @@ use std::f32::consts::PI;
 use rand::{Rng, rng};
 use thousands::Separable;
 
-use crate::{
-    app::App, assets::UNDEAD_FONT, consts::ERROR_COLOR, ui::components::histogram::Histogram,
-};
+use crate::{app::App, assets::UNDEAD_FONT, consts::color, ui::components::histogram::Histogram};
 use beam_logic::{level::Level, simulation::level_state::LevelResult};
 use engine::{
     color::{OkLab, Rgb},
@@ -106,7 +104,7 @@ fn success(
                 Spacer::new_y(8.0 * ctx.scale_factor).layout(ctx, layout);
                 Text::new(UNDEAD_FONT, "Failed to load global leaderboard.")
                     .scale(Vector2::repeat(2.0))
-                    .color(ERROR_COLOR)
+                    .color(color::ERROR)
                     .layout(ctx, layout);
                 Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
                 return;

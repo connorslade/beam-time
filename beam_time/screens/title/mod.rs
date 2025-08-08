@@ -19,7 +19,7 @@ use engine::{
 use crate::{
     App,
     assets::{ALAGARD_FONT, UNDEAD_FONT},
-    consts::{AUTHOR_HOMEPAGE, BACKGROUND_COLOR, GAME_HOMEPAGE, WATERFALL, layer},
+    consts::{AUTHOR_HOMEPAGE, GAME_HOMEPAGE, WATERFALL, color, layer},
     ui::{
         components::{
             button::{ButtonEffects, ButtonExt},
@@ -53,7 +53,7 @@ impl Screen for TitleScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         let (margin, padding) = state.spacing(ctx);
 
-        ctx.background(BACKGROUND_COLOR);
+        ctx.background(color::BACKGROUND);
         Waterfall::new(WATERFALL).draw(ctx);
         self.modals(state, ctx);
 

@@ -14,7 +14,7 @@ use engine::{
 
 use crate::{
     assets::{BUTTON_CLICK, BUTTON_HOVER, LEFT_ARROW, RIGHT_ARROW},
-    consts::ACCENT_COLOR,
+    consts::color,
 };
 
 pub struct Button<T: ButtonContent> {
@@ -104,7 +104,7 @@ impl<T: ButtonContent + 'static> Drawable for Button<T> {
         }
 
         if self.effects.contains(ButtonEffects::Color) {
-            self.asset = self.asset.color(color.lerp(ACCENT_COLOR, t));
+            self.asset = self.asset.color(color.lerp(color::ACCENT, t));
         }
 
         let bounds = self.asset.bounds(ctx);

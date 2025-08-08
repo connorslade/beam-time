@@ -11,7 +11,7 @@ use engine::{
 
 use crate::{
     app::App,
-    consts::{ERROR_COLOR, KEYBINDS, layer},
+    consts::{KEYBINDS, color, layer},
     ui::{
         components::{
             button::{ButtonEffects, ButtonExt},
@@ -84,7 +84,7 @@ impl GameScreen {
 
                                 Spacer::new_y(padding / 2.0).layout(ctx, layout);
                                 let trash_button = body("Delete World")
-                                    .color(ERROR_COLOR)
+                                    .color(color::ERROR)
                                     .button(memory_key!())
                                     .effects(ButtonEffects::Color);
                                 trash = trash_button.is_clicked(ctx);

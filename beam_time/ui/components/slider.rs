@@ -14,7 +14,7 @@ use engine::{
 
 use crate::{
     assets::{SLIDER_HANDLE, UNDEAD_FONT},
-    consts::MODAL_BORDER_COLOR,
+    consts::color,
 };
 
 pub struct Slider {
@@ -121,7 +121,7 @@ impl Drawable for Slider {
 
         Rectangle::new(Vector2::new(full_width, px))
             .position(self.position + Vector2::y() * px * 2.5, Anchor::BottomLeft)
-            .color(MODAL_BORDER_COLOR)
+            .color(color::MODAL_BORDER)
             .draw(ctx);
         handle.draw(ctx);
     }

@@ -27,7 +27,7 @@ use slug::slugify;
 use crate::{
     App,
     assets::{ALAGARD_FONT, DUPLICATE, EDIT, TRASH, UNDEAD_FONT},
-    consts::{BACKGROUND_COLOR, MODAL_BORDER_COLOR, WATERFALL, layer},
+    consts::{WATERFALL, color, layer},
     game::board::{
         Board,
         unloaded::{UnloadedBoard, load_level_dir},
@@ -69,7 +69,7 @@ impl Screen for SandboxScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         let (_, padding) = state.spacing(ctx);
 
-        ctx.background(BACKGROUND_COLOR);
+        ctx.background(color::BACKGROUND);
         Waterfall::new(WATERFALL).draw(ctx);
         self.modals(state, ctx);
 
@@ -108,11 +108,11 @@ impl Screen for SandboxScreen {
                             RectangleOutline::new(size, 4.0)
                                 .position(pos, Anchor::BottomLeft)
                                 .relative_inner()
-                                .color(MODAL_BORDER_COLOR)
+                                .color(color::MODAL_BORDER)
                                 .draw(ctx);
                             Rectangle::new(size)
                                 .position(pos, Anchor::BottomLeft)
-                                .color(BACKGROUND_COLOR)
+                                .color(color::BACKGROUND)
                                 .z_index(-1)
                                 .draw(ctx);
                         }

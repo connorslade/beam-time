@@ -18,7 +18,7 @@ use uuid::Uuid;
 use crate::{
     app::App,
     assets::{ALAGARD_FONT, CHECK, UNDEAD_FONT},
-    consts::BACKGROUND_COLOR,
+    consts::color,
     game::{
         board::{
             Board, BoardMeta, LevelMeta,
@@ -44,7 +44,7 @@ pub struct CampaignScreen {
 
 impl Screen for CampaignScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        ctx.background(BACKGROUND_COLOR);
+        ctx.background(color::BACKGROUND);
         let t = state.start.elapsed().as_secs_f32();
 
         let (_, padding) = state.spacing(ctx);

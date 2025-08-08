@@ -1,6 +1,6 @@
 use crate::{
     assets::UNDEAD_FONT,
-    consts::{SELECTION_COLOR, layer},
+    consts::{color, layer},
     util::key_events,
 };
 use ahash::HashSet;
@@ -220,7 +220,7 @@ impl Board {
                     };
 
                     Rectangle::new(size)
-                        .color(SELECTION_COLOR)
+                        .color(color::SELECTION)
                         .position(render_pos + shift, Anchor::BottomLeft)
                         .z_index(layer::TILE_BACKGROUND_OVERLAY)
                         .draw(ctx);

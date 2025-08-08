@@ -17,7 +17,7 @@ use slug::slugify;
 
 use crate::{
     app::App,
-    consts::{ERROR_COLOR, layer},
+    consts::{color, layer},
     game::board::Board,
     screens::{
         game::GameScreen,
@@ -93,7 +93,7 @@ impl SandboxScreen {
 
                 let checkers = [(no_name, NO_NAME_TEXT), (invalid_name, INVALID_NAME_TEXT)];
                 for (_, error) in checkers.iter().filter(|(predicate, _)| *predicate) {
-                    body(error).color(ERROR_COLOR).layout(ctx, layout);
+                    body(error).color(color::ERROR).layout(ctx, layout);
                     name_error = true;
                 }
 

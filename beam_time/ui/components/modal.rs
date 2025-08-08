@@ -18,11 +18,7 @@ use engine::{
     memory_key,
 };
 
-use crate::{
-    assets::HISTOGRAM_MARKER,
-    consts::{ACCENT_COLOR, MODAL_BORDER_COLOR, MODAL_COLOR},
-    ui::misc::body,
-};
+use crate::{assets::HISTOGRAM_MARKER, consts::color, ui::misc::body};
 
 pub struct Modal {
     size: Vector2<f32>,
@@ -161,7 +157,7 @@ pub fn modal_buttons(
         let t = ctx.memory.get_or_insert(key, 0.0);
         *t += ctx.delta_time * if hover { 1.0 } else { -1.0 };
         *t = t.clamp(0.0, 0.1);
-        let color = Rgb::hex(0xFFFFFF).lerp(ACCENT_COLOR, *t / 0.1);
+        let color = Rgb::hex(0xFFFFFF).lerp(color::ACCENT, *t / 0.1);
 
         let direction = [LayoutDirection::MaxToMin, LayoutDirection::MinToMax][rotation as usize];
         layout.nest(
@@ -211,7 +207,7 @@ impl Modal {
     // it's like whatever
     fn background(&self, ctx: &mut GraphicsContext, pos: Vector2<f32>) {
         Rectangle::new(self.size)
-            .color(MODAL_COLOR)
+            .color(color::MODAL)
             .position(pos, Anchor::TopLeft)
             .z_index(self.layer)
             .draw(ctx);
@@ -224,7 +220,7 @@ impl Modal {
 
         let mut border = |size, pos| {
             Rectangle::new(size)
-                .color(MODAL_BORDER_COLOR)
+                .color(color::MODAL_BORDER)
                 .position(pos, Anchor::TopLeft)
                 .z_index(self.layer)
                 .draw(ctx)

@@ -15,7 +15,7 @@ use indoc::indoc;
 use crate::{
     App,
     assets::UNDEAD_FONT,
-    consts::{SELECTION_COLOR, layer},
+    consts::{color, layer},
     screens::title::{ActiveModal, TitleScreen},
     ui::{
         components::{
@@ -92,7 +92,7 @@ impl TitleScreen {
                                         let button = body(page.name());
 
                                         if page == current {
-                                            button.color(SELECTION_COLOR).layout(ctx, layout);
+                                            button.color(color::SELECTION).layout(ctx, layout);
                                         } else {
                                             let button = button.button(memory_key!(page));
                                             if button.is_clicked(ctx) {

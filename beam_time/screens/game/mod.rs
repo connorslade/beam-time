@@ -12,7 +12,7 @@ use rand::{Rng, seq::SliceRandom};
 use crate::game::achievements::award_campaign_achievements;
 use crate::{
     App,
-    consts::BACKGROUND_COLOR,
+    consts::color,
     game::{board::Board, pancam::Pancam, render::beam::BeamStateRender},
     ui::{confetti::Confetti, level_panel::LevelPanel, tile_picker::TilePicker},
     util::key_events,
@@ -150,7 +150,7 @@ impl Screen for GameScreen {
             self.level_result = None;
         }
 
-        ctx.background(BACKGROUND_COLOR);
+        ctx.background(color::BACKGROUND);
         self.tile_picker
             .render(ctx, state, sim.beam.is_some(), &mut self.board);
         self.level_panel
