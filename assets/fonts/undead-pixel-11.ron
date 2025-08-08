@@ -98,6 +98,7 @@ FontDescriptor(
         '©': (uv: (22, 25), size: (6, 7), baseline_shift: -1),
         '♥': (uv: (29, 26), size: (7, 6)),
         '⊕': (uv: (37, 25), size: (7, 7)),
+        '∞': (uv: (45, 26), size: (7, 5)),
     },
     unknown: (uv: (136, 0), size: (8, 10), baseline_shift: -2),
     height: 6,

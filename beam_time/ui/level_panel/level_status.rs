@@ -100,8 +100,8 @@ fn success(
                 .max_width(layout.available().x)
                 .layout(ctx, layout);
 
+            Spacer::new_y(8.0 * ctx.scale_factor).layout(ctx, layout);
             let Some(hist_data) = state.leaderboard.get_results(level.id) else {
-                Spacer::new_y(8.0 * ctx.scale_factor).layout(ctx, layout);
                 Text::new(UNDEAD_FONT, "Failed to load global leaderboard.")
                     .scale(Vector2::repeat(2.0))
                     .color(color::ERROR)

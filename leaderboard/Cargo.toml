@@ -6,6 +6,10 @@ edition = "2024"
 [lib]
 path = "lib.rs"
 
+[[bin]]
+name = "leaderboard"
+path = "main.rs"
+
 [features]
 tracing = []
 default = ["tracing"]

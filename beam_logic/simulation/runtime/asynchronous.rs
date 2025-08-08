@@ -89,6 +89,22 @@ impl AsyncSimulationState {
     }
 }
 
+impl InnerAsyncSimulationState {
+    pub fn is_playing(&self) -> bool {
+        self.beam
+            .as_ref()
+            .map(|x| x.level.is_none())
+            .unwrap_or_default()
+    }
+
+    pub fn is_testing(&self) -> bool {
+        self.beam
+            .as_ref()
+            .map(|x| x.level.is_some())
+            .unwrap_or_default()
+    }
+}
+
 impl Drop for AsyncSimulationState {
     fn drop(&mut self) {
         self.get().kill = true;

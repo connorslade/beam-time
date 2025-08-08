@@ -54,9 +54,8 @@ impl Database {
             }
             i => {
                 error!(
-                    "Database version mismatch. Expected {}, got {}. Please run migrations, or \
+                    "Database version mismatch. Expected {DATABASE_VERSION}, got {i}. Please run migrations, or \
                      just like delete the database and start over.",
-                    DATABASE_VERSION, i
                 );
                 std::process::exit(1);
             }

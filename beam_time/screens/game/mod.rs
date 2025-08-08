@@ -30,8 +30,6 @@ use engine::{
 
 use super::Screen;
 
-use note_edit_modal::NoteEditModal;
-use paused_modal::PausedModal;
 mod note_edit_modal;
 mod paused_modal;
 
@@ -43,8 +41,7 @@ pub struct GameScreen {
     tile_picker: TilePicker,
     level_panel: LevelPanel,
     confetti: Confetti,
-    paused: Option<PausedModal>,
-    note_edit: Option<NoteEditModal>,
+    modal: ActiveModal,
 
     level_result: Option<LevelResult>,
     save_file: PathBuf,
@@ -52,13 +49,18 @@ pub struct GameScreen {
     tps: f32,
 }
 
+enum ActiveModal {
+    None,
+    Paused,
+    NoteEdit { index: usize, old: bool },
+}
+
 impl Screen for GameScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        self.paused_modal(state, ctx);
-        self.note_edit_modal(state, ctx);
-
-        if self.paused.is_none() && self.note_edit.is_none() {
-            self.pancam.update(state, ctx);
+        self.modal(state, ctx);
+        match self.modal {
+            ActiveModal::None => self.pancam.update(state, ctx),
+            _ => self.pancam.only_animate(ctx),
         }
 
         if mem::take(&mut self.needs_init) {
@@ -91,24 +93,25 @@ impl Screen for GameScreen {
         state.debug(|| format!("Tick: {:.2?}", sim.tick_length));
         sim.runtime.time_per_tick = Duration::from_secs_f32(self.tps.max(1.0).recip());
 
-        if sim.beam.is_none() && ctx.input.key_pressed(KeyCode::Escape) {
-            self.paused = self.paused.is_none().then_some(PausedModal {});
+        if ctx.input.key_pressed(KeyCode::Escape) {
+            self.modal = match self.modal {
+                ActiveModal::Paused => ActiveModal::None,
+                _ => ActiveModal::Paused,
+            }
         }
 
         let space_pressed = ctx.input.key_pressed(KeyCode::Space);
         let play_pressed = ctx.input.key_pressed(KeyCode::KeyP);
-        let test_pressed = ctx.input.key_pressed(KeyCode::KeyT)
-            && sim.beam.is_none()
-            && self.board.meta.level.is_some();
-
-        sim.runtime.running |= play_pressed || test_pressed;
+        let test_pressed = ctx.input.key_pressed(KeyCode::KeyT) && self.board.meta.level.is_some();
+        let mut stop_simulation = sim.beam.is_some() && (play_pressed || test_pressed);
         sim.runtime.running &= !space_pressed;
+        sim.runtime.running |= play_pressed || (test_pressed && sim.beam.is_none());
 
-        if let Some(beam_state) = &mut sim.beam {
+        if let Some(beam_state) = &mut sim.beam
+            && !stop_simulation
+        {
             // Make async?
-            if space_pressed {
-                beam_state.tick();
-            }
+            space_pressed.then(|| beam_state.tick());
 
             beam_state.render(ctx, state, &self.pancam);
 
@@ -136,7 +139,11 @@ impl Screen for GameScreen {
             }
 
             self.beam.notify_running();
-        } else if space_pressed || play_pressed || test_pressed {
+        } else if space_pressed
+            || (play_pressed && !sim.is_playing())
+            || (test_pressed && !sim.is_testing())
+        {
+            stop_simulation = false;
             sim.beam = Some(BeamState::new(
                 &self.board.tiles,
                 self.board.transient.level.map(Cow::Borrowed),
@@ -145,10 +152,7 @@ impl Screen for GameScreen {
             self.level_result = None;
         }
 
-        if ctx.input.key_pressed(KeyCode::Escape) {
-            sim.beam = None;
-            self.level_result = None;
-        }
+        stop_simulation.then(|| sim.beam = None);
 
         ctx.background(color::BACKGROUND);
         self.tile_picker
@@ -214,8 +218,7 @@ impl GameScreen {
             tile_picker: TilePicker::default(),
             level_panel: LevelPanel::default(),
             confetti: Confetti::new(),
-            paused: None,
-            note_edit: None,
+            modal: ActiveModal::None,
 
             level_result: None,
             save_file,
@@ -227,6 +230,11 @@ impl GameScreen {
     pub fn load(save_file: impl AsRef<Path>) -> Self {
         let save_file = save_file.as_ref().to_path_buf();
         GameScreen::new(Board::load(&save_file).unwrap_or_default(), save_file)
+    }
+
+    fn modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
+        self.paused_modal(state, ctx);
+        self.note_edit_modal(state, ctx);
     }
 }
 

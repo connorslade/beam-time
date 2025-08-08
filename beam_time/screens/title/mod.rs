@@ -189,14 +189,14 @@ impl TitleScreen {
                             (ctx, layout),
                             "Zoom Sensitivity",
                             &mut state.config.zoom_sensitivity,
-                            (0.0, 2.0),
+                            (0.0, 1.0, 2.0),
                         );
 
                         slider(
                             (ctx, layout),
                             "Movement Speed",
                             &mut state.config.movement_speed,
-                            (1000.0, 3000.0),
+                            (1000.0, 2000.0, 3000.0),
                         );
                     });
                 });

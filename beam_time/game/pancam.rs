@@ -16,6 +16,7 @@ pub struct Pancam {
     pub pan_goal: Vector2<f32>,
 }
 
+const DECAY: f32 = 10.0;
 const PAN_KEYS: [(KeyCode, Vector2<f32>); 4] = [
     (KeyCode::KeyW, Vector2::new(0.0, -1.0)),
     (KeyCode::KeyA, Vector2::new(1.0, 0.0)),
@@ -47,16 +48,21 @@ impl Pancam {
             + ctx.input.scroll_delta() * state.config.zoom_sensitivity)
             .clamp(1.0, 10.0);
 
-        let (decay, dt) = (10.0, ctx.delta_time);
-        self.scale = exp_decay(self.scale, self.scale_goal, decay, dt);
-        self.pan.x = exp_decay(self.pan.x, self.pan_goal.x, decay, dt);
-        self.pan.y = exp_decay(self.pan.y, self.pan_goal.y, decay, dt);
+        self.scale = exp_decay(self.scale, self.scale_goal, DECAY, ctx.delta_time);
+        self.pan.x = exp_decay(self.pan.x, self.pan_goal.x, DECAY, ctx.delta_time);
+        self.pan.y = exp_decay(self.pan.y, self.pan_goal.y, DECAY, ctx.delta_time);
 
         // Scale around the cursor position, not the world origin. Don't ask how
         // long this took me to get right...
         delta_pan += (ctx.input.mouse() - self.pan) * (old_scale - self.scale) / old_scale;
 
         self.delta_pan(delta_pan);
+    }
+
+    pub fn only_animate(&mut self, ctx: &mut GraphicsContext) {
+        self.scale = exp_decay(self.scale, self.scale_goal, DECAY, ctx.delta_time);
+        self.pan.x = exp_decay(self.pan.x, self.pan_goal.x, DECAY, ctx.delta_time);
+        self.pan.y = exp_decay(self.pan.y, self.pan_goal.y, DECAY, ctx.delta_time);
     }
 
     pub fn on_resize(&mut self, old_size: Vector2<f32>, new_size: Vector2<f32>) {

@@ -21,7 +21,8 @@ pub struct Slider {
     position: Vector2<f32>,
     width: f32,
     bounds: (f32, f32),
-    default: f32,
+    start: f32,
+    default: Option<f32>,
     key: MemoryKey,
 }
 
@@ -38,13 +39,21 @@ impl Slider {
             position: Vector2::zeros(),
             width: 150.0,
             bounds: (0.0, 1.0),
-            default: 0.0,
+            start: 0.0,
+            default: None,
             key,
         }
     }
 
+    pub fn start(self, start: f32) -> Self {
+        Self { start, ..self }
+    }
+
     pub fn default(self, default: f32) -> Self {
-        Self { default, ..self }
+        Self {
+            default: Some(default),
+            ..self
+        }
     }
 
     pub fn width(self, width: f32) -> Self {
@@ -63,7 +72,7 @@ impl Slider {
         ctx.memory
             .get::<SliderState>(self.key)
             .map(|x| x.t * (max - min) + min)
-            .unwrap_or(self.default)
+            .unwrap_or(self.start)
     }
 
     pub fn is_dragging(&self, ctx: &GraphicsContext) -> bool {
@@ -78,7 +87,7 @@ impl Slider {
     fn state<'a>(&self, memory: &'a mut Memory) -> &'a mut SliderState {
         let (min, max) = self.bounds;
         memory.get_or_insert_with(self.key, || SliderState {
-            t: ((self.default - min) / (max - min)).clamp(0.0, 1.0),
+            t: ((self.start - min) / (max - min)).clamp(0.0, 1.0),
             ..Default::default()
         })
     }
@@ -106,17 +115,29 @@ impl Drawable for Slider {
             .z_index(1);
 
         let click = ctx.input.mouse_pressed(MouseButton::Left);
+        let right = ctx.input.mouse_pressed(MouseButton::Right);
+
         let hovered = handle.is_hovered(ctx);
         hovered.then(|| ctx.window.cursor(CursorIcon::Pointer));
 
         let state = self.state(ctx.memory);
         let size = Vector2::new(full_width, px * 6.0);
+        let in_bounds = in_bounds(mouse, (self.position, self.position + size));
         if click && hovered {
             state.dragging = true;
-        } else if click && in_bounds(mouse, (self.position, self.position + size)) {
+        } else if click && in_bounds {
             state.offset = mouse.x - (self.position.x + offset.x);
             state.dragging = true;
             state.offset = px * 2.0;
+        }
+
+        if right
+            && !state.dragging
+            && in_bounds
+            && let Some(default) = self.default
+        {
+            let (min, max) = self.bounds;
+            state.t = (default - min) / (max - min);
         }
 
         Rectangle::new(Vector2::new(full_width, px))
@@ -146,7 +167,7 @@ pub fn slider<L: Layout + LayoutElement + 'static>(
     (ctx, layout): (&mut GraphicsContext, &mut L),
     name: &str,
     value: &mut f32,
-    range: (f32, f32),
+    (min, default, max): (f32, f32, f32),
 ) {
     Text::new(UNDEAD_FONT, name)
         .scale(Vector2::repeat(2.0))
@@ -156,8 +177,9 @@ pub fn slider<L: Layout + LayoutElement + 'static>(
         RowLayout::new(10.0 * ctx.scale_factor).justify(Justify::Center),
         |ctx, layout| {
             let slider = Slider::new(memory_key!(name))
-                .default(*value)
-                .bounds(range.0, range.1);
+                .start(*value)
+                .default(default)
+                .bounds(min, max);
             *value = slider.value(ctx);
             slider.layout(ctx, layout);
 

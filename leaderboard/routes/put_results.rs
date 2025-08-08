@@ -5,12 +5,12 @@ use std::{
 };
 
 use afire::{
+    HeaderName, Server,
     extensions::{RealIp, RouteShorthands},
     route::RouteContext,
-    HeaderName, Server,
 };
 use beam_logic::{
-    level::DEFAULT_LEVELS,
+    level::default::DEFAULT_LEVELS,
     misc::price,
     simulation::{level_state::LevelResult, runtime::testing::TestingSimulationState},
 };

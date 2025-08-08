@@ -22,6 +22,7 @@ use crate::{
     assets::TRASH,
     consts::layer,
     game::board::Note,
+    screens::game::ActiveModal,
     ui::{
         components::{button::ButtonExt, modal::Modal, text_input::TextInput},
         misc::body,
@@ -36,11 +37,6 @@ const DEFAULT_NAME: &str = "New Note";
 const DEFAULT_BODY: &str =
     "This note doesn't have any content yet, click it to open the edit modal.";
 
-pub struct NoteEditModal {
-    pub index: usize,
-    pub old: bool,
-}
-
 enum Operation {
     None,
     Delete,
@@ -49,14 +45,14 @@ enum Operation {
 
 impl GameScreen {
     pub(super) fn note_edit_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        if self.note_edit.is_none() && ctx.input.consume_key_pressed(KeyCode::KeyN) {
+        if matches!(self.modal, ActiveModal::None) && ctx.input.consume_key_pressed(KeyCode::KeyN) {
             let position = self.pancam.screen_to_world_space(ctx, ctx.input.mouse());
             let closest = closest_note(&self.board.notes, position);
             let closest_distance = closest.map(|x| x.1).unwrap_or(f32::MAX);
 
             if closest_distance < 1.0 {
                 let index = closest.unwrap().0;
-                self.note_edit = Some(NoteEditModal { index, old: true });
+                self.modal = ActiveModal::NoteEdit { index, old: true };
             } else {
                 let index = self.board.notes.len();
                 self.board.notes.push(Note {
@@ -65,11 +61,11 @@ impl GameScreen {
                     body: DEFAULT_BODY.into(),
                 });
 
-                self.note_edit = Some(NoteEditModal { index, old: false });
+                self.modal = ActiveModal::NoteEdit { index, old: false };
             }
         }
 
-        if let Some(note) = &mut self.note_edit {
+        if let ActiveModal::NoteEdit { index, old } = &mut self.modal {
             let (margin, padding) = state.spacing(ctx);
             let modal = Modal::new(state.modal_size(ctx))
                 .position(ctx.center(), Anchor::Center)
@@ -125,8 +121,8 @@ impl GameScreen {
                         .placeholder("Body")
                         .width(size.x);
 
-                    if mem::take(&mut note.old) {
-                        let note = &self.board.notes[note.index];
+                    if mem::take(old) {
+                        let note = &self.board.notes[*index];
                         title.with_content(ctx, note.title.to_owned());
                         body.with_content(ctx, note.body.to_owned());
                     }
@@ -148,19 +144,17 @@ impl GameScreen {
 
             match operation {
                 Operation::Delete => {
-                    self.board.notes.remove(note.index);
+                    self.board.notes.remove(*index);
                 }
                 Operation::Edit { title, body } => {
-                    let note = &mut self.board.notes[note.index];
+                    let note = &mut self.board.notes[*index];
                     note.title = title;
                     note.body = body;
                 }
                 Operation::None => {}
             }
 
-            if close {
-                self.note_edit = None;
-            }
+            close.then(|| self.modal = ActiveModal::None);
         }
     }
 }
