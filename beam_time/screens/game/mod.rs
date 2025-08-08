@@ -69,6 +69,11 @@ impl Screen for GameScreen {
             self.pancam.pan_goal = pan;
         }
 
+        if let Some(old_size) = ctx.input.resized {
+            self.pancam
+                .on_resize(old_size.map(|x| x as f32), ctx.size());
+        }
+
         let shift = ctx.input.key_down(KeyCode::ShiftLeft);
         key_events!(ctx, {
             KeyCode::Digit0 => self.tps = [20.0, f32::MAX][shift as usize],
@@ -171,10 +176,6 @@ impl Screen for GameScreen {
         if let Some(level) = self.board.transient.level {
             state.leaderboard.fetch_results(level.id);
         }
-    }
-
-    fn on_resize(&mut self, _state: &mut App, old_size: Vector2<f32>, new_size: Vector2<f32>) {
-        self.pancam.on_resize(old_size, new_size);
     }
 
     fn on_destroy(&mut self, _state: &mut App) {

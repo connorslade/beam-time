@@ -19,11 +19,7 @@ pub macro include_atlas($name:expr) {
 pub macro key_events(
     $ctx:expr, { $($key:expr => $action:expr),* }
 ) {
-    $(
-        if $ctx.input.key_pressed($key) {
-            $action;
-        }
-    )*
+    $($ctx.input.key_pressed($key).then(|| $action);)*
 }
 
 pub fn load_level_dir(dir: &Path) -> Vec<(PathBuf, BoardMeta)> {
@@ -45,10 +41,12 @@ pub fn load_level_dir(dir: &Path) -> Vec<(PathBuf, BoardMeta)> {
     out
 }
 
+const TIME_UNITS: &[(u64, &str)] = &[(86400, "d"), (3600, "h"), (60, "m"), (1, "s")];
+
 pub fn human_duration(mut secs: u64) -> String {
     let mut out = String::new();
 
-    for &(unit, label) in &[(86400, "d"), (3600, "h"), (60, "m"), (1, "s")] {
+    for &(unit, label) in TIME_UNITS {
         if secs >= unit {
             out.push_str(&format!("{}{} ", secs / unit, label));
             secs %= unit;
@@ -56,4 +54,15 @@ pub fn human_duration(mut secs: u64) -> String {
     }
 
     out.trim_end().to_string()
+}
+
+pub fn human_duration_minimal(secs: u64) -> String {
+    for &(unit, label) in TIME_UNITS {
+        if secs >= unit {
+            return format!("{}{}", secs / unit, label);
+        }
+    }
+
+    let (unit, label) = TIME_UNITS[0];
+    format!("{}{}", secs / unit, label)
 }

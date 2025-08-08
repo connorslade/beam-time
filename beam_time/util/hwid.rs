@@ -75,7 +75,7 @@ unsafe extern "C" {
 }
 
 // See http://0pointer.de/blog/projects/ids.html for info on linux hardware and
-// software IDs. I am using both a hardware id and a user ID to each user on
+// software IDs. I am using both a hardware id and a user ID, so each user on
 // each machine should have different IDs.
 #[cfg(target_os = "linux")]
 pub fn get() -> u64 {
@@ -132,8 +132,8 @@ pub fn get() -> u64 {
     };
 
     let mut hash = md5::Context::new();
-    hash.consume(serial_number);
     hash.consume(unsafe { getuid() }.to_be_bytes());
+    hash.consume(serial_number);
 
     digest_as_u64(hash.compute())
 }

@@ -36,7 +36,7 @@ pub struct CampaignScreen {
     layout: TreeLayout,
     pancam: Pancam,
 
-    worlds: HashMap<Uuid, (PathBuf, BoardMeta)>,
+    worlds: HashMap<Uuid, Vec<(PathBuf, BoardMeta)>>,
 }
 
 impl Screen for CampaignScreen {
@@ -84,8 +84,10 @@ impl Screen for CampaignScreen {
 
             for item in row {
                 let available = self.is_available(item.id);
-                let world = self.worlds.get(&item.id);
-                let solved = world.map(|(_, meta)| meta.is_solved()) == Some(true);
+                let worlds = self.worlds.get(&item.id);
+                let solved = worlds
+                    .map(|x| x.iter().any(|(_, meta)| meta.is_solved()))
+                    .unwrap_or_default();
 
                 let center = offset + Vector2::x() * item.offset();
                 let text = item.text.clone();
@@ -113,9 +115,10 @@ impl Screen for CampaignScreen {
                         .z_index(2)
                         .draw(ctx);
 
-                    // todo: invalidate if dragged after mouse down
-                    if ctx.input.mouse_released(MouseButton::Left) {
-                        self.open_level(state, world, self.tree.get(item.id).unwrap());
+                    if ctx.input.mouse_pressed(MouseButton::Left) {
+                        let latest =
+                            worlds.and_then(|x| x.iter().max_by_key(|(_, meta)| meta.last_played));
+                        self.open_level(state, latest, self.tree.get(item.id).unwrap());
                     }
                 }
 
@@ -167,7 +170,7 @@ impl Screen for CampaignScreen {
 
         for (path, meta) in load_level_dir(&campaign) {
             let Some(level) = meta.level else { continue };
-            self.worlds.insert(level.id, (path, meta));
+            self.worlds.entry(level.id).or_default().push((path, meta));
         }
 
         #[cfg(feature = "steam")]
@@ -210,8 +213,10 @@ impl CampaignScreen {
         };
 
         for id in parents {
-            if let Some((_, meta)) = self.worlds.get(id)
-                && meta.is_solved()
+            let worlds = self.worlds.get(id);
+            if worlds
+                .map(|x| x.iter().any(|(_, meta)| meta.is_solved()))
+                .unwrap_or_default()
             {
                 return true;
             }
@@ -221,7 +226,10 @@ impl CampaignScreen {
     }
 
     fn solved_count(&self) -> usize {
-        self.worlds.values().filter(|(_, x)| !x.is_solved()).count()
+        self.worlds
+            .values()
+            .filter(|x| x.iter().any(|(_, meta)| meta.is_solved()))
+            .count()
     }
 
     #[cfg(feature = "steam")]

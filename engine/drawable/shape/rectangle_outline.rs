@@ -16,6 +16,7 @@ pub struct RectangleOutline {
     z_index: i16,
     color: Rgb<f32>,
     thickness: f32,
+    relative_inner: bool,
 }
 
 impl RectangleOutline {
@@ -27,6 +28,7 @@ impl RectangleOutline {
             z_index: 0,
             color: Rgb::repeat(1.0),
             thickness,
+            relative_inner: false,
         }
     }
 
@@ -51,15 +53,29 @@ impl RectangleOutline {
         self
     }
 
-    fn points(&self, ctx: &GraphicsContext) -> [[Vector2<f32>; 4]; 2] {
-        let outer_size = self.size + Vector2::repeat(self.thickness * 2.0 * ctx.scale_factor);
+    pub fn relative_inner(self) -> Self {
+        Self {
+            relative_inner: true,
+            ..self
+        }
+    }
 
-        let offset_outer = self.position + self.position_anchor.offset(outer_size);
+    fn points(&self, ctx: &GraphicsContext) -> [[Vector2<f32>; 4]; 2] {
+        let (mut size, mut position) = (self.size, self.position);
+        if self.relative_inner {
+            let border = Vector2::repeat(self.thickness);
+            size -= border;
+            position -= border;
+        }
+
+        let outer_size = size + Vector2::repeat(self.thickness * 2.0 * ctx.scale_factor);
+
+        let offset_outer = position + self.position_anchor.offset(outer_size);
         let offset_inner = offset_outer + Vector2::repeat(self.thickness * ctx.scale_factor);
 
         [
             RECTANGLE_POINTS.map(|x| offset_outer + x.component_mul(&outer_size)),
-            RECTANGLE_POINTS.map(|x| offset_inner + x.component_mul(&self.size)),
+            RECTANGLE_POINTS.map(|x| offset_inner + x.component_mul(&size)),
         ]
     }
 }

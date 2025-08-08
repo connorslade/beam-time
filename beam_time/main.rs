@@ -49,9 +49,6 @@ fn main() -> Result<()> {
             Box::new(move |ctx| {
                 ctx.set_vsync(app.config.vsync);
                 app.on_tick();
-                if let Some(old_size) = ctx.input.resized {
-                    screens.on_resize(old_size.map(|x| x as f32), ctx.size(), &mut app);
-                }
 
                 screens.render(ctx, &mut app);
                 screens.pop_n(mem::take(&mut app.close_screens), &mut app);

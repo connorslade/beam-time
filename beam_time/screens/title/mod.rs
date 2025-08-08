@@ -175,9 +175,7 @@ impl TitleScreen {
                     layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
                         toggle(ctx, layout, &mut state.config.vsync, "Use VSync");
                         toggle(ctx, layout, &mut state.config.show_fps, "Show FPS");
-
-                        Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
-                        slider((ctx, layout), "Max Framerate", &mut 0.0, (10.0, 250.0));
+                        toggle(ctx, layout, &mut state.config.full_screen, "Full Screen");
                     });
 
                     Rule::vertical(layout.available().y - 6.0 * ctx.scale_factor - padding)

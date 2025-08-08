@@ -1,4 +1,6 @@
-use engine::{exports::nalgebra::Vector2, graphics_context::GraphicsContext};
+use std::mem;
+
+use engine::graphics_context::GraphicsContext;
 
 use crate::app::App;
 
@@ -14,21 +16,25 @@ pub trait Screen {
     fn post_render(&mut self, _state: &mut App, _ctx: &mut GraphicsContext) {}
 
     fn on_init(&mut self, _state: &mut App) {}
-    fn on_resize(&mut self, _state: &mut App, _old_size: Vector2<f32>, _new_size: Vector2<f32>) {}
     fn on_destroy(&mut self, _state: &mut App) {}
 }
 
 pub struct Screens {
     inner: Vec<Box<dyn Screen>>,
+    new_screen: bool,
 }
 
 impl Screens {
     pub fn new(inner: Vec<Box<dyn Screen>>) -> Self {
-        Self { inner }
+        Self {
+            inner,
+            new_screen: false,
+        }
     }
 
     pub fn extend(&mut self, mut screens: Vec<Box<dyn Screen>>, state: &mut App) {
         screens.iter_mut().for_each(|s| s.on_init(state));
+        self.new_screen |= !screens.is_empty();
         self.inner.extend(screens);
     }
 
@@ -41,6 +47,7 @@ impl Screens {
 
         if let (true, Some(screen)) = (n >= 1, self.inner.last_mut()) {
             screen.on_init(state);
+            self.new_screen = true;
         }
     }
 
@@ -55,16 +62,12 @@ impl Screens {
     }
 
     pub fn render(&mut self, ctx: &mut GraphicsContext, state: &mut App) {
+        mem::take(&mut self.new_screen).then(|| ctx.input.cancel_clicks());
+
         self.inner.iter_mut().for_each(|x| x.pre_render(state, ctx));
         self.top().render(state, ctx);
         self.inner
             .iter_mut()
             .for_each(|x| x.post_render(state, ctx));
-    }
-
-    pub fn on_resize(&mut self, old_size: Vector2<f32>, new_size: Vector2<f32>, state: &mut App) {
-        self.inner
-            .iter_mut()
-            .for_each(|x| x.on_resize(state, old_size, new_size));
     }
 }

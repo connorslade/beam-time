@@ -32,6 +32,7 @@ pub struct Config {
     pub movement_speed: f32,
     pub vsync: bool,
     pub show_fps: bool,
+    pub full_screen: bool,
     pub debug: bool,
 }
 
@@ -137,6 +138,7 @@ impl Default for Config {
             movement_speed: 2000.0,
             vsync: true,
             show_fps: false,
+            full_screen: false,
             debug: false,
         }
     }

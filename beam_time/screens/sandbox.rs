@@ -1,5 +1,6 @@
-use std::path::PathBuf;
+use std::{cmp::Reverse, path::PathBuf};
 
+use chrono::Utc;
 use engine::{
     drawable::{
         shape::{rectangle::Rectangle, rectangle_outline::RectangleOutline},
@@ -35,7 +36,7 @@ use crate::{
         misc::body,
         waterfall::Waterfall,
     },
-    util::{human_duration, load_level_dir},
+    util::{human_duration, human_duration_minimal, load_level_dir},
 };
 
 use super::Screen;
@@ -79,22 +80,22 @@ impl Screen for SandboxScreen {
                         .scale(Vector2::repeat(4.0))
                         .layout(ctx, layout);
                 } else {
-                    let width = (ctx.size().x * 0.5)
+                    let width = (ctx.size().x * 0.75)
                         .clamp(400.0 * ctx.scale_factor, 600.0 * ctx.scale_factor);
 
                     for (i, (world, meta)) in self.worlds.iter().enumerate() {
                         let tracker = LayoutTracker::new(memory_key!(i));
                         if let Some(bounds) = tracker.bounds(ctx) {
                             let offset = Vector2::repeat(padding);
-                            let border = Vector2::repeat(2.0 * ctx.scale_factor);
+                            let (size, pos) = (bounds.size() + offset * 2.0, bounds.min - offset);
 
-                            // todo: fix rect outline to account border by default?
-                            RectangleOutline::new(bounds.size() + offset * 2.0 - border, border.x)
-                                .position(bounds.min - offset - border, Anchor::BottomLeft)
+                            RectangleOutline::new(size, 4.0)
+                                .position(pos, Anchor::BottomLeft)
+                                .relative_inner()
                                 .color(MODAL_BORDER_COLOR)
                                 .draw(ctx);
-                            Rectangle::new(bounds.size() + offset * 2.0)
-                                .position(bounds.min - offset, Anchor::BottomLeft)
+                            Rectangle::new(size)
+                                .position(pos, Anchor::BottomLeft)
                                 .color(BACKGROUND_COLOR)
                                 .z_index(-1)
                                 .draw(ctx);
@@ -108,7 +109,7 @@ impl Screen for SandboxScreen {
                                 .show(ctx, layout, |ctx, layout| {
                                     Text::new(UNDEAD_FONT, &meta.name)
                                         .scale(Vector2::repeat(3.0))
-                                        .button(memory_key!())
+                                        .button(memory_key!(i))
                                         .effects(ButtonEffects::empty())
                                         .on_click(ctx, || {
                                             state.push_screen(GameScreen::load(world.clone()))
@@ -121,7 +122,7 @@ impl Screen for SandboxScreen {
                                         let button = |asset| {
                                             Sprite::new(asset)
                                                 .scale(Vector2::repeat(2.0))
-                                                .button(memory_key!(asset))
+                                                .button(memory_key!(i, asset))
                                         };
 
                                         button(TRASH).layout(ctx, layout);
@@ -132,7 +133,12 @@ impl Screen for SandboxScreen {
                                     });
                                 });
 
-                            let playtime = format!("Playtime: {}", human_duration(meta.playtime));
+                            let since_last_play = (Utc::now() - meta.last_played).num_seconds();
+                            let playtime = format!(
+                                "Last played {} ago\nPlayed for {}",
+                                human_duration_minimal(since_last_play as u64),
+                                human_duration(meta.playtime),
+                            );
                             Text::new(UNDEAD_FONT, playtime)
                                 .scale(Vector2::repeat(2.0))
                                 .layout(ctx, layout);
@@ -140,11 +146,12 @@ impl Screen for SandboxScreen {
                     }
                 }
 
-                let button = Text::new(UNDEAD_FONT, "+ New Sandbox +")
+                Text::new(UNDEAD_FONT, "+ New Sandbox +")
                     .scale(Vector2::repeat(2.0))
-                    .button(memory_key!());
-                self.create |= button.is_clicked(ctx);
-                button.layout(ctx, layout);
+                    .default_shadow()
+                    .button(memory_key!())
+                    .on_click(ctx, || self.create = true)
+                    .layout(ctx, layout);
             },
         );
 
@@ -156,6 +163,8 @@ impl Screen for SandboxScreen {
         self.world_dir = state.data_dir.join("sandbox");
         if self.world_dir.exists() {
             self.worlds = load_level_dir(&self.world_dir);
+            self.worlds
+                .sort_by_key(|(_, meta)| Reverse(meta.last_played));
         }
     }
 }
