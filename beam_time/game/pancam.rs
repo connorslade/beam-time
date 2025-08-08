@@ -28,8 +28,8 @@ impl Pancam {
         let mut delta_pan = Vector2::zeros();
 
         if ctx.input.mouse_down(MouseButton::Middle) {
-            ctx.set_cursor(CursorIcon::Grabbing);
-            delta_pan += ctx.input.mouse_delta;
+            ctx.window.cursor(CursorIcon::Grabbing);
+            delta_pan += ctx.input.mouse_delta();
         }
 
         let direction = PAN_KEYS
@@ -44,7 +44,7 @@ impl Pancam {
         // TODO: Don't allow scale goal to be non integer values when close to 1.0
         let old_scale = self.scale;
         self.scale_goal = (self.scale_goal
-            + ctx.input.scroll_delta * state.config.zoom_sensitivity)
+            + ctx.input.scroll_delta() * state.config.zoom_sensitivity)
             .clamp(1.0, 10.0);
 
         let (decay, dt) = (10.0, ctx.delta_time);
@@ -54,7 +54,7 @@ impl Pancam {
 
         // Scale around the cursor position, not the world origin. Don't ask how
         // long this took me to get right...
-        delta_pan += (ctx.input.mouse - self.pan) * (old_scale - self.scale) / old_scale;
+        delta_pan += (ctx.input.mouse() - self.pan) * (old_scale - self.scale) / old_scale;
 
         self.delta_pan(delta_pan);
     }

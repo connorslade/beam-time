@@ -167,3 +167,13 @@ impl MulAssign<Rgb<f32>> for Rgb<f32> {
         self.b *= rhs.b;
     }
 }
+
+impl<T: Default> Default for Rgb<T> {
+    fn default() -> Self {
+        Self {
+            r: Default::default(),
+            g: Default::default(),
+            b: Default::default(),
+        }
+    }
+}

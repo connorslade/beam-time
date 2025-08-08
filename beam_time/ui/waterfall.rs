@@ -2,8 +2,9 @@ use std::time::Instant;
 
 use engine::{
     assets::SpriteRef,
+    drawable::{Anchor, Drawable},
     exports::nalgebra::Vector2,
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
     memory::{Memory, MemoryKey},
 };
 use rand::{Rng, seq::IndexedRandom};
@@ -54,7 +55,7 @@ impl Drawable for Waterfall {
             let group = TILES.choose(&mut rng).unwrap();
             let asset = *group.choose(&mut rng).unwrap();
 
-            let pos_y = if is_empty || ctx.input.resized() {
+            let pos_y = if is_empty || ctx.window.resized() {
                 size.y * rng.random::<f32>()
             } else {
                 size.y + tile_offset
@@ -83,7 +84,7 @@ impl Drawable for Waterfall {
                 .z_index(layer::TILE_BACKGROUND)
                 .draw(ctx);
 
-            if !ctx.input.just_focused() {
+            if !ctx.window.just_focused() {
                 tile.pos.y -= tile.vel * ctx.delta_time * ctx.scale_factor;
             }
 

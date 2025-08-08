@@ -1,7 +1,6 @@
 use engine::{
-    drawable::text::Text,
-    exports::nalgebra::Vector2,
-    graphics_context::{Anchor, GraphicsContext},
+    drawable::Anchor, drawable::text::Text, exports::nalgebra::Vector2,
+    graphics_context::GraphicsContext,
 };
 
 use crate::assets::UNDEAD_FONT;

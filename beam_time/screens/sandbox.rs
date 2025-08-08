@@ -2,6 +2,7 @@ use std::{cmp::Reverse, path::PathBuf};
 
 use chrono::Utc;
 use engine::{
+    drawable::{Anchor, Drawable},
     drawable::{
         shape::{rectangle::Rectangle, rectangle_outline::RectangleOutline},
         spacer::Spacer,
@@ -12,7 +13,7 @@ use engine::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode, window::CursorIcon},
     },
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
     layout::{
         Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
         root::RootLayout, row::RowLayout, tracker::LayoutTracker,
@@ -229,7 +230,7 @@ impl SandboxScreen {
                 enter |= create && !name_error && click;
                 exit |= back && click;
 
-                (create && name_error).then(|| ctx.set_cursor(CursorIcon::NotAllowed));
+                (create && name_error).then(|| ctx.window.cursor(CursorIcon::NotAllowed));
             });
         });
 

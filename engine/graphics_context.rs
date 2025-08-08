@@ -2,14 +2,13 @@ use std::rc::Rc;
 
 use nalgebra::Vector2;
 use wgpu::Color;
-use winit::window::Cursor;
 
 use crate::{
-    application::State,
+    application::{State, input::InputManager, window::WindowManager},
     assets::{SpriteRef, manager::AssetManager},
     audio::AudioManager,
     color::Rgb,
-    input::InputManager,
+    drawable::Drawable,
     memory::Memory,
     render::{
         shape::{GpuPolygons, ShapeVertex},
@@ -25,20 +24,18 @@ pub struct GraphicsContext<'a> {
     pub audio: &'a AudioManager,
     pub memory: &'a mut Memory,
 
-    /// Background color
-    pub(crate) background: Rgb<f32>,
+    pub input: &'a mut InputManager,
+    pub window: &'a mut WindowManager,
+
     /// List of sprites to render this frame
     pub sprites: Vec<GpuSprite>,
     /// List of shapes to render this frame (triangulated)
     pub shapes: GpuPolygons,
-    /// The cursor to use for the next frame
-    pub(crate) cursor: Cursor,
+    /// Background color
+    pub(crate) background: Rgb<f32>,
     /// Functions to run after main render function completes
     pub(crate) defer: Vec<DeferCallback>,
-    /// If vsync should be active next frame
-    pub(crate) vsync: bool,
 
-    pub input: &'a mut InputManager,
     /// Current window scale_factor
     pub scale_factor: f32,
     /// The time elapsed since the last frame
@@ -47,30 +44,10 @@ pub struct GraphicsContext<'a> {
     pub frame: u64,
 }
 
-pub trait Drawable {
-    fn draw(self, ctx: &mut GraphicsContext);
-}
-
-#[derive(Debug, Copy, Clone)]
-pub enum Anchor {
-    TopLeft,
-    TopCenter,
-    TopRight,
-
-    CenterLeft,
-    Center,
-    CenterRight,
-
-    BottomLeft,
-    BottomCenter,
-    BottomRight,
-
-    Custom(Vector2<f32>),
-}
-
 impl<'a> GraphicsContext<'a> {
     pub fn new(
         input: &'a mut InputManager,
+        window: &'a mut WindowManager,
         memory: &'a mut Memory,
         state: &'a State,
         delta_time: f32,
@@ -80,16 +57,15 @@ impl<'a> GraphicsContext<'a> {
             assets: state.assets.clone(),
             audio: &state.audio,
             memory,
-            background: Rgb::new(0.0, 0.0, 0.0),
+            input,
+            window,
             sprites: Vec::new(),
             shapes: Default::default(),
-            cursor: Cursor::default(),
+            background: Default::default(),
             defer: Vec::new(),
-            input,
             scale_factor,
             delta_time,
             frame: state.frame,
-            vsync: state.vsync,
         }
     }
 
@@ -98,7 +74,7 @@ impl<'a> GraphicsContext<'a> {
     }
 
     pub fn size(&self) -> Vector2<f32> {
-        self.input.window_size.map(|x| x as f32)
+        self.window.size.map(|x| x as f32)
     }
 
     pub fn center(&self) -> Vector2<f32> {
@@ -136,14 +112,6 @@ impl<'a> GraphicsContext<'a> {
         )
     }
 
-    pub fn set_cursor(&mut self, cursor: impl Into<Cursor>) {
-        self.cursor = cursor.into();
-    }
-
-    pub fn set_vsync(&mut self, vsync: bool) {
-        self.vsync = vsync;
-    }
-
     pub fn darken(&mut self, color: Rgb<f32>, below: i16) {
         self.background *= color;
         self.sprites
@@ -167,31 +135,5 @@ impl GraphicsContext<'_> {
             b: self.background.b as f64,
             a: 1.0,
         }
-    }
-}
-
-impl Anchor {
-    pub fn offset(&self, size: Vector2<f32>) -> Vector2<f32> {
-        match self {
-            Anchor::Custom(offset) => size.component_mul(offset),
-
-            Anchor::CenterLeft => -Vector2::new(0.0, size.y / 2.0),
-            Anchor::Center => -size / 2.0,
-            Anchor::CenterRight => -Vector2::new(size.x, size.y / 2.0),
-
-            Anchor::BottomLeft => Vector2::zeros(),
-            Anchor::BottomCenter => -Vector2::new(size.x / 2.0, 0.0),
-            Anchor::BottomRight => -Vector2::new(size.x, 0.0),
-
-            Anchor::TopLeft => -Vector2::new(0.0, size.y),
-            Anchor::TopCenter => -Vector2::new(size.x / 2.0, size.y),
-            Anchor::TopRight => -Vector2::new(size.x, size.y),
-        }
-    }
-}
-
-impl<T: Drawable, const N: usize> Drawable for [T; N] {
-    fn draw(self, ctx: &mut GraphicsContext) {
-        self.into_iter().for_each(|x| x.draw(ctx));
     }
 }

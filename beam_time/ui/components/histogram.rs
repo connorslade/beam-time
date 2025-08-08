@@ -1,7 +1,8 @@
 use engine::{
+    drawable::{Anchor, Drawable},
     drawable::{shape::rectangle::Rectangle, sprite::Sprite, text::Text},
     exports::nalgebra::Vector2,
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
     layout::{LayoutElement, bounds::Bounds2D},
 };
 use itertools::Itertools;

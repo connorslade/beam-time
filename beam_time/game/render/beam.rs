@@ -3,8 +3,9 @@ use common::direction::Direction;
 use engine::{
     assets::SpriteRef,
     drawable::sprite::Sprite,
+    drawable::{Anchor, Drawable},
     exports::nalgebra::Vector2,
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
 };
 
 use crate::{

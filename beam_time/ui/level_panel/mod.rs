@@ -15,12 +15,13 @@ use beam_logic::{
     simulation::{level_state::LevelResult, runtime::asynchronous::InnerAsyncSimulationState},
 };
 use engine::{
+    drawable::Anchor,
     drawable::{dummy::DummyDrawable, spacer::Spacer, sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, window::CursorIcon},
     },
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::GraphicsContext,
     layout::{
         Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
         convenience::NoPaddingExt, row::RowLayout, tracker::LayoutTracker,
@@ -73,7 +74,7 @@ impl LevelPanel {
             .bounds(ctx)
             .map(|x| ctx.size().y - x.min.y)
             .unwrap_or_default()
-            - ctx.input.delta_size().y;
+            - ctx.window.delta_size().y;
         self.height = exp_decay(self.height, height, 10.0, ctx.delta_time);
 
         let position = Vector2::new(4.0 * ctx.scale_factor, ctx.size().y);
@@ -119,7 +120,7 @@ impl LevelPanel {
                     |ctx, layout| {
                         let tracker = LayoutTracker::new(memory_key!());
                         if tracker.hovered(ctx) {
-                            ctx.set_cursor(CursorIcon::Pointer);
+                            ctx.window.cursor(CursorIcon::Pointer);
                             self.collapsed ^= ctx.input.mouse_pressed(MouseButton::Left);
                         }
 
@@ -164,7 +165,7 @@ impl LevelPanel {
             .scale(Vector2::repeat(2.0));
 
         if let Some(status_bounds) = status_tracker.bounds(ctx) {
-            let top = status_bounds.min.y - padding + ctx.input.delta_size().y;
+            let top = status_bounds.min.y - padding + ctx.window.delta_size().y;
             desc = desc.clip(Vector2::zeros(), Vector2::new(f32::MAX, top));
         }
 

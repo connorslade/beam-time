@@ -2,6 +2,7 @@ use std::{cell::RefCell, mem};
 
 use engine::{
     color::Rgb,
+    drawable::{Anchor, Drawable},
     drawable::{
         shape::{rectangle::Rectangle, rectangle_outline::RectangleOutline},
         text::Text,
@@ -13,7 +14,7 @@ use engine::{
             keyboard::{KeyCode, PhysicalKey},
         },
     },
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
     layout::{LayoutElement, bounds::Bounds2D},
     memory::{Memory, MemoryKey},
 };
@@ -159,7 +160,7 @@ impl Drawable for TextInput {
     fn draw(self, ctx: &mut GraphicsContext) {
         let padding = 4.0 * ctx.scale_factor;
 
-        let hovered = self.bounds(ctx).contains(ctx.input.mouse);
+        let hovered = self.bounds(ctx).contains(ctx.input.mouse());
         let state = self.state(ctx.memory);
 
         if ctx.input.mouse_pressed(MouseButton::Left) {
@@ -199,7 +200,8 @@ impl Drawable for TextInput {
         };
 
         let state = self.state(ctx.memory);
-        for key in mem::take(&mut ctx.input.key_actions)
+        let actions = ctx.input.consume_key_actions();
+        for key in actions
             .into_iter()
             .filter(|x| x.state == ElementState::Pressed)
         {

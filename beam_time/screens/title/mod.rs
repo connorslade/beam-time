@@ -2,12 +2,13 @@ use std::mem;
 
 use engine::{
     color::Rgb,
+    drawable::{Anchor, Drawable},
     drawable::{spacer::Spacer, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
     layout::{
         Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout,
         row::RowLayout,
@@ -176,6 +177,8 @@ impl TitleScreen {
                         toggle(ctx, layout, &mut state.config.vsync, "Use VSync");
                         toggle(ctx, layout, &mut state.config.show_fps, "Show FPS");
                         toggle(ctx, layout, &mut state.config.full_screen, "Full Screen");
+                        Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
+                        toggle(ctx, layout, &mut state.config.debug, "Debug Mode");
                     });
 
                     Rule::vertical(layout.available().y - 6.0 * ctx.scale_factor - padding)
@@ -195,9 +198,6 @@ impl TitleScreen {
                             &mut state.config.movement_speed,
                             (1000.0, 3000.0),
                         );
-
-                        Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
-                        toggle(ctx, layout, &mut state.config.debug, "Debug Mode");
                     });
                 });
 

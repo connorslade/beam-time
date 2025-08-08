@@ -8,12 +8,13 @@ use beam_logic::{level::Level, simulation::state::BeamState};
 use common::{direction::Direction, misc::in_bounds};
 use engine::{
     color::Rgb,
+    drawable::{Anchor, Drawable},
     drawable::{shape::rectangle::Rectangle, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
 };
 use thousands::Separable;
 
@@ -39,7 +40,7 @@ impl Board {
 
         this.working_selection = this.selection_start.map(|start| {
             let end = pancam
-                .screen_to_world_space(ctx, ctx.input.mouse)
+                .screen_to_world_space(ctx, ctx.input.mouse())
                 .map(|x| x.ceil() as i32);
 
             (
@@ -136,7 +137,7 @@ impl Board {
             }
 
             let origin = pancam
-                .screen_to_world_space(ctx, ctx.input.mouse)
+                .screen_to_world_space(ctx, ctx.input.mouse())
                 .map(|x| x.ceil() as i32);
             list.iter_mut().for_each(|(pos, _)| *pos -= origin);
 

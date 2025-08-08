@@ -1,12 +1,13 @@
 use std::mem;
 
 use engine::{
+    drawable::Anchor,
     drawable::{spacer::Spacer, sprite::Sprite},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::GraphicsContext,
     layout::{
         Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
         row::RowLayout, tracker::LayoutTracker,
@@ -49,7 +50,7 @@ enum Operation {
 impl GameScreen {
     pub(super) fn note_edit_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         if self.note_edit.is_none() && ctx.input.consume_key_pressed(KeyCode::KeyN) {
-            let position = self.pancam.screen_to_world_space(ctx, ctx.input.mouse);
+            let position = self.pancam.screen_to_world_space(ctx, ctx.input.mouse());
             let closest = closest_note(&self.board.notes, position);
             let closest_distance = closest.map(|x| x.1).unwrap_or(f32::MAX);
 

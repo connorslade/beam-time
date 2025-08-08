@@ -1,8 +1,9 @@
 use engine::{
     color::Rgb,
     drawable::shape::rectangle::Rectangle,
+    drawable::{Anchor, Drawable},
     exports::nalgebra::Vector2,
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
     layout::{LayoutElement, bounds::Bounds2D},
 };
 

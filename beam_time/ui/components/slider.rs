@@ -1,11 +1,12 @@
 use common::misc::in_bounds;
 use engine::{
+    drawable::{Anchor, Drawable},
     drawable::{shape::rectangle::Rectangle, sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, window::CursorIcon},
     },
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
     layout::{Justify, Layout, LayoutElement, LayoutMethods, bounds::Bounds2D, row::RowLayout},
     memory::{Memory, MemoryKey},
     memory_key,
@@ -92,8 +93,9 @@ impl Drawable for Slider {
         let state = self.state(ctx.memory);
         let offset = Vector2::x() * (state.t * width);
 
+        let mouse = ctx.input.mouse();
         if state.dragging {
-            let dx = ctx.input.mouse.x - self.position.x - state.offset;
+            let dx = mouse.x - self.position.x - state.offset;
             state.t = (dx / width).clamp(0.0, 1.0);
             state.dragging = ctx.input.mouse_down(MouseButton::Left);
         }
@@ -105,14 +107,14 @@ impl Drawable for Slider {
 
         let click = ctx.input.mouse_pressed(MouseButton::Left);
         let hovered = handle.is_hovered(ctx);
-        hovered.then(|| ctx.set_cursor(CursorIcon::Pointer));
+        hovered.then(|| ctx.window.cursor(CursorIcon::Pointer));
 
         let state = self.state(ctx.memory);
         let size = Vector2::new(full_width, px * 6.0);
         if click && hovered {
             state.dragging = true;
-            state.offset = ctx.input.mouse.x - (self.position.x + offset.x);
-        } else if click && in_bounds(ctx.input.mouse, (self.position, self.position + size)) {
+        } else if click && in_bounds(mouse, (self.position, self.position + size)) {
+            state.offset = mouse.x - (self.position.x + offset.x);
             state.dragging = true;
             state.offset = px * 2.0;
         }

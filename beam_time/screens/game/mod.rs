@@ -69,9 +69,8 @@ impl Screen for GameScreen {
             self.pancam.pan_goal = pan;
         }
 
-        if let Some(old_size) = ctx.input.resized {
-            self.pancam
-                .on_resize(old_size.map(|x| x as f32), ctx.size());
+        if let Some(old_size) = ctx.window.size_changed() {
+            self.pancam.on_resize(old_size, ctx.size());
         }
 
         let shift = ctx.input.key_down(KeyCode::ShiftLeft);

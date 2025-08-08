@@ -4,11 +4,12 @@ use beam_logic::{
 };
 use engine::{
     drawable::sprite::Sprite,
+    drawable::{Anchor, Drawable},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
 };
 
 use crate::{
@@ -55,7 +56,7 @@ impl Holding {
                     KeyCode::KeyE => *tile = tile.activate()
                 });
 
-                render_tile(ctx, pancam, &level, *tile, ctx.input.mouse);
+                render_tile(ctx, pancam, &level, *tile, ctx.input.mouse());
             }
             Holding::Paste(tiles) => {
                 key_events!(ctx, {
@@ -84,7 +85,7 @@ impl Holding {
 
                 let tile_size = 16.0 * pancam.scale * ctx.scale_factor;
                 for (pos, tile) in tiles.iter() {
-                    let render_pos = ctx.input.mouse + tile_size * pos.map(|x| x as f32);
+                    let render_pos = ctx.input.mouse() + tile_size * pos.map(|x| x as f32);
                     render_tile(ctx, pancam, &level, *tile, render_pos);
                 }
             }

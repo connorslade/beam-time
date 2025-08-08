@@ -2,8 +2,9 @@ use std::f32::consts::PI;
 
 use engine::{
     drawable::sprite::Sprite,
+    drawable::{Anchor, Drawable},
     exports::nalgebra::{Rotation2, Vector2},
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
 };
 use rand::Rng;
 

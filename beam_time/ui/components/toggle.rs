@@ -1,10 +1,11 @@
 use engine::{
+    drawable::{Anchor, Drawable},
     drawable::{sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, window::CursorIcon},
     },
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
     layout::{
         Justify, Layout, LayoutElement, LayoutMethods, bounds::Bounds2D, row::RowLayout,
         tracker::LayoutTracker,
@@ -69,7 +70,7 @@ pub fn toggle<L: Layout + LayoutElement + 'static>(
 ) {
     let tracker = LayoutTracker::new(memory_key!(name));
     let hover = tracker.hovered(ctx);
-    hover.then(|| ctx.set_cursor(CursorIcon::Pointer));
+    hover.then(|| ctx.window.cursor(CursorIcon::Pointer));
     *value ^= hover && ctx.input.mouse_pressed(MouseButton::Left);
 
     layout.nest(

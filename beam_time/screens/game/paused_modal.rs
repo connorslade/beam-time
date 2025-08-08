@@ -1,9 +1,10 @@
 use std::time::Duration;
 
 use engine::{
+    drawable::Anchor,
     drawable::spacer::Spacer,
     exports::{nalgebra::Vector2, winit::event::MouseButton},
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::GraphicsContext,
     layout::{Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout, row::RowLayout},
     memory_key,
 };

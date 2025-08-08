@@ -7,9 +7,10 @@ use bitflags::bitflags;
 use common::direction::Direction;
 use engine::{
     color::Rgb,
+    drawable::{Anchor, Drawable},
     drawable::{shape::rectangle::Rectangle, spacer::Spacer, sprite::Sprite},
     exports::{nalgebra::Vector2, winit::window::CursorIcon},
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
     layout::{
         Direction as LayoutDirection, Layout, LayoutElement, LayoutMethods, bounds::Bounds2D,
         column::ColumnLayout, root::RootLayout, row::RowLayout, tracker::LayoutTracker,
@@ -132,7 +133,7 @@ impl Modal {
 
             ctx.input.cancel_hover();
             ctx.input.cancel_clicks();
-        } else if bounds.contains(ctx.input.mouse) {
+        } else if bounds.contains(ctx.input.mouse()) {
             ctx.input.cancel_clicks();
         }
     }
@@ -155,7 +156,7 @@ pub fn modal_buttons(
         let key = memory_key!(rotation);
         let tracker = LayoutTracker::new(key);
         let hover = tracker.hovered(ctx);
-        hover.then(|| ctx.set_cursor(CursorIcon::Pointer));
+        hover.then(|| ctx.window.cursor(CursorIcon::Pointer));
 
         let t = ctx.memory.get_or_insert(key, 0.0);
         *t += ctx.delta_time * if hover { 1.0 } else { -1.0 };

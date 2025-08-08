@@ -47,14 +47,16 @@ fn main() -> Result<()> {
             screens.top().on_init(&mut app);
 
             Box::new(move |ctx| {
-                ctx.set_vsync(app.config.vsync);
+                ctx.window.vsync(app.config.vsync);
                 app.on_tick();
 
                 screens.render(ctx, &mut app);
                 screens.pop_n(mem::take(&mut app.close_screens), &mut app);
                 screens.extend(mem::take(&mut app.new_screens), &mut app);
 
-                ctx.input.close.then(|| screens.destroy(&mut app));
+                ctx.window
+                    .close_requested()
+                    .then(|| screens.destroy(&mut app));
             })
         }),
         ..Default::default()

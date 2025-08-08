@@ -15,11 +15,12 @@ use engine::{
     assets::SpriteRef,
     color::Rgb,
     drawable::text::Text,
+    drawable::{Anchor, Drawable},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
 };
 
 use super::components::modal::{Modal, ModalSides};
@@ -55,6 +56,7 @@ impl TilePicker {
             return;
         }
 
+        let mouse = ctx.input.mouse();
         let px = 4.0 * ctx.scale_factor;
         let tile_size = 16.0 * px;
 
@@ -88,7 +90,7 @@ impl TilePicker {
                 board.transient.holding = Holding::Tile(*tile);
             }
 
-            let is_hovered = in_bounds(ctx.input.mouse, (pos, pos + Vector2::repeat(tile_size)));
+            let is_hovered = in_bounds(mouse, (pos, pos + Vector2::repeat(tile_size)));
             if !matches!(tile, Tile::Wall) && !disabled {
                 let frame = state.frame();
                 let texture = TILE_ASSETS[tile.as_type() as usize];
@@ -111,7 +113,7 @@ impl TilePicker {
                         format!("{}\n${}", tile.name(), tile.price().separate_with_commas())
                     };
 
-                    let pos = Vector2::new(ctx.input.mouse.x, tile_size * 1.1);
+                    let pos = Vector2::new(mouse.x, tile_size * 1.1);
                     Text::new(UNDEAD_FONT, &text)
                         .position(pos, Anchor::BottomCenter)
                         .scale(Vector2::repeat(2.0))
@@ -129,7 +131,7 @@ impl TilePicker {
             Vector2::zeros(),
             Vector2::new(Tile::DEFAULT.len() as f32 * tile_size, tile_size),
         );
-        if in_bounds(ctx.input.mouse, bounds) {
+        if in_bounds(mouse, bounds) {
             ctx.input.cancel_clicks();
         }
     }

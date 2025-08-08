@@ -4,12 +4,13 @@ use ahash::{HashMap, HashMapExt};
 use beam_logic::level::{Level, default::DEFAULT_LEVELS, tree::LevelTree};
 use engine::{
     color::Rgb,
+    drawable::{Anchor, Drawable},
     drawable::{shape::rectangle_outline::RectangleOutline, sprite::Sprite, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode, window::CursorIcon},
     },
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
     layout::{LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout},
 };
 use uuid::Uuid;
@@ -74,7 +75,7 @@ impl Screen for CampaignScreen {
             .key_pressed(KeyCode::Escape)
             .then(|| state.pop_screen());
 
-        if self.layout.is_empty() || ctx.input.dpi_changed() {
+        if self.layout.is_empty() || ctx.window.dpi_changed() {
             self.layout = TreeLayout::generate(&self.tree, ctx);
         }
 
@@ -109,7 +110,7 @@ impl Screen for CampaignScreen {
                 if (available || state.config.debug) && text.is_hovered(ctx) {
                     let size = text.size(ctx);
                     let px = 2.0 * ctx.scale_factor;
-                    ctx.set_cursor(CursorIcon::Pointer);
+                    ctx.window.cursor(CursorIcon::Pointer);
                     RectangleOutline::new(Vector2::new(size.x + px * 4.0, size.y + px * 4.0), 2.0)
                         .position(self.pancam.pan + center, Anchor::Center)
                         .z_index(2)

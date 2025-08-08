@@ -1,11 +1,7 @@
 use nalgebra::Vector2;
 use winit::event::MouseButton;
 
-use crate::{
-    graphics_context::{Drawable, GraphicsContext},
-    memory::MemoryKey,
-    memory_key,
-};
+use crate::{drawable::Drawable, graphics_context::GraphicsContext, memory::MemoryKey, memory_key};
 
 use super::{Layout, LayoutElement, bounds::Bounds2D};
 
@@ -27,7 +23,7 @@ impl LayoutTracker {
 
     pub fn hovered(&self, ctx: &GraphicsContext) -> bool {
         self.bounds(ctx)
-            .map(|x| x.contains(ctx.input.mouse))
+            .map(|x| x.contains(ctx.input.mouse()))
             .unwrap_or_default()
     }
 

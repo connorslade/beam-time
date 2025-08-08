@@ -1,4 +1,4 @@
-use std::{iter, mem, rc::Rc, sync::Arc, time::Instant};
+use std::{iter, rc::Rc, sync::Arc, time::Instant};
 
 use anyhow::{Context, Result};
 use wgpu::{
@@ -13,19 +13,22 @@ use winit::{
     dpi::PhysicalSize,
     event::WindowEvent,
     event_loop::{ActiveEventLoop, ControlFlow, EventLoopBuilder},
-    window::{Cursor, Window, WindowAttributes, WindowId},
+    window::{Window, WindowAttributes, WindowId},
 };
 
 use crate::{
     DEPTH_TEXTURE_FORMAT, TEXTURE_FORMAT,
+    application::{input::InputManager, window::WindowManager},
     assets::{constructor::AssetConstructor, manager::AssetManager},
     audio::AudioManager,
     color::Rgb,
     graphics_context::GraphicsContext,
-    input::InputManager,
     memory::Memory,
     render::{shape::pipeline::ShapeRenderPipeline, sprite::pipeline::SpriteRenderPipeline},
 };
+
+pub mod input;
+pub mod window;
 
 type Render = Box<dyn FnMut(&mut GraphicsContext)>;
 
@@ -44,17 +47,15 @@ pub struct ApplicationArgs {
 pub struct State<'a> {
     // Misc
     pub graphics: RenderContext<'a>,
-    pub input: InputManager,
-
     pub assets: Rc<AssetManager>,
+    pub window: WindowManager,
+    pub input: InputManager,
     pub audio: AudioManager,
     pub memory: Memory,
-    pub render: Box<dyn FnMut(&mut GraphicsContext)>,
 
-    pub frame: u64,
+    pub render: Box<dyn FnMut(&mut GraphicsContext)>,
     pub last_frame: Instant,
-    pub last_cursor: Cursor,
-    pub vsync: bool,
+    pub frame: u64,
 
     // Rendering stuff (pipelines & buffers)
     pub sprite_renderer: SpriteRenderPipeline,
@@ -120,8 +121,9 @@ impl ApplicationHandler for Application<'_> {
             depth_texture,
             audio: AudioManager::new_default_output(assets.clone()).unwrap(),
             assets,
+            window: WindowManager::new(window.clone()),
+            input: InputManager::default(),
             memory: Memory::default(),
-            input: InputManager::new(window.inner_size()),
             graphics: RenderContext {
                 surface,
                 window,
@@ -131,8 +133,6 @@ impl ApplicationHandler for Application<'_> {
             render: (self.args.resumed)(),
             frame: 0,
             last_frame: Instant::now(),
-            last_cursor: Cursor::default(),
-            vsync: true,
         });
     }
 
@@ -151,7 +151,8 @@ impl ApplicationHandler for Application<'_> {
             return;
         }
 
-        state.input.on_window_event(&event);
+        state.window.on_window_event(&event);
+        state.input.on_window_event(&event, state.window.size.y);
         match event {
             WindowEvent::RedrawRequested => {
                 let gcx = &state.graphics;
@@ -169,13 +170,12 @@ impl ApplicationHandler for Application<'_> {
                     background: Rgb::new(0.0, 0.0, 0.0),
                     sprites: Vec::new(),
                     shapes: Default::default(),
-                    cursor: Cursor::default(),
                     defer: Vec::new(),
+                    window: &mut state.window,
                     input: &mut state.input,
                     scale_factor,
                     delta_time,
                     frame: state.frame,
-                    vsync: state.vsync,
                 };
 
                 (state.render)(&mut ctx);
@@ -183,13 +183,7 @@ impl ApplicationHandler for Application<'_> {
                     (defer)(&mut ctx);
                 }
 
-                let next_vsync = ctx.vsync;
                 state.frame = state.frame.wrapping_add(1);
-
-                if ctx.cursor != state.last_cursor {
-                    gcx.window.set_cursor(ctx.cursor.clone());
-                    state.last_cursor = mem::take(&mut ctx.cursor);
-                }
 
                 state.sprite_renderer.prepare(&gcx.device, &gcx.queue, &ctx);
                 state.shape_renderer.prepare(&gcx.device, &gcx.queue, &ctx);
@@ -239,17 +233,15 @@ impl ApplicationHandler for Application<'_> {
                 drop(render_pass);
 
                 gcx.queue.submit(iter::once(encoder.finish()));
-
                 output.present();
 
+                let resize_surface = state.window.vsync.is_set();
+                state.window.on_frame_end();
                 state.input.on_frame_end();
                 gcx.window.request_redraw();
 
-                state.input.close.then(|| event_loop.exit());
-                if state.vsync != next_vsync {
-                    state.vsync = next_vsync;
-                    self.resize_surface();
-                }
+                state.window.close_requested().then(|| event_loop.exit());
+                resize_surface.then(|| self.resize_surface());
             }
             WindowEvent::Resized(size) => {
                 let (texture, depth) = create_textures(&state.graphics.device, size, samples);
@@ -279,7 +271,8 @@ impl<'a> Application<'a> {
     fn resize_surface(&mut self) {
         let state = self.state.as_mut().unwrap();
         let size = state.graphics.window.inner_size();
-        let present_mode = [PresentMode::AutoNoVsync, PresentMode::AutoVsync][state.vsync as usize];
+        let present_mode =
+            [PresentMode::AutoNoVsync, PresentMode::AutoVsync][*state.window.vsync as usize];
 
         state.graphics.surface.configure(
             &state.graphics.device,

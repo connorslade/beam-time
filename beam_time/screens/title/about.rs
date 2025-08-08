@@ -1,7 +1,8 @@
 use engine::{
+    drawable::Anchor,
     drawable::{spacer::Spacer, text::Text},
     exports::{nalgebra::Vector2, winit::event::MouseButton},
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::GraphicsContext,
     layout::{
         Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
         row::RowLayout,

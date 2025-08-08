@@ -3,7 +3,8 @@ use nalgebra::{Matrix3, Vector2};
 use crate::{
     assets::{SpriteAsset, SpriteRef},
     color::Rgb,
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    drawable::{Anchor, Drawable},
+    graphics_context::GraphicsContext,
     layout::{LayoutElement, bounds::Bounds2D},
     render::sprite::GpuSprite,
 };
@@ -56,9 +57,9 @@ impl Sprite {
         let points = self.points(ctx, asset, false);
 
         let ab = points[1] - points[0];
-        let am = ctx.input.mouse - points[0];
+        let am = ctx.input.mouse() - points[0];
         let bc = points[2] - points[1];
-        let bm = ctx.input.mouse - points[1];
+        let bm = ctx.input.mouse() - points[1];
 
         let dot_ab_am = ab.dot(&am);
         let dot_ab_ab = ab.dot(&ab);

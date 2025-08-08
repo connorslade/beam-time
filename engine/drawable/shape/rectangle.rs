@@ -3,7 +3,8 @@ use nalgebra::Vector2;
 use crate::{
     color::Rgb,
     drawable::RECTANGLE_POINTS,
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    drawable::{Anchor, Drawable},
+    graphics_context::GraphicsContext,
     layout::{LayoutElement, bounds::Bounds2D},
     render::shape::ShapeVertex,
 };

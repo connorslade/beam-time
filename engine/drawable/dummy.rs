@@ -1,7 +1,8 @@
 use nalgebra::Vector2;
 
 use crate::{
-    graphics_context::{Drawable, GraphicsContext},
+    drawable::Drawable,
+    graphics_context::GraphicsContext,
     layout::{LayoutElement, bounds::Bounds2D},
 };
 

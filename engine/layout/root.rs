@@ -1,6 +1,9 @@
 use nalgebra::Vector2;
 
-use crate::graphics_context::{Anchor, Drawable, GraphicsContext};
+use crate::{
+    drawable::{Anchor, Drawable},
+    graphics_context::GraphicsContext,
+};
 
 use super::{Layout, LayoutElement, SizedLayoutElement, container::Container};
 

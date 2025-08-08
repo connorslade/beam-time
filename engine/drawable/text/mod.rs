@@ -6,7 +6,8 @@ use nalgebra::Vector2;
 use crate::{
     assets::FontRef,
     color::Rgb,
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    drawable::{Anchor, Drawable},
+    graphics_context::GraphicsContext,
     layout::{Layout, LayoutElement, bounds::Bounds2D},
     render::sprite::GpuSprite,
 };
@@ -138,7 +139,7 @@ impl Text {
         let min = self.pos + self.position_anchor.offset(layout.base);
         let max = min + layout.base;
 
-        let mouse = ctx.input.mouse;
+        let mouse = ctx.input.mouse();
         mouse.x >= min.x && mouse.x <= max.x && mouse.y >= min.y && mouse.y <= max.y
     }
 }

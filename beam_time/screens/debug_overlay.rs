@@ -2,8 +2,9 @@ use std::time::{Duration, Instant};
 
 use engine::{
     drawable::text::Text,
+    drawable::{Anchor, Drawable},
     exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
-    graphics_context::{Anchor, Drawable, GraphicsContext},
+    graphics_context::GraphicsContext,
 };
 
 use crate::{App, assets::UNDEAD_FONT, consts::layer::OVERLAY, screens::Screen};

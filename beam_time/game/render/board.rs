@@ -13,14 +13,14 @@ use crate::{
 use beam_logic::level::ElementLocation;
 use beam_logic::simulation::{state::BeamState, tile::BeamTile};
 use common::misc::in_bounds;
-use engine::graphics_context::Drawable;
 use engine::{
     drawable::sprite::Sprite,
+    drawable::{Anchor, Drawable},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
     },
-    graphics_context::{Anchor, GraphicsContext},
+    graphics_context::GraphicsContext,
 };
 
 use super::tile::{BeamTileBaseSprite, TileAsset};
@@ -70,7 +70,7 @@ impl Board {
                 }
 
                 let hovered = in_bounds(
-                    ctx.input.mouse,
+                    ctx.input.mouse(),
                     (render_pos - half_tile, render_pos + half_tile),
                 );
 

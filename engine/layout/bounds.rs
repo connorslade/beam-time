@@ -2,7 +2,7 @@ use std::ops::{Add, AddAssign};
 
 use nalgebra::Vector2;
 
-use crate::{drawable::shape::rectangle_outline::RectangleOutline, graphics_context::Anchor};
+use crate::{drawable::Anchor, drawable::shape::rectangle_outline::RectangleOutline};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Bounds2D {
