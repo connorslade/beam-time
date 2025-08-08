@@ -1,4 +1,4 @@
-use std::{f32::consts::TAU, path::PathBuf};
+use std::f32::consts::TAU;
 
 use ahash::{HashMap, HashMapExt};
 use beam_logic::level::{Level, default::DEFAULT_LEVELS, tree::LevelTree};
@@ -20,11 +20,13 @@ use crate::{
     assets::{ALAGARD_FONT, CHECK, UNDEAD_FONT},
     consts::BACKGROUND_COLOR,
     game::{
-        board::{Board, BoardMeta, LevelMeta},
+        board::{
+            Board, BoardMeta, LevelMeta,
+            unloaded::{UnloadedBoard, load_level_dir},
+        },
         pancam::Pancam,
     },
     ui::pixel_line::PixelLine,
-    util::load_level_dir,
 };
 
 use super::{Screen, game::GameScreen};
@@ -37,7 +39,7 @@ pub struct CampaignScreen {
     layout: TreeLayout,
     pancam: Pancam,
 
-    worlds: HashMap<Uuid, Vec<(PathBuf, BoardMeta)>>,
+    worlds: HashMap<Uuid, Vec<UnloadedBoard>>,
 }
 
 impl Screen for CampaignScreen {
@@ -87,7 +89,7 @@ impl Screen for CampaignScreen {
                 let available = self.is_available(item.id);
                 let worlds = self.worlds.get(&item.id);
                 let solved = worlds
-                    .map(|x| x.iter().any(|(_, meta)| meta.is_solved()))
+                    .map(|x| x.iter().any(|x| x.meta.is_solved()))
                     .unwrap_or_default();
 
                 let center = offset + Vector2::x() * item.offset();
@@ -118,7 +120,7 @@ impl Screen for CampaignScreen {
 
                     if ctx.input.mouse_pressed(MouseButton::Left) {
                         let latest =
-                            worlds.and_then(|x| x.iter().max_by_key(|(_, meta)| meta.last_played));
+                            worlds.and_then(|x| x.iter().max_by_key(|x| x.meta.last_played));
                         self.open_level(state, latest, self.tree.get(item.id).unwrap());
                     }
                 }
@@ -169,9 +171,11 @@ impl Screen for CampaignScreen {
             return;
         }
 
-        for (path, meta) in load_level_dir(&campaign) {
-            let Some(level) = meta.level else { continue };
-            self.worlds.entry(level.id).or_default().push((path, meta));
+        for board in load_level_dir(&campaign) {
+            let Some(level) = board.meta.level else {
+                continue;
+            };
+            self.worlds.entry(level.id).or_default().push(board);
         }
 
         #[cfg(feature = "steam")]
@@ -182,9 +186,9 @@ impl Screen for CampaignScreen {
 }
 
 impl CampaignScreen {
-    pub fn open_level(&self, state: &mut App, world: Option<&(PathBuf, BoardMeta)>, level: &Level) {
-        if let Some((path, _meta)) = world {
-            state.push_screen(GameScreen::load(path.to_path_buf()));
+    pub fn open_level(&self, state: &mut App, world: Option<&UnloadedBoard>, level: &Level) {
+        if let Some(UnloadedBoard { path, .. }) = world {
+            state.push_screen(GameScreen::load(path));
         } else {
             let board = Board {
                 meta: BoardMeta {
@@ -216,7 +220,7 @@ impl CampaignScreen {
         for id in parents {
             let worlds = self.worlds.get(id);
             if worlds
-                .map(|x| x.iter().any(|(_, meta)| meta.is_solved()))
+                .map(|x| x.iter().any(|x| x.meta.is_solved()))
                 .unwrap_or_default()
             {
                 return true;
@@ -229,7 +233,7 @@ impl CampaignScreen {
     fn solved_count(&self) -> usize {
         self.worlds
             .values()
-            .filter(|x| x.iter().any(|(_, meta)| meta.is_solved()))
+            .filter(|x| x.iter().any(|x| x.meta.is_solved()))
             .count()
     }
 

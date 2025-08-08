@@ -176,7 +176,7 @@ impl TitleScreen {
                     layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
                         toggle(ctx, layout, &mut state.config.vsync, "Use VSync");
                         toggle(ctx, layout, &mut state.config.show_fps, "Show FPS");
-                        toggle(ctx, layout, &mut state.config.full_screen, "Full Screen");
+                        toggle(ctx, layout, &mut state.config.fullscreen, "Full Screen");
                         Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
                         toggle(ctx, layout, &mut state.config.debug, "Debug Mode");
                     });

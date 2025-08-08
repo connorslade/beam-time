@@ -22,7 +22,7 @@ use crate::{
         },
         misc::body,
     },
-    util::human_duration,
+    util::time::human_duration,
 };
 
 use super::GameScreen;

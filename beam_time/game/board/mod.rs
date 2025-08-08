@@ -20,6 +20,7 @@ use common::{consts::BINCODE_OPTIONS, map::Map};
 
 use super::{history::History, holding::Holding, selection::SelectionState};
 
+pub mod unloaded;
 mod upgrade;
 
 pub const SAVE_VERSION: u32 = 5;
@@ -107,6 +108,12 @@ impl Board {
         self.meta.last_played = Utc::now();
         self.meta.version = SAVE_VERSION;
 
+        self.save_exact(path)?;
+        Ok(())
+    }
+
+    /// Saves the board without editing the playtime or last_played timestamp.
+    pub fn save_exact(self, path: &PathBuf) -> Result<()> {
         let start = Instant::now();
         info!("Saving board to {path:?}");
         if let Some(parent) = path.parent() {

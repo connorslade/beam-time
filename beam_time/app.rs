@@ -32,7 +32,7 @@ pub struct Config {
     pub movement_speed: f32,
     pub vsync: bool,
     pub show_fps: bool,
-    pub full_screen: bool,
+    pub fullscreen: bool,
     pub debug: bool,
 }
 
@@ -104,10 +104,13 @@ impl App {
         Ok(())
     }
 
-    pub fn on_tick(&mut self) {
+    pub fn on_tick(&mut self, ctx: &mut GraphicsContext) {
         #[cfg(feature = "steam")]
         self.steam.on_tick();
         self.leaderboard.tick();
+
+        ctx.window.vsync(self.config.vsync);
+        ctx.window.fullscreen(self.config.fullscreen);
     }
 
     pub fn frame(&self) -> u8 {
@@ -138,7 +141,7 @@ impl Default for Config {
             movement_speed: 2000.0,
             vsync: true,
             show_fps: false,
-            full_screen: false,
+            fullscreen: false,
             debug: false,
         }
     }

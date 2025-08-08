@@ -3,7 +3,7 @@ use std::sync::Arc;
 use nalgebra::Vector2;
 use winit::{
     event::WindowEvent,
-    window::{Cursor, Window},
+    window::{Cursor, Fullscreen, Window},
 };
 
 use crate::misc::Mutable;
@@ -20,12 +20,14 @@ pub struct WindowManager {
     focus_change: Option<bool>,
 
     pub(crate) vsync: Mutable<bool>,
+    pub(crate) fullscreen: Mutable<bool>,
     pub(crate) cursor: Mutable<Cursor>,
 }
 
 impl WindowManager {
     pub(crate) fn new(window: Arc<Window>) -> Self {
         let size = window.inner_size();
+
         Self {
             window,
 
@@ -38,6 +40,7 @@ impl WindowManager {
             focus_change: None,
 
             vsync: Mutable::default(),
+            fullscreen: Mutable::default(),
             cursor: Mutable::default(),
         }
     }
@@ -64,6 +67,11 @@ impl WindowManager {
             self.window.set_cursor(cursor.clone());
         }
 
+        if let Some(fullscreen) = self.fullscreen.desired() {
+            self.window
+                .set_fullscreen(fullscreen.then_some(Fullscreen::Borderless(None)));
+        }
+
         self.cursor.set(Default::default());
         self.size_changed = None;
         self.dpi_changed = None;
@@ -75,6 +83,11 @@ impl WindowManager {
     #[inline(always)]
     pub fn vsync(&mut self, vsync: bool) {
         self.vsync.set(vsync);
+    }
+
+    #[inline(always)]
+    pub fn fullscreen(&mut self, fullscreen: bool) {
+        self.fullscreen.set(fullscreen);
     }
 
     #[inline(always)]

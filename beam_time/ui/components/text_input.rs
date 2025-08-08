@@ -103,6 +103,11 @@ impl TextInput {
         Self::content_for(ctx, self.key)
     }
 
+    pub fn is_edited(&self, ctx: &mut GraphicsContext) -> bool {
+        let state = ctx.memory.get::<TextInputState>(self.key);
+        state.map(|x| !x.unedited).unwrap_or_default()
+    }
+
     pub fn content_for(ctx: &mut GraphicsContext, key: MemoryKey) -> String {
         let state = ctx.memory.get::<TextInputState>(key);
         if let Some(TextInputState {

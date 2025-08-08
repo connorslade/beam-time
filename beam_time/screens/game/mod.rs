@@ -1,4 +1,9 @@
-use std::{borrow::Cow, mem, path::PathBuf, time::Duration};
+use std::{
+    borrow::Cow,
+    mem,
+    path::{Path, PathBuf},
+    time::Duration,
+};
 
 use log::{info, warn};
 use rand::{Rng, seq::SliceRandom};
@@ -219,7 +224,8 @@ impl GameScreen {
         }
     }
 
-    pub fn load(save_file: PathBuf) -> Self {
+    pub fn load(save_file: impl AsRef<Path>) -> Self {
+        let save_file = save_file.as_ref().to_path_buf();
         GameScreen::new(Board::load(&save_file).unwrap_or_default(), save_file)
     }
 }

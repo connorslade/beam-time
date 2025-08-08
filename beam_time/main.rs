@@ -47,8 +47,7 @@ fn main() -> Result<()> {
             screens.top().on_init(&mut app);
 
             Box::new(move |ctx| {
-                ctx.window.vsync(app.config.vsync);
-                app.on_tick();
+                app.on_tick(ctx);
 
                 screens.render(ctx, &mut app);
                 screens.pop_n(mem::take(&mut app.close_screens), &mut app);
