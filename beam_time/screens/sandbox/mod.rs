@@ -38,7 +38,7 @@ use crate::{
             button::{ButtonEffects, ButtonExt},
             modal::{Modal, modal_buttons},
         },
-        misc::body,
+        misc::{body, modal_size, spacing},
         waterfall::Waterfall,
     },
     util::time::{human_duration, human_duration_minimal},
@@ -67,7 +67,7 @@ enum ActiveModal {
 
 impl Screen for SandboxScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        let (_, padding) = state.spacing(ctx);
+        let (_, padding) = spacing(ctx);
 
         ctx.background(color::BACKGROUND);
         Waterfall::new(WATERFALL).draw(ctx);
@@ -224,11 +224,11 @@ impl SandboxScreen {
         }
     }
 
-    fn delete_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext, board: usize) {
+    fn delete_modal(&mut self, _state: &mut App, ctx: &mut GraphicsContext, board: usize) {
         let mut exit = ctx.input.consume_key_pressed(KeyCode::Escape);
 
-        let (margin, padding) = state.spacing(ctx);
-        let modal = Modal::new(state.modal_size(ctx))
+        let (margin, padding) = spacing(ctx);
+        let modal = Modal::new(modal_size(ctx))
             .position(ctx.center(), Anchor::Center)
             .margin(margin)
             .layer(layer::OVERLAY);

@@ -26,7 +26,7 @@ use crate::{
         },
         pancam::Pancam,
     },
-    ui::pixel_line::PixelLine,
+    ui::{misc::spacing, pixel_line::PixelLine},
 };
 
 use super::{Screen, game::GameScreen};
@@ -47,7 +47,7 @@ impl Screen for CampaignScreen {
         ctx.background(color::BACKGROUND);
         let t = state.start.elapsed().as_secs_f32();
 
-        let (_, padding) = state.spacing(ctx);
+        let (_, padding) = spacing(ctx);
         let spacing = 64.0 * ctx.scale_factor;
 
         let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);

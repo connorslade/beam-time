@@ -157,7 +157,7 @@ pub fn modal_buttons(
         let t = ctx.memory.get_or_insert(key, 0.0);
         *t += ctx.delta_time * if hover { 1.0 } else { -1.0 };
         *t = t.clamp(0.0, 0.1);
-        let color = Rgb::hex(0xFFFFFF).lerp(color::ACCENT, *t / 0.1);
+        let color = Rgb::repeat(1.0).lerp(color::ACCENT, *t / 0.1);
 
         let direction = [LayoutDirection::MaxToMin, LayoutDirection::MinToMax][rotation as usize];
         layout.nest(

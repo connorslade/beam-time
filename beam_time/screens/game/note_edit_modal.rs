@@ -25,7 +25,7 @@ use crate::{
     screens::game::ActiveModal,
     ui::{
         components::{button::ButtonExt, modal::Modal, text_input::TextInput},
-        misc::body,
+        misc::{body, modal_size, spacing},
     },
 };
 
@@ -44,7 +44,7 @@ enum Operation {
 }
 
 impl GameScreen {
-    pub(super) fn note_edit_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
+    pub(super) fn note_edit_modal(&mut self, _state: &mut App, ctx: &mut GraphicsContext) {
         if matches!(self.modal, ActiveModal::None) && ctx.input.consume_key_pressed(KeyCode::KeyN) {
             let position = self.pancam.screen_to_world_space(ctx, ctx.input.mouse());
             let closest = closest_note(&self.board.notes, position);
@@ -66,8 +66,8 @@ impl GameScreen {
         }
 
         if let ActiveModal::NoteEdit { index, old } = &mut self.modal {
-            let (margin, padding) = state.spacing(ctx);
-            let modal = Modal::new(state.modal_size(ctx))
+            let (margin, padding) = spacing(ctx);
+            let modal = Modal::new(modal_size(ctx))
                 .position(ctx.center(), Anchor::Center)
                 .margin(margin)
                 .layer(layer::UI_OVERLAY);

@@ -28,7 +28,7 @@ use crate::{
             modal::{Modal, modal_buttons},
             text_input::TextInput,
         },
-        misc::body,
+        misc::{body, modal_size, spacing},
     },
 };
 
@@ -53,8 +53,8 @@ impl SandboxScreen {
         let mut exit = ctx.input.consume_key_pressed(KeyCode::Escape);
         let mut enter = ctx.input.consume_key_pressed(KeyCode::Enter);
 
-        let (margin, padding) = state.spacing(ctx);
-        let modal = Modal::new(state.modal_size(ctx))
+        let (margin, padding) = spacing(ctx);
+        let modal = Modal::new(modal_size(ctx))
             .position(ctx.center(), Anchor::Center)
             .margin(margin)
             .layer(layer::OVERLAY);

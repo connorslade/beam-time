@@ -9,18 +9,15 @@ use crate::{
     assets::{COLLAPSE, UNDEAD_FONT},
     consts::layer,
     game::board::Board,
+    ui::{components::button::ButtonExt, misc::spacing},
 };
 use beam_logic::{
     level::Level,
     simulation::{level_state::LevelResult, runtime::asynchronous::InnerAsyncSimulationState},
 };
 use engine::{
-    drawable::Anchor,
-    drawable::{dummy::DummyDrawable, spacer::Spacer, sprite::Sprite, text::Text},
-    exports::{
-        nalgebra::Vector2,
-        winit::{event::MouseButton, window::CursorIcon},
-    },
+    drawable::{Anchor, dummy::DummyDrawable, spacer::Spacer, sprite::Sprite, text::Text},
+    exports::nalgebra::Vector2,
     graphics_context::GraphicsContext,
     layout::{
         Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
@@ -61,7 +58,7 @@ impl LevelPanel {
         };
 
         let tile_size = 4.0 * 16.0 * ctx.scale_factor;
-        let (margin, padding) = state.spacing(ctx);
+        let (margin, padding) = spacing(ctx);
         let width = tile_size * WIDTH as f32;
 
         // idk maybe cache or smth — not that it really matters
@@ -106,6 +103,7 @@ impl LevelPanel {
         price: u32,
         tiles: usize,
     ) {
+        let (_, padding) = spacing(ctx);
         layout.nest(
             ctx,
             RowLayout::new(0.0).justify(Justify::Center),
@@ -114,24 +112,18 @@ impl LevelPanel {
                     .scale(Vector2::repeat(3.0))
                     .layout(ctx, layout);
 
-                layout.nest(
-                    ctx,
-                    RowLayout::new(0.0).direction(Direction::MaxToMin),
-                    |ctx, layout| {
-                        let tracker = LayoutTracker::new(memory_key!());
-                        if tracker.hovered(ctx) {
-                            ctx.window.cursor(CursorIcon::Pointer);
-                            self.collapsed ^= ctx.input.mouse_pressed(MouseButton::Left);
-                        }
-
+                RowLayout::new(padding)
+                    .justify(Justify::Center)
+                    .direction(Direction::MaxToMin)
+                    .show(ctx, layout, |ctx, layout| {
                         Sprite::new(COLLAPSE)
                             .scale(Vector2::repeat(3.0))
                             .rotate(self.collapsed as u8 as f32 * PI, Anchor::Center)
-                            .tracked(tracker)
+                            .button(memory_key!())
+                            .on_click(ctx, || self.collapsed ^= true)
                             .layout(ctx, layout);
                         Spacer::new_x(layout.available().x).layout(ctx, layout);
-                    },
-                );
+                    });
             },
         );
 

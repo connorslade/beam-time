@@ -21,7 +21,7 @@ use crate::{
             modal::{Modal, modal_buttons},
             slider::Slider,
         },
-        misc::body,
+        misc::{body, modal_size, spacing},
     },
     util::time::human_duration,
 };
@@ -38,8 +38,8 @@ impl GameScreen {
         let delta = Duration::from_secs_f32(ctx.delta_time);
         self.board.transient.open_timestamp += delta;
 
-        let (margin, padding) = state.spacing(ctx);
-        let modal = Modal::new(state.modal_size(ctx))
+        let (margin, padding) = spacing(ctx);
+        let modal = Modal::new(modal_size(ctx))
             .position(ctx.center(), Anchor::Center)
             .margin(margin)
             .layer(layer::UI_OVERLAY);
@@ -99,8 +99,10 @@ impl GameScreen {
                             trash_button.layout(ctx, layout);
                         });
 
-                        Rule::vertical(layout.available().y - 6.0 * ctx.scale_factor - padding)
-                            .layout(ctx, layout);
+                        Rule::vertical(
+                            layout.available().y - 6.0 * ctx.scale_factor - padding * 2.0,
+                        )
+                        .layout(ctx, layout);
 
                         layout.nest(ctx, ColumnLayout::new(padding / 2.0), |ctx, layout| {
                             Spacer::new_y(0.0).layout(ctx, layout);

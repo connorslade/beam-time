@@ -11,14 +11,15 @@ use crate::{
     assets::{HISTOGRAM_MARKER, UNDEAD_FONT},
     consts::layer,
     game::{board::Board, pancam::Pancam},
+    ui::misc::spacing,
 };
 
 impl Board {
-    pub fn render_notes(&mut self, ctx: &mut GraphicsContext, state: &App, pancam: &Pancam) {
+    pub fn render_notes(&mut self, ctx: &mut GraphicsContext, _state: &App, pancam: &Pancam) {
         for note in self.notes.iter() {
             let pos = pancam.world_to_screen_space(ctx, note.position);
 
-            let (_, padding) = state.spacing(ctx);
+            let (_, padding) = spacing(ctx);
             let mut root = RootLayout::new(pos, Anchor::BottomCenter);
 
             root.nest(

@@ -25,3 +25,21 @@ pub fn body(max_width: f32) -> impl Fn(&str) -> Text {
             .max_width(max_width)
     }
 }
+
+/// => (Margin, Padding)
+#[inline(always)]
+pub fn spacing(ctx: &GraphicsContext) -> (f32, f32) {
+    let margin = 16.0 * ctx.scale_factor;
+    let padding = 10.0 * ctx.scale_factor;
+    (margin, padding)
+}
+
+#[inline(always)]
+pub fn modal_size(ctx: &GraphicsContext) -> Vector2<f32> {
+    let min_width = 400.0 * ctx.scale_factor;
+    let max_width = 800.0 * ctx.scale_factor;
+    Vector2::new(
+        (ctx.size().x * 0.75).clamp(min_width, max_width),
+        250.0 * ctx.scale_factor,
+    )
+}

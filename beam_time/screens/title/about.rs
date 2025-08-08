@@ -22,7 +22,7 @@ use crate::{
             button::ButtonExt,
             modal::{Modal, modal_buttons},
         },
-        misc::body,
+        misc::{body, modal_size, spacing},
     },
 };
 
@@ -51,9 +51,9 @@ enum Page {
 }
 
 impl TitleScreen {
-    pub fn about_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        let (margin, padding) = state.spacing(ctx);
-        let desired_size = state.modal_size(ctx);
+    pub fn about_modal(&mut self, _state: &mut App, ctx: &mut GraphicsContext) {
+        let (margin, padding) = spacing(ctx);
+        let desired_size = modal_size(ctx);
 
         let current = *ctx.memory.get_or_insert(PAGE_KEY, Page::General);
         let text = [DESCRIPTION, "todo: controls or smth\n"][current as u8 as usize];

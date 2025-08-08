@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf, time::Instant};
 
 use anyhow::Result;
 use common::user::UserId;
-use engine::{exports::nalgebra::Vector2, graphics_context::GraphicsContext};
+use engine::graphics_context::GraphicsContext;
 use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "steam")]
@@ -72,24 +72,6 @@ impl App {
             new_screens: vec![],
             close_screens: 0,
         }
-    }
-
-    /// => (Margin, Padding)
-    #[inline(always)]
-    pub fn spacing(&self, ctx: &mut GraphicsContext) -> (f32, f32) {
-        let margin = 16.0 * ctx.scale_factor;
-        let padding = 10.0 * ctx.scale_factor;
-
-        (margin, padding)
-    }
-
-    pub fn modal_size(&self, ctx: &GraphicsContext) -> Vector2<f32> {
-        let min_width = 400.0 * ctx.scale_factor;
-        let max_width = 800.0 * ctx.scale_factor;
-        Vector2::new(
-            (ctx.size().x * 0.75).clamp(min_width, max_width),
-            250.0 * ctx.scale_factor,
-        )
     }
 
     pub fn debug(&mut self, msg: impl Fn() -> String) {

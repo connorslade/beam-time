@@ -28,7 +28,7 @@ use crate::{
             slider::slider,
             toggle::toggle,
         },
-        misc::body,
+        misc::{body, modal_size, spacing},
         waterfall::Waterfall,
     },
 };
@@ -51,7 +51,7 @@ enum ActiveModal {
 
 impl Screen for TitleScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        let (margin, padding) = state.spacing(ctx);
+        let (margin, padding) = spacing(ctx);
 
         ctx.background(color::BACKGROUND);
         Waterfall::new(WATERFALL).draw(ctx);
@@ -156,8 +156,8 @@ impl TitleScreen {
     }
 
     fn settings_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        let (margin, padding) = state.spacing(ctx);
-        let modal = Modal::new(state.modal_size(ctx))
+        let (margin, padding) = spacing(ctx);
+        let modal = Modal::new(modal_size(ctx))
             .position(ctx.center(), Anchor::Center)
             .margin(margin)
             .layer(layer::OVERLAY);
@@ -181,7 +181,7 @@ impl TitleScreen {
                         toggle(ctx, layout, &mut state.config.debug, "Debug Mode");
                     });
 
-                    Rule::vertical(layout.available().y - 6.0 * ctx.scale_factor - padding)
+                    Rule::vertical(layout.available().y - 6.0 * ctx.scale_factor - padding * 2.0)
                         .layout(ctx, layout);
 
                     layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
