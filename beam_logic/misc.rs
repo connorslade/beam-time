@@ -2,11 +2,17 @@ use common::map::Map;
 
 use crate::{level::Level, tile::Tile};
 
-pub fn price(board: &Map<Tile>, level: Option<&Level>) -> u32 {
-    board
-        .tiles
-        .iter()
-        .filter(|(pos, _)| level.map(|x| !x.permanent.contains(pos)).unwrap_or(true))
-        .map(|(_, tile)| tile.price())
-        .sum::<u32>()
+pub fn price(board: &Map<Tile>, level: &Level) -> (u32, usize) {
+    let (mut price, mut count) = (0, 0);
+    for (pos, tile) in board.iter() {
+        let is_dynamic = tile.id().map(|id| level.is_dynamic(id)).unwrap_or_default();
+        if level.permanent.contains(&pos) || is_dynamic {
+            continue;
+        }
+
+        price += tile.price();
+        count += 1;
+    }
+
+    (price, count)
 }

@@ -26,6 +26,7 @@ define_refs! {
         TRASH,
         DUPLICATE,
         EDIT,
+        RESET,
         SLIDER_HANDLE,
         CHECK,
         COLLAPSE,
@@ -92,6 +93,7 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, TRASH, (24, 8), (7, 8));
     assets.register_sprite(interface, DUPLICATE, (16, 8), (7, 8));
     assets.register_sprite(interface, EDIT, (32, 8), (8, 8));
+    assets.register_sprite(interface, RESET, (24, 17), (8, 7));
     assets.register_sprite(interface, SLIDER_HANDLE, (19, 17), (4, 6));
     assets.register_sprite(interface, CHECK, (22, 0), (5, 5));
     assets.register_sprite(interface, COLLAPSE, (16, 0), (5, 6));

@@ -80,7 +80,7 @@ pub trait LayoutMethods: Layout {
         ui: impl FnOnce(&mut GraphicsContext, &mut Self),
     ) where
         Self: LayoutElement + Sized + 'static,
-        T: Layout + LayoutElement + 'static,
+        T: Layout + 'static,
     {
         let available = self.available();
         if available.x == 0.0 && available.y == 0.0 {

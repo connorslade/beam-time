@@ -52,7 +52,7 @@ pub fn attach(server: &mut Server<App>) {
         ctx.text(json!(results)).send()?;
 
         if let LevelResult::Success { latency } = results {
-            let cost = price(&body.board, Some(level));
+            let (cost, _count) = price(&body.board, level);
             let timestamp = SystemTime::now()
                 .duration_since(UNIX_EPOCH)
                 .unwrap()

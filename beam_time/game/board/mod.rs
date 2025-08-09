@@ -23,7 +23,7 @@ use super::{history::History, holding::Holding, selection::SelectionState};
 pub mod unloaded;
 mod upgrade;
 
-pub const SAVE_VERSION: u32 = 5;
+pub const SAVE_VERSION: u32 = 6;
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct Board {
@@ -60,10 +60,17 @@ pub struct BoardMeta {
     pub playtime: u64,
 }
 
-#[derive(Default, Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct LevelMeta {
     pub id: Uuid,
-    pub solved: bool,
+    pub name: String,
+    pub solved: Option<LevelStats>,
+}
+
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
+pub struct LevelStats {
+    pub cost: u32,
+    pub latency: u32,
 }
 
 #[derive(Default, Clone, Serialize, Deserialize)]
@@ -152,11 +159,24 @@ impl Board {
             }
         }
     }
+
+    pub fn reset(&mut self) {
+        self.notes.clear();
+        self.tiles = Map::default();
+
+        if let (Some(meta), Some(level)) = (&mut self.meta.level, self.transient.level) {
+            meta.solved = None;
+            self.tiles = level.tiles.clone();
+        };
+    }
 }
 
 impl BoardMeta {
     pub fn is_solved(&self) -> bool {
-        self.level.map(|x| x.solved).unwrap_or_default()
+        self.level
+            .as_ref()
+            .map(|x| x.solved.is_some())
+            .unwrap_or_default()
     }
 }
 

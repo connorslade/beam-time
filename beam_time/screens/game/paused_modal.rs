@@ -1,8 +1,7 @@
 use std::time::Duration;
 
 use engine::{
-    drawable::Anchor,
-    drawable::spacer::Spacer,
+    drawable::{Anchor, spacer::Spacer, sprite::Sprite},
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::GraphicsContext,
     layout::{Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout, row::RowLayout},
@@ -11,6 +10,7 @@ use engine::{
 
 use crate::{
     app::App,
+    assets::{EDIT, RESET, TRASH},
     consts::{KEYBINDS, color, layer},
     screens::game::ActiveModal,
     ui::{
@@ -43,9 +43,8 @@ impl GameScreen {
             .position(ctx.center(), Anchor::Center)
             .margin(margin)
             .layer(layer::UI_OVERLAY);
-
-        let size = modal.inner_size();
         modal.draw(ctx, |ctx, root| {
+            let size = root.available();
             let body = body(size.x);
 
             let mut trash = false;
@@ -67,8 +66,62 @@ impl GameScreen {
                             let playtime = self.board.total_playtime();
                             let playtime = format!("Playtime: {}", human_duration(playtime));
                             body(&playtime).layout(ctx, layout);
+                            Spacer::new_y(padding / 2.0).layout(ctx, layout);
 
-                            Spacer::new_y(padding).layout(ctx, layout);
+                            if let Some(level) = self.board.transient.level {
+                                layout.nest(
+                                    ctx,
+                                    RowLayout::new(padding).justify(Justify::Center),
+                                    |ctx, layout| {
+                                        Sprite::new(EDIT)
+                                            .scale(Vector2::repeat(2.0))
+                                            .layout(ctx, layout);
+                                        body("Solutions (1)")
+                                            .button(memory_key!())
+                                            .effects(ButtonEffects::Color)
+                                            .on_click(ctx, || self.modal = ActiveModal::Solutions)
+                                            .layout(ctx, layout);
+                                    },
+                                );
+
+                                layout.nest(
+                                    ctx,
+                                    RowLayout::new(padding).justify(Justify::Center),
+                                    |ctx, layout| {
+                                        Sprite::new(RESET)
+                                            .scale(Vector2::repeat(2.0))
+                                            .layout(ctx, layout);
+                                        body("Reset")
+                                            .button(memory_key!())
+                                            .effects(ButtonEffects::Color)
+                                            .on_click(ctx, || {
+                                                self.beam.get().beam = None;
+                                                self.board.reset();
+                                                self.modal = ActiveModal::None;
+                                            })
+                                            .layout(ctx, layout);
+                                    },
+                                );
+                            } else {
+                                layout.nest(
+                                    ctx,
+                                    RowLayout::new(padding).justify(Justify::Center),
+                                    |ctx, layout| {
+                                        Sprite::new(TRASH)
+                                            .scale(Vector2::repeat(2.0))
+                                            .color(color::ERROR)
+                                            .layout(ctx, layout);
+                                        body("Delete World")
+                                            .color(color::ERROR)
+                                            .button(memory_key!())
+                                            .effects(ButtonEffects::Color)
+                                            .on_click(ctx, || trash = true)
+                                            .layout(ctx, layout);
+                                    },
+                                );
+                            }
+
+                            Spacer::new_y(padding / 2.0).layout(ctx, layout);
                             body("Simulation Speed (TPS)").layout(ctx, layout);
                             layout.nest(
                                 ctx,
@@ -89,14 +142,6 @@ impl GameScreen {
                                     }
                                 },
                             );
-
-                            Spacer::new_y(padding / 2.0).layout(ctx, layout);
-                            let trash_button = body("Delete World")
-                                .color(color::ERROR)
-                                .button(memory_key!())
-                                .effects(ButtonEffects::Color);
-                            trash = trash_button.is_clicked(ctx);
-                            trash_button.layout(ctx, layout);
                         });
 
                         Rule::vertical(
@@ -127,7 +172,7 @@ impl GameScreen {
                     },
                 );
 
-                let clicking = ctx.input.mouse_down(MouseButton::Left);
+                let clicking = ctx.input.mouse_pressed(MouseButton::Left);
                 let (exit, resume) = modal_buttons(ctx, layout, size.x, ("Exit", "Resume"));
 
                 (clicking && resume).then(|| self.modal = ActiveModal::None);

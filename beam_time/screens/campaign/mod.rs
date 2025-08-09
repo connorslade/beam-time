@@ -4,15 +4,24 @@ use ahash::{HashMap, HashMapExt};
 use beam_logic::level::{Level, default::DEFAULT_LEVELS, tree::LevelTree};
 use engine::{
     color::Rgb,
-    drawable::{Anchor, Drawable},
-    drawable::{shape::rectangle_outline::RectangleOutline, sprite::Sprite, text::Text},
+    drawable::{
+        Anchor, Drawable,
+        shape::{rectangle::Rectangle, rectangle_outline::RectangleOutline},
+        sprite::Sprite,
+        text::Text,
+    },
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode, window::CursorIcon},
     },
     graphics_context::GraphicsContext,
-    layout::{LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout},
+    layout::{
+        LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout,
+        tracker::LayoutTracker,
+    },
+    memory_key,
 };
+use slug::slugify;
 use uuid::Uuid;
 
 use crate::{
@@ -26,7 +35,10 @@ use crate::{
         },
         pancam::Pancam,
     },
-    ui::{misc::spacing, pixel_line::PixelLine},
+    ui::{
+        misc::{spacing, title_layout},
+        pixel_line::PixelLine,
+    },
 };
 
 use super::{Screen, game::GameScreen};
@@ -47,31 +59,41 @@ impl Screen for CampaignScreen {
         ctx.background(color::BACKGROUND);
         let t = state.start.elapsed().as_secs_f32();
 
-        let (_, padding) = spacing(ctx);
-        let spacing = 64.0 * ctx.scale_factor;
+        let (scale, pos) = title_layout(ctx, 8.0);
+        let title_padding = 6.0 * (scale / 3.0).round() * ctx.scale_factor;
 
-        let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
         let mut root = RootLayout::new(pos, Anchor::TopCenter);
-        root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
-            Text::new(ALAGARD_FONT, "Campaign")
-                .scale(Vector2::repeat(6.0))
-                .z_index(4)
-                .default_shadow()
-                .layout(ctx, layout);
+        let tracker = LayoutTracker::new(memory_key!());
+        ColumnLayout::new(title_padding)
+            .tracked(tracker)
+            .show(ctx, &mut root, |ctx, layout| {
+                Text::new(ALAGARD_FONT, "Campaign")
+                    .scale(Vector2::repeat(scale.round()))
+                    .z_index(4)
+                    .default_shadow()
+                    .layout(ctx, layout);
 
-            let percent = self.solved_count() as f32 / self.tree.count() as f32 * 100.0;
-            Text::new(UNDEAD_FONT, format!("{percent:.0}% Complete"))
-                .scale(Vector2::repeat(2.0))
-                .position(Vector2::x() * padding, Anchor::BottomLeft)
-                .z_index(4)
-                .default_shadow()
-                .layout(ctx, layout);
-        });
+                let percent = self.solved_count() as f32 / self.tree.count() as f32 * 100.0;
+                Text::new(UNDEAD_FONT, format!("{percent:.0}% Complete"))
+                    .scale(Vector2::repeat((scale / 3.0).round()))
+                    .position(Vector2::x() * title_padding, Anchor::BottomLeft)
+                    .z_index(4)
+                    .default_shadow()
+                    .layout(ctx, layout);
+            });
 
         root.draw(ctx);
 
+        if let Some(bounds) = tracker.bounds(ctx) {
+            let (_, padding) = spacing(ctx);
+            Rectangle::new(bounds.size() + Vector2::repeat(padding * 2.0))
+                .position(bounds.min - Vector2::repeat(padding), Anchor::BottomLeft)
+                .color(color::BACKGROUND)
+                .z_index(3)
+                .draw(ctx);
+        }
+
         self.pancam.update(state, ctx);
-        self.pancam.pan.y = 0.0;
 
         ctx.input
             .key_pressed(KeyCode::Escape)
@@ -81,6 +103,7 @@ impl Screen for CampaignScreen {
             self.layout = TreeLayout::generate(&self.tree, ctx);
         }
 
+        let spacing = 64.0 * ctx.scale_factor;
         let origin = Vector2::new(ctx.center().x, spacing);
         for (i, row) in self.layout.rows.iter().enumerate() {
             let offset = origin + Vector2::y() * i as f32 * spacing;
@@ -97,6 +120,7 @@ impl Screen for CampaignScreen {
                 let text = text
                     .position(self.pancam.pan + center, Anchor::Center)
                     .z_index(1)
+                    .color([Rgb::repeat(0.95), Rgb::repeat(1.0)][available as usize])
                     .default_shadow();
 
                 if solved {
@@ -172,7 +196,7 @@ impl Screen for CampaignScreen {
         }
 
         for board in load_level_dir(&campaign) {
-            let Some(level) = board.meta.level else {
+            let Some(level) = &board.meta.level else {
                 continue;
             };
             self.worlds.entry(level.id).or_default().push(board);
@@ -195,7 +219,8 @@ impl CampaignScreen {
                     name: level.name.to_owned(),
                     level: Some(LevelMeta {
                         id: level.id,
-                        solved: false,
+                        name: "New Solution 1".into(),
+                        solved: None,
                     }),
                     size: level.size,
                     ..Default::default()
@@ -203,11 +228,12 @@ impl CampaignScreen {
                 tiles: level.tiles.clone(),
                 ..Default::default()
             };
+
+            let id = Uuid::new_v4();
             let path = state
                 .data_dir
                 .join("campaign")
-                .join(level.id.to_string())
-                .with_extension("bin");
+                .join(format!("{}_{id}.bin", slugify(&level.name)));
             state.push_screen(GameScreen::new(board, path));
         }
     }
@@ -255,7 +281,7 @@ impl Default for CampaignScreen {
         Self {
             tree,
             layout: TreeLayout::default(),
-            pancam: Pancam::default(),
+            pancam: Pancam::default().with_zoom_sensitivity(0.0),
 
             worlds: HashMap::new(),
         }

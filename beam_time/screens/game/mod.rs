@@ -13,12 +13,17 @@ use crate::game::achievements::award_campaign_achievements;
 use crate::{
     App,
     consts::color,
-    game::{board::Board, pancam::Pancam, render::beam::BeamStateRender},
+    game::{
+        board::{Board, LevelStats},
+        pancam::Pancam,
+        render::beam::BeamStateRender,
+    },
     ui::{confetti::Confetti, level_panel::LevelPanel, tile_picker::TilePicker},
     util::key_events,
 };
 use beam_logic::{
     level::default::DEFAULT_LEVELS,
+    misc::price,
     simulation::{
         level_state::LevelResult, runtime::asynchronous::AsyncSimulationState, state::BeamState,
     },
@@ -32,6 +37,7 @@ use super::Screen;
 
 mod note_edit_modal;
 mod paused_modal;
+mod solutions_modal;
 
 pub struct GameScreen {
     pancam: Pancam,
@@ -53,6 +59,7 @@ enum ActiveModal {
     None,
     Paused,
     NoteEdit { index: usize, old: bool },
+    Solutions,
 }
 
 impl Screen for GameScreen {
@@ -120,12 +127,15 @@ impl Screen for GameScreen {
                 self.level_result = Some(result);
                 sim.runtime.running = false;
 
-                if matches!(result, LevelResult::Success { .. }) {
+                if let LevelResult::Success { latency } = result
+                    && let Some(level_meta) = &mut self.board.meta.level
+                {
                     let level = self.board.transient.level.as_ref().unwrap();
+                    let (cost, _count) = price(&self.board.tiles, level);
 
                     // Award potential steam achievements
                     #[cfg(feature = "steam")]
-                    award_campaign_achievements(state, level);
+                    award_campaign_achievements(state, level_meta);
 
                     // Upload solution to leaderboard server
                     state
@@ -133,7 +143,7 @@ impl Screen for GameScreen {
                         .publish_solution(&state.id, level.id, &self.board.tiles);
 
                     create_confetti(&mut self.confetti, ctx);
-                    self.board.meta.level.as_mut().unwrap().solved = true;
+                    level_meta.solved = Some(LevelStats { cost, latency });
                     sim.beam = None;
                 }
             }
@@ -167,7 +177,7 @@ impl Screen for GameScreen {
         if self.board.transient.history.is_dirty() {
             self.level_result = None;
             if let Some(level) = &mut self.board.meta.level {
-                level.solved = false;
+                level.solved = None;
             }
         }
     }
@@ -205,10 +215,9 @@ impl Screen for GameScreen {
 
 impl GameScreen {
     pub fn new(mut board: Board, save_file: PathBuf) -> Self {
-        board.transient.level = board
-            .meta
-            .level
-            .map(|x| DEFAULT_LEVELS.iter().find(|y| y.id == x.id).unwrap());
+        let level_meta = board.meta.level.as_ref();
+        board.transient.level =
+            level_meta.map(|x| DEFAULT_LEVELS.iter().find(|y| y.id == x.id).unwrap());
 
         Self {
             pancam: Pancam::default(),
@@ -233,6 +242,7 @@ impl GameScreen {
     }
 
     fn modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
+        self.solutions_modal(state, ctx);
         self.paused_modal(state, ctx);
         self.note_edit_modal(state, ctx);
     }

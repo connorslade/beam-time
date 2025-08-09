@@ -14,6 +14,8 @@ pub struct Pancam {
     pub scale: f32,
     pub scale_goal: f32,
     pub pan_goal: Vector2<f32>,
+
+    pub zoom_sensitivity: f32,
 }
 
 const DECAY: f32 = 10.0;
@@ -25,6 +27,13 @@ const PAN_KEYS: [(KeyCode, Vector2<f32>); 4] = [
 ];
 
 impl Pancam {
+    pub fn with_zoom_sensitivity(self, zoom_sensitivity: f32) -> Self {
+        Self {
+            zoom_sensitivity,
+            ..self
+        }
+    }
+
     pub fn update(&mut self, state: &App, ctx: &mut GraphicsContext) {
         let mut delta_pan = Vector2::zeros();
 
@@ -45,7 +54,7 @@ impl Pancam {
         // TODO: Don't allow scale goal to be non integer values when close to 1.0
         let old_scale = self.scale;
         self.scale_goal = (self.scale_goal
-            + ctx.input.scroll_delta() * state.config.zoom_sensitivity)
+            + ctx.input.scroll_delta() * state.config.zoom_sensitivity * self.zoom_sensitivity)
             .clamp(1.0, 10.0);
 
         self.scale = exp_decay(self.scale, self.scale_goal, DECAY, ctx.delta_time);
@@ -117,6 +126,8 @@ impl Default for Pancam {
 
             scale: 4.0,
             scale_goal: 4.0,
+
+            zoom_sensitivity: 1.0,
         }
     }
 }

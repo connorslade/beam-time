@@ -28,7 +28,7 @@ use crate::{
             slider::slider,
             toggle::toggle,
         },
-        misc::{body, modal_size, spacing},
+        misc::{body, modal_size, spacing, title_layout},
         waterfall::Waterfall,
     },
 };
@@ -62,37 +62,31 @@ impl Screen for TitleScreen {
             .then(|| mem::take(&mut self.modal));
 
         // Title & copyright
-        let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
-
-        let screen = ctx.size() / ctx.scale_factor;
-        let scale = (screen.x / 81.0 * 0.5)
-            .min(screen.y / 20.0 * 0.3)
-            .clamp(4.0, 15.0);
-
+        let (scale, pos) = title_layout(ctx, 15.0);
         let title = Text::new(ALAGARD_FONT, "Beam Time")
             .position(pos, Anchor::TopCenter)
             .scale(Vector2::repeat(scale.round()))
             .default_shadow();
         let size = title.size(ctx);
-        let title_button = title
+        title
             .button(memory_key!())
-            .effects(ButtonEffects::Arrows | ButtonEffects::Color);
-        title_button
-            .is_clicked(ctx)
-            .then(|| webbrowser::open(GAME_HOMEPAGE));
-        title_button.draw(ctx);
+            .effects(ButtonEffects::Arrows | ButtonEffects::Color)
+            .on_click(ctx, || {
+                let _ = webbrowser::open(GAME_HOMEPAGE);
+            })
+            .draw(ctx);
 
         let offset = Vector2::new(size.x / 2.0, -size.y * 1.25);
-        let author_button = Text::new(UNDEAD_FONT, "By Connor Slade")
+        Text::new(UNDEAD_FONT, "By Connor Slade")
             .position(pos + offset, Anchor::TopRight)
             .scale(Vector2::repeat((scale / 2.0).round()))
             .default_shadow()
             .button(memory_key!())
-            .effects(ButtonEffects::Arrows | ButtonEffects::Color);
-        author_button
-            .is_clicked(ctx)
-            .then(|| webbrowser::open(AUTHOR_HOMEPAGE));
-        author_button.draw(ctx);
+            .effects(ButtonEffects::Arrows | ButtonEffects::Color)
+            .on_click(ctx, || {
+                let _ = webbrowser::open(AUTHOR_HOMEPAGE);
+            })
+            .draw(ctx);
 
         Text::new(
             UNDEAD_FONT,

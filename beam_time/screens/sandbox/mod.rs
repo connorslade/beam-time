@@ -38,7 +38,7 @@ use crate::{
             button::{ButtonEffects, ButtonExt},
             modal::{Modal, modal_buttons},
         },
-        misc::{body, modal_size, spacing},
+        misc::{body, modal_size, spacing, title_layout},
         waterfall::Waterfall,
     },
     util::time::{human_duration, human_duration_minimal},
@@ -77,10 +77,10 @@ impl Screen for SandboxScreen {
             .key_pressed(KeyCode::Escape)
             .then(|| state.pop_screen());
 
-        let pos = Vector2::new(ctx.size().x / 2.0, ctx.size().y * 0.9);
+        let (scale, pos) = title_layout(ctx, 8.0);
         Text::new(ALAGARD_FONT, "Sandbox")
             .position(pos, Anchor::TopCenter)
-            .scale(Vector2::repeat(6.0))
+            .scale(Vector2::repeat(scale))
             .default_shadow()
             .draw(ctx);
 
@@ -101,21 +101,24 @@ impl Screen for SandboxScreen {
 
                     for (i, board) in self.worlds.iter().enumerate() {
                         let tracker = LayoutTracker::new(memory_key!(i));
-                        if let Some(bounds) = tracker.bounds(ctx) {
-                            let offset = Vector2::repeat(padding);
-                            let (size, pos) = (bounds.size() + offset * 2.0, bounds.min - offset);
+                        ctx.defer(move |ctx| {
+                            if let Some(bounds) = tracker.bounds(ctx) {
+                                let offset = Vector2::repeat(padding);
+                                let (size, pos) =
+                                    (bounds.size() + offset * 2.0, bounds.min - offset);
 
-                            RectangleOutline::new(size, 4.0)
-                                .position(pos, Anchor::BottomLeft)
-                                .relative_inner()
-                                .color(color::MODAL_BORDER)
-                                .draw(ctx);
-                            Rectangle::new(size)
-                                .position(pos, Anchor::BottomLeft)
-                                .color(color::BACKGROUND)
-                                .z_index(-1)
-                                .draw(ctx);
-                        }
+                                RectangleOutline::new(size, 4.0)
+                                    .position(pos, Anchor::BottomLeft)
+                                    .relative_inner()
+                                    .color(color::MODAL_BORDER)
+                                    .draw(ctx);
+                                Rectangle::new(size)
+                                    .position(pos, Anchor::BottomLeft)
+                                    .color(color::BACKGROUND)
+                                    .z_index(-1)
+                                    .draw(ctx);
+                            }
+                        });
 
                         let column = ColumnLayout::new(padding).tracked(tracker);
                         column.show(ctx, layout, |ctx, layout| {

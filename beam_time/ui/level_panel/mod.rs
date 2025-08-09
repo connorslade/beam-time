@@ -13,6 +13,7 @@ use crate::{
 };
 use beam_logic::{
     level::Level,
+    misc::price,
     simulation::{level_state::LevelResult, runtime::asynchronous::InnerAsyncSimulationState},
 };
 use engine::{
@@ -62,7 +63,7 @@ impl LevelPanel {
         let width = tile_size * WIDTH as f32;
 
         // idk maybe cache or smth — not that it really matters
-        let (price, tiles) = price(board, level);
+        let (price, tiles) = price(&board.tiles, level);
 
         let trackers @ [base, extended] = [memory_key!(), memory_key!()].map(LayoutTracker::new);
         let tracker = trackers[level_result.is_some() as usize];
@@ -163,22 +164,6 @@ impl LevelPanel {
 
         desc.tracked(tracker).layout(ctx, layout);
     }
-}
-
-// todo: Don't re-calc price every frame
-fn price(board: &Board, level: &Level) -> (u32, usize) {
-    let (mut price, mut count) = (0, 0);
-    for (pos, tile) in board.tiles.iter() {
-        let is_dynamic = tile.id().map(|id| level.is_dynamic(id)).unwrap_or_default();
-        if level.permanent.contains(&pos) || is_dynamic {
-            continue;
-        }
-
-        price += tile.price();
-        count += 1;
-    }
-
-    (price, count)
 }
 
 fn horizontal_rule(ctx: &mut GraphicsContext, layout: &mut ColumnLayout) {
