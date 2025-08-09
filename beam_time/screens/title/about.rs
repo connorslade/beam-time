@@ -1,6 +1,5 @@
 use engine::{
-    drawable::Anchor,
-    drawable::{spacer::Spacer, text::Text},
+    drawable::{Anchor, spacer::Spacer, text::Text},
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::GraphicsContext,
     layout::{
@@ -20,20 +19,21 @@ use crate::{
     ui::{
         components::{
             button::ButtonExt,
+            horizontal_rule::Rule,
             modal::{Modal, modal_buttons},
         },
         misc::{body, modal_size, spacing},
     },
 };
 
-pub const DESCRIPTION: &str = indoc! {"
+pub const GENERAL_DESCRIPTION: &str = indoc! {"
     Beam time is a logic puzzle game where you redirect and split laser beams to create digital circuits. \
     Through the campaign, you will explore logic gates, oscillators, latches, counters, adders, memory, and more.
 
     Thank you to everyone that pushed me to actually finish this project ♥. \
     Special thanks to Brandon Li (aspiringLich on GitHub) for creating the tile graphics, you do not want to see what the game looked like before.
 
-    This is not an open source project, however the source code for the custom engine, leaderboard server, and the game itself is available on Github at @connorslade/beam-time.
+    The source code for this game, the custom engine, and leaderboard server is available on Github at @connorslade/beam-time, although it is not open source and unauthorized distribution is not allowed.
 
     Assets Used:
       • Alagard, Font by Hewett Tsoi
@@ -41,35 +41,76 @@ pub const DESCRIPTION: &str = indoc! {"
       • Universal UI/Menu Soundpack, by Cyrex Studios
 "};
 
+pub const CONTROLS_DESCRIPTION: &[&str] = &[
+    indoc! {"
+        In addition to the keybinds on the pause screen, here are some useful, but non-essential ones that can significantly speed up the construction of large circuits.
+    "},
+    indoc! {"
+        • CTRL+Z - Undo
+        • 1-7 - Picks up the corisponding tile from panel
+        • N - Creates a stickey note at the mouse position
+        • +/-/0 - Increses/decreses/rests TPS
+        • SHIFT+0 - ∞ TPS
+        • SHIFT+R - Rotates counterclockwise
+    "},
+    indoc! {"
+        Selections are a powerful way to modify multiple tiles at once. \
+        Create one by holding SHIFT and dragging to select a rectangular area of tiles. \
+        If you've already made a selection, dragging with CTRL+SHIFT will add to it and ALT+SHIFT will subtract from it.
+
+        You can either deselect (U), delete (BACKSPACE), cut (CTRL+X), or copy (CTRL+C) the selection. \
+        If you cut/copy it, you will pick up the selection like you would a tile, and just like with a tile you can rotate it (R/SHIFT+R). \
+        You can also flip it, either horizontally (H) or vertically (V).
+    "},
+];
+
 const PAGE_KEY: MemoryKey = memory_key!();
 
 #[derive(Hash, Clone, Copy, PartialEq, Eq)]
-#[repr(u8)]
 enum Page {
-    General = 0,
-    Controls = 1,
+    General,
+    Controls,
+}
+
+fn about_general(ctx: &mut GraphicsContext, width: f32) -> Box<dyn LayoutElement> {
+    let (margin, _) = spacing(ctx);
+    let text = Text::new(UNDEAD_FONT, GENERAL_DESCRIPTION.trim_end())
+        .max_width(width - margin * 2.0)
+        .scale(Vector2::repeat(2.0));
+    Box::new(text)
+}
+
+fn about_controls(ctx: &mut GraphicsContext, width: f32) -> Box<dyn LayoutElement> {
+    let body = body(width);
+
+    let mut layout = ColumnLayout::new(12.0 * ctx.scale_factor);
+    for (i, desc) in CONTROLS_DESCRIPTION.iter().enumerate() {
+        body(desc.trim_end()).layout(ctx, &mut layout);
+        if i + 1 != CONTROLS_DESCRIPTION.len() {
+            Rule::horizontal(width).layout(ctx, &mut layout);
+        }
+    }
+
+    Box::new(layout)
 }
 
 impl TitleScreen {
     pub fn about_modal(&mut self, _state: &mut App, ctx: &mut GraphicsContext) {
         let (margin, padding) = spacing(ctx);
-        let desired_size = modal_size(ctx);
+        let width = modal_size(ctx).x;
+        let inner_width = width - 2.0 * margin;
 
         let current = *ctx.memory.get_or_insert(PAGE_KEY, Page::General);
-        let text = [DESCRIPTION, "todo: controls or smth\n"][current as u8 as usize];
+        let element = match current {
+            Page::General => about_general(ctx, inner_width),
+            Page::Controls => about_controls(ctx, inner_width),
+        };
 
-        let description = Text::new(UNDEAD_FONT, text)
-            .max_width(desired_size.x - margin * 2.0)
-            .scale(Vector2::repeat(2.0));
-        let height = description.size(ctx).y;
-
-        let modal = Modal::new(Vector2::new(
-            desired_size.x,
-            height + 100.0 * ctx.scale_factor,
-        ))
-        .position(ctx.center(), Anchor::Center)
-        .margin(margin)
-        .layer(layer::OVERLAY);
+        let height = element.bounds(ctx).height();
+        let modal = Modal::new(Vector2::new(width, height + 120.0 * ctx.scale_factor))
+            .position(ctx.center(), Anchor::Center)
+            .margin(margin)
+            .layer(layer::OVERLAY);
 
         let size = modal.inner_size();
         modal.draw(ctx, |ctx, root| {
@@ -113,7 +154,7 @@ impl TitleScreen {
                 );
                 Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
 
-                description.layout(ctx, layout);
+                layout.layout(ctx, element);
 
                 let clicking = ctx.input.mouse_down(MouseButton::Left);
                 let (back, _) = modal_buttons(ctx, layout, size.x, ("Back", ""));
