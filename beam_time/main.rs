@@ -35,8 +35,9 @@ fn main() -> Result<()> {
     let icon = Icon::from_rgba(include_atlas!("textures/icon.png").into_vec(), 32, 32)?;
     Application::new(ApplicationArgs {
         window_attributes: WindowAttributes::default()
-            .with_title("Beam Time")
-            .with_window_icon(Some(icon)),
+            .with_title(concat!("Beam Time v", env!("CARGO_PKG_VERSION")))
+            .with_window_icon(Some(icon))
+            .with_maximized(true),
         asset_constructor: Box::new(assets::init),
         resumed: Box::new(|| {
             let mut app = App::new();

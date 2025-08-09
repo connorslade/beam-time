@@ -83,7 +83,7 @@ impl Rgb<f32> {
         Self::new(r as f32 / 255.0, g as f32 / 255.0, b as f32 / 255.0)
     }
 
-    pub fn lerp(&self, other: Self, t: f32) -> Self {
+    pub const fn lerp(&self, other: Self, t: f32) -> Self {
         Self::new(
             lerp(self.r, other.r, t),
             lerp(self.g, other.g, t),
@@ -132,7 +132,7 @@ fn to_gamma(u: f32) -> f32 {
     }
 }
 
-fn lerp(a: f32, b: f32, t: f32) -> f32 {
+const fn lerp(a: f32, b: f32, t: f32) -> f32 {
     (1.0 - t) * a + t * b
 }
 

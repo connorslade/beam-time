@@ -57,9 +57,11 @@ impl Screen for TitleScreen {
         Waterfall::new(WATERFALL).draw(ctx);
         self.modals(state, ctx);
 
-        ctx.input
-            .consume_key_pressed(KeyCode::Escape)
-            .then(|| mem::take(&mut self.modal));
+        if ctx.input.consume_key_pressed(KeyCode::Escape)
+            && let ActiveModal::None = mem::take(&mut self.modal)
+        {
+            ctx.window.close();
+        }
 
         // Title & copyright
         let (scale, pos) = title_layout(ctx, 15.0);

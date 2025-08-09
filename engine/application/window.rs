@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{mem, sync::Arc};
 
 use nalgebra::Vector2;
 use winit::{
@@ -13,6 +13,7 @@ pub struct WindowManager {
 
     pub(crate) size: Vector2<u32>,
     scale_factor: f32,
+    close_next: bool,
     close: bool,
 
     size_changed: Option<Vector2<u32>>,
@@ -33,6 +34,7 @@ impl WindowManager {
 
             size: Vector2::new(size.width, size.height),
             scale_factor: 1.0,
+            close_next: false,
             close: false,
 
             size_changed: None,
@@ -73,6 +75,7 @@ impl WindowManager {
         }
 
         self.cursor.set(Default::default());
+        self.close = mem::take(&mut self.close_next);
         self.size_changed = None;
         self.dpi_changed = None;
         self.focus_change = None;
@@ -80,6 +83,11 @@ impl WindowManager {
 }
 
 impl WindowManager {
+    #[inline(always)]
+    pub fn close(&mut self) {
+        self.close_next = true;
+    }
+
     #[inline(always)]
     pub fn vsync(&mut self, vsync: bool) {
         self.vsync.set(vsync);

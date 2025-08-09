@@ -48,7 +48,6 @@ pub struct State<'a> {
     // Misc
     pub graphics: RenderContext<'a>,
     pub assets: Rc<AssetManager>,
-    pub window: WindowManager,
     pub input: InputManager,
     pub audio: AudioManager,
     pub memory: Memory,
@@ -62,6 +61,7 @@ pub struct State<'a> {
     pub shape_renderer: ShapeRenderPipeline,
     pub texture: Texture,
     pub depth_texture: Texture,
+    pub window: WindowManager,
 }
 
 pub struct RenderContext<'a> {
@@ -261,6 +261,7 @@ impl<'a> Application<'a> {
         let event_loop_builder = EventLoopBuilder::default().build()?;
         event_loop_builder.set_control_flow(ControlFlow::Wait);
         event_loop_builder.run_app(&mut self)?;
+
         Ok(())
     }
 

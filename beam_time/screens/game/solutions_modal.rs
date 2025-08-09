@@ -55,10 +55,12 @@ impl GameScreen {
                     });
                     DummyDrawable::new().layout(ctx, layout);
 
+                    Rule::horizontal(layout.available().x).layout(ctx, layout);
                     solution(ctx, layout, &self.save_file, &self.board.meta);
+                    Rule::horizontal(layout.available().x).layout(ctx, layout);
                     for UnloadedBoard { path, meta } in &self.solutions {
-                        Rule::horizontal(layout.available().x).layout(ctx, layout);
                         solution(ctx, layout, path, meta);
+                        Rule::horizontal(layout.available().x).layout(ctx, layout);
                     }
 
                     Text::new(UNDEAD_FONT, "+ New Solution +")
@@ -89,7 +91,7 @@ fn solution(
             .justify(Justify::Center)
             .sized(Vector2::new(layout.available().x, 0.0))
             .show(ctx, layout, |ctx, layout| {
-                Text::new(UNDEAD_FONT, &meta.name)
+                Text::new(UNDEAD_FONT, &format!("{} (Current)", meta.name))
                     .scale(Vector2::repeat(3.0))
                     .button(memory_key!(path))
                     .effects(ButtonEffects::empty())
