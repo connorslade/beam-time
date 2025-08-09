@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use engine::{
     drawable::{Anchor, dummy::DummyDrawable, spacer::Spacer, sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::event::MouseButton},
@@ -8,11 +10,13 @@ use engine::{
     },
     memory_key,
 };
+use thousands::Separable;
 
 use crate::{
     app::App,
     assets::{DUPLICATE, EDIT, TRASH, UNDEAD_FONT},
     consts::layer,
+    game::board::{BoardMeta, LevelStats, unloaded::UnloadedBoard},
     screens::game::{ActiveModal, GameScreen},
     ui::{
         components::{
@@ -51,41 +55,11 @@ impl GameScreen {
                     });
                     DummyDrawable::new().layout(ctx, layout);
 
-                    let i = 0;
-
-                    ColumnLayout::new(padding).show(ctx, layout, |ctx, layout| {
-                        RowLayout::new(0.0)
-                            .justify(Justify::Center)
-                            .sized(Vector2::new(size.x, 0.0))
-                            .show(ctx, layout, |ctx, layout| {
-                                Text::new(UNDEAD_FONT, "Solution #1")
-                                    .scale(Vector2::repeat(3.0))
-                                    .button(memory_key!(i))
-                                    .effects(ButtonEffects::empty())
-                                    .layout(ctx, layout);
-
-                                let row = RowLayout::new(padding).direction(Direction::MaxToMin);
-                                row.show(ctx, layout, |ctx, layout| {
-                                    let button = |asset| {
-                                        Sprite::new(asset)
-                                            .scale(Vector2::repeat(2.0))
-                                            .button(memory_key!(i, asset))
-                                    };
-
-                                    button(TRASH).layout(ctx, layout);
-                                    button(DUPLICATE).layout(ctx, layout);
-                                    button(EDIT).layout(ctx, layout);
-
-                                    Spacer::new_x(layout.available().x).layout(ctx, layout);
-                                });
-                            });
-
-                        Text::new(UNDEAD_FONT, "Costs $23,000 • Latency of 147 ticks")
-                            .scale(Vector2::repeat(2.0))
-                            .layout(ctx, layout);
-                    });
-
-                    Rule::horizontal(layout.available().x).layout(ctx, layout);
+                    solution(ctx, layout, &self.save_file, &self.board.meta);
+                    for UnloadedBoard { path, meta } in &self.solutions {
+                        Rule::horizontal(layout.available().x).layout(ctx, layout);
+                        solution(ctx, layout, path, meta);
+                    }
 
                     Text::new(UNDEAD_FONT, "+ New Solution +")
                         .scale(Vector2::repeat(2.0))
@@ -101,4 +75,52 @@ impl GameScreen {
                 });
         });
     }
+}
+
+fn solution(
+    ctx: &mut GraphicsContext,
+    layout: &mut ColumnLayout,
+    path: &PathBuf,
+    meta: &BoardMeta,
+) {
+    let (_, padding) = spacing(ctx);
+    ColumnLayout::new(padding).show(ctx, layout, |ctx, layout| {
+        RowLayout::new(0.0)
+            .justify(Justify::Center)
+            .sized(Vector2::new(layout.available().x, 0.0))
+            .show(ctx, layout, |ctx, layout| {
+                Text::new(UNDEAD_FONT, &meta.name)
+                    .scale(Vector2::repeat(3.0))
+                    .button(memory_key!(path))
+                    .effects(ButtonEffects::empty())
+                    .layout(ctx, layout);
+
+                let row = RowLayout::new(padding).direction(Direction::MaxToMin);
+                row.show(ctx, layout, |ctx, layout| {
+                    let button = |asset| {
+                        Sprite::new(asset)
+                            .scale(Vector2::repeat(2.0))
+                            .button(memory_key!(path, asset))
+                    };
+
+                    button(TRASH).layout(ctx, layout);
+                    button(DUPLICATE).layout(ctx, layout);
+                    button(EDIT).layout(ctx, layout);
+
+                    Spacer::new_x(layout.available().x).layout(ctx, layout);
+                });
+            });
+
+        let level = meta.level.as_ref().unwrap();
+        let text = if let Some(LevelStats { cost, latency }) = level.solved {
+            let cost = cost.separate_with_commas();
+            format!("Costs ${cost} • Latency of {latency} ticks")
+        } else {
+            "Unsolved".into()
+        };
+
+        Text::new(UNDEAD_FONT, &text)
+            .scale(Vector2::repeat(2.0))
+            .layout(ctx, layout);
+    });
 }

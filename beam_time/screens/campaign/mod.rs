@@ -143,9 +143,10 @@ impl Screen for CampaignScreen {
                         .draw(ctx);
 
                     if ctx.input.mouse_pressed(MouseButton::Left) {
-                        let latest =
-                            worlds.and_then(|x| x.iter().max_by_key(|x| x.meta.last_played));
-                        self.open_level(state, latest, self.tree.get(item.id).unwrap());
+                        // We can remove it bc we're going to be going to a new
+                        // screen and dropping this anyway
+                        let worlds = self.worlds.remove(&item.id);
+                        self.open_level(state, worlds, self.tree.get(item.id).unwrap());
                     }
                 }
 
@@ -210,16 +211,24 @@ impl Screen for CampaignScreen {
 }
 
 impl CampaignScreen {
-    pub fn open_level(&self, state: &mut App, world: Option<&UnloadedBoard>, level: &Level) {
-        if let Some(UnloadedBoard { path, .. }) = world {
-            state.push_screen(GameScreen::load(path));
+    pub fn open_level(
+        &self,
+        state: &mut App,
+        solutions: Option<Vec<UnloadedBoard>>,
+        level: &Level,
+    ) {
+        let latest = solutions
+            .as_ref()
+            .and_then(|x| x.iter().max_by_key(|x| x.meta.last_played));
+
+        if let Some(UnloadedBoard { path, .. }) = latest {
+            state.push_screen(GameScreen::load(path).with_solutions(solutions.unwrap()));
         } else {
             let board = Board {
                 meta: BoardMeta {
-                    name: level.name.to_owned(),
+                    name: "New Solution 1".into(),
                     level: Some(LevelMeta {
                         id: level.id,
-                        name: "New Solution 1".into(),
                         solved: None,
                     }),
                     size: level.size,

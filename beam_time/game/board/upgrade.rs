@@ -189,7 +189,6 @@ mod version_5 {
         fn from(value: LevelMeta) -> Self {
             Self {
                 id: value.id,
-                name: "New Solution 1".into(),
                 solved: None,
             }
         }

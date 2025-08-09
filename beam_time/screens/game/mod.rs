@@ -14,7 +14,7 @@ use crate::{
     App,
     consts::color,
     game::{
-        board::{Board, LevelStats},
+        board::{Board, LevelStats, unloaded::UnloadedBoard},
         pancam::Pancam,
         render::beam::BeamStateRender,
     },
@@ -43,14 +43,16 @@ pub struct GameScreen {
     pancam: Pancam,
     board: Board,
     beam: AsyncSimulationState,
+    level_result: Option<LevelResult>,
 
     tile_picker: TilePicker,
     level_panel: LevelPanel,
     confetti: Confetti,
     modal: ActiveModal,
 
-    level_result: Option<LevelResult>,
     save_file: PathBuf,
+    solutions: Vec<UnloadedBoard>,
+
     needs_init: bool,
     tps: f32,
 }
@@ -223,14 +225,16 @@ impl GameScreen {
             pancam: Pancam::default(),
             board,
             beam: AsyncSimulationState::new(),
+            level_result: None,
 
             tile_picker: TilePicker::default(),
             level_panel: LevelPanel::default(),
             confetti: Confetti::new(),
             modal: ActiveModal::None,
 
-            level_result: None,
             save_file,
+            solutions: Vec::new(),
+
             needs_init: true,
             tps: 20.0,
         }
@@ -239,6 +243,12 @@ impl GameScreen {
     pub fn load(save_file: impl AsRef<Path>) -> Self {
         let save_file = save_file.as_ref().to_path_buf();
         GameScreen::new(Board::load(&save_file).unwrap_or_default(), save_file)
+    }
+
+    pub fn with_solutions(mut self, solutions: Vec<UnloadedBoard>) -> Self {
+        self.solutions
+            .extend(solutions.into_iter().filter(|x| x.path != self.save_file));
+        self
     }
 
     fn modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {

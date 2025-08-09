@@ -68,7 +68,7 @@ impl GameScreen {
                             body(&playtime).layout(ctx, layout);
                             Spacer::new_y(padding / 2.0).layout(ctx, layout);
 
-                            if let Some(level) = self.board.transient.level {
+                            if self.board.transient.level.is_some() {
                                 layout.nest(
                                     ctx,
                                     RowLayout::new(padding).justify(Justify::Center),
@@ -76,7 +76,7 @@ impl GameScreen {
                                         Sprite::new(EDIT)
                                             .scale(Vector2::repeat(2.0))
                                             .layout(ctx, layout);
-                                        body("Solutions (1)")
+                                        body(&format!("Solutions ({})", self.solutions.len() + 1))
                                             .button(memory_key!())
                                             .effects(ButtonEffects::Color)
                                             .on_click(ctx, || self.modal = ActiveModal::Solutions)

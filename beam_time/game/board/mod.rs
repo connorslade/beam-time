@@ -63,7 +63,6 @@ pub struct BoardMeta {
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct LevelMeta {
     pub id: Uuid,
-    pub name: String,
     pub solved: Option<LevelStats>,
 }
 
