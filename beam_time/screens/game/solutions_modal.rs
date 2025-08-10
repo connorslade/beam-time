@@ -40,18 +40,9 @@ use crate::{
 
 impl GameScreen {
     pub(super) fn solutions_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        let Some(level) = self.board.transient.level else {
-            return;
-        };
-
-        self.solutions_rename_modal(ctx);
-        self.solutions_delete_modal(state, ctx);
-        let ActiveModal::Solutions = &self.modal else {
-            return;
-        };
-
         // todo: maybe don't sort every frame? just a thought
         self.solutions.sort_by_key(|x| Reverse(x.meta.last_played));
+        let level = self.board.transient.level.unwrap();
 
         let (margin, padding) = spacing(ctx);
         let modal = Modal::new(modal_size(ctx))
@@ -132,12 +123,8 @@ impl GameScreen {
         }
     }
 
-    fn solutions_rename_modal(&mut self, ctx: &mut GraphicsContext) {
-        let ActiveModal::SolutionEdit { index } = &self.modal else {
-            return;
-        };
-
-        let name = self.name(*index);
+    pub(super) fn solutions_rename_modal(&mut self, ctx: &mut GraphicsContext, index: usize) {
+        let name = self.name(index);
         match create_modal(ctx, BoardType::Solution, Some(name)) {
             create::Result::Nothing => {}
             create::Result::Cancled => self.modal = ActiveModal::Solutions,
@@ -148,12 +135,12 @@ impl GameScreen {
         }
     }
 
-    fn solutions_delete_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        let ActiveModal::SolutionDelete { index } = &self.modal else {
-            return;
-        };
-
-        let index = *index;
+    pub(super) fn solutions_delete_modal(
+        &mut self,
+        state: &mut App,
+        ctx: &mut GraphicsContext,
+        index: usize,
+    ) {
         let name = self.name(index);
         match delete_modal(ctx, BoardType::Solution, name) {
             delete::Result::Nothing => {}

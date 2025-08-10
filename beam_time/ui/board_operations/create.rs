@@ -42,7 +42,7 @@ pub fn create_modal(ctx: &mut GraphicsContext, mode: BoardType, start: Option<&s
     let modal = Modal::new(modal_size(ctx))
         .position(ctx.center(), Anchor::Center)
         .margin(margin)
-        .layer(layer::OVERLAY);
+        .layer(layer::UI_OVERLAY);
 
     let size = modal.inner_size();
     modal.draw(ctx, |ctx, root| {

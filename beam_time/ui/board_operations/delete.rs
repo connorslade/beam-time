@@ -28,7 +28,7 @@ pub fn delete_modal(ctx: &mut GraphicsContext, mode: BoardType, name: &str) -> R
     let modal = Modal::new(modal_size(ctx))
         .position(ctx.center(), Anchor::Center)
         .margin(margin)
-        .layer(layer::OVERLAY);
+        .layer(layer::UI_OVERLAY);
     let size = modal.inner_size();
 
     let mut out = Result::Nothing;

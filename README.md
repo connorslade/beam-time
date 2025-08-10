@@ -2,14 +2,16 @@
 
 ---
 
-Beam time is a logic puzzle game where you redirect and split laser beams to create digital circuits. Through the campaign, you will explore logic gates, oscillators, latches, counters, adders, memory, and more.
+Beam time is a logic puzzle game where you redirect and split laser beams to create digital circuits.
+Through the campaign, you will explore logic gates, oscillators, latches, counters, adders, memory, and more.
+
 Each level provides a description and some test cases your solution must pass.
-Inputs are passed in through laser emitters and outputs are made with beam detectors.
-It's your job to use some combination of mirrors, beam splitters, delay gates, and galvos to complete the level. Galvos are the only 'active' component, they rotate the mirror they are facing when powered.
+Inputs are passed in through laser emitters and outputs taken from beam detectors. It's your job to use some combination of components to complete the level.
 
 ![beam-time](https://github.com/user-attachments/assets/0c7e36e2-f215-4d70-94a4-d23da675fd51)
 
-Here are all seven in-game components from left to right: emitter, galvo (rotates the mirror it’s facing when powered with a beam), splitter, mirror, delay, wall, detector. With just these few components, It's possible to perform any computation.
+Here are all seven in-game components from left to right: emitter, galvo, splitter, mirror, delay, wall, detector.
+Galvos are the only 'active' component, they rotate the mirror they are facing when powered. With just these few components, It's theoretically possible to perform any computation.
 
 ![Tiles](https://github.com/user-attachments/assets/5a59ce18-30b6-4d62-b6ce-6b04fc648a01)
 

@@ -57,6 +57,7 @@ pub struct GameScreen {
     tps: f32,
 }
 
+#[derive(Debug)]
 enum ActiveModal {
     None,
     Paused,
@@ -255,9 +256,14 @@ impl GameScreen {
     }
 
     fn modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        self.solutions_modal(state, ctx);
-        self.paused_modal(state, ctx);
         self.note_edit_modal(state, ctx);
+        match self.modal {
+            ActiveModal::Paused => self.paused_modal(state, ctx),
+            ActiveModal::Solutions => self.solutions_modal(state, ctx),
+            ActiveModal::SolutionEdit { index } => self.solutions_rename_modal(ctx, index),
+            ActiveModal::SolutionDelete { index } => self.solutions_delete_modal(state, ctx, index),
+            _ => {}
+        }
     }
 }
 
