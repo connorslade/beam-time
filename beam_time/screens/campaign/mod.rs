@@ -118,7 +118,7 @@ impl Screen for CampaignScreen {
                 let center = offset + Vector2::x() * item.offset();
                 let text = item.text.clone();
                 let text = text
-                    .position(self.pancam.pan + center, Anchor::Center)
+                    .position(self.pancam.pan + center, Anchor::CenterLeft)
                     .z_index(1)
                     .color([Rgb::repeat(0.95), Rgb::repeat(1.0)][available as usize])
                     .default_shadow();

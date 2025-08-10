@@ -37,6 +37,22 @@ use super::{Screen, campaign::CampaignScreen, sandbox::SandboxScreen};
 
 mod about;
 
+type ButtonCallback = fn(&mut App, &mut ActiveModal);
+const BUTTONS: [(&str, KeyCode, ButtonCallback); 4] = [
+    ("Campaign", KeyCode::KeyC, |s, _| {
+        s.push_screen(CampaignScreen::default())
+    }),
+    ("Sandbox", KeyCode::KeyS, |s, _| {
+        s.push_screen(SandboxScreen::default())
+    }),
+    ("Options", KeyCode::KeyO, |_, modal| {
+        *modal = ActiveModal::Settings
+    }),
+    ("About", KeyCode::KeyA, |_, modal| {
+        *modal = ActiveModal::About
+    }),
+];
+
 pub struct TitleScreen {
     modal: ActiveModal,
 }
@@ -109,19 +125,12 @@ impl Screen for TitleScreen {
             Anchor::Center,
         );
 
-        let buttons: [(_, fn(&mut App, &mut _)); _] = [
-            ("Campaign", |s, _| s.push_screen(CampaignScreen::default())),
-            ("Sandbox", |s, _| s.push_screen(SandboxScreen::default())),
-            ("Options", |_, modal| *modal = ActiveModal::Settings),
-            ("About", |_, modal| *modal = ActiveModal::About),
-        ];
-
         root.nest(
             ctx,
             ColumnLayout::new(padding).justify(Justify::Center),
             |ctx, layout| {
                 Spacer::new_y(60.0 * ctx.scale_factor).layout(ctx, layout);
-                for (name, on_click) in buttons {
+                for (name, keycode, on_click) in BUTTONS {
                     let key = memory_key!(name);
                     let button = Text::new(UNDEAD_FONT, name)
                         .scale(Vector2::repeat(4.0))
@@ -129,8 +138,7 @@ impl Screen for TitleScreen {
                         .button(key)
                         .effects(ButtonEffects::Color | ButtonEffects::Arrows);
 
-                    button
-                        .is_clicked(ctx)
+                    (button.is_clicked(ctx) || ctx.input.key_pressed(keycode))
                         .then(|| on_click(state, &mut self.modal));
                     button.layout(ctx, layout);
                     Spacer::new_y(5.0 * ctx.scale_factor - padding).layout(ctx, layout);
