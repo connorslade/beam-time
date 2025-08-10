@@ -1,5 +1,7 @@
-use std::path::PathBuf;
+use std::{cmp::Reverse, iter, mem, path::PathBuf};
 
+use anyhow::Result;
+use beam_logic::level::Level;
 use engine::{
     drawable::{Anchor, dummy::DummyDrawable, spacer::Spacer, sprite::Sprite, text::Text},
     exports::{nalgebra::Vector2, winit::event::MouseButton},
@@ -10,15 +12,23 @@ use engine::{
     },
     memory_key,
 };
+use log::error;
+use slug::slugify;
 use thousands::Separable;
+use uuid::Uuid;
 
 use crate::{
     app::App,
     assets::{DUPLICATE, EDIT, TRASH, UNDEAD_FONT},
     consts::layer,
-    game::board::{BoardMeta, LevelStats, unloaded::UnloadedBoard},
+    game::board::{Board, BoardMeta, LevelMeta, LevelStats, unloaded::UnloadedBoard},
     screens::game::{ActiveModal, GameScreen},
     ui::{
+        board_operations::{
+            BoardType,
+            create::{self, create_modal},
+            delete::{self, delete_modal},
+        },
         components::{
             button::{ButtonEffects, ButtonExt},
             horizontal_rule::Rule,
@@ -29,11 +39,19 @@ use crate::{
 };
 
 impl GameScreen {
-    pub(super) fn solutions_modal(&mut self, _state: &mut App, ctx: &mut GraphicsContext) {
-        let (Some(level), ActiveModal::Solutions) = (self.board.transient.level, &self.modal)
-        else {
+    pub(super) fn solutions_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
+        let Some(level) = self.board.transient.level else {
             return;
         };
+
+        self.solutions_rename_modal(ctx);
+        self.solutions_delete_modal(state, ctx);
+        let ActiveModal::Solutions = &self.modal else {
+            return;
+        };
+
+        // todo: maybe don't sort every frame? just a thought
+        self.solutions.sort_by_key(|x| Reverse(x.meta.last_played));
 
         let (margin, padding) = spacing(ctx);
         let modal = Modal::new(modal_size(ctx))
@@ -56,16 +74,44 @@ impl GameScreen {
                     DummyDrawable::new().layout(ctx, layout);
 
                     Rule::horizontal(layout.available().x).layout(ctx, layout);
-                    solution(ctx, layout, &self.save_file, &self.board.meta);
+                    self.solution(state, ctx, layout, 0);
                     Rule::horizontal(layout.available().x).layout(ctx, layout);
-                    for UnloadedBoard { path, meta } in &self.solutions {
-                        solution(ctx, layout, path, meta);
+                    for i in 0..self.solutions.len() {
+                        self.solution(state, ctx, layout, i + 1);
                         Rule::horizontal(layout.available().x).layout(ctx, layout);
                     }
 
                     Text::new(UNDEAD_FONT, "+ New Solution +")
                         .scale(Vector2::repeat(2.0))
                         .button(memory_key!())
+                        .on_click(ctx, || {
+                            // make a function for this
+                            let board = Board {
+                                meta: BoardMeta {
+                                    name: format!("New Solution {}", self.solutions.len() + 2),
+                                    level: Some(LevelMeta {
+                                        id: level.id,
+                                        solved: None,
+                                    }),
+                                    size: level.size,
+                                    ..Default::default()
+                                },
+                                tiles: level.tiles.clone(),
+                                ..Default::default()
+                            };
+                            let meta = board.meta.clone();
+
+                            let id = Uuid::new_v4();
+                            let path = state
+                                .data_dir
+                                .join("campaign")
+                                .join(format!("{}_{id}.bin", slugify(&level.name)));
+                            if let Err(err) = board.save_exact(&path) {
+                                error!("Failed to create new solution: {err}");
+                            } else {
+                                self.solutions.push(UnloadedBoard { path, meta });
+                            }
+                        })
                         .layout(ctx, layout);
 
                     let (back, _) = modal_buttons(ctx, layout, size.x, ("Back", ""));
@@ -77,52 +123,170 @@ impl GameScreen {
                 });
         });
     }
-}
 
-fn solution(
-    ctx: &mut GraphicsContext,
-    layout: &mut ColumnLayout,
-    path: &PathBuf,
-    meta: &BoardMeta,
-) {
-    let (_, padding) = spacing(ctx);
-    ColumnLayout::new(padding).show(ctx, layout, |ctx, layout| {
-        RowLayout::new(0.0)
-            .justify(Justify::Center)
-            .sized(Vector2::new(layout.available().x, 0.0))
-            .show(ctx, layout, |ctx, layout| {
-                Text::new(UNDEAD_FONT, &format!("{} (Current)", meta.name))
-                    .scale(Vector2::repeat(3.0))
-                    .button(memory_key!(path))
-                    .effects(ButtonEffects::empty())
-                    .layout(ctx, layout);
-
-                let row = RowLayout::new(padding).direction(Direction::MaxToMin);
-                row.show(ctx, layout, |ctx, layout| {
-                    let button = |asset| {
-                        Sprite::new(asset)
-                            .scale(Vector2::repeat(2.0))
-                            .button(memory_key!(path, asset))
-                    };
-
-                    button(TRASH).layout(ctx, layout);
-                    button(DUPLICATE).layout(ctx, layout);
-                    button(EDIT).layout(ctx, layout);
-
-                    Spacer::new_x(layout.available().x).layout(ctx, layout);
-                });
-            });
-
-        let level = meta.level.as_ref().unwrap();
-        let text = if let Some(LevelStats { cost, latency }) = level.solved {
-            let cost = cost.separate_with_commas();
-            format!("Costs ${cost} • Latency of {latency} ticks")
+    fn name(&mut self, idx: usize) -> &mut String {
+        if idx == 0 {
+            &mut self.board.meta.name
         } else {
-            "Unsolved".into()
+            &mut self.solutions[idx - 1].meta.name
+        }
+    }
+
+    fn solutions_rename_modal(&mut self, ctx: &mut GraphicsContext) {
+        let ActiveModal::SolutionEdit { index } = &self.modal else {
+            return;
         };
 
-        Text::new(UNDEAD_FONT, &text)
-            .scale(Vector2::repeat(2.0))
-            .layout(ctx, layout);
-    });
+        let name = self.name(*index);
+        match create_modal(ctx, BoardType::Solution, Some(name)) {
+            create::Result::Nothing => {}
+            create::Result::Cancled => self.modal = ActiveModal::Solutions,
+            create::Result::Finished(new) => {
+                *name = new;
+                self.modal = ActiveModal::Solutions;
+            }
+        }
+    }
+
+    fn solutions_delete_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
+        let ActiveModal::SolutionDelete { index } = &self.modal else {
+            return;
+        };
+
+        let index = *index;
+        let name = self.name(index);
+        match delete_modal(ctx, BoardType::Solution, name) {
+            delete::Result::Nothing => {}
+            delete::Result::Cancled => self.modal = ActiveModal::Solutions,
+            delete::Result::Deleted => {
+                self.modal = ActiveModal::Solutions;
+
+                if index == 0 {
+                    self.board.transient.trash = true;
+                    state.pop_screen();
+                    // todo: auto load next solution if there is another
+                } else {
+                    let path = self.solutions.remove(index - 1).path;
+                    if let Err(err) = trash::delete(path) {
+                        error!("Failed to trash solution: {err}");
+                    }
+                }
+            }
+        }
+    }
+
+    fn solution(
+        &mut self,
+        state: &mut App,
+        ctx: &mut GraphicsContext,
+        layout: &mut ColumnLayout,
+        index: usize,
+    ) {
+        let (_, padding) = spacing(ctx);
+
+        let (path, meta) = if index == 0 {
+            (&self.save_file, &self.board.meta)
+        } else {
+            let solution = &self.solutions[index - 1];
+            (&solution.path, &solution.meta)
+        };
+
+        let mut new_board = None;
+        let mut load = None;
+        ColumnLayout::new(padding).show(ctx, layout, |ctx, layout| {
+            let level = meta.level.as_ref().unwrap();
+            let text = if let Some(LevelStats { cost, latency }) = level.solved {
+                let cost = cost.separate_with_commas();
+                format!("Costs ${cost} • Latency of {latency} ticks")
+            } else {
+                "Unsolved".into()
+            };
+
+            RowLayout::new(0.0)
+                .justify(Justify::Center)
+                .sized(Vector2::new(layout.available().x, 0.0))
+                .show(ctx, layout, |ctx, layout| {
+                    let current = if index == 0 { " (Current)" } else { "" };
+                    let title = Text::new(UNDEAD_FONT, format!("{}{current}", meta.name))
+                        .scale(Vector2::repeat(3.0));
+
+                    if index != 0 {
+                        title
+                            .button(memory_key!(path))
+                            .effects(ButtonEffects::empty())
+                            .on_click(ctx, || load = Some(index))
+                            .layout(ctx, layout);
+                    } else {
+                        title.layout(ctx, layout);
+                    }
+
+                    let row = RowLayout::new(padding).direction(Direction::MaxToMin);
+                    row.show(ctx, layout, |ctx, layout| {
+                        let button = |asset| {
+                            Sprite::new(asset)
+                                .scale(Vector2::repeat(2.0))
+                                .button(memory_key!(path, asset))
+                        };
+
+                        button(TRASH)
+                            .on_click(ctx, || {
+                                self.modal = ActiveModal::SolutionDelete { index };
+                            })
+                            .layout(ctx, layout);
+                        button(DUPLICATE)
+                            .on_click(ctx, || {
+                                let level = self.board.transient.level.unwrap();
+                                let path = path.to_path_buf();
+                                match duplicate_solution(path, level) {
+                                    Ok(board) => new_board = Some(board),
+                                    Err(err) => error!("Failed to duplicate solution: {err}"),
+                                }
+                            })
+                            .layout(ctx, layout);
+                        button(EDIT)
+                            .on_click(ctx, || self.modal = ActiveModal::SolutionEdit { index })
+                            .layout(ctx, layout);
+
+                        Spacer::new_x(layout.available().x).layout(ctx, layout);
+                    });
+                });
+
+            Text::new(UNDEAD_FONT, &text)
+                .scale(Vector2::repeat(2.0))
+                .layout(ctx, layout);
+        });
+
+        if let Some(board) = new_board {
+            self.solutions.push(board);
+        }
+
+        if let Some(index) = load {
+            let solution = self.solutions.remove(index - 1);
+            state.pop_screen();
+
+            state.push_screen(
+                GameScreen::load(solution.path)
+                    .with_solutions(mem::take(&mut self.solutions).into_iter())
+                    .with_solutions(iter::once(UnloadedBoard {
+                        path: self.save_file.clone(),
+                        meta: self.board.meta.clone(),
+                    })),
+            );
+        }
+    }
+}
+
+fn duplicate_solution(solution: PathBuf, level: &Level) -> Result<UnloadedBoard> {
+    let mut board = Board::load(&solution)?;
+    board.meta.playtime = 0;
+    board.meta.name += " copy";
+
+    let id = Uuid::new_v4();
+    let parent = solution.parent().unwrap();
+    let path = parent.join(format!("{}_{id}.bin", slugify(&level.name)));
+
+    let meta = board.meta.clone();
+    board.save_exact(&path)?;
+
+    Ok(UnloadedBoard { path, meta })
 }

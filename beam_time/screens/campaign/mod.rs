@@ -222,7 +222,8 @@ impl CampaignScreen {
             .and_then(|x| x.iter().max_by_key(|x| x.meta.last_played));
 
         if let Some(UnloadedBoard { path, .. }) = latest {
-            state.push_screen(GameScreen::load(path).with_solutions(solutions.unwrap()));
+            state
+                .push_screen(GameScreen::load(path).with_solutions(solutions.unwrap().into_iter()));
         } else {
             let board = Board {
                 meta: BoardMeta {

@@ -112,14 +112,15 @@ impl Board {
     pub fn save(mut self, path: &PathBuf) -> Result<()> {
         self.meta.playtime += self.transient.open_timestamp.elapsed().as_secs();
         self.meta.last_played = Utc::now();
-        self.meta.version = SAVE_VERSION;
 
         self.save_exact(path)?;
         Ok(())
     }
 
     /// Saves the board without editing the playtime or last_played timestamp.
-    pub fn save_exact(self, path: &PathBuf) -> Result<()> {
+    pub fn save_exact(mut self, path: &PathBuf) -> Result<()> {
+        self.meta.version = SAVE_VERSION;
+
         let start = Instant::now();
         info!("Saving board to {path:?}");
         if let Some(parent) = path.parent() {

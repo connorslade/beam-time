@@ -61,7 +61,10 @@ enum ActiveModal {
     None,
     Paused,
     NoteEdit { index: usize, old: bool },
+
     Solutions,
+    SolutionEdit { index: usize },
+    SolutionDelete { index: usize },
 }
 
 impl Screen for GameScreen {
@@ -245,9 +248,9 @@ impl GameScreen {
         GameScreen::new(Board::load(&save_file).unwrap_or_default(), save_file)
     }
 
-    pub fn with_solutions(mut self, solutions: Vec<UnloadedBoard>) -> Self {
+    pub fn with_solutions(mut self, solutions: impl Iterator<Item = UnloadedBoard>) -> Self {
         self.solutions
-            .extend(solutions.into_iter().filter(|x| x.path != self.save_file));
+            .extend(solutions.filter(|x| x.path != self.save_file));
         self
     }
 

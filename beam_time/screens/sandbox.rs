@@ -1,4 +1,4 @@
-use std::{cmp::Reverse, path::PathBuf};
+use std::{cmp::Reverse, fs, path::PathBuf};
 
 use anyhow::{Context, Result};
 use chrono::Utc;
@@ -10,10 +10,7 @@ use engine::{
         sprite::Sprite,
         text::Text,
     },
-    exports::{
-        nalgebra::Vector2,
-        winit::{event::MouseButton, keyboard::KeyCode},
-    },
+    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::GraphicsContext,
     layout::{
         Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
@@ -27,26 +24,26 @@ use slug::slugify;
 use crate::{
     App,
     assets::{ALAGARD_FONT, DUPLICATE, EDIT, TRASH, UNDEAD_FONT},
-    consts::{WATERFALL, color, layer},
+    consts::{WATERFALL, color},
     game::board::{
         Board,
         unloaded::{UnloadedBoard, load_level_dir},
     },
     screens::game::GameScreen,
     ui::{
-        components::{
-            button::{ButtonEffects, ButtonExt},
-            modal::{Modal, modal_buttons},
+        board_operations::{
+            BoardType,
+            create::{self, create_modal},
+            delete::{self, delete_modal},
         },
-        misc::{body, modal_size, spacing, title_layout},
+        components::button::{ButtonEffects, ButtonExt},
+        misc::{spacing, title_layout},
         waterfall::Waterfall,
     },
     util::time::{human_duration, human_duration_minimal},
 };
 
 use super::Screen;
-
-mod create_modal;
 
 #[derive(Default)]
 pub struct SandboxScreen {
@@ -206,10 +203,57 @@ impl SandboxScreen {
     }
 }
 
+impl SandboxScreen {
+    fn modals(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
+        match self.modal {
+            ActiveModal::None => {}
+            ActiveModal::Delete(board) => {
+                let board = &self.worlds[board];
+                match delete_modal(ctx, BoardType::Sandbox, &board.meta.name) {
+                    delete::Result::Nothing => {}
+                    delete::Result::Cancled => self.modal = ActiveModal::None,
+                    delete::Result::Deleted => {
+                        self.modal = ActiveModal::None;
+                        if let Err(err) = trash::delete(&board.path) {
+                            error!("Failed to delete sandbox: {err}");
+                        }
+                        self.load_worlds();
+                    }
+                }
+            }
+            ActiveModal::Create => match create_modal(ctx, BoardType::Sandbox, None) {
+                create::Result::Nothing => {}
+                create::Result::Cancled => self.modal = ActiveModal::None,
+                create::Result::Finished(name) => {
+                    self.modal = ActiveModal::None;
+                    let path = self.world_dir.join(slugify(&name)).with_extension("bin");
+                    let board = Board::new_sandbox(name);
+                    let screen = GameScreen::new(board, path);
+                    state.push_screen(screen);
+                }
+            },
+            ActiveModal::Edit(board) => {
+                let board = &self.worlds[board];
+                match create_modal(ctx, BoardType::Sandbox, Some(&board.meta.name)) {
+                    create::Result::Nothing => {}
+                    create::Result::Cancled => self.modal = ActiveModal::None,
+                    create::Result::Finished(name) => {
+                        self.modal = ActiveModal::None;
+                        if let Err(err) = rename_board(&board.path, name) {
+                            error!("Error renaming sandbox: {err}");
+                        }
+                        self.load_worlds();
+                    }
+                }
+            }
+        }
+    }
+}
+
 fn duplicate_board(world: &PathBuf) -> Result<()> {
     let mut board = Board::load(world)?;
     board.meta.playtime = 0;
-    board.meta.name = format!("{} copy", board.meta.name);
+    board.meta.name += " copy";
 
     let world_dir = world.parent().context("No parent")?;
     let path = world_dir.join(format!("{}.ron", slugify(&board.meta.name)));
@@ -217,57 +261,14 @@ fn duplicate_board(world: &PathBuf) -> Result<()> {
     Ok(())
 }
 
-impl SandboxScreen {
-    fn modals(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        match self.modal {
-            ActiveModal::None => {}
-            ActiveModal::Delete(board) => self.delete_modal(state, ctx, board),
-            ActiveModal::Create => self.create_modal(state, ctx, None),
-            ActiveModal::Edit(board) => self.create_modal(state, ctx, Some(board)),
-        }
-    }
+fn rename_board(world: &PathBuf, name: String) -> Result<()> {
+    let mut board = Board::load(world)?;
+    board.meta.name = name;
 
-    fn delete_modal(&mut self, _state: &mut App, ctx: &mut GraphicsContext, board: usize) {
-        let mut exit = ctx.input.consume_key_pressed(KeyCode::Escape);
+    let world_dir = world.parent().context("No parent")?;
+    let path = world_dir.join(format!("{}.ron", slugify(&board.meta.name)));
+    board.save_exact(&path)?;
 
-        let (margin, padding) = spacing(ctx);
-        let modal = Modal::new(modal_size(ctx))
-            .position(ctx.center(), Anchor::Center)
-            .margin(margin)
-            .layer(layer::OVERLAY);
-
-        let size = modal.inner_size();
-        modal.draw(ctx, |ctx, root| {
-            let body = body(size.x);
-
-            root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
-                body("Deletion Confirmation")
-                    .scale(Vector2::repeat(4.0))
-                    .layout(ctx, layout);
-                Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
-
-                let world = &self.worlds[board];
-                let text = format!(
-                    "Are you sure you want to delete the sandbox world '{}'?",
-                    world.meta.name
-                );
-                body(&text).layout(ctx, layout);
-                body("If so, it will be moved to your system trash.").layout(ctx, layout);
-
-                let click = ctx.input.mouse_pressed(MouseButton::Left);
-                let (back, delete) = modal_buttons(ctx, layout, size.x, ("Back", "Delete"));
-                exit |= back && click;
-
-                if delete && click {
-                    self.modal = ActiveModal::None;
-                    if let Err(err) = trash::delete(&world.path) {
-                        error!("Failed to delete world: {err}");
-                    }
-                    self.load_worlds();
-                }
-            });
-        });
-
-        exit.then(|| self.modal = ActiveModal::None);
-    }
+    fs::remove_file(world)?;
+    Ok(())
 }
