@@ -103,8 +103,14 @@ impl Screen for CampaignScreen {
             self.layout = TreeLayout::generate(&self.tree, ctx);
         }
 
+        let center = ctx.center();
         let spacing = 64.0 * ctx.scale_factor;
-        let origin = Vector2::new(ctx.center().x, spacing);
+        let height = self.layout.rows[0][0].height;
+        let origin = Vector2::new(
+            center.x,
+            (center.y - (height as f32 * spacing) / 2.0).max(spacing),
+        );
+
         for (i, row) in self.layout.rows.iter().enumerate() {
             let offset = origin + Vector2::y() * i as f32 * spacing;
 
@@ -118,7 +124,7 @@ impl Screen for CampaignScreen {
                 let center = offset + Vector2::x() * item.offset();
                 let text = item.text.clone();
                 let text = text
-                    .position(self.pancam.pan + center, Anchor::CenterLeft)
+                    .position(self.pancam.pan + center, Anchor::Center)
                     .z_index(1)
                     .color([Rgb::repeat(0.95), Rgb::repeat(1.0)][available as usize])
                     .default_shadow();
