@@ -2,6 +2,7 @@ pub mod button;
 pub mod histogram;
 pub mod horizontal_rule;
 pub mod key;
+pub mod manual_button;
 pub mod modal;
 pub mod slider;
 pub mod text_input;

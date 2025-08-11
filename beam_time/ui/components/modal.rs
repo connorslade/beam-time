@@ -9,7 +9,7 @@ use engine::{
     color::Rgb,
     drawable::{Anchor, Drawable},
     drawable::{shape::rectangle::Rectangle, spacer::Spacer, sprite::Sprite},
-    exports::{nalgebra::Vector2, winit::window::CursorIcon},
+    exports::nalgebra::Vector2,
     graphics_context::GraphicsContext,
     layout::{
         Direction as LayoutDirection, Layout, LayoutElement, LayoutMethods, bounds::Bounds2D,
@@ -18,7 +18,11 @@ use engine::{
     memory_key,
 };
 
-use crate::{assets::HISTOGRAM_MARKER, consts::color, ui::misc::body};
+use crate::{
+    assets::HISTOGRAM_MARKER,
+    consts::color,
+    ui::{components::manual_button::ManualButton, misc::body},
+};
 
 pub struct Modal {
     size: Vector2<f32>,
@@ -158,15 +162,9 @@ pub fn modal_buttons(
             return false;
         }
 
-        let key = memory_key!(rotation);
-        let tracker = LayoutTracker::new(key);
-        let hover = tracker.hovered(ctx);
-        hover.then(|| ctx.window.cursor(CursorIcon::Pointer));
-
-        let t = ctx.memory.get_or_insert(key, 0.0);
-        *t += ctx.delta_time * if hover { 1.0 } else { -1.0 };
-        *t = t.clamp(0.0, 0.1);
-        let color = Rgb::repeat(1.0).lerp(color::ACCENT, *t / 0.1);
+        let tracker = LayoutTracker::new(memory_key!(rotation));
+        let button = ManualButton::new(memory_key!()).tracker(ctx, tracker);
+        let color = Rgb::repeat(1.0).lerp(color::ACCENT, button.hover_time(ctx));
 
         let direction = [LayoutDirection::MaxToMin, LayoutDirection::MinToMax][rotation as usize];
         layout.nest(
@@ -184,7 +182,7 @@ pub fn modal_buttons(
             },
         );
 
-        hover
+        button.is_hovered()
     };
 
     let mut hovered = (false, false);

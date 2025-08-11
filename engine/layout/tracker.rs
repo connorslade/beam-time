@@ -17,6 +17,10 @@ impl LayoutTracker {
         }
     }
 
+    pub fn key(&self) -> MemoryKey {
+        self.key
+    }
+
     pub fn bounds(&self, ctx: &GraphicsContext) -> Option<Bounds2D> {
         ctx.memory.get::<Bounds2D>(self.key).copied()
     }
