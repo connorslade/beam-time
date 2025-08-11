@@ -75,7 +75,7 @@ impl ManualButton {
         state.hover_time / 0.1
     }
 
-    pub fn button_pressed(&self, ctx: &mut GraphicsContext) -> bool {
+    pub fn pressed(&self, ctx: &mut GraphicsContext) -> bool {
         self._tick(ctx);
         self.hover && ctx.input.mouse_pressed(MouseButton::Left)
     }

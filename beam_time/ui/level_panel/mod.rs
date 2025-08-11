@@ -9,7 +9,10 @@ use crate::{
     assets::{COLLAPSE, UNDEAD_FONT},
     consts::layer,
     game::board::Board,
-    ui::{components::button::ButtonExt, misc::spacing},
+    ui::{
+        components::button::{ButtonEffects, ButtonExt},
+        misc::spacing,
+    },
 };
 use beam_logic::{
     level::Level,
@@ -121,6 +124,7 @@ impl LevelPanel {
                             .scale(Vector2::repeat(3.0))
                             .rotate(self.collapsed as u8 as f32 * PI, Anchor::Center)
                             .button(memory_key!())
+                            .effects(ButtonEffects::empty())
                             .on_click(ctx, || self.collapsed ^= true)
                             .layout(ctx, layout);
                         Spacer::new_x(layout.available().x).layout(ctx, layout);

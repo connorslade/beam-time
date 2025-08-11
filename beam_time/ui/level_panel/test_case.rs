@@ -5,7 +5,7 @@ use crate::{
         BIG_RIGHT_ARROW, HISTOGRAM_MARKER, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR,
         TILE_EMITTER_DOWN, UNDEAD_FONT,
     },
-    ui::{level_panel::horizontal_rule, misc::tile_label},
+    ui::{components::manual_button::ManualButton, level_panel::horizontal_rule, misc::tile_label},
 };
 use beam_logic::{
     level::{ElementLocation, Level, LevelIo as Io, case::CasePreview},
@@ -14,7 +14,7 @@ use beam_logic::{
 use engine::{
     color::Rgb,
     drawable::{dummy::DummyDrawable, spacer::Spacer, sprite::Sprite, text::Text},
-    exports::{nalgebra::Vector2, winit::event::MouseButton},
+    exports::nalgebra::Vector2,
     graphics_context::GraphicsContext,
     layout::{
         Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
@@ -68,15 +68,15 @@ impl LevelPanel {
                     |ctx, layout| {
                         let mut button =
                             |ctx: &mut _, layout: &mut RowLayout, sprite, direction: bool| {
-                                let tracker = LayoutTracker::new(memory_key!(direction));
-                                let hovered = tracker.hovered(ctx);
-                                let clicking = ctx.input.mouse_pressed(MouseButton::Left);
+                                let key = memory_key!(direction);
+                                let tracker = LayoutTracker::new(key);
+                                let button = ManualButton::new(key).tracker(ctx, tracker);
 
                                 let disabled = (!direction && self.case == 0)
                                     || (direction && self.case + 1 == level.tests.visible_count())
                                     || is_test;
 
-                                let inc = (hovered && !disabled && clicking) as usize;
+                                let inc = (!disabled && button.pressed(ctx)) as usize;
                                 if direction {
                                     self.case += inc;
                                 } else {
@@ -84,7 +84,7 @@ impl LevelPanel {
                                 }
 
                                 let color = [0.25, 0.9, 1.0].map(Rgb::repeat)
-                                    [(1 + !hovered as usize) * !disabled as usize];
+                                    [(1 + !button.is_hovered() as usize) * !disabled as usize];
 
                                 Sprite::new(sprite)
                                     .scale(scale)

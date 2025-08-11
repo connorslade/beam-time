@@ -1,10 +1,14 @@
 use std::time::Duration;
 
 use engine::{
+    color::Rgb,
     drawable::{Anchor, spacer::Spacer, sprite::Sprite},
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::GraphicsContext,
-    layout::{Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout, row::RowLayout},
+    layout::{
+        Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout, row::RowLayout,
+        tracker::LayoutTracker,
+    },
     memory_key,
 };
 
@@ -15,9 +19,9 @@ use crate::{
     screens::game::ActiveModal,
     ui::{
         components::{
-            button::{ButtonEffects, ButtonExt},
             horizontal_rule::Rule,
             key::Key,
+            manual_button::ManualButton,
             modal::{Modal, modal_buttons},
             slider::Slider,
         },
@@ -68,57 +72,40 @@ impl GameScreen {
                             body(&playtime).layout(ctx, layout);
                             Spacer::new_y(padding / 2.0).layout(ctx, layout);
 
-                            if self.board.transient.level.is_some() {
-                                layout.nest(
-                                    ctx,
-                                    RowLayout::new(padding).justify(Justify::Center),
-                                    |ctx, layout| {
-                                        Sprite::new(EDIT)
-                                            .scale(Vector2::repeat(2.0))
-                                            .layout(ctx, layout);
-                                        body(&format!("Solutions ({})", self.solutions.len() + 1))
-                                            .button(memory_key!())
-                                            .effects(ButtonEffects::Color)
-                                            .on_click(ctx, || self.modal = ActiveModal::Solutions)
-                                            .layout(ctx, layout);
-                                    },
-                                );
+                            let mut icon_button = |icon, text| {
+                                let key = memory_key!(icon);
+                                let tracker = LayoutTracker::new(key);
+                                let button = ManualButton::new(key).tracker(ctx, tracker);
+                                let color =
+                                    Rgb::repeat(1.0).lerp(color::ACCENT, button.hover_time(ctx));
 
-                                layout.nest(
-                                    ctx,
-                                    RowLayout::new(padding).justify(Justify::Center),
-                                    |ctx, layout| {
-                                        Sprite::new(RESET)
+                                RowLayout::new(padding)
+                                    .justify(Justify::Center)
+                                    .tracked(tracker)
+                                    .show(ctx, layout, |ctx, layout| {
+                                        Sprite::new(icon)
                                             .scale(Vector2::repeat(2.0))
+                                            .color(color)
                                             .layout(ctx, layout);
-                                        body("Reset")
-                                            .button(memory_key!())
-                                            .effects(ButtonEffects::Color)
-                                            .on_click(ctx, || {
-                                                self.beam.get().beam = None;
-                                                self.board.reset();
-                                                self.modal = ActiveModal::None;
-                                            })
-                                            .layout(ctx, layout);
-                                    },
-                                );
+                                        body(text).color(color).layout(ctx, layout);
+                                    });
+
+                                button.pressed(ctx)
+                            };
+
+                            if self.board.transient.level.is_some() {
+                                let solutions_text =
+                                    format!("Solutions ({})", self.solutions.len() + 1);
+                                icon_button(EDIT, &solutions_text)
+                                    .then(|| self.modal = ActiveModal::Solutions);
+
+                                icon_button(RESET, "Reset").then(|| {
+                                    self.beam.get().beam = None;
+                                    self.board.reset();
+                                    self.modal = ActiveModal::None;
+                                });
                             } else {
-                                layout.nest(
-                                    ctx,
-                                    RowLayout::new(padding).justify(Justify::Center),
-                                    |ctx, layout| {
-                                        Sprite::new(TRASH)
-                                            .scale(Vector2::repeat(2.0))
-                                            .color(color::ERROR)
-                                            .layout(ctx, layout);
-                                        body("Delete World")
-                                            .color(color::ERROR)
-                                            .button(memory_key!())
-                                            .effects(ButtonEffects::Color)
-                                            .on_click(ctx, || trash = true)
-                                            .layout(ctx, layout);
-                                    },
-                                );
+                                icon_button(TRASH, "Delete World").then(|| trash = true);
                             }
 
                             Spacer::new_y(padding / 2.0).layout(ctx, layout);

@@ -36,6 +36,7 @@ use crate::{
         pancam::Pancam,
     },
     ui::{
+        components::manual_button::ManualButton,
         misc::{spacing, title_layout},
         pixel_line::PixelLine,
         tutorial::Tutorial,
@@ -122,7 +123,7 @@ impl Screen for CampaignScreen {
         for (i, row) in self.layout.rows.iter().enumerate() {
             let offset = origin + Vector2::y() * i as f32 * spacing;
 
-            for item in row {
+            for (j, item) in row.iter().enumerate() {
                 let available = self.is_available(item.id) || state.config.debug;
                 let worlds = self.worlds.get(&item.id);
                 let solved = worlds
@@ -136,6 +137,10 @@ impl Screen for CampaignScreen {
                     .z_index(1)
                     .color([Rgb::repeat(0.8), Rgb::repeat(1.0)][available as usize])
                     .default_shadow();
+                let hover = text.is_hovered(ctx);
+                ManualButton::new(memory_key!(i, j))
+                    .hovered(hover && available)
+                    .tick(ctx);
 
                 if solved {
                     let size = text.size(ctx);
@@ -147,7 +152,7 @@ impl Screen for CampaignScreen {
                         .draw(ctx);
                 }
 
-                if text.is_hovered(ctx) {
+                if hover {
                     ctx.window
                         .cursor([CursorIcon::NotAllowed, CursorIcon::Pointer][available as usize]);
 
