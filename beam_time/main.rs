@@ -45,7 +45,7 @@ fn main() -> Result<()> {
                 Box::new(DebugOverlay::default()),
                 Box::new(TitleScreen::default()),
             ]);
-            screens.top().on_init(&mut app);
+            screens.top().unwrap().on_init(&mut app);
 
             Box::new(move |ctx| {
                 app.on_tick(ctx);

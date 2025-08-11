@@ -57,15 +57,17 @@ impl Screens {
         }
     }
 
-    pub fn top(&mut self) -> &mut Box<dyn Screen> {
-        self.inner.last_mut().unwrap()
+    pub fn top(&mut self) -> Option<&mut Box<dyn Screen>> {
+        self.inner.last_mut()
     }
 
     pub fn render(&mut self, ctx: &mut GraphicsContext, state: &mut App) {
         mem::take(&mut self.new_screen).then(|| ctx.input.cancel_clicks());
 
         self.inner.iter_mut().for_each(|x| x.pre_render(state, ctx));
-        self.top().render(state, ctx);
+        if let Some(top) = self.top() {
+            top.render(state, ctx);
+        }
         self.inner
             .iter_mut()
             .for_each(|x| x.post_render(state, ctx));

@@ -29,6 +29,7 @@ pub struct Modal {
     layer: i16,
     sides: ModalSides,
     popup: bool,
+    colors: (Rgb<f32>, Rgb<f32>),
 }
 
 bitflags! {
@@ -51,6 +52,7 @@ impl Modal {
             margin: 0.0,
             sides: ModalSides::all(),
             popup: true,
+            colors: (color::MODAL, color::MODAL_BORDER),
         }
     }
 
@@ -76,6 +78,13 @@ impl Modal {
 
     pub fn popup(self, popup: bool) -> Self {
         Self { popup, ..self }
+    }
+
+    pub fn color(self, background: Rgb<f32>, border: Rgb<f32>) -> Self {
+        Self {
+            colors: (background, border),
+            ..self
+        }
     }
 
     pub fn inner_size(&self) -> Vector2<f32> {
@@ -206,8 +215,9 @@ pub fn modal_buttons(
 impl Modal {
     // it's like whatever
     fn background(&self, ctx: &mut GraphicsContext, pos: Vector2<f32>) {
+        let (background, border) = self.colors;
         Rectangle::new(self.size)
-            .color(color::MODAL)
+            .color(background)
             .position(pos, Anchor::TopLeft)
             .z_index(self.layer)
             .draw(ctx);
@@ -220,7 +230,7 @@ impl Modal {
 
         let mut border = |size, pos| {
             Rectangle::new(size)
-                .color(color::MODAL_BORDER)
+                .color(border)
                 .position(pos, Anchor::TopLeft)
                 .z_index(self.layer)
                 .draw(ctx)

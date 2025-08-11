@@ -38,6 +38,7 @@ use crate::{
     ui::{
         misc::{spacing, title_layout},
         pixel_line::PixelLine,
+        tutorial::Tutorial,
     },
 };
 
@@ -111,11 +112,18 @@ impl Screen for CampaignScreen {
             (center.y - (height as f32 * spacing) / 2.0).max(spacing),
         );
 
+        Tutorial::new(
+            "Start with the first level",
+            origin + self.pancam.pan
+                - Vector2::x() * (self.layout.rows[0][0].width / 2.0 + 4.0 * ctx.scale_factor),
+        )
+        .draw(ctx);
+
         for (i, row) in self.layout.rows.iter().enumerate() {
             let offset = origin + Vector2::y() * i as f32 * spacing;
 
             for item in row {
-                let available = self.is_available(item.id);
+                let available = self.is_available(item.id) || state.config.debug;
                 let worlds = self.worlds.get(&item.id);
                 let solved = worlds
                     .map(|x| x.iter().any(|x| x.meta.is_solved()))
@@ -126,7 +134,7 @@ impl Screen for CampaignScreen {
                 let text = text
                     .position(self.pancam.pan + center, Anchor::Center)
                     .z_index(1)
-                    .color([Rgb::repeat(0.95), Rgb::repeat(1.0)][available as usize])
+                    .color([Rgb::repeat(0.8), Rgb::repeat(1.0)][available as usize])
                     .default_shadow();
 
                 if solved {
@@ -139,20 +147,27 @@ impl Screen for CampaignScreen {
                         .draw(ctx);
                 }
 
-                if (available || state.config.debug) && text.is_hovered(ctx) {
-                    let size = text.size(ctx);
-                    let px = 2.0 * ctx.scale_factor;
-                    ctx.window.cursor(CursorIcon::Pointer);
-                    RectangleOutline::new(Vector2::new(size.x + px * 4.0, size.y + px * 4.0), 2.0)
+                if text.is_hovered(ctx) {
+                    ctx.window
+                        .cursor([CursorIcon::NotAllowed, CursorIcon::Pointer][available as usize]);
+
+                    if available {
+                        let size = text.size(ctx);
+                        let px = 2.0 * ctx.scale_factor;
+                        RectangleOutline::new(
+                            Vector2::new(size.x + px * 4.0, size.y + px * 4.0),
+                            2.0,
+                        )
                         .position(self.pancam.pan + center, Anchor::Center)
                         .z_index(2)
                         .draw(ctx);
 
-                    if ctx.input.mouse_pressed(MouseButton::Left) {
-                        // We can remove it bc we're going to be going to a new
-                        // screen and dropping this anyway
-                        let worlds = self.worlds.remove(&item.id);
-                        self.open_level(state, worlds, self.tree.get(item.id).unwrap());
+                        if ctx.input.mouse_pressed(MouseButton::Left) {
+                            // We can remove it bc we're going to be going to a new
+                            // screen and dropping this anyway
+                            let worlds = self.worlds.remove(&item.id);
+                            self.open_level(state, worlds, self.tree.get(item.id).unwrap());
+                        }
                     }
                 }
 

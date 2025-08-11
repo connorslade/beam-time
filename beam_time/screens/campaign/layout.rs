@@ -18,7 +18,7 @@ pub struct TreeItem {
     pub children: Vec<usize>,
 
     pub height: u32,
-    width: f32,
+    pub width: f32,
     total_width: f32,
     offset: f32,
     parent_offset: f32,
