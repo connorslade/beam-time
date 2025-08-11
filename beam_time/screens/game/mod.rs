@@ -116,7 +116,10 @@ impl Screen for GameScreen {
         let space_pressed = ctx.input.key_pressed(KeyCode::Space);
         let play_pressed = ctx.input.key_pressed(KeyCode::KeyF);
         let test_pressed = ctx.input.key_pressed(KeyCode::KeyT) && self.board.meta.level.is_some();
-        let mut stop_simulation = sim.beam.is_some() && (play_pressed || test_pressed);
+        // todo: clean this up
+        let mut stop_simulation = sim.beam.is_some()
+            && ((sim.runtime.running && play_pressed) || test_pressed)
+            || ctx.input.key_pressed(KeyCode::Backquote);
         sim.runtime.running &= !space_pressed;
         sim.runtime.running |= play_pressed || (test_pressed && sim.beam.is_none());
 

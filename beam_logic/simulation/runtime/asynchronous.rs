@@ -42,40 +42,43 @@ impl AsyncSimulationState {
             Condvar::new(),
         ));
 
-        thread::spawn(clone!([inner], move || {
-            let (mutex, cond) = &*inner;
+        thread::Builder::new()
+            .name("Simulation runtime".into())
+            .spawn(clone!([inner], move || {
+                let (mutex, cond) = &*inner;
 
-            loop {
-                let mut state = mutex.lock();
+                loop {
+                    let mut state = mutex.lock();
 
-                while !state.runtime.running && !state.kill {
-                    cond.wait(&mut state);
-                }
-
-                if state.kill {
-                    break;
-                }
-
-                let timestamp = Instant::now();
-                if let Some(beam) = &mut state.beam {
-                    beam.tick();
-
-                    let runtime = state.runtime;
-
-                    if !runtime.running {
-                        continue;
+                    while !state.runtime.running && !state.kill {
+                        cond.wait(&mut state);
                     }
 
-                    let elapsed = timestamp.elapsed();
-                    state.tick_length = elapsed;
-                    drop(state);
+                    if state.kill {
+                        break;
+                    }
 
-                    if elapsed < runtime.time_per_tick {
-                        thread::sleep(runtime.time_per_tick - elapsed);
+                    let timestamp = Instant::now();
+                    if let Some(beam) = &mut state.beam {
+                        beam.tick();
+
+                        let runtime = state.runtime;
+
+                        if !runtime.running {
+                            continue;
+                        }
+
+                        let elapsed = timestamp.elapsed();
+                        state.tick_length = elapsed;
+                        drop(state);
+
+                        if elapsed < runtime.time_per_tick {
+                            thread::sleep(runtime.time_per_tick - elapsed);
+                        }
                     }
                 }
-            }
-        }));
+            }))
+            .unwrap();
 
         Self { inner }
     }

@@ -129,8 +129,9 @@ impl Board {
                 }
 
                 // move this out of board render :sob: please
-                if sim.is_none() && hovered && !shift_down {
+                if hovered && !shift_down {
                     if ctx.input.mouse_pressed(MouseButton::Left) {
+                        *sim = None;
                         let old = tile;
                         match mem::take(&mut self.transient.holding) {
                             Holding::None if !empty && !permanent => {
@@ -178,6 +179,7 @@ impl Board {
 
                     if !permanent && ctx.input.mouse_down(MouseButton::Right) && !empty && !dynamic
                     {
+                        *sim = None;
                         self.tiles.remove(pos);
                         self.transient.history.track_one(pos, tile);
                     }
@@ -186,6 +188,7 @@ impl Board {
                     if holding.is_none() {
                         key_events!(ctx, {
                             KeyCode::KeyR => if !permanent {
+                                *sim = None;
                                 if ctx.input.key_down(KeyCode::ShiftLeft) {
                                     self.tiles.set(pos, tile.rotate_reverse());
                                 } else {
@@ -193,7 +196,7 @@ impl Board {
                                 }
                                 self.transient.history.track_one(pos, tile);
                             },
-                            KeyCode::KeyE => {
+                            KeyCode::KeyE => if sim.is_none() {
                                 self.tiles.set(pos, tile.activate());
                                 self.transient.history.track_one(pos, tile);
                             }

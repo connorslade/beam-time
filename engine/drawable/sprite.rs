@@ -152,8 +152,10 @@ impl Sprite {
             * Matrix3::new_translation(&rotation_offset);
         let transform = |point: Vector2<f32>| (transform * point.push(1.0)).xy();
 
-        // Apply to the bounds of the sprite
-        RECTANGLE_POINTS.map(|x| transform(x.component_mul(&size)))
+        // Apply to the bounds of the sprite. After all transformations sprite
+        // corners are rounded to the screen's pixel grid to avoid any edge
+        // pixels being cut off.
+        RECTANGLE_POINTS.map(|x| transform(x.component_mul(&size)).map(|c| c.round()))
     }
 }
 

@@ -162,8 +162,9 @@ pub fn modal_buttons(
             return false;
         }
 
-        let tracker = LayoutTracker::new(memory_key!(rotation));
-        let button = ManualButton::new(memory_key!()).tracker(ctx, tracker);
+        let key = memory_key!(rotation);
+        let tracker = LayoutTracker::new(key);
+        let button = ManualButton::new(key).tracker(ctx, tracker);
         let color = Rgb::repeat(1.0).lerp(color::ACCENT, button.hover_time(ctx));
 
         let direction = [LayoutDirection::MaxToMin, LayoutDirection::MinToMax][rotation as usize];

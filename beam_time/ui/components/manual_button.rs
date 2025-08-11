@@ -43,6 +43,7 @@ impl ManualButton {
         self
     }
 
+    // kinda jank but whatever
     fn _tick<'a>(&self, ctx: &'a mut GraphicsContext) -> &'a mut ButtonState {
         let state = ctx.memory.get_or_insert(self.key, ButtonState::default());
         if self.updated {
