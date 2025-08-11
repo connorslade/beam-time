@@ -47,7 +47,7 @@ pub mod layer {
 pub const WATERFALL: MemoryKey = memory_key!();
 pub const KEYBINDS: &[(&str, &str)] = &[
     ("T", "Runs test cases"),
-    ("P", "Starts simulation"),
+    ("F", "Starts/stops simulation"),
     ("R", "Rotates the held or hovered tile"),
     ("Q", "Copy hovered tile"),
     ("E", "Toggle the held or hovered emitter"),

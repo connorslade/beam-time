@@ -75,7 +75,7 @@ impl WindowManager {
         }
 
         self.cursor.set(Default::default());
-        self.close = mem::take(&mut self.close_next);
+        self.close |= mem::take(&mut self.close_next);
         self.size_changed = None;
         self.dpi_changed = None;
         self.focus_change = None;

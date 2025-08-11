@@ -4,9 +4,9 @@ Level(
     description: "
         A stack is a device that supports two operations a push and a pop. You can think of it like a stack of plates, pushing adds a new plate on top and popping takes the top plate off.
         
-        When the enable (ENBL) line is set high, execute the correct opertion depending on MODE (0 → pop, 1 → push).
+        When the enable (ENBL) line is set high, execute the correct opertion depending on MODE (0 for pop, 1 for push).
         
-        When pushing, take in the numeric value from the input and store it internally. When popping, remove the top data and send it to the output.",
+        When pushing, take in the numeric value from the input and store it internally and when popping, remove the top data. The top (most recently added) value should be sent to the output and no more than four values will every by on the stack at once.",
     parents: [ "fe48e117-1114-417a-b72b-d80c239797c9" ], // ← shift_register
 
     labels: {
@@ -58,6 +58,29 @@ Level(
         lasers: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ],
         detectors: [ 10, 11, 12, 13, 14, 15, 16, 17 ],
 
-        cases: [ ]
+        hidden: [ 2, 4, 6, 8, 10, 12, 14, 16, 18, 20 ],
+        cases: [
+            Cycle( lasers: [ false, false, false, false, false, false, false, false, false, false ], detectors: [ [ false, false, false, false, false, false, false, false ] ] ), // empty stack
+            Cycle( lasers: [ false, false, true,  false, true,  false, true,  true,  true,  true  ], detectors: [ [ false, false, true,  false, true,  false, true,  true  ] ] ), // [ false, false, true,  false, true,  false, true,  true  ]
+            /* HIDDEN */ Cycle( lasers: [ false, false, true,  false, true,  false, true,  true,  true,  false  ], detectors: [ ] ),
+            Cycle( lasers: [ false, true,  false, false, true,  true,  true,  true,  true,  true  ], detectors: [ [ false, true,  false, false, true,  true,  true,  true  ] ] ), // [ false, false, true,  false, true,  false, true,  true  ], [ false, true,  false, false, true,  true,  true,  true  ]
+            /* HIDDEN */ Cycle( lasers: [ false, true,  false, false, true,  true,  true,  true,  true,  false ], detectors: [ ] ),
+            Cycle( lasers: [ true,  true,  false, true,  false, false, true,  true,  true,  true  ], detectors: [ [ true,  true,  false, true,  false, false, true,  true  ] ] ), // [ false, false, true,  false, true,  false, true,  true  ], [ false, true,  false, false, true,  true,  true,  true  ], [ true,  true,  false, true,  false, false, true,  true  ]
+            /* HIDDEN */ Cycle( lasers: [ true,  true,  false, true,  false, false, true,  true,  true,  false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, false, false, false, false, false, false, false, true  ], detectors: [ [ false, true,  false, false, true,  true,  true,  true  ] ] ), // [ false, false, true,  false, true,  false, true,  true  ], [ false, true,  false, false, true,  true,  true,  true  ]
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, false, false, false, false, false, false, false ], detectors: [ ] ),
+            Cycle( lasers: [ true,  true,  true,  false, false, false, false, true,  true,  true  ], detectors: [ [ true,  true,  true,  false, false, false, false, true  ] ] ), // [ false, false, true,  false, true,  false, true,  true  ], [ false, true,  false, false, true,  true,  true,  true  ], [ true,  true,  true,  false, false, false, false, true  ]
+            /* HIDDEN */ Cycle( lasers: [ true,  true,  true,  false, false, false, false, true,  true,  false ], detectors: [ ] ),
+            Cycle( lasers: [ true,  false, true,  true,  true,  false, true,  true,  true,  true  ], detectors: [ [ true,  false, true,  true,  true,  false, true,  true  ] ] ), // [ false, false, true,  false, true,  false, true,  true  ], [ false, true,  false, false, true,  true,  true,  true  ], [ true,  true,  true,  false, false, false, false, true  ], [ true,  false, true,  true,  true,  false, true,  true  ]
+            /* HIDDEN */ Cycle( lasers: [ true,  false, true,  true,  true,  false, true,  true,  true,  false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, false, false, false, false, false, false, false, true  ], detectors: [ [ true,  true,  true,  false, false, false, false, true  ] ] ), // [ false, false, true,  false, true,  false, true,  true  ], [ false, true,  false, false, true,  true,  true,  true  ], [ true,  true,  true,  false, false, false, false, true  ]
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, false, false, false, false, false, false, false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, false, false, false, false, false, false, false, true  ], detectors: [ [ false, true,  false, false, true,  true,  true,  true  ] ] ), // [ false, false, true,  false, true,  false, true,  true  ], [ false, true,  false, false, true,  true,  true,  true  ]
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, false, false, false, false, false, false, false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, false, false, false, false, false, false, false, true  ], detectors: [ [ false, false, true,  false, true,  false, true,  true  ] ] ), // [ false, false, true,  false, true,  false, true,  true  ]
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, false, false, false, false, false, false, false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, false, false, false, false, false, false, false, true  ], detectors: [ [ false, false, false, false, false, false, false, false ] ] ), // empty stack
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, false, false, false, false, false, false, false], detectors: [ ] ),
+        ]
     )
 )
