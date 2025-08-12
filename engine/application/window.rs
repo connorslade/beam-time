@@ -125,13 +125,13 @@ impl WindowManager {
     }
 
     #[inline(always)]
-    pub fn resized(&self) -> bool {
-        self.size_changed.is_some()
+    pub fn resized(&self) -> Option<Vector2<f32>> {
+        self.size_changed.map(|x| x.map(|x| x as f32))
     }
 
     #[inline(always)]
-    pub fn dpi_changed(&self) -> bool {
-        self.dpi_changed.is_some()
+    pub fn dpi_changed(&self) -> Option<f32> {
+        self.dpi_changed
     }
 
     #[inline(always)]

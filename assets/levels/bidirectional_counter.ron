@@ -1,40 +1,66 @@
 Level(
     id: "9dcb218d-c18c-4a7a-8979-9572322f5460",
     name: "Bidirectional Counter",
-    description: "",
+    description: "
+        Build a 3-bit counter that counts up by one when INC is pulsed and counts down when DEC is pulsed.
+        
+        You will never need to to increment past 8 or decrement past 0 and INC and DEC will never both be active.",
     parents: [ "fc3b280e-6a80-41d2-84d1-c8fa55a3946f" ], // ← counter
 
     labels: {
-        Dynamic(0): "Inc",
-        Dynamic(1): "Dec",
+        Dynamic(0): "INC",
+        Dynamic(1): "DEC",
 
-        Dynamic(2): "8",
-        Dynamic(3): "4",
-        Dynamic(4): "2",
-        Dynamic(5): "1",
+        Dynamic(2): "4",
+        Dynamic(3): "2",
+        Dynamic(4): "1",
     },
     tiles: {
-        (1, 0): Emitter( rotation: Down, active: false, id: 0 ),
-        (2, 0): Emitter( rotation: Down, active: false, id: 1 ),
+        (1, 5): Emitter( rotation: Down, active: false, id: 0 ),
+        (2, 5): Emitter( rotation: Down, active: false, id: 1 ),
 
-        (1, -6): Detector( id: 2 ),
-        (2, -6): Detector( id: 3 ),
-        (3, -6): Detector( id: 4 ),
-        (4, -6): Detector( id: 5 )
+        (1, 0): Detector( id: 2 ),
+        (2, 0): Detector( id: 3 ),
+        (3, 0): Detector( id: 4 ),
     },
 
     tests: Tests(
         lasers: [ 0, 1 ],
-        detectors: [ 2, 3, 4, 5 ],
+        detectors: [ 2, 3, 4 ],
+        display: DisplayConfig(
+            descriptions: {
+                0: "Increment 0 ⇒ 1",
+                1: "Increment 1 ⇒ 2",
+                2: "Decrement 2 ⇒ 1",
+                3: "Increment 1 ⇒ 2",
+                4: "Increment 2 ⇒ 3",
+                5: "Increment 3 ⇒ 4",
+                6: "Increment 4 ⇒ 5",
+                7: "Decrement 5 ⇒ 4",
+                8: "Decrement 4 ⇒ 3",
+            }
+        ),
 
+        hidden: [ 1, 3, 5, 7, 9, 11, 13, 15, 17 ],
         cases: [
-            Cycle( lasers: [ false, false ], detectors: [ [ false, false, false, false ] ] ),
-            Cycle( lasers: [ true,  false ], detectors: [ [ false, false, false, true  ] ] ),
-            Cycle( lasers: [ false, false ], detectors: [ [ false, false, false, true  ] ] ),
-            Cycle( lasers: [ true,  false ], detectors: [ [ false, false, true,  false ] ] ),
-            Cycle( lasers: [ false, false ], detectors: [ [ false, false, true,  false ] ] ),
-            Cycle( lasers: [ false, true  ], detectors: [ [ false, false, false, true  ] ] ),
-            Cycle( lasers: [ false, false ], detectors: [ [ false, false, false, true  ] ] ),
+            Cycle( lasers: [ true,  false ], detectors: [ [ false, false, true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false ], detectors: [ ] ),
+            Cycle( lasers: [ true,  false ], detectors: [ [ false, true,  false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false ], detectors: [ ] ),
+            Cycle( lasers: [ false, true  ], detectors: [ [ false, false, true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false ], detectors: [ ] ),
+            Cycle( lasers: [ true, false  ], detectors: [ [ false, true,  false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false ], detectors: [ ] ),
+            Cycle( lasers: [ true,  false ], detectors: [ [ false, true,  true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false ], detectors: [ ] ),
+            Cycle( lasers: [ true,  false ], detectors: [ [ true,  false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false ], detectors: [ ] ),
+            Cycle( lasers: [ true,  false ], detectors: [ [ true,  false, true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false ], detectors: [ ] ),
+            Cycle( lasers: [ false, true  ], detectors: [ [ true,  false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false ], detectors: [ ] ),
+            Cycle( lasers: [ false, true  ], detectors: [ [ false, true,  true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false ], detectors: [ ] ),
         ]
     )
 )

@@ -1,18 +1,42 @@
 Level(
     id: "ea9291be-554b-451f-9699-b2f410c02af1",
     name: "Grey Encode",
-    description: "",
+    description: "
+        Devices like rotary encoders use a series of switches to represent position. With standard binary, going from 3 (011) to 4 (100) changes three bits. Since physical switches don't change instantly, this can cause erroneous intermediate readings.
+        
+        Gray code solves this. In Gray code, suscsesive values only differ by a single bit.
+        
+        To convert a binary number to Grey code, every bit should be XORed with the bit to its left (more significant).",
     parents: [ "45052dc5-0d3a-449d-b153-19a608ae52f1" ], // ← binary_decoder
 
+    labels: {
+        Dynamic(0): "128",
+        Dynamic(1): "64",
+        Dynamic(2): "32",
+        Dynamic(3): "16",
+        Dynamic(4): "8",
+        Dynamic(5): "4",
+        Dynamic(6): "2",
+        Dynamic(7): "1",
+
+        Dynamic(8): "8",
+        Dynamic(9): "7",
+        Dynamic(10): "6",
+        Dynamic(11): "5",
+        Dynamic(12): "4",
+        Dynamic(13): "3",
+        Dynamic(14): "2",
+        Dynamic(15): "1",
+    },
     tiles: {
-        (0, 9): Emitter( rotation: Down, active: true, id: 0 ),
-        (1, 9): Emitter( rotation: Down, active: true, id: 1 ),
-        (2, 9): Emitter( rotation: Down, active: true, id: 2 ),
-        (3, 9): Emitter( rotation: Down, active: true, id: 3 ),
-        (4, 9): Emitter( rotation: Down, active: true, id: 4 ),
-        (5, 9): Emitter( rotation: Down, active: true, id: 5 ),
-        (6, 9): Emitter( rotation: Down, active: true, id: 6 ),
-        (7, 9): Emitter( rotation: Down, active: true, id: 7 ),
+        (0, 5): Emitter( rotation: Down, active: true, id: 0 ),
+        (1, 5): Emitter( rotation: Down, active: true, id: 1 ),
+        (2, 5): Emitter( rotation: Down, active: true, id: 2 ),
+        (3, 5): Emitter( rotation: Down, active: true, id: 3 ),
+        (4, 5): Emitter( rotation: Down, active: true, id: 4 ),
+        (5, 5): Emitter( rotation: Down, active: true, id: 5 ),
+        (6, 5): Emitter( rotation: Down, active: true, id: 6 ),
+        (7, 5): Emitter( rotation: Down, active: true, id: 7 ),
 
         (0, 0): Detector( id: 8 ),
         (1, 0): Detector( id: 9 ),

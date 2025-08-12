@@ -1,22 +1,22 @@
 Level(
     id: "acacce88-9c84-4f5c-ad98-caa2d0c48593",
     name: "Large Multiplexer",
-    description: "",
+    description: "Build an 8-to-1 multiplexer. The 3-bit selector (S) chooses which data input (D0-D7) to pass to the output.",
     parents: [ "2f854277-df80-4ee8-b5ab-69f7d6587ff4" ], // ← bit_reverse
 
     labels: {
-        Dynamic(0): "000",
-        Dynamic(1): "001",
-        Dynamic(2): "010",
-        Dynamic(3): "011",
-        Dynamic(4): "100",
-        Dynamic(5): "101",
-        Dynamic(6): "110",
-        Dynamic(7): "111",
+        Dynamic(0): "D0",
+        Dynamic(1): "D1",
+        Dynamic(2): "D2",
+        Dynamic(3): "D3",
+        Dynamic(4): "D4",
+        Dynamic(5): "D5",
+        Dynamic(6): "D6",
+        Dynamic(7): "D7",
 
-        Dynamic(8): "A",
-        Dynamic(9): "B",
-        Dynamic(10): "C"
+        Dynamic(8): "S4",
+        Dynamic(9): "S2",
+        Dynamic(10): "S1"
     },
     tiles: {
         (1, 5): Emitter( rotation: Down, active: true, id: 0 ),
@@ -38,15 +38,27 @@ Level(
     tests: Tests(
         lasers: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
         detectors: [ 11 ],
-        display: DisplayConfig( emitter_breaks: [ 7 ] ),
+        display: DisplayConfig(
+            emitter_breaks: [ 7 ],
+            descriptions: {
+                0: "Pass D0 to the output",
+                1: "Pass D1 to the output",
+                2: "Pass D2 to the output",
+                3: "Pass D3 to the output",
+                4: "Pass D4 to the output",
+                5: "Pass D5 to the output",
+                6: "Pass D6 to the output",
+                7: "Pass D7 to the output"
+            }
+        ),
 
         cases: [
-            Cycle( lasers: [ false, true,  false, false, true,  false, false, true,  false, false, false ], detectors: [ [ true  ] ] ),
-            Cycle( lasers: [ true,  true,  false, false, false, true,  false, true,  false, false, true  ], detectors: [ [ false ] ] ),
-            Cycle( lasers: [ true,  true,  false, false, true,  true,  true,  false, false, true,  false ], detectors: [ [ true  ] ] ),
-            Cycle( lasers: [ true,  false, true,  true,  false, false, true,  false, false, true,  true  ], detectors: [ [ false ] ] ),
+            Cycle( lasers: [ false, true,  false, false, true,  false, false, true,  false, false, false ], detectors: [ [ false ] ] ),
+            Cycle( lasers: [ true,  true,  false, false, false, true,  false, true,  false, false, true  ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ true,  true,  false, false, true,  true,  true,  false, false, true,  false ], detectors: [ [ false ] ] ),
+            Cycle( lasers: [ true,  false, true,  true,  false, false, true,  false, false, true,  true  ], detectors: [ [ true  ] ] ),
             Cycle( lasers: [ true,  true,  true,  false, false, false, true,  true,  true,  false, false ], detectors: [ [ false ] ] ),
-            Cycle( lasers: [ true,  true,  true,  true,  true,  false, true,  true,  true,  false, true  ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ true,  true,  true,  true,  true,  false, true,  true,  true,  false, true  ], detectors: [ [ false ] ] ),
             Cycle( lasers: [ true,  false, false, true,  true,  true,  false, false, true,  true,  false ], detectors: [ [ false ] ] ),
             Cycle( lasers: [ true,  true,  false, true,  true,  true,  false, true,  true,  true,  true  ], detectors: [ [ true  ] ] ),
         ]

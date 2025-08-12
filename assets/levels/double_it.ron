@@ -1,7 +1,7 @@
 Level(
     id: "52108765-b8d2-47cf-a0c7-36b3b73cc644",
     name: "Double It",
-    description: "Double the numeric of the big-endian binary value.",
+    description: "Double the numeric value of the big-endian binary value.",
     parents: [ "ca887bfe-5c8c-425d-b414-265e6d8c909e" ], // ← full_adder
 
     size: (8, 5),

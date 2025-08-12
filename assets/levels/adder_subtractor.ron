@@ -1,8 +1,8 @@
 Level(
     id: "597b1d3d-0441-460f-870d-ed77749a07d7",
     name: "Adder Subtractor",
-    description: "a + b or a - b",
-    parents: [ "2052ed73-edaf-45b7-8f2f-43993d558ff4" ], // ← adder
+    description: "When the SUB is low, add the two 8-bit inputs (A + B), when SUB is high, subtract B from A (B - A).",
+    parents: [ "92488235-9149-4595-aee4-e591acb013e7" ], // ← twos_compliment
 
     labels: {
         Dynamic(0): "A128",
@@ -14,7 +14,7 @@ Level(
         Dynamic(6): "A2",
         Dynamic(7): "A1",
 
-        Dynamic(24): "Sub",
+        Dynamic(24): "SUB",
 
         Dynamic(8): "B128",
         Dynamic(9): "B64",
@@ -110,3 +110,20 @@ Level(
         ]
     )
 )
+
+// Test cases generated with the following code:
+// let mut rng = rand::rng();
+// for _ in 0..16 {
+//     let sub = rng.random::<bool>();
+//     let a = rng.random::<u8>();
+//     let b = rng.random::<u8>();
+
+//     let (l, s) = (a.max(b), a.min(b));
+//     if sub {
+//         println!("{l} - {s} = {}", l - s);
+//         println!("{l:0>8b}{s:0>8b}1 → {:0>8b}", l - s);
+//     } else {
+//         println!("{s} + {} = {l}", l - s);
+//         println!("{s:0>8b}{:0>8b}0 → {l:0>8b}", l - s);
+//     }
+// }

@@ -1,29 +1,48 @@
 Level(
     id: "f79d2928-aa91-44d8-ac3a-176e991b2c7a",
     name: "Conway's Game of Life",
-    description: "todo: description",
+    description: "
+        Conway's Game of Life is a simple cellular automaton made up of an infinite 2D grid of cells. Each cell is either live or dead and each on timestep every cell's state updated.
+
+        Your job is to implement the control logic of a cell given the cell's current state (LIVE) and the number if live neighbors it has (N).
+
+        • A live cell with <2 neighbours dies
+        • A live cell with 3-4 neighbours lives
+        • A live cell with >3 neighbours dies
+        • A dead cell with 3 neighbours becomes live",
     parents: [ "b59c1a75-8d7a-4c91-bdd4-6831e3b1f41a" ], // ← count_ones
 
     labels: {
-        Dynamic(0): "8",
-        Dynamic(1): "4",
-        Dynamic(2): "2",
-        Dynamic(3): "1",
-        Dynamic(5): "Live",
-        Dynamic(6): "Out"
+        Dynamic(0): "N8",
+        Dynamic(1): "N4",
+        Dynamic(2): "N2",
+        Dynamic(3): "N1",
+        Dynamic(4): "LIVE",
     },
     tiles: {
-        (0, 0): Emitter( rotation: Down, active: false, id: 0 ),
-        (1, 0): Emitter( rotation: Down, active: false, id: 1 ),
-        (2, 0): Emitter( rotation: Down, active: false, id: 2 ),
-        (3, 0): Emitter( rotation: Down, active: false, id: 3 ),
-        (5, 0): Emitter( rotation: Down, active: false, id: 5 ),
-        (7, 0): Detector( id: 6 )
+        (0, 5): Emitter( rotation: Down, active: false, id: 0 ),
+        (1, 5): Emitter( rotation: Down, active: false, id: 1 ),
+        (2, 5): Emitter( rotation: Down, active: false, id: 2 ),
+        (3, 5): Emitter( rotation: Down, active: false, id: 3 ),
+        (5, 5): Emitter( rotation: Down, active: false, id: 4 ),
+        (3, 0): Detector( id: 5 )
     },
 
     tests: Tests(
-        lasers: [ 1, 2, 3, 4, 5 ],
-        detectors: [ 6 ],
+        lasers: [ 0, 1, 2, 3, 4 ],
+        detectors: [ 5 ],
+        display: DisplayConfig(
+            descriptions: {
+                0: "Dead cell with 4 live neighbors stays dead.",
+                1: "Live cell with 2 live neighbors lives.",
+                2: "Dead cell with 1 live neighbor stays dead.",
+                3: "Live cell with 3 live neighbors lives.",
+                4: "Dead cell with 6 live neighbors dies.",
+                5: "Dead cell with 7 live neighbors stays dead.",
+                6: "Dead cell with 3 live neighbors beacomes live.",
+                7: "Live cell with no live neighbors dies.",
+            }
+        ),
 
         cases: [
             Cycle( lasers: [ false, true,  false, false, false ], detectors: [ [ false ] ] ),
@@ -32,6 +51,8 @@ Level(
             Cycle( lasers: [ false, false, true,  true,  true  ], detectors: [ [ true  ] ] ),
             Cycle( lasers: [ false, true,  true,  false, false ], detectors: [ [ false ] ] ),
             Cycle( lasers: [ false, true,  true,  true,  false ], detectors: [ [ false ] ] ),
+            Cycle( lasers: [ false, false, true,  true,  false ], detectors: [ [ true  ] ] ),
+            Cycle( lasers: [ false, false, false, false, true  ], detectors: [ [ false ] ] ),
         ]
     )
 )

@@ -52,6 +52,7 @@ pub static DEFAULT_LEVELS: Lazy<Vec<Level>> = Lazy::new(|| {
         "imply_gate.ron",
         "large_multiplexer.ron",
         "multiplier.ron",
+        "mux_demux.ron",
         "not_gate.ron",
         "one_tick_clock.ron",
         "or_gate.ron",

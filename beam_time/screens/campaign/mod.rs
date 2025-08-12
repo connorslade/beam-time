@@ -101,7 +101,7 @@ impl Screen for CampaignScreen {
             .key_pressed(KeyCode::Escape)
             .then(|| state.pop_screen());
 
-        if self.layout.is_empty() || ctx.window.dpi_changed() {
+        if self.layout.is_empty() || ctx.window.dpi_changed().is_some() {
             self.layout = TreeLayout::generate(&self.tree, ctx);
         }
 

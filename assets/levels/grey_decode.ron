@@ -1,18 +1,40 @@
 Level(
     id: "f90f9889-e68a-40e9-9fef-83ff0324808d",
     name: "Grey Decode",
-    description: "",
+    description: "
+        Convert the 8-bit Gray code input back to standard binary. You will need to reverse the encoding process from the previous level.
+        
+        Remember, to convert a binary number to Grey code, every bit should be XORed with the bit to its left (more significant).",
     parents: [ "ea9291be-554b-451f-9699-b2f410c02af1" ], // ← grey_encode
 
+    labels: {
+        Dynamic(0): "8",
+        Dynamic(1): "7",
+        Dynamic(2): "6",
+        Dynamic(3): "5",
+        Dynamic(4): "4",
+        Dynamic(5): "3",
+        Dynamic(6): "2",
+        Dynamic(7): "1",
+
+        Dynamic(8): "128",
+        Dynamic(9): "64",
+        Dynamic(10): "32",
+        Dynamic(11): "16",
+        Dynamic(12): "8",
+        Dynamic(13): "4",
+        Dynamic(14): "2",
+        Dynamic(15): "1",
+    },
     tiles: {
-        (0, 9): Emitter( rotation: Down, active: true, id: 0 ),
-        (1, 9): Emitter( rotation: Down, active: true, id: 1 ),
-        (2, 9): Emitter( rotation: Down, active: true, id: 2 ),
-        (3, 9): Emitter( rotation: Down, active: true, id: 3 ),
-        (4, 9): Emitter( rotation: Down, active: true, id: 4 ),
-        (5, 9): Emitter( rotation: Down, active: true, id: 5 ),
-        (6, 9): Emitter( rotation: Down, active: true, id: 6 ),
-        (7, 9): Emitter( rotation: Down, active: true, id: 7 ),
+        (0, 5): Emitter( rotation: Down, active: true, id: 0 ),
+        (1, 5): Emitter( rotation: Down, active: true, id: 1 ),
+        (2, 5): Emitter( rotation: Down, active: true, id: 2 ),
+        (3, 5): Emitter( rotation: Down, active: true, id: 3 ),
+        (4, 5): Emitter( rotation: Down, active: true, id: 4 ),
+        (5, 5): Emitter( rotation: Down, active: true, id: 5 ),
+        (6, 5): Emitter( rotation: Down, active: true, id: 6 ),
+        (7, 5): Emitter( rotation: Down, active: true, id: 7 ),
 
         (0, 0): Detector( id: 8 ),
         (1, 0): Detector( id: 9 ),
@@ -63,4 +85,4 @@ Level(
 //     num ^= num >>  2;
 //     num ^= num >>  1;
 // num
-}
+// }

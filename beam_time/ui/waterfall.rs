@@ -66,7 +66,7 @@ impl Drawable for Waterfall {
             let group = TILES.choose(&mut rng).unwrap();
             let asset = *group.choose(&mut rng).unwrap();
 
-            let pos_y = if is_empty || ctx.window.resized() {
+            let pos_y = if is_empty || ctx.window.resized().is_some() {
                 size.y * rng.random::<f32>()
             } else {
                 size.y + tile_offset

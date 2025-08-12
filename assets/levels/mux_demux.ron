@@ -1,0 +1,82 @@
+Level(
+    id: "151094cc-afcf-4825-87e2-72a565c18162",
+    name: "Mux-Demux",
+    description: "Pass the 8-bit value from the input to the output. How hard could be?",
+    parents: [ "acacce88-9c84-4f5c-ad98-caa2d0c48593" ], // ← large_multiplexer
+
+    size: (64, 64),
+    permanent: [
+        (00, 32), (01, 32), (02, 32), (03, 32), (04, 32), (05, 32), (06, 32), (07, 32),
+        (08, 32), (09, 32), (10, 32), (11, 32), (12, 32), (13, 32), (14, 32), (15, 32),
+        (16, 32), (17, 32), (18, 32), (19, 32), (20, 32), (21, 32), (22, 32), (23, 32),
+        (24, 32), (25, 32), (26, 32), (27, 32), (28, 32), (29, 32), (30, 32), (31, 32),
+        (33, 32), (34, 32), (35, 32), (36, 32), (37, 32), (38, 32), (39, 32), (40, 32),
+        (41, 32), (42, 32), (43, 32), (44, 32), (45, 32), (46, 32), (47, 32), (48, 32),
+        (49, 32), (50, 32), (51, 32), (52, 32), (53, 32), (54, 32), (55, 32), (56, 32),
+        (57, 32), (58, 32), (59, 32), (60, 32), (61, 32), (62, 32), (63, 32)
+    ],
+    labels: {
+        Dynamic(0): "128",
+        Dynamic(1): "64",
+        Dynamic(2): "32",
+        Dynamic(3): "16",
+        Dynamic(4): "8",
+        Dynamic(5): "4",
+        Dynamic(6): "2",
+        Dynamic(7): "1",
+
+        Dynamic(8): "128",
+        Dynamic(9): "64",
+        Dynamic(10): "32",
+        Dynamic(11): "16",
+        Dynamic(12): "8",
+        Dynamic(13): "4",
+        Dynamic(14): "2",
+        Dynamic(15): "1",
+    },
+    tiles: {
+        (28, 35): Emitter( rotation: Down, active: true, id: 0 ),
+        (29, 35): Emitter( rotation: Down, active: true, id: 1 ),
+        (30, 35): Emitter( rotation: Down, active: true, id: 2 ),
+        (31, 35): Emitter( rotation: Down, active: true, id: 3 ),
+        (32, 35): Emitter( rotation: Down, active: true, id: 4 ),
+        (33, 35): Emitter( rotation: Down, active: true, id: 5 ),
+        (34, 35): Emitter( rotation: Down, active: true, id: 6 ),
+        (35, 35): Emitter( rotation: Down, active: true, id: 7 ),
+
+        (28, 29): Detector( id: 8 ),
+        (29, 29): Detector( id: 9 ),
+        (30, 29): Detector( id: 10 ),
+        (31, 29): Detector( id: 11 ),
+        (32, 29): Detector( id: 12 ),
+        (33, 29): Detector( id: 13 ),
+        (34, 29): Detector( id: 14 ),
+        (35, 29): Detector( id: 15 ),
+
+        (00, 32): Wall, (01, 32): Wall, (02, 32): Wall, (03, 32): Wall, (04, 32): Wall,
+        (05, 32): Wall, (06, 32): Wall, (07, 32): Wall, (08, 32): Wall, (09, 32): Wall,
+        (10, 32): Wall, (11, 32): Wall, (12, 32): Wall, (13, 32): Wall, (14, 32): Wall,
+        (15, 32): Wall, (16, 32): Wall, (17, 32): Wall, (18, 32): Wall, (19, 32): Wall,
+        (20, 32): Wall, (21, 32): Wall, (22, 32): Wall, (23, 32): Wall, (24, 32): Wall,
+        (25, 32): Wall, (26, 32): Wall, (27, 32): Wall, (28, 32): Wall, (29, 32): Wall,
+        (30, 32): Wall, (31, 32): Wall, (33, 32): Wall, (34, 32): Wall, (35, 32): Wall,
+        (36, 32): Wall, (37, 32): Wall, (38, 32): Wall, (39, 32): Wall, (40, 32): Wall,
+        (41, 32): Wall, (42, 32): Wall, (43, 32): Wall, (44, 32): Wall, (45, 32): Wall,
+        (46, 32): Wall, (47, 32): Wall, (48, 32): Wall, (49, 32): Wall, (50, 32): Wall,
+        (51, 32): Wall, (52, 32): Wall, (53, 32): Wall, (54, 32): Wall, (55, 32): Wall,
+        (56, 32): Wall, (57, 32): Wall, (58, 32): Wall, (59, 32): Wall, (60, 32): Wall,
+        (61, 32): Wall, (62, 32): Wall, (63, 32): Wall,
+    },
+
+    tests: Tests(
+        lasers: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
+        detectors: [ 8, 9, 10, 11, 12, 13, 14, 15 ],
+
+        cases: [
+            Cycle( lasers: [ false, true,  false, false, true,  false, false, false ], detectors: [ [ false, true,  false, false, true,  false, false, false ] ] ),
+            Cycle( lasers: [ true,  true,  true,  false, true,  true,  true,  false ], detectors: [ [ true,  true,  true,  false, true,  true,  true,  false ] ] ),
+            Cycle( lasers: [ false, false, false, false, false, false, true,  true  ], detectors: [ [ false, false, false, false, false, false, true,  true  ] ] ),
+            Cycle( lasers: [ false, true,  false, false, true,  false, true,  true  ], detectors: [ [ false, true,  false, false, true,  false, true,  true  ] ] ),
+        ]
+    )
+)

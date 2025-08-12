@@ -1,22 +1,22 @@
 Level(
     id: "e69ddcf2-be60-46aa-8964-e818c107154b",
     name: "Barrel Shifter",
-    description: "",
-    parents: [ ],
+    description: "Shift the input data (D) by S bits to the left.",
+    parents: [ "52108765-b8d2-47cf-a0c7-36b3b73cc644" ], // ← double_it
 
     labels: {
-        Dynamic(0): "d128",
-        Dynamic(1): "d64",
-        Dynamic(2): "d32",
-        Dynamic(3): "d16",
-        Dynamic(4): "d8",
-        Dynamic(5): "d4",
-        Dynamic(6): "d2",
-        Dynamic(7): "d1",
+        Dynamic(0): "D128",
+        Dynamic(1): "D64",
+        Dynamic(2): "D32",
+        Dynamic(3): "D16",
+        Dynamic(4): "D8",
+        Dynamic(5): "D4",
+        Dynamic(6): "D2",
+        Dynamic(7): "D1",
 
-        Dynamic(8): "s4",
-        Dynamic(9): "s2",
-        Dynamic(10): "s1",
+        Dynamic(8): "S4",
+        Dynamic(9): "S2",
+        Dynamic(10): "S1",
 
         Dynamic(11): "128",
         Dynamic(12): "64",
@@ -54,7 +54,19 @@ Level(
     tests: Tests(
         lasers: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
         detectors: [ 11, 12, 13, 14, 15, 16, 17, 18 ],
-        display: DisplayConfig( emitter_breaks: [ 7 ] ),
+        display: DisplayConfig(
+            emitter_breaks: [ 7 ],
+            descriptions: {
+                0: "Shift 0 bits to the left.",
+                1: "Shift 1 bits to the left.",
+                2: "Shift 2 bits to the left.",
+                3: "Shift 3 bits to the left.",
+                4: "Shift 4 bits to the left.",
+                5: "Shift 5 bits to the left.",
+                6: "Shift 6 bits to the left.",
+                7: "Shift 7 bits to the left."
+            }
+        ),
 
         cases: [
             Cycle( lasers: [ false, false, true,  true,  false, false, true,  true,  false, false, false ], detectors: [ [ false, false, true,  true,  false, false, true,  true  ] ] ),

@@ -36,7 +36,6 @@ impl Pancam {
 
     pub fn update(&mut self, state: &App, ctx: &mut GraphicsContext) {
         let mut delta_pan = Vector2::zeros();
-
         if ctx.input.mouse_down(MouseButton::Middle) {
             ctx.window.cursor(CursorIcon::Grabbing);
             delta_pan += ctx.input.mouse_delta();
@@ -110,12 +109,20 @@ impl Pancam {
     }
 
     pub fn screen_to_world_space(&self, ctx: &GraphicsContext, pos: Vector2<f32>) -> Vector2<f32> {
-        (pos - self.pan) / (16.0 * self.scale * ctx.scale_factor)
+        screen_to_world_space(pos, self.pan, self.scale * ctx.scale_factor)
     }
 
     pub fn world_to_screen_space(&self, ctx: &GraphicsContext, pos: Vector2<f32>) -> Vector2<f32> {
-        pos * (16.0 * self.scale * ctx.scale_factor) + self.pan
+        world_to_screen_space(pos, self.pan, self.scale * ctx.scale_factor)
     }
+}
+
+fn screen_to_world_space(screen: Vector2<f32>, pan: Vector2<f32>, scale: f32) -> Vector2<f32> {
+    (screen - pan) / (16.0 * scale)
+}
+
+fn world_to_screen_space(world: Vector2<f32>, pan: Vector2<f32>, scale: f32) -> Vector2<f32> {
+    world * (16.0 * scale) + pan
 }
 
 impl Default for Pancam {

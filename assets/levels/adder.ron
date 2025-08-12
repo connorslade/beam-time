@@ -1,7 +1,7 @@
 Level(
     id: "2052ed73-edaf-45b7-8f2f-43993d558ff4",
     name: "Adder",
-    description: "todo: this",
+    description: "Add two 8-bit numbers, A and B, and output the result. You will need one full-adder per bit.",
     parents: [ "52108765-b8d2-47cf-a0c7-36b3b73cc644" ], // ← double_it
 
     labels: {
