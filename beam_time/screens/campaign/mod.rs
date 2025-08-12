@@ -294,13 +294,17 @@ impl CampaignScreen {
 
     #[cfg(feature = "steam")]
     fn all_solved(&self) -> bool {
-        for level in self.worlds.values() {
-            if !level.1.is_solved() {
+        for level in DEFAULT_LEVELS.iter() {
+            let Some(level) = self.worlds.get(&level.id) else {
+                return false;
+            };
+
+            if !level.iter().any(|x| x.meta.is_solved()) {
                 return false;
             }
         }
 
-        !self.worlds.is_empty()
+        true
     }
 }
 
