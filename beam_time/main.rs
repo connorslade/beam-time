@@ -1,3 +1,4 @@
+#![windows_subsystem = "windows"]
 #![feature(decl_macro)]
 
 use std::mem;
