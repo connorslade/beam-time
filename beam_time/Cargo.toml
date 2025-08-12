@@ -49,6 +49,9 @@ url.workspace = true
 uuid.workspace = true
 webbrowser.workspace = true
 
+[target.'cfg(windows)'.build-dependencies]
+winres.workspace = true
+
 [target.'cfg(windows)'.dependencies]
 winreg.workspace = true
 windows.workspace = true

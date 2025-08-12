@@ -59,3 +59,4 @@ windows = { version = "0.58.0", features = [
 ] }
 winit = "0.30.11"
 winreg = "0.52.0"
+winres = "0.1.12"
