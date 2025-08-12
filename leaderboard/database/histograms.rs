@@ -1,10 +1,10 @@
 use anyhow::Result;
-use rusqlite::{params, Row};
+use rusqlite::{Row, params};
 use uuid::Uuid;
 
 use leaderboard::api::results::Histogram;
 
-use super::{types::DbUuid, Database, DbResult, SimplifyDbResult};
+use super::{Database, DbResult, SimplifyDbResult, types::DbUuid};
 
 impl Database {
     /// -> (Cost, Latency)

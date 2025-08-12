@@ -3,12 +3,13 @@
 use std::mem;
 
 use anyhow::Result;
+use common::consts::API_TESTING;
 use engine::{
     application::{Application, ApplicationArgs},
     exports::winit::window::{Icon, WindowAttributes},
 };
 use env_logger::WriteStyle;
-use log::LevelFilter;
+use log::{LevelFilter, warn};
 
 mod app;
 mod assets;
@@ -31,6 +32,7 @@ fn main() -> Result<()> {
         .filter(Some("beam_logic"), LevelFilter::Trace)
         .write_style(WriteStyle::Always)
         .init();
+    API_TESTING.then(|| warn!("Using test API key!"));
 
     let icon = Icon::from_rgba(include_atlas!("textures/icon.png").into_vec(), 32, 32)?;
     Application::new(ApplicationArgs {

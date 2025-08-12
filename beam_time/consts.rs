@@ -14,7 +14,7 @@ pub const AUTHOR_HOMEPAGE: &str = "https://connorcode.com";
 pub const GAME_HOMEPAGE: &str =
     "https://store.steampowered.com/app/3385920/Beam_Time?utm_source=in_game";
 pub static LEADERBOARD_SERVER: Lazy<Url> =
-    Lazy::new(|| Url::parse("http://localhost:8080/api/").unwrap());
+    Lazy::new(|| Url::parse("https://beamtime.connorcode.com/api/").unwrap());
 
 pub mod color {
     use engine::color::Rgb;

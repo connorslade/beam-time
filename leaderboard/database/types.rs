@@ -4,8 +4,8 @@ use std::{
 };
 
 use rusqlite::{
-    types::{FromSql, FromSqlResult, ToSqlOutput, ValueRef},
     Result, ToSql,
+    types::{FromSql, FromSqlResult, ToSqlOutput, ValueRef},
 };
 use uuid::Uuid;
 

@@ -1,4 +1,4 @@
-use afire::{extensions::RouteShorthands, Content, Server};
+use afire::{Content, Server, extensions::RouteShorthands};
 use serde_json::json;
 use uuid::Uuid;
 
@@ -20,18 +20,3 @@ pub fn attach(server: &mut Server<App>) {
         Ok(())
     });
 }
-
-// fn generate(data: &[u32]) -> Histogram {
-//     const BIN_COUNT: usize = 12;
-
-//     let max = data.iter().copied().max().unwrap_or_default();
-//     let bin_width = max as f32 / BIN_COUNT as f32;
-
-//     let mut bins = [0; BIN_COUNT];
-//     for &point in data {
-//         let bin = (point as f32 / bin_width) as usize;
-//         bins[bin.min(BIN_COUNT - 1)] += 1;
-//     }
-
-//     Histogram { bins, max }
-// }

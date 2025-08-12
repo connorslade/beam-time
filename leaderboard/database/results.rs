@@ -6,7 +6,7 @@ use bincode::Options;
 use common::{consts::BINCODE_OPTIONS, map::Map, user::UserId};
 use rusqlite::params;
 
-use super::{types::DbUuid, Database};
+use super::{Database, types::DbUuid};
 
 #[derive(Debug)]
 pub struct Results {

@@ -1,12 +1,13 @@
 use std::process;
 
-use afire::{trace, trace::Level, Middleware, Server};
+use afire::{Middleware, Server, trace, trace::Level};
 use anyhow::Result;
 
 mod logger;
 use app::App;
+use common::consts::API_TESTING;
 use env_logger::WriteStyle;
-use log::{info, LevelFilter};
+use log::{LevelFilter, info, warn};
 use logger::{AfireLogger, RequestLogger};
 mod app;
 mod config;
@@ -21,6 +22,8 @@ fn main() -> Result<()> {
         .filter(None, LevelFilter::Trace)
         .write_style(WriteStyle::Always)
         .init();
+
+    API_TESTING.then(|| warn!("Using test API key!"));
 
     let app = App::new()?;
     let mut server = Server::<App>::new(&app.config.server.host, app.config.server.port)

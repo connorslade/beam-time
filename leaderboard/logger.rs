@@ -1,11 +1,11 @@
 use std::fmt::Arguments;
 
 use afire::{
+    Middleware, Request,
     prelude::MiddleResult,
     trace::{Formatter, Level as AfireLevel},
-    Middleware, Request,
 };
-use log::{trace, Level, RecordBuilder};
+use log::{Level, RecordBuilder, trace};
 
 pub struct AfireLogger;
 
