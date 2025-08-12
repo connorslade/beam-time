@@ -2,9 +2,9 @@ use engine::{
     assets::{AudioRef, FontRef, SpriteRef, constructor::AssetConstructor, font::FontDescriptor},
     define_refs,
     drawable::sprite::Sprite,
-    exports::nalgebra::Vector2,
+    exports::{nalgebra::Vector2, winit::window::Icon},
 };
-use image::RgbaImage;
+use image::{RgbaImage, imageops::FilterType};
 
 use crate::util::{include_asset, include_atlas};
 
@@ -160,4 +160,11 @@ fn load_font(assets: &mut AssetConstructor, asset: FontRef, atlas: RgbaImage, de
     let font = assets.register_atlas(atlas);
     let descriptor = ron::de::from_bytes::<FontDescriptor>(descriptor).unwrap();
     assets.register_font(font, asset, descriptor);
+}
+
+pub fn icon(size: u32) -> Icon {
+    let image = image::load_from_memory(include_asset!("textures/icon.png"))
+        .unwrap()
+        .resize(size, size, FilterType::Nearest);
+    Icon::from_rgba(image.to_rgba8().to_vec(), size, size).unwrap()
 }

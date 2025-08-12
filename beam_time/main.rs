@@ -7,10 +7,7 @@ use anyhow::Result;
 use common::consts::API_TESTING;
 use engine::{
     application::{Application, ApplicationArgs},
-    exports::winit::{
-        dpi::PhysicalSize,
-        window::{Icon, WindowAttributes},
-    },
+    exports::winit::{dpi::PhysicalSize, window::WindowAttributes},
 };
 use env_logger::WriteStyle;
 use log::{LevelFilter, warn};
@@ -23,14 +20,13 @@ mod leaderboard;
 mod screens;
 #[cfg(feature = "steam")]
 mod steam;
-pub mod ui;
+mod ui;
 mod util;
 
 use app::App;
 use screens::{Screens, debug_overlay::DebugOverlay, title::TitleScreen};
-use util::include_atlas;
 
-use crate::util::enable_console;
+use crate::{assets::icon, util::enable_console};
 
 fn main() -> Result<()> {
     env_logger::builder()
@@ -42,11 +38,10 @@ fn main() -> Result<()> {
     enable_console();
     API_TESTING.then(|| warn!("Using test API key!"));
 
-    let icon = Icon::from_rgba(include_atlas!("textures/icon.png").into_vec(), 32, 32)?;
     Application::new(ApplicationArgs {
         window_attributes: WindowAttributes::default()
             .with_title(concat!("Beam Time v", env!("CARGO_PKG_VERSION")))
-            .with_window_icon(Some(icon))
+            .with_window_icon(Some(icon(128)))
             .with_inner_size(PhysicalSize::new(1920, 1080))
             .with_maximized(true),
         asset_constructor: Box::new(assets::init),
