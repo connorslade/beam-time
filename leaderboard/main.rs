@@ -3,15 +3,19 @@ use std::process;
 use afire::{Middleware, Server, trace, trace::Level};
 use anyhow::Result;
 
-mod logger;
 use app::App;
 use common::consts::API_TESTING;
 use env_logger::WriteStyle;
 use log::{LevelFilter, info, warn};
-use logger::{AfireLogger, RequestLogger};
+
+use middleware::{
+    logger::{AfireLogger, RequestLogger},
+    version::Version,
+};
 mod app;
 mod config;
 mod database;
+mod middleware;
 mod routes;
 
 fn main() -> Result<()> {
@@ -30,6 +34,7 @@ fn main() -> Result<()> {
         .workers(app.config.server.threads)
         .state(app);
 
+    Version.attach(&mut server);
     RequestLogger.attach(&mut server);
     routes::attach(&mut server);
 

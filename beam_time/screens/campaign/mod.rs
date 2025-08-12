@@ -113,13 +113,6 @@ impl Screen for CampaignScreen {
             (center.y - (height as f32 * spacing) / 2.0).max(spacing),
         );
 
-        Tutorial::new(
-            "Start with the first level",
-            origin + self.pancam.pan
-                - Vector2::x() * (self.layout.rows[0][0].width / 2.0 + 4.0 * ctx.scale_factor),
-        )
-        .draw(ctx);
-
         for (i, row) in self.layout.rows.iter().enumerate() {
             let offset = origin + Vector2::y() * i as f32 * spacing;
 
