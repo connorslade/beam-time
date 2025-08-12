@@ -1,11 +1,12 @@
 use std::mem;
 
-use crate::assets::{DYNAMIC_TILE_A, DYNAMIC_TILE_B};
-use crate::game::board::Board;
 use crate::{
     app::App,
+    assets::{DYNAMIC_TILE_A, DYNAMIC_TILE_B},
     assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B},
+    consts::CTRL,
     consts::layer,
+    game::board::Board,
     game::{holding::Holding, pancam::Pancam},
     ui::misc::tile_label,
     util::key_events,
@@ -51,10 +52,7 @@ impl Board {
         self.update_selection(ctx, pancam, sim);
         self.render_notes(ctx, state, pancam);
 
-        if sim.is_none()
-            && ctx.input.key_down(KeyCode::ControlLeft)
-            && ctx.input.key_pressed(KeyCode::KeyZ)
-        {
+        if sim.is_none() && ctx.input.key_down(CTRL) && ctx.input.key_pressed(KeyCode::KeyZ) {
             self.transient.history.pop(&mut self.tiles);
         }
 

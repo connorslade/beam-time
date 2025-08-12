@@ -1,6 +1,6 @@
 use crate::{
     assets::UNDEAD_FONT,
-    consts::{color, layer},
+    consts::{CTRL, color, layer},
     util::key_events,
 };
 use ahash::HashSet;
@@ -49,7 +49,7 @@ impl Board {
             )
         });
 
-        let ctrl = ctx.input.key_down(KeyCode::ControlLeft);
+        let ctrl = ctx.input.key_down(CTRL);
         let alt = ctx.input.key_down(KeyCode::AltLeft);
         let copy = ctx.input.key_pressed(KeyCode::KeyC);
         let cut = ctx.input.key_pressed(KeyCode::KeyX);
@@ -87,7 +87,7 @@ impl Board {
 
             // if ctrl down, add to selection
             // if alt down, remove from selection
-            if ctx.input.key_down(KeyCode::ControlLeft) {
+            if ctrl {
                 this.selection.extend(new_selection);
             } else if ctx.input.key_down(KeyCode::AltLeft) {
                 // remove new_selection from selection
@@ -132,9 +132,7 @@ impl Board {
                 }
             }
 
-            if cut {
-                self.transient.history.track_many(old);
-            }
+            cut.then(|| self.transient.history.track_many(old));
 
             let origin = pancam
                 .screen_to_world_space(ctx, ctx.input.mouse())
@@ -176,7 +174,7 @@ impl Board {
             return;
         }
 
-        let ctrl = ctx.input.key_down(KeyCode::ControlLeft);
+        let ctrl = ctx.input.key_down(CTRL);
         let alt = ctx.input.key_down(KeyCode::AltLeft);
         let shift = ctx.input.key_down(KeyCode::ShiftLeft);
 

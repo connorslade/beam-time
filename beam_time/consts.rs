@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use engine::{memory::MemoryKey, memory_key};
+use engine::{exports::winit::keyboard::KeyCode, memory::MemoryKey, memory_key};
 use once_cell::sync::Lazy;
 use url::Url;
 
@@ -45,6 +45,8 @@ pub mod layer {
 }
 
 pub const WATERFALL: MemoryKey = memory_key!();
+pub const CTRL: KeyCode =
+    [KeyCode::ControlLeft, KeyCode::SuperLeft][cfg!(target_os = "macos") as usize];
 pub const KEYBINDS: &[(&str, &str)] = &[
     ("T", "Runs test cases"),
     ("F", "Starts/stops simulation"),
