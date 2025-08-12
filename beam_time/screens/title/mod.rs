@@ -2,8 +2,7 @@ use std::mem;
 
 use engine::{
     color::Rgb,
-    drawable::{Anchor, Drawable},
-    drawable::{spacer::Spacer, text::Text},
+    drawable::{Anchor, Drawable, spacer::Spacer, text::Text},
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, keyboard::KeyCode},
@@ -11,7 +10,7 @@ use engine::{
     graphics_context::GraphicsContext,
     layout::{
         Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout,
-        row::RowLayout,
+        row::RowLayout, tracker::LayoutTracker,
     },
     memory_key,
 };
@@ -178,15 +177,39 @@ impl TitleScreen {
 
                 layout.nest(ctx, RowLayout::new(padding * 2.4), |ctx, layout| {
                     layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
-                        toggle(ctx, layout, &mut state.config.vsync, "Use VSync");
-                        toggle(ctx, layout, &mut state.config.show_fps, "Show FPS");
                         toggle(ctx, layout, &mut state.config.fullscreen, "Full Screen");
                         Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
-                        toggle(ctx, layout, &mut state.config.debug, "Debug Mode");
+
+                        let tracker = LayoutTracker::new(memory_key!());
+                        ColumnLayout::new(padding).tracked(tracker).show(
+                            ctx,
+                            layout,
+                            |ctx, layout| {
+                                slider(
+                                    (ctx, layout),
+                                    "Interface Scale",
+                                    &mut state.config.interface_scale,
+                                    (1.0, 1.0, 2.0),
+                                );
+                            },
+                        );
+
+                        if state.config.interface_scale != state.scale_multiplier
+                            && let Some(bounds) = tracker.bounds(ctx)
+                        {
+                            body("Restart for new interface scale to take effect.")
+                                .max_width(bounds.width())
+                                .color(color::ERROR)
+                                .layout(ctx, layout);
+                        }
                     });
 
-                    Rule::vertical(layout.available().y - 6.0 * ctx.scale_factor - padding * 2.0)
-                        .layout(ctx, layout);
+                    let rule = |ctx: &mut GraphicsContext, layout: &mut RowLayout| {
+                        let height = layout.available().y - 6.0 * ctx.scale_factor - padding * 2.0;
+                        Rule::vertical(height).layout(ctx, layout)
+                    };
+
+                    rule(ctx, layout);
 
                     layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
                         slider(
@@ -202,6 +225,15 @@ impl TitleScreen {
                             &mut state.config.movement_speed,
                             (1000.0, 2000.0, 3000.0),
                         );
+                    });
+
+                    rule(ctx, layout);
+
+                    layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+                        toggle(ctx, layout, &mut state.config.vsync, "Use VSync");
+                        toggle(ctx, layout, &mut state.config.show_fps, "Show FPS");
+                        Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
+                        toggle(ctx, layout, &mut state.config.debug, "Debug Mode");
                     });
                 });
 

@@ -52,19 +52,15 @@ pub struct Tests {
     pub cases: Vec<TestCase>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Default, Clone, Deserialize)]
+#[serde(default)]
 pub struct DisplayConfig {
-    #[serde(default)]
     pub emitter_breaks: HashSet<u32>,
-    #[serde(default)]
     pub emitter_spaces: HashSet<u32>,
 
-    #[serde(default)]
     pub detector_breaks: HashSet<u32>,
-    #[serde(default)]
     pub detector_spaces: HashSet<u32>,
 
-    #[serde(default)]
     pub descriptions: HashMap<u32, String>,
 }
 

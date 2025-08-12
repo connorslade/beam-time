@@ -1,7 +1,8 @@
 use common::misc::in_bounds;
 use engine::{
-    drawable::{Anchor, Drawable},
-    drawable::{shape::rectangle::Rectangle, sprite::Sprite, text::Text},
+    drawable::{
+        Anchor, Drawable, shape::rectangle::Rectangle, spacer::Spacer, sprite::Sprite, text::Text,
+    },
     exports::{
         nalgebra::Vector2,
         winit::{event::MouseButton, window::CursorIcon},
@@ -183,9 +184,14 @@ pub fn slider<L: Layout + LayoutElement + 'static>(
             *value = slider.value(ctx);
             slider.layout(ctx, layout);
 
-            Text::new(UNDEAD_FONT, format!("{value:.2}"))
-                .scale(Vector2::repeat(2.0))
-                .layout(ctx, layout);
+            let max_digits = (max.round() as u32).ilog10() + 4;
+            let max_width = max_digits as f32 * 4.0 * ctx.scale_factor * 2.0;
+
+            let text = Text::new(UNDEAD_FONT, format!("{value:.2}")).scale(Vector2::repeat(2.0));
+            let space = max_width - text.size(ctx).x;
+
+            text.layout(ctx, layout);
+            Spacer::new_x(space).layout(ctx, layout);
         },
     );
 }

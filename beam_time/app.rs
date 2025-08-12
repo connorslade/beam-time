@@ -19,6 +19,7 @@ pub struct App {
     pub debug: Vec<String>,
 
     pub config: Config,
+    pub scale_multiplier: f32,
     pub data_dir: PathBuf,
 
     pub new_screens: Vec<Box<dyn Screen>>,
@@ -28,12 +29,15 @@ pub struct App {
 #[derive(Serialize, Deserialize)]
 #[serde(default)]
 pub struct Config {
-    pub zoom_sensitivity: f32,
-    pub movement_speed: f32,
     pub vsync: bool,
     pub show_fps: bool,
-    pub fullscreen: bool,
     pub debug: bool,
+
+    pub zoom_sensitivity: f32,
+    pub movement_speed: f32,
+
+    pub interface_scale: f32,
+    pub fullscreen: bool,
 }
 
 impl App {
@@ -47,7 +51,7 @@ impl App {
 
         let config = fs::read_to_string(data_dir.join(CONFIG_FILE))
             .ok()
-            .and_then(|s| toml::from_str(&s).ok())
+            .and_then(|s| toml::from_str::<Config>(&s).ok())
             .unwrap_or_default();
 
         #[cfg(feature = "steam")]
@@ -66,6 +70,7 @@ impl App {
             start: Instant::now(),
             debug: Vec::new(),
 
+            scale_multiplier: config.interface_scale,
             config,
             data_dir,
 
@@ -87,6 +92,8 @@ impl App {
     }
 
     pub fn on_tick(&mut self, ctx: &mut GraphicsContext) {
+        ctx.scale_factor *= self.scale_multiplier;
+
         #[cfg(feature = "steam")]
         self.steam.on_tick();
         self.leaderboard.tick();
@@ -114,12 +121,15 @@ impl App {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            zoom_sensitivity: 0.08,
-            movement_speed: 2000.0,
             vsync: true,
             show_fps: false,
-            fullscreen: false,
             debug: false,
+
+            zoom_sensitivity: 0.08,
+            movement_speed: 2000.0,
+
+            fullscreen: false,
+            interface_scale: 1.0,
         }
     }
 }
