@@ -63,6 +63,9 @@ pub struct DisplayConfig {
     pub detector_breaks: HashSet<u32>,
     #[serde(default)]
     pub detector_spaces: HashSet<u32>,
+
+    #[serde(default)]
+    pub descriptions: HashMap<u32, String>,
 }
 
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, Deserialize)]

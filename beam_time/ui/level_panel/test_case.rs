@@ -5,7 +5,11 @@ use crate::{
         BIG_RIGHT_ARROW, HISTOGRAM_MARKER, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR,
         TILE_EMITTER_DOWN, UNDEAD_FONT,
     },
-    ui::{components::manual_button::ManualButton, level_panel::horizontal_rule, misc::tile_label},
+    ui::{
+        components::manual_button::ManualButton,
+        level_panel::horizontal_rule,
+        misc::{spacing, tile_label},
+    },
 };
 use beam_logic::{
     level::{ElementLocation, Level, LevelIo as Io, case::CasePreview},
@@ -50,75 +54,90 @@ impl LevelPanel {
         let scale = Vector2::repeat(4.0);
         horizontal_rule(ctx, layout);
 
-        layout.nest(
-            ctx,
-            RowLayout::new(0.0).justify(Justify::Center),
-            |ctx, layout| {
-                if preview.elements() < 6 {
-                    case_big(ctx, layout, level, &preview);
-                } else {
-                    case_small(ctx, layout, level, &preview);
-                }
+        let (margin, _) = spacing(ctx);
+        ColumnLayout::new(margin).show(ctx, layout, |ctx, layout| {
+            RowLayout::new(0.0)
+                .justify(Justify::Center)
+                .show(ctx, layout, |ctx, layout| {
+                    if preview.elements() < 6 {
+                        case_big(ctx, layout, level, &preview);
+                    } else {
+                        case_small(ctx, layout, level, &preview);
+                    }
 
-                layout.nest(
-                    ctx,
-                    RowLayout::new(8.0 * ctx.scale_factor)
-                        .justify(Justify::Center)
-                        .direction(Direction::MaxToMin),
-                    |ctx, layout| {
-                        let mut button =
-                            |ctx: &mut _, layout: &mut RowLayout, sprite, direction: bool| {
-                                let key = memory_key!(direction);
-                                let tracker = LayoutTracker::new(key);
-                                let button = ManualButton::new(key).tracker(ctx, tracker);
+                    layout.nest(
+                        ctx,
+                        RowLayout::new(8.0 * ctx.scale_factor)
+                            .justify(Justify::Center)
+                            .direction(Direction::MaxToMin),
+                        |ctx, layout| {
+                            let mut button =
+                                |ctx: &mut _, layout: &mut RowLayout, sprite, direction: bool| {
+                                    let key = memory_key!(direction);
+                                    let tracker = LayoutTracker::new(key);
+                                    let button = ManualButton::new(key).tracker(ctx, tracker);
 
-                                let disabled = (!direction && self.case == 0)
-                                    || (direction && self.case + 1 == level.tests.visible_count())
-                                    || is_test;
+                                    let disabled = (!direction && self.case == 0)
+                                        || (direction
+                                            && self.case + 1 == level.tests.visible_count())
+                                        || is_test;
 
-                                let inc = (!disabled && button.pressed(ctx)) as usize;
-                                if direction {
-                                    self.case += inc;
-                                } else {
-                                    self.case -= inc;
-                                }
+                                    let inc = (!disabled && button.pressed(ctx)) as usize;
+                                    if direction {
+                                        self.case += inc;
+                                    } else {
+                                        self.case -= inc;
+                                    }
 
-                                let color = [0.25, 0.9, 1.0].map(Rgb::repeat)
-                                    [(1 + !button.is_hovered() as usize) * !disabled as usize];
+                                    let color = [0.25, 0.9, 1.0].map(Rgb::repeat)
+                                        [(1 + !button.is_hovered() as usize) * !disabled as usize];
 
-                                Sprite::new(sprite)
-                                    .scale(scale)
-                                    .color(color)
-                                    .tracked(tracker)
-                                    .layout(ctx, layout);
-                            };
-
-                        let digits = level.tests.visible_count().ilog10() as usize + 1;
-                        let width = (digits * 4 + digits - 1) as f32 * 4.0 * ctx.scale_factor;
-                        button(ctx, layout, RIGHT_ARROW, true);
-                        layout.nest(
-                            ctx,
-                            RowLayout::new(0.0)
-                                .sized(Vector2::x() * width)
-                                .direction(Direction::MaxToMin),
-                            |ctx, layout| {
-                                layout.nest(ctx, RowLayout::new(0.0), |ctx, layout| {
-                                    let text = format!("{:0>width$}", case_idx + 1, width = digits);
-                                    Text::new(UNDEAD_FONT, text)
+                                    Sprite::new(sprite)
                                         .scale(scale)
+                                        .color(color)
+                                        .tracked(tracker)
                                         .layout(ctx, layout);
-                                    let half_width = layout.available().x / 2.0;
-                                    Spacer::new_x(half_width).layout(ctx, layout);
-                                });
-                                Spacer::new_x(layout.available().x).layout(ctx, layout);
-                            },
-                        );
-                        button(ctx, layout, LEFT_ARROW, false);
-                        Spacer::new_x(layout.available().x).layout(ctx, layout);
-                    },
-                );
-            },
-        );
+                                };
+
+                            let digits = level.tests.visible_count().ilog10() as usize + 1;
+                            let width = (digits * 4 + digits - 1) as f32 * 4.0 * ctx.scale_factor;
+                            button(ctx, layout, RIGHT_ARROW, true);
+                            layout.nest(
+                                ctx,
+                                RowLayout::new(0.0)
+                                    .sized(Vector2::x() * width)
+                                    .direction(Direction::MaxToMin),
+                                |ctx, layout| {
+                                    layout.nest(ctx, RowLayout::new(0.0), |ctx, layout| {
+                                        let text =
+                                            format!("{:0>width$}", case_idx + 1, width = digits);
+                                        Text::new(UNDEAD_FONT, text)
+                                            .scale(scale)
+                                            .layout(ctx, layout);
+                                        let half_width = layout.available().x / 2.0;
+                                        Spacer::new_x(half_width).layout(ctx, layout);
+                                    });
+                                    Spacer::new_x(layout.available().x).layout(ctx, layout);
+                                },
+                            );
+                            button(ctx, layout, LEFT_ARROW, false);
+                            Spacer::new_x(layout.available().x).layout(ctx, layout);
+                        },
+                    );
+                });
+
+            if let Some(display) = &level.tests.display
+                && let Some(desc) = display.descriptions.get(&(case_idx as u32))
+            {
+                RowLayout::new(0.0).show(ctx, layout, |ctx, layout| {
+                    Spacer::new_x(2.0 * 4.0 * ctx.scale_factor).layout(ctx, layout);
+                    Text::new(UNDEAD_FONT, desc)
+                        .max_width(layout.available().x)
+                        .scale(Vector2::repeat(2.0))
+                        .layout(ctx, layout);
+                });
+            }
+        });
     }
 }
 

@@ -1,7 +1,7 @@
 use nalgebra::Vector2;
 
 #[cfg(feature = "layout_debug")]
-use crate::{color::Rgb, graphics_context::Drawable};
+use crate::{color::Rgb, drawable::Drawable};
 use crate::{
     graphics_context::GraphicsContext,
     render::{shape::ShapeVertex, sprite::GpuSprite},

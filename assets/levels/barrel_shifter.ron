@@ -54,7 +54,17 @@ Level(
     tests: Tests(
         lasers: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
         detectors: [ 11, 12, 13, 14, 15, 16, 17, 18 ],
+        display: DisplayConfig( emitter_breaks: [ 7 ] ),
 
-        cases: [ ]
+        cases: [
+            Cycle( lasers: [ false, false, true,  true,  false, false, true,  true,  false, false, false ], detectors: [ [ false, false, true,  true,  false, false, true,  true  ] ] ),
+            Cycle( lasers: [ false, true,  false, false, false, false, false, false, false, false, true  ], detectors: [ [ true,  false, false, false, false, false, false, false ] ] ),
+            Cycle( lasers: [ true,  true,  true,  true,  false, true,  true,  true,  false, true,  false ], detectors: [ [ true,  true,  false, true,  true,  true,  false, false ] ] ),
+            Cycle( lasers: [ false, false, true,  true,  false, false, true,  false, false, true,  true  ], detectors: [ [ true,  false, false, true,  false, false, false, false ] ] ),
+            Cycle( lasers: [ true,  true,  true,  false, true,  true,  false, true,  true,  false, false ], detectors: [ [ true,  true,  false, true,  false, false, false, false ] ] ),
+            Cycle( lasers: [ false, true,  false, true,  true,  true,  true,  true,  true,  false, true  ], detectors: [ [ true,  true,  true,  false, false, false, false, false ] ] ),
+            Cycle( lasers: [ true,  true,  false, false, false, true,  false, true,  true,  true,  false ], detectors: [ [ false, true,  false, false, false, false, false, false ] ] ),
+            Cycle( lasers: [ true,  false, false, true,  true,  true,  false, true,  true,  true,  true  ], detectors: [ [ true,  false, false, false, false, false, false, false ] ] ),
+        ]
     )
 )
