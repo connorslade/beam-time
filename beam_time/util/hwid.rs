@@ -2,7 +2,7 @@
 
 use md5::Digest;
 
-#[cfg(windows)]
+#[cfg(target_os = "windows")]
 pub fn get() -> u64 {
     use std::{
         ffi::{CString, c_void},

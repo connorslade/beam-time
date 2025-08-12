@@ -7,7 +7,10 @@ use anyhow::Result;
 use common::consts::API_TESTING;
 use engine::{
     application::{Application, ApplicationArgs},
-    exports::winit::window::{Icon, WindowAttributes},
+    exports::winit::{
+        dpi::PhysicalSize,
+        window::{Icon, WindowAttributes},
+    },
 };
 use env_logger::WriteStyle;
 use log::{LevelFilter, warn};
@@ -27,12 +30,16 @@ use app::App;
 use screens::{Screens, debug_overlay::DebugOverlay, title::TitleScreen};
 use util::include_atlas;
 
+use crate::util::enable_console;
+
 fn main() -> Result<()> {
     env_logger::builder()
         .filter(Some("beam_time"), LevelFilter::Trace)
         .filter(Some("beam_logic"), LevelFilter::Trace)
         .write_style(WriteStyle::Always)
         .init();
+
+    enable_console();
     API_TESTING.then(|| warn!("Using test API key!"));
 
     let icon = Icon::from_rgba(include_atlas!("textures/icon.png").into_vec(), 32, 32)?;
@@ -40,6 +47,7 @@ fn main() -> Result<()> {
         window_attributes: WindowAttributes::default()
             .with_title(concat!("Beam Time v", env!("CARGO_PKG_VERSION")))
             .with_window_icon(Some(icon))
+            .with_inner_size(PhysicalSize::new(1920, 1080))
             .with_maximized(true),
         asset_constructor: Box::new(assets::init),
         resumed: Box::new(|| {

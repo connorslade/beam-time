@@ -16,3 +16,13 @@ pub macro key_events(
 ) {
     $($ctx.input.key_pressed($key).then(|| $action);)*
 }
+
+// why can't window just be normal...
+pub fn enable_console() {
+    #[cfg(target_os = "windows")]
+    unsafe {
+        use windows::Win32::System::Console::{AttachConsole, FreeConsole, ATTACH_PARENT_PROCESS};
+        let _ = FreeConsole();
+        let _ = AttachConsole(ATTACH_PARENT_PROCESS);
+    }
+}
