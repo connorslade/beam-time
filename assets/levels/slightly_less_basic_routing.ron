@@ -5,7 +5,7 @@ Level(
         Connect the laser to all detectors. You will need to make use of both mirrors and the newly unlocked splitters, which act like mirrors that also pass the beam straight through.
         
         This level contains many walls that you will need to route the beam around.",
-    parents: [ "58fc60ca-3831-4f27-a29a-b4878a5dd68a" ], // ← basic_routing
+    children: [ "cafeb123-66dc-4b04-b560-5cf80868cae4" ], // ← not_gate
 
     size: (6, 6),
     permanent: [

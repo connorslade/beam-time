@@ -2,7 +2,7 @@ Level(
     id: "46c56d9a-fda5-4876-aaa7-de80a7fcc710",
     name: "Data Latch",
     description: "When enable (E) is active, the signal on D should be forwarded to the output. When E is disabled continue outputting the current value of D.",
-    parents: [ "f4444a1c-d2a8-4a7a-b311-ec39322c1776" ], // ← rs_latch
+    children: [ "fe48e117-1114-417a-b72b-d80c239797c9" ], // ← shift_register
 
     size: (6, 6),
     permanent: [ (0, 5), (1, 5), (5, 0) ],

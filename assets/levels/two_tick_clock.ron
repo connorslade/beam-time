@@ -2,7 +2,7 @@ Level(
     id: "5d317b17-a9b5-4b5c-b07f-e006064581f1",
     name: "Two-Tick Clock",
     description: "Create an oscillator that is on for two ticks, off for two ticks, then repeats. There is no way to speed up the oscillator you made in that other level, you will need to be clever.",
-    parents: [ "aa28086a-564e-46d3-9233-894c157d92fe" ], // ← basic_oscillator
+    children: [ "e0a12f39-2c24-489f-acc7-cc573ec8be86" ], // ← one_tick_clock
 
     size: (6, 6),
     permanent: [ (5, 0) ],

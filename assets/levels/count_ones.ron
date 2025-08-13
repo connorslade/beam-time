@@ -2,7 +2,7 @@ Level(
     id: "b59c1a75-8d7a-4c91-bdd4-6831e3b1f41a",
     name: "Count Ones",
     description: "Output the number of active inputs in binary.",
-    parents: [ "ca887bfe-5c8c-425d-b414-265e6d8c909e" ], // ← full_adder
+    children: [ "f79d2928-aa91-44d8-ac3a-176e991b2c7a" ], // ← conways_game_of_life
 
     labels: {
         Dynamic(4): "4",

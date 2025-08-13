@@ -6,25 +6,26 @@ use super::Level;
 pub struct LevelTree {
     map: HashMap<Uuid, &'static Level>,
 
-    tree: HashMap<Uuid, Vec<Uuid>>,
+    reverse: HashMap<Uuid, Vec<Uuid>>,
     root: HashSet<Uuid>,
 }
 
 impl LevelTree {
     pub fn new(levels: &'static [Level]) -> Self {
         let mut map = HashMap::new();
-        let mut tree = HashMap::<_, Vec<_>>::new();
+        let mut reverse = HashMap::<_, Vec<_>>::new();
         let mut root = levels.iter().map(|x| x.id).collect::<HashSet<_>>();
 
         for level in levels {
             map.insert(level.id, level);
-            for parent in &level.parents {
-                root.remove(parent);
-                tree.entry(*parent).or_default().push(level.id);
+
+            for child in &level.children {
+                root.remove(child);
+                reverse.entry(*child).or_default().push(level.id);
             }
         }
 
-        Self { map, tree, root }
+        Self { map, reverse, root }
     }
 
     pub fn get(&self, id: Uuid) -> Option<&'static Level> {
@@ -35,8 +36,8 @@ impl LevelTree {
         self.root.iter().copied()
     }
 
-    pub fn children(&self, parent: Uuid) -> Option<&Vec<Uuid>> {
-        self.tree.get(&parent)
+    pub fn parents(&self, child: Uuid) -> Option<&Vec<Uuid>> {
+        self.reverse.get(&child)
     }
 
     pub fn count(&self) -> usize {

@@ -2,7 +2,7 @@ Level(
     id: "fff0fee3-8c27-4230-bc9c-eb49156dd50e",
     name: "Comparator",
     description: "Given two 8-bit input values, A and B, compare them and return the result. Either A>B, A=B, or A<B.",
-    parents: [ "eaab5121-8a05-49fd-8f6b-e364dd34bf48" ], // ← find_first_set
+    children: [ ],
 
     labels: {
         Dynamic(0): "A128",

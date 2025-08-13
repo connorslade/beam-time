@@ -8,7 +8,7 @@ Level(
         p1 = d1 ⊕ d2 ⊕ d4
         p2 = d1 ⊕ d3 ⊕ d4
         p3 = d2 ⊕ d3 ⊕ d4",
-    parents: [ "a2f4358f-b86e-45da-b4cb-23c5819a79e7" ], // ← hamming_generation
+    children: [ ],
 
     labels: {
         Dynamic(0): "p1",

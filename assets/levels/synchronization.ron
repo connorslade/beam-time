@@ -2,7 +2,7 @@ Level(
     id: "86456173-e27c-4918-ae11-ef5a36147037",
     name: "Synchronization",
     description: "Make all the outputs turn on in the same tick. You will need to use delay gates for this, they delay a beam by one tick.",
-    parents: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ], // ← xor_gate
+    children: [ "aa28086a-564e-46d3-9233-894c157d92fe", "bd637589-b931-40d5-984c-60f158d1c8a9", "f4444a1c-d2a8-4a7a-b311-ec39322c1776" ], // ← basic_oscillator, edge_detectors, rs_latch
 
     size: (6, 6),
     permanent: [

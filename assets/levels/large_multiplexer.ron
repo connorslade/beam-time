@@ -2,7 +2,7 @@ Level(
     id: "acacce88-9c84-4f5c-ad98-caa2d0c48593",
     name: "Large Multiplexer",
     description: "Build an 8-to-1 multiplexer. The 3-bit selector (S) chooses which data input (D0-D7) to pass to the output.",
-    parents: [ "2f854277-df80-4ee8-b5ab-69f7d6587ff4" ], // ← bit_reverse
+    children: [ "151094cc-afcf-4825-87e2-72a565c18162" ], // ← mux_demux
 
     labels: {
         Dynamic(0): "D0",

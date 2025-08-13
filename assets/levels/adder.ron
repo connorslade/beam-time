@@ -2,7 +2,7 @@ Level(
     id: "2052ed73-edaf-45b7-8f2f-43993d558ff4",
     name: "Adder",
     description: "Add two 8-bit numbers, A and B, and output the result. You will need one full-adder per bit.",
-    parents: [ "52108765-b8d2-47cf-a0c7-36b3b73cc644" ], // ← double_it
+    children: [ "ab666a1a-4f8a-4bdb-97db-451d279dfe6a", "c04be8ac-0a2e-44c8-b82b-4f1ef2566244", "92488235-9149-4595-aee4-e591acb013e7" ], // ← accumulator, triple_it, twos_complement
 
     labels: {
         Dynamic(0): "A128",

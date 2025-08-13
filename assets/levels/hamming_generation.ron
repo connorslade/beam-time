@@ -11,7 +11,7 @@ Level(
         p1 = d1 ⊕ d2 ⊕ d4
         p2 = d1 ⊕ d3 ⊕ d4
         p3 = d2 ⊕ d3 ⊕ d4",
-    parents: [ "c98218bd-937b-4a60-a94c-a51d677c61b1" ], // ← parity_bit
+    children: [ "12beb169-a85c-4235-98eb-3851864a61f8" ], // ← hamming_correction
 
     labels: {
         Dynamic(0): "d1",

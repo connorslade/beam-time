@@ -2,7 +2,7 @@ Level(
     id: "bb524613-e8d0-4d29-b61a-ec30b9accd90",
     name: "Random Access Memory",
     description: "todo. (0 ⇒ read, 1 ⇒ write)",
-    parents: [ "f36846af-910b-4aec-8ed0-7e3deca17251" ], // ← read_only_memory
+    children: [ ],
 
     labels: {
         Dynamic(0): "A4",

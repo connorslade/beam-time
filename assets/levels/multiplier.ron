@@ -5,7 +5,7 @@ Level(
         Multiply the two 8-bit inputs.
         
         The resulting value will never overflow (be greater than 255).",
-    parents: [ "ab666a1a-4f8a-4bdb-97db-451d279dfe6a" ], // ← accumulator
+    children: [ ],
 
     labels: {
         Dynamic(0): "A128",

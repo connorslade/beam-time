@@ -268,8 +268,8 @@ impl CampaignScreen {
     }
 
     fn is_available(&self, state: &App, id: Uuid) -> bool {
-        let Some(parents) = self.tree.get(id).map(|x| &x.parents) else {
-            return false;
+        let Some(parents) = self.tree.parents(id) else {
+            return true;
         };
 
         for id in parents {

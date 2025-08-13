@@ -4,9 +4,8 @@ Level(
     description: "
         Return the index or position (starting with zero) of the least significant bit set to one. This is equivalent to counting the number of trailing zeros.
         
-        You can assume every test case will have at least one bit set.
-        ",
-    parents: [ "ca887bfe-5c8c-425d-b414-265e6d8c909e" ], // ← full_adder
+        You can assume every test case will have at least one bit set.",
+    children: [ "fff0fee3-8c27-4230-bc9c-eb49156dd50e" ], // ← comparator
 
     labels: {
         Dynamic(0): "128",

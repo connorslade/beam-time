@@ -2,7 +2,7 @@ Level(
     id: "597b1d3d-0441-460f-870d-ed77749a07d7",
     name: "Adder Subtractor",
     description: "When the SUB is low, add the two 8-bit inputs (A + B), when SUB is high, subtract B from A (B - A).",
-    parents: [ "92488235-9149-4595-aee4-e591acb013e7" ], // ← twos_compliment
+    children: [ ],
 
     labels: {
         Dynamic(0): "A128",

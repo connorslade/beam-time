@@ -5,7 +5,7 @@ Level(
         A multiplexer chooses one of its data inputs to forward to a single output.
         
         This level has two data inputs, D0 and D1, as well as a selector (S). When S is disabled pass the value at D0 to the output, when S is enabled pass the value at D1 to the output.",
-    parents: [ "91d5f245-75e8-4d3e-8994-7dcbdcd70670" ],
+    children: [ "f36846af-910b-4aec-8ed0-7e3deca17251" ], // ← read_only_memory
 
     size: (6, 6),
     permanent: [ (1, 5), (2, 5), (5, 5), (5, 0) ],

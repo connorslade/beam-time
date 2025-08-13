@@ -10,7 +10,7 @@ Level(
         • A live cell with 3-4 neighbours lives
         • A live cell with >3 neighbours dies
         • A dead cell with 3 neighbours becomes live",
-    parents: [ "b59c1a75-8d7a-4c91-bdd4-6831e3b1f41a" ], // ← count_ones
+        children: [ ],
 
     labels: {
         Dynamic(0): "N8",

@@ -2,7 +2,7 @@ Level(
     id: "ab666a1a-4f8a-4bdb-97db-451d279dfe6a",
     name: "Accumulator",
     description: "An accumulator is an adder with an internal memory (initialized to zero). Every time the enable (ENBL) line is pulsed, the input should be added to the stored value, and the result should be stored.",
-    parents: [ "2052ed73-edaf-45b7-8f2f-43993d558ff4" ], // ← adder
+    children: [ "898fede9-9bb5-455e-9671-4671d2bbdae3" ], // ← multiplier 
 
     labels: {
         Dynamic(0): "128",

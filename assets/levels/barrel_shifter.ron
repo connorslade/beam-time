@@ -2,7 +2,7 @@ Level(
     id: "e69ddcf2-be60-46aa-8964-e818c107154b",
     name: "Barrel Shifter",
     description: "Shift the input data (D) by S bits to the left.",
-    parents: [ "52108765-b8d2-47cf-a0c7-36b3b73cc644" ], // ← double_it
+    children: [ ],
 
     labels: {
         Dynamic(0): "D128",

@@ -9,7 +9,7 @@ Level(
         • Emitter: Emits a constant beam, can be toggled by pressing E while hovering
         
         This is the first level that has multiple test cases. Use the white arrow buttons below to scroll thought them.",
-    parents: [ "3d01432a-228c-4cfd-9be3-407a796b49c8" ], // ← slightly_less_basic_routing
+    children: [ "5b27a3dd-aa6a-492b-9727-147e5eb54d15", "d46980e0-b2d0-4102-ab95-8bdc16d00ca9" ], // ← four_bit_not, or_gate
     
     size: (6, 6),
     permanent: [ (0, 5), (5, 0) ],

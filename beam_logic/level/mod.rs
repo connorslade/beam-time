@@ -24,7 +24,7 @@ pub struct Level {
     #[serde(deserialize_with = "unindent_string")]
     pub description: String,
 
-    pub parents: Vec<Uuid>,
+    pub children: Vec<Uuid>,
 
     #[serde(default)]
     pub size: Option<Vector2<u32>>,

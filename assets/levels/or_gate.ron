@@ -5,8 +5,7 @@ Level(
         Enable the output when either of the inputs are active. The wall is there to keep you from just routing each input into a different side of the output.
         
         In these first few levels you will build up some basic binary logic gates. As simple as each of these gates are, when combined they can create very complicated behaviors, this game is running on the logic gates in your computer!",
-    parents: [ "cafeb123-66dc-4b04-b560-5cf80868cae4" ], // ← not_gate
-    
+    children: [ "1c9ddabc-8e4b-41a1-bc0c-e0623226e5c3", "b7ee4ec1-4b9d-46d6-99a6-dd136384304e" ], // ← and_gate, another_or_gate
 
     size: (6, 6),
     permanent: [ (0, 5), (1, 5), (5, 0), (5, 1) ],

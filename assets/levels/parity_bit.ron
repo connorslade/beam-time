@@ -6,7 +6,7 @@ Level(
 
         For this level all the parity bits (P) haven been chosen to make the parity of all 8 bits (data and P) even. Send an output if the parity of the input is even (a bit-flip is not detected).
         ",
-    parents: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ], // ← xor_gate
+    children: [ "a2f4358f-b86e-45da-b4cb-23c5819a79e7" ], // ← hamming_generation
 
     labels: {
         Dynamic(0): "64",

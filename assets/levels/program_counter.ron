@@ -5,7 +5,7 @@ Level(
         The Program Counter (PC) is a register in the CPU used to keep track of which instruction should be executed next. This means it must be able to increment by one after executing every instruction, and it must be writable for jumps.
 
         Implement an 4-bit program counter that increments when 'Inc' is pulsed and copies the input to the memory cells when 'Set' is pulsed. 'Inc' and 'Set' will never both be on.",
-    parents: [ "fc3b280e-6a80-41d2-84d1-c8fa55a3946f" ], // ← counter
+    children: [ ],
 
     labels: {
         Dynamic(0): "8",

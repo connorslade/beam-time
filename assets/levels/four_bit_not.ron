@@ -2,7 +2,7 @@ Level(
     id: "5b27a3dd-aa6a-492b-9727-147e5eb54d15",
     name: "Four Bit Not",
     description: "Invert the values of each of the inputs (NOT) and pass them to their corresponding output.",
-    parents: [ "cafeb123-66dc-4b04-b560-5cf80868cae4" ], // ← not_gate
+    children: [ ],
 
     size: (8, 10),
     permanent: [
@@ -14,7 +14,7 @@ Level(
         Dynamic(1): "4",
         Dynamic(2): "2",
         Dynamic(3): "1",
-        
+
         Dynamic(4): "8",
         Dynamic(5): "4",
         Dynamic(6): "2",

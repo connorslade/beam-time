@@ -5,7 +5,7 @@ Level(
         Instead of taking in one data bit at a time and shifting them into memory, create a shift register that takes in the innitial values of d1-d8 and sends each bit to the output (OUT) on each clock (CLK) pulse.
         
         The data values stay constant through the entire run",
-    parents: [ "fe48e117-1114-417a-b72b-d80c239797c9" ], // ← shift_register
+    children: [ ],
 
     labels: {
         Dynamic(0): "D1",

@@ -19,7 +19,7 @@ pub struct TreeItem {
 
     pub height: u32,
     pub width: f32,
-    total_width: f32,
+    contours: Vec<(f32, f32)>,
     offset: f32,
     parent_offset: f32,
 }
@@ -44,8 +44,8 @@ impl TreeLayout {
             rows[depth].push(TreeItem {
                 id: level.id,
                 width,
+                contours: vec![(-width / 2.0, width / 2.0)],
                 height: 1,
-                total_width: width,
                 offset: 0.0,
                 parent_offset: 0.0,
                 children: Vec::new(),
@@ -57,47 +57,64 @@ impl TreeLayout {
                 parent.children.push(index);
             }
 
-            if let Some(children) = tree.children(id) {
-                for child in children {
-                    queue.push_back((*child, Some(index), depth + 1));
-                }
-            };
+            for child in &level.children {
+                queue.push_back((*child, Some(index), depth + 1));
+            }
         }
 
         let spacing = 64.0 * ctx.scale_factor;
         let mut this = Self { rows, spacing };
-        this.naive_layout();
+        this.compact_layout();
         this.propagate_offsets();
 
         this
     }
 
-    fn naive_layout(&mut self) {
+    fn compact_layout(&mut self) {
         for depth in (0..self.rows.len() - 1).rev() {
             let (current_row, next_row) = self.rows.split_at_mut(depth + 1);
             let (current_row, next_row) = (&mut current_row[depth], &mut next_row[0]);
 
-            for item in current_row.iter_mut() {
-                let children = item.children.iter().map(|x| &next_row[*x]);
-                let child_width =
-                    children.fold(-self.spacing, |acc, x| acc + x.total_width + self.spacing);
-                item.total_width = item.total_width.max(child_width);
+            for item in current_row.iter_mut().filter(|x| !x.children.is_empty()) {
+                for i in 1..item.children.len() {
+                    let child = &next_row[item.children[i]];
+                    let mut shift = 0.0_f32;
 
-                let mut acc = 0.0;
-                for &child in &item.children {
-                    let child = &mut next_row[child];
-                    child.offset = acc + child.total_width / 2.0;
-                    acc += child.total_width + self.spacing;
+                    for &prev_child in &item.children[0..i] {
+                        shift = shift.max(item_separation(&next_row[prev_child], child));
+                    }
+
+                    for j in i..item.children.len() {
+                        next_row[item.children[j]].offset += shift + self.spacing;
+                    }
                 }
 
-                let mut max_height = 0;
-                for &child in &item.children {
-                    let child = &mut next_row[child];
-                    child.offset -= (acc - self.spacing) / 2.0;
-                    max_height = max_height.max(child.height);
+                let first_child = &next_row[item.children[0]];
+                let last_child = &next_row[*item.children.last().unwrap()];
+                let shift = -((first_child.offset - first_child.width / 2.0)
+                    + (last_child.offset + last_child.width / 2.0))
+                    / 2.0;
+
+                for &child_idx in &item.children {
+                    let child = &mut next_row[child_idx];
+                    child.offset += shift;
+
+                    if child.contours.len() >= item.contours.len() {
+                        item.contours
+                            .resize(child.contours.len() + 1, (f32::INFINITY, f32::NEG_INFINITY));
+                    }
+
+                    for i in 0..child.contours.len() {
+                        let contours = item.contours[i + 1];
+                        item.contours[i + 1] = (
+                            contours.0.min(child.offset + child.contours[i].0),
+                            contours.1.max(child.offset + child.contours[i].1),
+                        );
+                    }
                 }
 
-                item.height += max_height;
+                let max_height = item.children.iter().map(|&x| next_row[x].height).max();
+                item.height += max_height.unwrap_or_default();
             }
         }
     }
@@ -121,4 +138,18 @@ impl TreeItem {
     pub fn offset(&self) -> f32 {
         self.offset + self.parent_offset
     }
+}
+
+fn item_separation(a: &TreeItem, b: &TreeItem) -> f32 {
+    let max_depth = b.contours.len().max(a.contours.len());
+    let mut separation = 0_f32;
+
+    for l in 0..max_depth {
+        let left = b.contours.get(l).map(|x| x.0).unwrap_or(f32::INFINITY);
+        let right = a.contours.get(l).map(|x| x.1).unwrap_or(f32::NEG_INFINITY);
+
+        separation = separation.max((right - left) - (b.offset - a.offset));
+    }
+
+    separation
 }

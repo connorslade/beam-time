@@ -2,7 +2,7 @@ Level(
     id: "72e79fe9-ae4e-4366-a98a-5aaaf7bb584f",
     name: "Pulse-width modulation",
     description: "Make an oscilator with a variable frequency. The input gives the number of ticks to be on, then off before repeating.",
-    parents: [ "d1d080f7-06c4-421d-9125-dceadc5b6f32" ], // ← even_oscillators
+    children: [ ],
 
     labels: {
         Dynamic(0): "4",

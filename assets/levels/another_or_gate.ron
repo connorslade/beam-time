@@ -2,7 +2,7 @@ Level(
     id: "b7ee4ec1-4b9d-46d6-99a6-dd136384304e",
     name: "Another Or Gate",
     description: "There are two main ways to build OR gates, knowing how to build both will help you compact your circuits.",
-    parents: [ "d46980e0-b2d0-4102-ab95-8bdc16d00ca9" ], // ← or_gate
+    children: [ ],
 
     size: (6, 6),
     permanent: [ (0, 5), (1, 5), (5, 0), (5, 1) ],

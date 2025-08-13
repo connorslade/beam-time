@@ -2,7 +2,7 @@ Level(
     id: "568f004d-f7f5-4b23-9fce-2fc9afb6fcbd",
     name: "Binary Encoder",
     description: "Encode the given value into binary.",
-    parents: [ "45052dc5-0d3a-449d-b153-19a608ae52f1" ], // ← binary_decoder
+    children: [ ],
 
     labels: {
         Dynamic(0): "0",

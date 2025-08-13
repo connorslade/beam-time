@@ -2,7 +2,7 @@ Level(
     id: "bd637589-b931-40d5-984c-60f158d1c8a9",
     name: "Edge Detectors",
     description: "On the rising-edge of the input signal, send a pulse to output R and send an output to output F on the falling-edge.",
-    parents: [ "86456173-e27c-4918-ae11-ef5a36147037" ], // ← synchronization
+    children: [ ],
 
     size: (6, 6),
     permanent: [ (0, 5), (4, 0), (5, 0) ],

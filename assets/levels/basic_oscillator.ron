@@ -7,7 +7,7 @@ Level(
         For this level, make the output alternate between the on and off states every four ticks, for a total cycle period of eight ticks.
         
         Instead of using P to start the simulation, use SPACE to step through each simulation tick one at a time.",
-    parents: [ "86456173-e27c-4918-ae11-ef5a36147037" ], // ← synchronization
+    children: [ "d1d080f7-06c4-421d-9125-dceadc5b6f32", "5d317b17-a9b5-4b5c-b07f-e006064581f1" ], // ← even_oscillators, two_tick_clock
 
     size: (6, 6),
     permanent: [ (5, 0) ],

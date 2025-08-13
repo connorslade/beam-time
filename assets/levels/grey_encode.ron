@@ -7,7 +7,7 @@ Level(
         Gray code solves this. In Gray code, suscsesive values only differ by a single bit.
         
         To convert a binary number to Grey code, every bit should be XORed with the bit to its left (more significant).",
-    parents: [ "45052dc5-0d3a-449d-b153-19a608ae52f1" ], // ← binary_decoder
+    children: [ "f90f9889-e68a-40e9-9fef-83ff0324808d" ], // ← grey_decode
 
     labels: {
         Dynamic(0): "128",

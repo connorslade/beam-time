@@ -5,7 +5,7 @@ Level(
         Build a 3-bit counter that counts up by one when INC is pulsed and counts down when DEC is pulsed.
         
         You will never need to to increment past 8 or decrement past 0 and INC and DEC will never both be active.",
-    parents: [ "fc3b280e-6a80-41d2-84d1-c8fa55a3946f" ], // ← counter
+    children: [ ],
 
     labels: {
         Dynamic(0): "INC",

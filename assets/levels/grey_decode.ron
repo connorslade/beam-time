@@ -5,7 +5,7 @@ Level(
         Convert the 8-bit Gray code input back to standard binary. You will need to reverse the encoding process from the previous level.
         
         Remember, to convert a binary number to Grey code, every bit should be XORed with the bit to its left (more significant).",
-    parents: [ "ea9291be-554b-451f-9699-b2f410c02af1" ], // ← grey_encode
+    children: [ ],
 
     labels: {
         Dynamic(0): "8",

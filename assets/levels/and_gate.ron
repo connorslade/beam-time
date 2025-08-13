@@ -2,7 +2,7 @@ Level(
     id: "1c9ddabc-8e4b-41a1-bc0c-e0623226e5c3",
     name: "And Gate",
     description: "Output a signal only when both inputs are active.",
-    parents: [ "d46980e0-b2d0-4102-ab95-8bdc16d00ca9" ],
+    children: [ "3eb940dd-1f76-46c5-8aea-800ae0951364" ], // ← xor_gate
 
     size: Some((6, 6)),
     permanent: [ (0, 5), (1, 5), (5, 0) ],

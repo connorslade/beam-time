@@ -4,9 +4,8 @@ Level(
     description: "
         So far we have only worked with the binary representation of positive integers, but there is actually a clever way to represent negative integers that allows adding them with the same adder circuit you already designed.
         
-        All you have to do to convert a positive integer to a negative (in two's complement) is flip all of the bits, then add one.
-        ",
-    parents: [ "2052ed73-edaf-45b7-8f2f-43993d558ff4" ], // ← adder
+        All you have to do to convert a positive integer to a negative (in two's complement) is flip all of the bits, then add one.",
+    children: [ "597b1d3d-0441-460f-870d-ed77749a07d7" ], // ← adder_subtractor
 
     labels: {
         Dynamic(0): "128",
