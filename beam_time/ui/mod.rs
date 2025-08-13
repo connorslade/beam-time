@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 pub mod board_operations;
 pub mod components;
 pub mod confetti;

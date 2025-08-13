@@ -1,19 +1,29 @@
-use std::{fs, path::PathBuf, time::Instant};
+use std::{
+    collections::HashSet,
+    fs::{self, File},
+    path::PathBuf,
+    time::Instant,
+};
 
-use anyhow::Result;
-use common::user::UserId;
+use anyhow::{Context, Result};
+use bincode::Options;
+use common::{consts::BINCODE_OPTIONS, user::UserId};
 use engine::graphics_context::GraphicsContext;
+use log::error;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[cfg(feature = "steam")]
 use crate::steam::Steam;
-use crate::{consts::CONFIG_FILE, leaderboard::LeaderboardManager, screens::Screen};
+use crate::{consts::paths, leaderboard::LeaderboardManager, screens::Screen};
 
 pub struct App {
     pub id: UserId,
     #[cfg(feature = "steam")]
     pub steam: Steam,
     pub leaderboard: LeaderboardManager,
+    /// Record of all levels that have ever been solved.
+    pub solved: HashSet<Uuid>,
 
     pub start: Instant,
     pub debug: Vec<String>,
@@ -47,11 +57,11 @@ impl App {
             fs::create_dir_all(&data_dir).unwrap();
         }
 
-        let _ = fs::create_dir(data_dir.join("levels"));
-
-        let config = fs::read_to_string(data_dir.join(CONFIG_FILE))
-            .ok()
+        let config = (fs::read_to_string(data_dir.join(paths::CONFIG)).ok())
             .and_then(|s| toml::from_str::<Config>(&s).ok())
+            .unwrap_or_default();
+        let solved = (File::open(data_dir.join("solved.bin")).ok())
+            .and_then(|b| BINCODE_OPTIONS.deserialize_from(b).ok())
             .unwrap_or_default();
 
         #[cfg(feature = "steam")]
@@ -62,6 +72,7 @@ impl App {
             id: UserId::Steam(steam.user_id()),
             #[cfg(not(feature = "steam"))]
             id: UserId::Hardware(crate::util::hwid::get()),
+            solved,
 
             #[cfg(feature = "steam")]
             steam,
@@ -85,7 +96,7 @@ impl App {
 
     pub fn save_config(&self) -> Result<()> {
         fs::write(
-            self.data_dir.join(CONFIG_FILE),
+            self.data_dir.join(paths::CONFIG),
             toml::to_string(&self.config).unwrap(),
         )?;
         Ok(())
@@ -104,6 +115,24 @@ impl App {
 
     pub fn frame(&self) -> u8 {
         self.start.elapsed().as_millis() as u8 / 100 % 3
+    }
+
+    pub fn mark_level_complete(&mut self, id: Uuid) {
+        self.solved.insert(id);
+
+        let file =
+            File::create(self.data_dir.join(paths::SOLVED)).context("Failed to open solved.bin");
+        if let Err(err) = file.and_then(|file| {
+            BINCODE_OPTIONS
+                .serialize_into(file, &self.solved)
+                .context("Failed to serialize into solved.bin")
+        }) {
+            error!("Failed to write solved.bin: {err}");
+        }
+    }
+
+    pub fn level_solved(&self, id: &Uuid) -> bool {
+        self.solved.contains(id)
     }
 }
 

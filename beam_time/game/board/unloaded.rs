@@ -2,11 +2,26 @@ use std::path::{Path, PathBuf};
 
 use log::warn;
 
-use crate::game::board::{Board, BoardMeta};
+use crate::{
+    app::App,
+    game::board::{Board, BoardMeta},
+};
 
 pub struct UnloadedBoard {
     pub path: PathBuf,
     pub meta: BoardMeta,
+}
+
+impl UnloadedBoard {
+    pub fn ever_solved(&self, state: &App) -> bool {
+        if let Some(level) = &self.meta.level
+            && state.level_solved(&level.id)
+        {
+            return true;
+        }
+
+        self.meta.is_solved()
+    }
 }
 
 pub fn load_level_dir(dir: &Path) -> Vec<UnloadedBoard> {

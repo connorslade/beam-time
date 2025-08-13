@@ -27,7 +27,7 @@ use uuid::Uuid;
 use crate::{
     app::App,
     assets::{ALAGARD_FONT, CHECK, UNDEAD_FONT},
-    consts::color,
+    consts::{color, paths},
     game::{
         board::{
             Board, BoardMeta, LevelMeta,
@@ -39,7 +39,6 @@ use crate::{
         components::manual_button::ManualButton,
         misc::{spacing, title_layout},
         pixel_line::PixelLine,
-        tutorial::Tutorial,
     },
 };
 
@@ -117,11 +116,12 @@ impl Screen for CampaignScreen {
             let offset = origin + Vector2::y() * i as f32 * spacing;
 
             for (j, item) in row.iter().enumerate() {
-                let available = self.is_available(item.id) || state.config.debug;
+                let available = self.is_available(state, item.id) || state.config.debug;
                 let worlds = self.worlds.get(&item.id);
                 let solved = worlds
                     .map(|x| x.iter().any(|x| x.meta.is_solved()))
                     .unwrap_or_default();
+                let ever_solved = state.level_solved(&item.id);
 
                 let center = offset + Vector2::x() * item.offset();
                 let text = item.text.clone();
@@ -192,7 +192,7 @@ impl Screen for CampaignScreen {
                             .draw(ctx);
                     });
 
-                    if !solved {
+                    if !ever_solved && !solved {
                         continue;
                     }
 
@@ -210,7 +210,7 @@ impl Screen for CampaignScreen {
     fn on_init(&mut self, state: &mut App) {
         self.worlds.clear();
 
-        let campaign = state.data_dir.join("campaign");
+        let campaign = state.data_dir.join(paths::CAMPAIGN);
         if !campaign.exists() {
             return;
         }
@@ -261,13 +261,13 @@ impl CampaignScreen {
             let id = Uuid::new_v4();
             let path = state
                 .data_dir
-                .join("campaign")
+                .join(paths::CAMPAIGN)
                 .join(format!("{}_{id}.bin", slugify(&level.name)));
             state.push_screen(GameScreen::new(board, path));
         }
     }
 
-    fn is_available(&self, id: Uuid) -> bool {
+    fn is_available(&self, state: &App, id: Uuid) -> bool {
         let Some(parents) = self.tree.get(id).map(|x| &x.parents) else {
             return false;
         };
@@ -275,7 +275,7 @@ impl CampaignScreen {
         for id in parents {
             let worlds = self.worlds.get(id);
             if worlds
-                .map(|x| x.iter().any(|x| x.meta.is_solved()))
+                .map(|x| x.iter().any(|x| x.ever_solved(state)))
                 .unwrap_or_default()
             {
                 return true;

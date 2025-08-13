@@ -6,7 +6,6 @@ use url::Url;
 
 #[cfg(feature = "steam")]
 pub const STEAM_ID: u32 = 3385920;
-pub const CONFIG_FILE: &str = "config.toml";
 pub const MAX_HISTORY: usize = 100;
 pub const AUTOSAVE_INTERVAL: Duration = Duration::from_secs(60 * 5);
 
@@ -42,6 +41,15 @@ pub mod layer {
     pub const UNDER_LASER: i16 = -1;
     pub const TILE_BACKGROUND_OVERLAY: i16 = -2;
     pub const TILE_BACKGROUND: i16 = -3;
+}
+
+/// All relative to data_dir.
+pub mod paths {
+    pub const CAMPAIGN: &str = "campaign";
+    pub const SANDBOX: &str = "sandbox";
+
+    pub const CONFIG: &str = "config.toml";
+    pub const SOLVED: &str = "solved.bin";
 }
 
 pub const WATERFALL: MemoryKey = memory_key!();

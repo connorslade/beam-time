@@ -20,7 +20,7 @@ use uuid::Uuid;
 use crate::{
     app::App,
     assets::{DUPLICATE, EDIT, TRASH, UNDEAD_FONT},
-    consts::layer,
+    consts::{layer, paths},
     game::board::{Board, BoardMeta, LevelMeta, LevelStats, unloaded::UnloadedBoard},
     screens::game::{ActiveModal, GameScreen},
     ui::{
@@ -95,7 +95,7 @@ impl GameScreen {
                             let id = Uuid::new_v4();
                             let path = state
                                 .data_dir
-                                .join("campaign")
+                                .join(paths::CAMPAIGN)
                                 .join(format!("{}_{id}.bin", slugify(&level.name)));
                             if let Err(err) = board.save_exact(&path) {
                                 error!("Failed to create new solution: {err}");

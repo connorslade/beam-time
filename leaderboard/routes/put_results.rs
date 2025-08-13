@@ -13,6 +13,7 @@ use beam_logic::{
     level::default::DEFAULT_LEVELS,
     misc::price,
     simulation::{level_state::LevelResult, runtime::testing::TestingSimulationState},
+    tile::TILE_VERSION,
 };
 use bincode::Options;
 use common::consts::BINCODE_OPTIONS;
@@ -37,6 +38,9 @@ pub fn attach(server: &mut Server<App>) {
 
         let app = ctx.app();
         let body = BINCODE_OPTIONS.deserialize::<PutResults>(&ctx.req.body)?;
+        if body.version != TILE_VERSION {
+            Err("Unsupported tile version!")?;
+        }
 
         let level = DEFAULT_LEVELS
             .iter()

@@ -146,6 +146,7 @@ impl Screen for GameScreen {
                     #[cfg(feature = "steam")]
                     award_campaign_achievements(state, level_meta.id);
 
+                    state.mark_level_complete(level.id);
                     // Upload solution to leaderboard server
                     state
                         .leaderboard

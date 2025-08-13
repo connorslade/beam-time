@@ -13,12 +13,14 @@ pub struct GetResultsResponse {
 pub struct PutResults {
     pub user: UserId,
     pub board: Map<Tile>,
+    pub version: u32,
 }
 
 #[derive(Serialize)]
 pub struct PutResultsRef<'a> {
     pub user: &'a UserId,
     pub board: &'a Map<Tile>,
+    pub version: u32,
 }
 
 #[derive(Copy, Clone, Default, Serialize, Deserialize)]

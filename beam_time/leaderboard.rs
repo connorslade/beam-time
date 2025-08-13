@@ -11,7 +11,10 @@ use url::Url;
 use uuid::Uuid;
 
 use crate::consts::LEADERBOARD_SERVER;
-use beam_logic::{simulation::level_state::LevelResult, tile::Tile};
+use beam_logic::{
+    simulation::level_state::LevelResult,
+    tile::{TILE_VERSION, Tile},
+};
 use common::{consts::BINCODE_OPTIONS, map::Map, user::UserId};
 use leaderboard::api::{
     hmac::hash,
@@ -30,9 +33,12 @@ pub struct LeaderboardManager {
 impl LeaderboardManager {
     pub fn publish_solution(&self, user: &UserId, level: Uuid, board: &Map<Tile>) {
         let path = results_path(level);
-        let body = BINCODE_OPTIONS
-            .serialize(&PutResultsRef { user, board })
-            .unwrap();
+        let results = PutResultsRef {
+            user,
+            board,
+            version: TILE_VERSION,
+        };
+        let body = BINCODE_OPTIONS.serialize(&results).unwrap();
 
         thread::spawn(clone!([{ self.client } as client], move || {
             let auth = hex::encode(hash(&body));

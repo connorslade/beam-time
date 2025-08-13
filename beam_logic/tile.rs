@@ -2,6 +2,8 @@ use serde::{Deserialize, Serialize};
 
 use common::direction::Direction;
 
+pub const TILE_VERSION: u32 = 2;
+
 #[derive(Default, Debug, Copy, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Tile {
     #[default]

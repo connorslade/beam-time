@@ -24,7 +24,7 @@ use slug::slugify;
 use crate::{
     App,
     assets::{ALAGARD_FONT, DUPLICATE, EDIT, TRASH, UNDEAD_FONT},
-    consts::{WATERFALL, color},
+    consts::{WATERFALL, color, paths},
     game::board::{
         Board,
         unloaded::{UnloadedBoard, load_level_dir},
@@ -189,7 +189,7 @@ impl Screen for SandboxScreen {
     }
 
     fn on_init(&mut self, state: &mut App) {
-        self.world_dir = state.data_dir.join("sandbox");
+        self.world_dir = state.data_dir.join(paths::SANDBOX);
         self.load_worlds();
     }
 }
