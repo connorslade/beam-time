@@ -1,12 +1,7 @@
 Level(
     id: "1c9ddabc-8e4b-41a1-bc0c-e0623226e5c3",
     name: "And Gate",
-    description: "
-        Output a signal only when both inputs are active.
-
-        In these first few levels you will build up some basic binary logic gates. As simple as each of these gates are, when combined they can create very complicated behaviors, this game is running on the logic gates in your computer!
-
-        If you don't already know about binary logic, it might not be a bad idea to do some research to be better prepared for the coming levels, or just figure it out as you go!",
+    description: "Output a signal only when both inputs are active.",
     parents: [ "d46980e0-b2d0-4102-ab95-8bdc16d00ca9" ],
 
     size: Some((6, 6)),

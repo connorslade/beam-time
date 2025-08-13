@@ -132,7 +132,8 @@ fn success(
 }
 
 fn failed(ctx: &mut GraphicsContext, layout: &mut ColumnLayout, case: usize) {
-    const MESSAGE: &str = "Check the board to see what went wrong then press ESC to exit the current simulation, make your fixes and re-run the tests.";
+    const MESSAGE: &str =
+        "Check the board to see what went wrong, make your fixes, and re-run the tests.";
     layout.nest(
         ctx,
         layout.clone().justify(Justify::Center),

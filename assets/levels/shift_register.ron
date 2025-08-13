@@ -2,7 +2,7 @@ Level(
     id: "fe48e117-1114-417a-b72b-d80c239797c9",
     name: "Shift Register",
     description: "A shift register is a circuit that stores and shifts data bits in a sequential manner. Every time a clock (CLK) pulse is sent, the current data (DAT) value should be stored in the first output. The previous value of the first output should be stored in the second output, and so on. Effectively shifting all the bits over.",
-    parents: [ "46c56d9a-fda5-4876-aaa7-de80a7fcc710" ], // ← gated_d_latch
+    parents: [ "46c56d9a-fda5-4876-aaa7-de80a7fcc710" ], // ← data_latch
 
     labels: {
         Dynamic(0): "DAT",

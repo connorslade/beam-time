@@ -1,7 +1,7 @@
 Level(
     id: "46c56d9a-fda5-4876-aaa7-de80a7fcc710",
-    name: "Gated D Latch",
-    description: "When enable (E) is active, the signal on D should be forewarded to the output. When E is disabled continue outputting the current value of D.",
+    name: "Data Latch",
+    description: "When enable (E) is active, the signal on D should be forwarded to the output. When E is disabled continue outputting the current value of D.",
     parents: [ "f4444a1c-d2a8-4a7a-b311-ec39322c1776" ], // ← rs_latch
 
     size: (6, 6),

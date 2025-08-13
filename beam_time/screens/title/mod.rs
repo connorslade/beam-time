@@ -197,7 +197,7 @@ impl TitleScreen {
                         if state.config.interface_scale != state.scale_multiplier
                             && let Some(bounds) = tracker.bounds(ctx)
                         {
-                            body("Restart for new interface scale to take effect.")
+                            body("Restart for new scale to take effect.")
                                 .max_width(bounds.width())
                                 .color(color::ERROR)
                                 .layout(ctx, layout);

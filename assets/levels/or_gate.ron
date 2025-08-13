@@ -2,10 +2,11 @@ Level(
     id: "d46980e0-b2d0-4102-ab95-8bdc16d00ca9",
     name: "Or Gate",
     description: "
-        Enable the output when either of the inputs are active.
+        Enable the output when either of the inputs are active. The wall is there to keep you from just routing each input into a different side of the output.
         
-        The wall is there to keep you from just routing each input into a different side of the output.",
-    parents: [ "3d01432a-228c-4cfd-9be3-407a796b49c8" ], // ← slightly_less_basic_routing
+        In these first few levels you will build up some basic binary logic gates. As simple as each of these gates are, when combined they can create very complicated behaviors, this game is running on the logic gates in your computer!",
+    parents: [ "cafeb123-66dc-4b04-b560-5cf80868cae4" ], // ← not_gate
+    
 
     size: (6, 6),
     permanent: [ (0, 5), (1, 5), (5, 0), (5, 1) ],

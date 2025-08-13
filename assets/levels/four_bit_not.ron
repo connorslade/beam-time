@@ -9,7 +9,17 @@ Level(
         (0, 9), (1, 9), (2, 9), (3, 9),
         (4, 0), (5, 0), (6, 0), (7, 0)
     ],
-    labels: { },
+    labels: {
+        Dynamic(0): "8",
+        Dynamic(1): "4",
+        Dynamic(2): "2",
+        Dynamic(3): "1",
+        
+        Dynamic(4): "8",
+        Dynamic(5): "4",
+        Dynamic(6): "2",
+        Dynamic(7): "1",
+    },
     tiles: {
         (0, 9): Emitter( rotation: Down, active: true,  id: 0 ),
         (1, 9): Emitter( rotation: Down, active: true,  id: 1 ),

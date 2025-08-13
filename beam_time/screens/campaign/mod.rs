@@ -74,7 +74,7 @@ impl Screen for CampaignScreen {
                     .default_shadow()
                     .layout(ctx, layout);
 
-                let percent = self.solved_count() as f32 / self.tree.count() as f32 * 100.0;
+                let percent = self.solved_count(state) as f32 / self.tree.count() as f32 * 100.0;
                 Text::new(UNDEAD_FONT, format!("{percent:.0}% Complete"))
                     .scale(Vector2::repeat((scale / 3.0).round()))
                     .position(Vector2::x() * title_padding, Anchor::BottomLeft)
@@ -285,10 +285,10 @@ impl CampaignScreen {
         parents.is_empty()
     }
 
-    fn solved_count(&self) -> usize {
+    fn solved_count(&self, state: &App) -> usize {
         self.worlds
             .values()
-            .filter(|x| x.iter().any(|x| x.meta.is_solved()))
+            .filter(|x| x.iter().any(|x| x.ever_solved(state)))
             .count()
     }
 
