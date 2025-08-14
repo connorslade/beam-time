@@ -101,6 +101,16 @@ impl InputManager {
             .any(|(b, s)| b == &button && s == &ElementState::Pressed)
     }
 
+    pub fn consume_mouse_pressed(&mut self, button: MouseButton) -> bool {
+        self.mouse_actions
+            .iter()
+            .position(|(b, s)| b == &button && s == &ElementState::Pressed)
+            .inspect(|idx| {
+                self.mouse_actions.remove(*idx);
+            })
+            .is_some()
+    }
+
     pub fn mouse_released(&self, button: MouseButton) -> bool {
         self.mouse_actions
             .iter()

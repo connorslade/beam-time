@@ -42,6 +42,7 @@ pub struct TransientBoardState {
 
     pub save_path: Option<PathBuf>,
     pub selection: SelectionState,
+    pub deleting: bool,
 
     pub open_timestamp: Instant,
     pub trash: bool,
@@ -169,6 +170,10 @@ impl Board {
             self.tiles = level.tiles.clone();
         };
     }
+
+    pub fn tile_props(&self, tile: &Tile, pos: &Vector2<i32>) -> (bool, bool, bool) {
+        (tile.is_empty(), self.is_permanent(pos), tile.id().is_some())
+    }
 }
 
 impl BoardMeta {
@@ -189,6 +194,7 @@ impl Default for TransientBoardState {
 
             save_path: None,
             selection: Default::default(),
+            deleting: false,
 
             open_timestamp: Instant::now(),
             trash: false,

@@ -47,11 +47,10 @@ pub const CONTROLS_DESCRIPTION: &[&str] = &[
     "},
     indoc! {"
         • CTRL+Z - Undo
-        • 1-7 - Picks up the corisponding tile from panel
-        • N - Creates a stickey note at the mouse position
-        • +/-/0 - Increses/decreses/rests TPS
-        • SHIFT+0 - ∞ TPS
         • SHIFT+R - Rotates counterclockwise
+        • 1-7 - Picks up the corresponding tile from panel
+        • N - Creates or opens a sticky note at the mouse position
+        • +/-/0/SHIFT+0 - Increses/decreses/resets TPS/∞ TPS
     "},
     indoc! {"
         Selections are a powerful way to modify multiple tiles at once. \

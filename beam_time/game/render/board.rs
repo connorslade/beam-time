@@ -1,5 +1,3 @@
-use std::mem;
-
 use crate::{
     app::App,
     assets::{DYNAMIC_TILE_A, DYNAMIC_TILE_B},
@@ -7,20 +5,15 @@ use crate::{
     consts::CTRL,
     consts::layer,
     game::board::Board,
-    game::{holding::Holding, pancam::Pancam},
+    game::pancam::Pancam,
     ui::misc::tile_label,
-    util::key_events,
 };
 use beam_logic::level::ElementLocation;
-use beam_logic::simulation::{state::BeamState, tile::BeamTile};
-use common::misc::in_bounds;
+use beam_logic::simulation::state::BeamState;
 use engine::{
     drawable::sprite::Sprite,
     drawable::{Anchor, Drawable},
-    exports::{
-        nalgebra::Vector2,
-        winit::{event::MouseButton, keyboard::KeyCode},
-    },
+    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::GraphicsContext,
 };
 
@@ -39,13 +32,9 @@ impl Board {
             state,
         );
 
-        let tile_size = 16.0 * pancam.scale * ctx.scale_factor;
-        let half_tile = Vector2::repeat(tile_size / 2.0);
-
         let tile_counts = pancam.tile_counts(ctx.size());
         let frame = state.frame();
 
-        let shift_down = ctx.input.key_down(KeyCode::ShiftLeft);
         self.transient
             .holding
             .render(ctx, pancam, self.transient.level);
@@ -58,7 +47,6 @@ impl Board {
 
         for x in 0..tile_counts.x {
             for y in 0..tile_counts.y {
-                let render_pos = pancam.render_pos(ctx, (x, y));
                 let pos = pancam.tile_pos(ctx, (x, y));
 
                 if let Some(size) = self.meta.size
@@ -67,17 +55,11 @@ impl Board {
                     continue;
                 }
 
-                let hovered = in_bounds(
-                    ctx.input.mouse(),
-                    (render_pos - half_tile, render_pos + half_tile),
-                );
-
-                self.tile_selection(ctx, pancam, hovered, pos, render_pos);
+                let render_pos = pancam.render_pos(ctx, (x, y));
+                self.tile_selection(ctx, pancam, pos, render_pos);
 
                 let tile = self.tiles.get(pos);
-                let empty = tile.is_empty();
-                let permanent = self.is_permanent(&pos);
-                let dynamic = tile.id().is_some();
+                let (empty, permanent, dynamic) = self.tile_props(&tile, &pos);
 
                 let gridset_index = match (permanent, dynamic) {
                     (true, _) => 1,
@@ -114,98 +96,7 @@ impl Board {
                         .scale(Vector2::repeat(pancam.scale))
                         .position(render_pos, Anchor::Center);
 
-                    if ctx.input.key_pressed(KeyCode::KeyE)
-                        && hovered
-                        && let Some(sim) = sim
-                        && let (BeamTile::Emitter { active, .. }, true) =
-                            (sim.board.get_mut(pos), sim.level.is_none())
-                    {
-                        *active ^= true;
-                    }
-
                     sprite.draw(ctx);
-                }
-
-                // move this out of board render :sob: please
-                if hovered && !shift_down {
-                    if ctx.input.mouse_pressed(MouseButton::Left) {
-                        let old = tile;
-                        match mem::take(&mut self.transient.holding) {
-                            Holding::None if !empty && !permanent => {
-                                *sim = None;
-                                self.transient.history.track_one(pos, old);
-                                self.tiles.remove(pos);
-                                self.transient.holding = Holding::Tile(tile);
-                            }
-                            Holding::Tile(tile) if !permanent => {
-                                *sim = None;
-                                self.transient.history.track_one(pos, old);
-                                self.tiles.set(pos, tile);
-
-                                if !old.is_empty() && !ctx.input.key_down(KeyCode::AltLeft) {
-                                    self.transient.holding = Holding::Tile(old);
-                                }
-                            }
-                            Holding::Paste(tiles) => {
-                                *sim = None;
-                                let mut old = Vec::new();
-                                let mut next = Vec::new();
-
-                                let level = self.transient.level;
-                                for set @ (paste_pos, paste_tile) in tiles {
-                                    let pos = paste_pos + pos;
-                                    let current_tile = self.tiles.get(pos);
-                                    if level
-                                        .map(|x| x.permanent.contains(&pos))
-                                        .unwrap_or_default()
-                                        || current_tile.id().is_some()
-                                    {
-                                        next.push(set);
-                                        continue;
-                                    }
-
-                                    old.push((pos, current_tile));
-                                    self.tiles.set(pos, paste_tile);
-                                }
-
-                                self.transient.history.track_many(old);
-                                if !next.is_empty() {
-                                    self.transient.holding = Holding::Paste(next);
-                                }
-                            }
-                            x => self.transient.holding = x,
-                        }
-                    }
-
-                    if !permanent && ctx.input.mouse_down(MouseButton::Right) && !empty && !dynamic
-                    {
-                        *sim = None;
-                        self.tiles.remove(pos);
-                        self.transient.history.track_one(pos, tile);
-                    }
-
-                    let holding = &mut self.transient.holding;
-                    if holding.is_none() {
-                        key_events!(ctx, {
-                            KeyCode::KeyR => if !permanent {
-                                *sim = None;
-                                if ctx.input.key_down(KeyCode::ShiftLeft) {
-                                    self.tiles.set(pos, tile.rotate_reverse());
-                                } else {
-                                    self.tiles.set(pos, tile.rotate());
-                                }
-                                self.transient.history.track_one(pos, tile);
-                            },
-                            KeyCode::KeyE => if sim.is_none() {
-                                self.tiles.set(pos, tile.activate());
-                                self.transient.history.track_one(pos, tile);
-                            }
-                        });
-                    }
-
-                    if !empty && ctx.input.key_pressed(KeyCode::KeyQ) {
-                        *holding = Holding::Tile(tile.generic());
-                    }
                 }
 
                 grid.draw(ctx);

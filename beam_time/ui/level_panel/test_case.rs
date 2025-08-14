@@ -195,8 +195,9 @@ fn render_tiles<'a, T: Layout>(
         }
     };
 
+    let row_spacing = -2.0 * scale * ctx.scale_factor;
     let sprite = [TILE_DETECTOR, TILE_EMITTER_DOWN][matches!(io_type, Io::Emitter) as usize];
-    let (mut column, mut row) = (ColumnLayout::new(0.0), RowLayout::new(0.0));
+    let (mut column, mut row) = (ColumnLayout::new(0.0), RowLayout::new(row_spacing));
 
     for (idx, (&input, tile)) in items.enumerate() {
         let label = tile_label(ctx, ElementLocation::Dynamic(tile));
@@ -212,7 +213,7 @@ fn render_tiles<'a, T: Layout>(
 
             if config.do_break(io_type, idx) {
                 row.layout(ctx, &mut column);
-                row = RowLayout::new(0.0);
+                row = RowLayout::new(row_spacing);
             }
         }
     }

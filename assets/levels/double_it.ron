@@ -1,7 +1,7 @@
 Level(
     id: "52108765-b8d2-47cf-a0c7-36b3b73cc644",
     name: "Double It",
-    description: "Double the numeric value of the big-endian binary value.",
+    description: "Double the numeric value of the binary value.",
     children: [ "2052ed73-edaf-45b7-8f2f-43993d558ff4", "e69ddcf2-be60-46aa-8964-e818c107154b", "2f854277-df80-4ee8-b5ab-69f7d6587ff4" ], // ← adder, barrel_shifter, bit_reverse
 
     size: (8, 5),
@@ -9,6 +9,25 @@ Level(
         (0, 4), (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4), (7, 4),
         (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0)
     ],
+    labels: {
+        Dynamic(0): "128",
+        Dynamic(1): "64",
+        Dynamic(2): "32",
+        Dynamic(3): "16",
+        Dynamic(4): "8",
+        Dynamic(5): "4",
+        Dynamic(6): "2",
+        Dynamic(7): "1",
+
+        Dynamic(8): "128",
+        Dynamic(9): "64",
+        Dynamic(10): "32",
+        Dynamic(11): "16",
+        Dynamic(12): "8",
+        Dynamic(13): "4",
+        Dynamic(14): "2",
+        Dynamic(15): "1"
+    },
     tiles: {
         (0, 4): Emitter( rotation: Down, active: true, id: 0 ),
         (1, 4): Emitter( rotation: Down, active: true, id: 1 ),

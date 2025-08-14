@@ -23,7 +23,7 @@ use super::{board::Board, holding::Holding, pancam::Pancam};
 #[derive(Default)]
 pub struct SelectionState {
     selection: HashSet<Vector2<i32>>,
-    selection_start: Option<Vector2<i32>>,
+    pub(super) selection_start: Option<Vector2<i32>>,
 
     working_selection: Option<(Vector2<i32>, Vector2<i32>)>,
     last_holding: Holding,
@@ -155,19 +155,10 @@ impl Board {
         &mut self,
         ctx: &mut GraphicsContext,
         pancam: &Pancam,
-        hovered: bool,
         pos: Vector2<i32>,
         render_pos: Vector2<f32>,
     ) {
         let this = &mut self.transient.selection;
-
-        if this.selection_start.is_none()
-            && hovered
-            && ctx.input.key_down(KeyCode::ShiftLeft)
-            && ctx.input.mouse_pressed(MouseButton::Left)
-        {
-            this.selection_start = Some(pos);
-        }
 
         // Return quickly if there is not currently a selection.
         if this.working_selection.is_none() && this.selection.is_empty() {

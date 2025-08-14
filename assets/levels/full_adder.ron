@@ -15,10 +15,10 @@ Level(
     labels: {
         Dynamic(0): "A",
         Dynamic(1): "B",
-        Dynamic(2): "C-In",
+        Dynamic(2): "C-IN",
 
-        Dynamic(3): "Sum",
-        Dynamic(4): "C-Out"
+        Dynamic(3): "SUM",
+        Dynamic(4): "C-OUT"
     },
     disabled: [ ],
     tiles: {

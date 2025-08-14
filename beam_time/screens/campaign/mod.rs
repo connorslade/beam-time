@@ -56,6 +56,12 @@ pub struct CampaignScreen {
 }
 
 impl Screen for CampaignScreen {
+    fn tick(&mut self, _state: &mut App, ctx: &mut GraphicsContext) {
+        if self.layout.is_empty() || ctx.window.dpi_changed().is_some() {
+            self.layout = TreeLayout::generate(&self.tree, ctx);
+        }
+    }
+
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         ctx.background(color::BACKGROUND);
         let t = state.start.elapsed().as_secs_f32();
@@ -99,10 +105,6 @@ impl Screen for CampaignScreen {
         ctx.input
             .key_pressed(KeyCode::Escape)
             .then(|| state.pop_screen());
-
-        if self.layout.is_empty() || ctx.window.dpi_changed().is_some() {
-            self.layout = TreeLayout::generate(&self.tree, ctx);
-        }
 
         let center = ctx.center();
         let spacing = 64.0 * ctx.scale_factor;

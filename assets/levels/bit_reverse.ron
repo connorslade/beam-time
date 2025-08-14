@@ -13,11 +13,23 @@ Level(
         (7, 0), (8, 0), (9, 0), (10, 0), (11, 0), (12, 0), (13, 0), (14, 0)
     ],
     labels: {
-        Dynamic(0): "MSb",
-        Dynamic(7): "LSb",
-
-        Dynamic(8): "LSb",
-        Dynamic(15): "MSb"
+        Dynamic(0): "128",
+        Dynamic(1): "64",
+        Dynamic(2): "32",
+        Dynamic(3): "16",
+        Dynamic(4): "8",
+        Dynamic(5): "4",
+        Dynamic(6): "2",
+        Dynamic(7): "1",
+    
+        Dynamic(8): "1",
+        Dynamic(9): "2",
+        Dynamic(10): "4",
+        Dynamic(11): "8",
+        Dynamic(12): "16",
+        Dynamic(13): "32",
+        Dynamic(14): "64",
+        Dynamic(15): "128"
     },
     disabled: [ ],
     tiles: {

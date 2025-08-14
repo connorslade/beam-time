@@ -16,7 +16,7 @@ pub struct DebugOverlay {
 }
 
 impl Screen for DebugOverlay {
-    fn pre_render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
+    fn tick(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         if state.config.debug && ctx.input.key_down(KeyCode::Slash) {
             ctx.scale_factor = 1.0 + (ctx.scale_factor == 1.0) as u8 as f32;
         }

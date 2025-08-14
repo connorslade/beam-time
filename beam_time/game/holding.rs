@@ -38,7 +38,9 @@ impl Holding {
         pancam: &Pancam,
         level: Option<&'static Level>,
     ) {
-        if ctx.input.mouse_down(MouseButton::Right) || ctx.input.key_pressed(KeyCode::KeyQ) {
+        if (!self.is_none() && ctx.input.consume_mouse_pressed(MouseButton::Right))
+            || ctx.input.key_pressed(KeyCode::KeyQ)
+        {
             *self = Holding::None;
         }
 

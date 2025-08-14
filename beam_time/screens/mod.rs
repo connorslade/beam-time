@@ -11,8 +11,8 @@ pub mod sandbox;
 pub mod title;
 
 pub trait Screen {
+    fn tick(&mut self, _state: &mut App, _ctx: &mut GraphicsContext) {}
     fn render(&mut self, _state: &mut App, _ctx: &mut GraphicsContext) {}
-    fn pre_render(&mut self, _state: &mut App, _ctx: &mut GraphicsContext) {}
     fn post_render(&mut self, _state: &mut App, _ctx: &mut GraphicsContext) {}
 
     fn on_init(&mut self, _state: &mut App) {}
@@ -64,7 +64,7 @@ impl Screens {
     pub fn render(&mut self, ctx: &mut GraphicsContext, state: &mut App) {
         mem::take(&mut self.new_screen).then(|| ctx.input.cancel_clicks());
 
-        self.inner.iter_mut().for_each(|x| x.pre_render(state, ctx));
+        self.inner.iter_mut().for_each(|x| x.tick(state, ctx));
         if let Some(top) = self.top() {
             top.render(state, ctx);
         }

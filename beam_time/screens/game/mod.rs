@@ -185,6 +185,7 @@ impl Screen for GameScreen {
 
         self.board.transient.history.mark_clean();
         self.board.render(ctx, state, &self.pancam, &mut sim.beam);
+        self.board.tick_input(ctx, &self.pancam, &mut sim.beam);
 
         if self.board.transient.history.is_dirty() {
             self.level_result = None;
