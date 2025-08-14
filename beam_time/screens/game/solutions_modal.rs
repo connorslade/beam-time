@@ -20,7 +20,10 @@ use uuid::Uuid;
 use crate::{
     app::App,
     assets::{DUPLICATE, EDIT, TRASH, UNDEAD_FONT},
-    consts::{layer, paths},
+    consts::{
+        layer, paths,
+        spacing::{MARGIN, PADDING},
+    },
     game::board::{Board, BoardMeta, LevelMeta, LevelStats, unloaded::UnloadedBoard},
     screens::game::{ActiveModal, GameScreen},
     ui::{
@@ -34,7 +37,7 @@ use crate::{
             horizontal_rule::Rule,
             modal::{Modal, modal_buttons},
         },
-        misc::{body, modal_size, spacing},
+        misc::{body, modal_size},
     },
 };
 
@@ -44,16 +47,15 @@ impl GameScreen {
         self.solutions.sort_by_key(|x| Reverse(x.meta.last_played));
         let level = self.board.transient.level.unwrap();
 
-        let (margin, padding) = spacing(ctx);
         let modal = Modal::new(modal_size(ctx))
             .position(ctx.center(), Anchor::Center)
-            .margin(margin)
+            .margin(MARGIN)
             .layer(layer::UI_OVERLAY);
         modal.draw(ctx, |ctx, root| {
             let size = root.available();
             let body = body(size.x);
 
-            ColumnLayout::new(padding)
+            ColumnLayout::new(PADDING)
                 .justify(Justify::Center)
                 .show(ctx, root, |ctx, layout| {
                     RowLayout::new(0.0).show(ctx, layout, |ctx, layout| {
@@ -169,8 +171,6 @@ impl GameScreen {
         layout: &mut ColumnLayout,
         index: usize,
     ) {
-        let (_, padding) = spacing(ctx);
-
         let (path, meta) = if index == 0 {
             (&self.save_file, &self.board.meta)
         } else {
@@ -180,7 +180,7 @@ impl GameScreen {
 
         let mut new_board = None;
         let mut load = None;
-        ColumnLayout::new(padding).show(ctx, layout, |ctx, layout| {
+        ColumnLayout::new(PADDING).show(ctx, layout, |ctx, layout| {
             let level = meta.level.as_ref().unwrap();
             let text = if let Some(LevelStats { cost, latency }) = level.solved {
                 let cost = cost.separate_with_commas();
@@ -207,7 +207,7 @@ impl GameScreen {
                         title.layout(ctx, layout);
                     }
 
-                    let row = RowLayout::new(padding).direction(Direction::MaxToMin);
+                    let row = RowLayout::new(PADDING).direction(Direction::MaxToMin);
                     row.show(ctx, layout, |ctx, layout| {
                         let button = |asset| {
                             Sprite::new(asset)

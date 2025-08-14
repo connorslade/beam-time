@@ -35,7 +35,7 @@ impl Drawable for Key {
             .scale(Vector2::repeat(self.scale))
             .draw(ctx);
 
-        let center = self.pos + Vector2::new(4.5, 6.0) * self.scale * ctx.scale_factor;
+        let center = self.pos + Vector2::new(4.5, 6.0) * self.scale;
         Text::new(UNDEAD_FONT, self.text)
             .position(center, Anchor::Center)
             .scale(Vector2::repeat(self.scale))
@@ -48,8 +48,8 @@ impl LayoutElement for Key {
         self.pos += distance;
     }
 
-    fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
-        let size = Vector2::new(9.0, 11.0) * self.scale * ctx.scale_factor;
+    fn bounds(&self, _ctx: &mut GraphicsContext) -> Bounds2D {
+        let size = Vector2::new(9.0, 11.0) * self.scale;
         Bounds2D::new(self.pos, self.pos + size)
     }
 

@@ -5,11 +5,8 @@ use crate::{
         BIG_RIGHT_ARROW, HISTOGRAM_MARKER, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR,
         TILE_EMITTER_DOWN, UNDEAD_FONT,
     },
-    ui::{
-        components::manual_button::ManualButton,
-        level_panel::horizontal_rule,
-        misc::{spacing, tile_label},
-    },
+    consts::spacing::MARGIN,
+    ui::{components::manual_button::ManualButton, level_panel::horizontal_rule, misc::tile_label},
 };
 use beam_logic::{
     level::{ElementLocation, Level, LevelIo as Io, case::CasePreview},
@@ -54,8 +51,7 @@ impl LevelPanel {
         let scale = Vector2::repeat(4.0);
         horizontal_rule(ctx, layout);
 
-        let (margin, _) = spacing(ctx);
-        ColumnLayout::new(margin).show(ctx, layout, |ctx, layout| {
+        ColumnLayout::new(MARGIN).show(ctx, layout, |ctx, layout| {
             RowLayout::new(0.0)
                 .justify(Justify::Center)
                 .show(ctx, layout, |ctx, layout| {
@@ -67,7 +63,7 @@ impl LevelPanel {
 
                     layout.nest(
                         ctx,
-                        RowLayout::new(8.0 * ctx.scale_factor)
+                        RowLayout::new(8.0)
                             .justify(Justify::Center)
                             .direction(Direction::MaxToMin),
                         |ctx, layout| {
@@ -100,7 +96,7 @@ impl LevelPanel {
                                 };
 
                             let digits = level.tests.visible_count().ilog10() as usize + 1;
-                            let width = (digits * 4 + digits - 1) as f32 * 4.0 * ctx.scale_factor;
+                            let width = (digits * 4 + digits - 1) as f32 * 4.0;
                             button(ctx, layout, RIGHT_ARROW, true);
                             layout.nest(
                                 ctx,
@@ -130,7 +126,7 @@ impl LevelPanel {
                 && let Some(desc) = display.descriptions.get(&(case_idx as u32))
             {
                 RowLayout::new(0.0).show(ctx, layout, |ctx, layout| {
-                    Spacer::new_x(2.0 * 4.0 * ctx.scale_factor).layout(ctx, layout);
+                    Spacer::new_x(2.0 * 4.0).layout(ctx, layout);
                     Text::new(UNDEAD_FONT, desc)
                         .max_width(layout.available().x)
                         .scale(Vector2::repeat(2.0))
@@ -168,7 +164,7 @@ fn case_small(
         |ctx, layout| {
             render_tiles(ctx, layout, 2.0, level, Io::Emitter, preview.laser());
 
-            Spacer::new_y(8.0 * ctx.scale_factor).layout(ctx, layout);
+            Spacer::new_y(8.0).layout(ctx, layout);
             Sprite::new(HISTOGRAM_MARKER)
                 .scale(Vector2::repeat(2.0))
                 .layout(ctx, layout);
@@ -186,21 +182,21 @@ fn render_tiles<'a, T: Layout>(
     io_type: Io,
     items: impl Iterator<Item = (&'a bool, u32)>,
 ) {
-    let tile_label_offset = Vector2::repeat(8.0 * scale * ctx.scale_factor);
-    let tile_label = |ctx: &mut GraphicsContext, pos| -> Box<dyn LayoutElement> {
+    let tile_label_offset = Vector2::repeat(8.0 * scale);
+    let tile_label = |pos| -> Box<dyn LayoutElement> {
         if let Some(label) = level.labels.get(&pos) {
-            Box::new(tile_label(ctx, scale, tile_label_offset, label).z_index(1))
+            Box::new(tile_label(scale, tile_label_offset, label).z_index(1))
         } else {
             Box::new(DummyDrawable::new())
         }
     };
 
-    let row_spacing = -2.0 * scale * ctx.scale_factor;
+    let row_spacing = -2.0 * scale;
     let sprite = [TILE_DETECTOR, TILE_EMITTER_DOWN][matches!(io_type, Io::Emitter) as usize];
     let (mut column, mut row) = (ColumnLayout::new(0.0), RowLayout::new(row_spacing));
 
     for (idx, (&input, tile)) in items.enumerate() {
-        let label = tile_label(ctx, ElementLocation::Dynamic(tile));
+        let label = tile_label(ElementLocation::Dynamic(tile));
         let tile_sprite = Sprite::new(sprite)
             .uv_offset(Vector2::new(16 * input as i32, 0))
             .scale(Vector2::repeat(scale));

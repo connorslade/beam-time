@@ -43,6 +43,11 @@ pub mod layer {
     pub const TILE_BACKGROUND: i16 = -3;
 }
 
+pub mod spacing {
+    pub const MARGIN: f32 = 16.0;
+    pub const PADDING: f32 = 10.0;
+}
+
 /// All relative to data_dir.
 pub mod paths {
     pub const CAMPAIGN: &str = "campaign";

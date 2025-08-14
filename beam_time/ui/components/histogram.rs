@@ -40,10 +40,10 @@ impl Histogram {
 
 impl Drawable for Histogram {
     fn draw(self, ctx: &mut GraphicsContext) {
-        let px = 4.0 * ctx.scale_factor;
+        let px = 4.0;
         let bar = Vector2::new(4.0, 1.0) * px;
         let (width, height) = (bar.x * 12.0, 15.0 * px);
-        let position = self.position + Vector2::y() * (px + 12.0 * ctx.scale_factor);
+        let position = self.position + Vector2::y() * (px + 12.0);
 
         let max_value = *self.data.bins.iter().max().unwrap() as f32;
 
@@ -77,7 +77,7 @@ impl Drawable for Histogram {
                 .scale(Vector2::repeat(2.0))
                 .draw(ctx);
 
-            let text_offset = offset + Vector2::y() * (6.0 * ctx.scale_factor + px);
+            let text_offset = offset + Vector2::y() * (6.0 + px);
             Text::new(UNDEAD_FONT, real.to_string())
                 .position(position + text_offset, Anchor::BottomCenter)
                 .scale(Vector2::repeat(2.0))
@@ -87,7 +87,7 @@ impl Drawable for Histogram {
         if let Some(title) = self.title {
             let offset = Vector2::new(
                 width / 2.0,
-                height + px * 3.0 + 26.0 * ctx.scale_factor * self.real.is_some() as u8 as f32,
+                height + px * 3.0 + 26.0 * self.real.is_some() as u8 as f32,
             );
 
             Text::new(UNDEAD_FONT, title)
@@ -112,11 +112,10 @@ impl LayoutElement for Histogram {
         self.position += distance;
     }
 
-    fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
-        let size = (Vector2::new(12.0, 5.0) * 16.0
+    fn bounds(&self, _ctx: &mut GraphicsContext) -> Bounds2D {
+        let size = Vector2::new(12.0, 5.0) * 16.0
             + Vector2::y() * 26.0 * self.real.is_some() as u8 as f32
-            + Vector2::y() * 20.0 * self.title.is_some() as u8 as f32)
-            * ctx.scale_factor;
+            + Vector2::y() * 20.0 * self.title.is_some() as u8 as f32;
         Bounds2D::new(self.position, self.position + size)
     }
 

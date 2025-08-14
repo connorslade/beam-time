@@ -58,7 +58,7 @@ impl Confetti {
 
     pub fn render(&mut self, ctx: &mut GraphicsContext) {
         let viewport = ctx.size();
-        let half_size = 1.5 * 4.0 * ctx.scale_factor;
+        let half_size = 1.5 * 4.0;
 
         self.particles.retain(|x| {
             x.position.x > -half_size

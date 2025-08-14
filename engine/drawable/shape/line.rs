@@ -63,7 +63,7 @@ impl Drawable for Line {
     fn draw(self, ctx: &mut GraphicsContext) {
         let [a, b] = self.points;
         let direction = (b - a).normalize();
-        let p = Vector2::new(-direction.y, direction.x) * (self.thickness * ctx.scale_factor / 2.0);
+        let p = Vector2::new(-direction.y, direction.x) * (self.thickness / 2.0);
 
         let mut vert = |position| {
             ctx.shapes.push_vertex(ShapeVertex {

@@ -24,7 +24,7 @@ use slug::slugify;
 use crate::{
     App,
     assets::{ALAGARD_FONT, DUPLICATE, EDIT, TRASH, UNDEAD_FONT},
-    consts::{WATERFALL, color, paths},
+    consts::{WATERFALL, color, paths, spacing::PADDING},
     game::board::{
         Board,
         unloaded::{UnloadedBoard, load_level_dir},
@@ -37,7 +37,7 @@ use crate::{
             delete::{self, delete_modal},
         },
         components::button::{ButtonEffects, ButtonExt},
-        misc::{spacing, title_layout},
+        misc::title_layout,
         waterfall::Waterfall,
     },
     util::time::{human_duration, human_duration_minimal},
@@ -64,8 +64,6 @@ enum ActiveModal {
 
 impl Screen for SandboxScreen {
     fn render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        let (_, padding) = spacing(ctx);
-
         ctx.background(color::BACKGROUND);
         Waterfall::new(WATERFALL).draw(ctx);
         self.modals(state, ctx);
@@ -85,7 +83,7 @@ impl Screen for SandboxScreen {
         let mut root = RootLayout::new(ctx.center(), Anchor::Center);
         root.nest(
             ctx,
-            ColumnLayout::new(32.0 * ctx.scale_factor).justify(Justify::Center),
+            ColumnLayout::new(32.0).justify(Justify::Center),
             |ctx, layout| {
                 if self.worlds.is_empty() {
                     Text::new(UNDEAD_FONT, "No worlds...")
@@ -93,14 +91,13 @@ impl Screen for SandboxScreen {
                         .scale(Vector2::repeat(4.0))
                         .layout(ctx, layout);
                 } else {
-                    let width = (ctx.size().x * 0.75)
-                        .clamp(400.0 * ctx.scale_factor, 600.0 * ctx.scale_factor);
+                    let width = (ctx.size().x * 0.75).clamp(400.0, 600.0);
 
                     for (i, board) in self.worlds.iter().enumerate() {
                         let tracker = LayoutTracker::new(memory_key!(i));
                         ctx.defer(move |ctx| {
                             if let Some(bounds) = tracker.bounds(ctx) {
-                                let offset = Vector2::repeat(padding);
+                                let offset = Vector2::repeat(PADDING);
                                 let (size, pos) =
                                     (bounds.size() + offset * 2.0, bounds.min - offset);
 
@@ -117,7 +114,7 @@ impl Screen for SandboxScreen {
                             }
                         });
 
-                        let column = ColumnLayout::new(padding).tracked(tracker);
+                        let column = ColumnLayout::new(PADDING).tracked(tracker);
                         column.show(ctx, layout, |ctx, layout| {
                             RowLayout::new(0.0)
                                 .justify(Justify::Center)
@@ -133,7 +130,7 @@ impl Screen for SandboxScreen {
                                         .layout(ctx, layout);
 
                                     let row =
-                                        RowLayout::new(padding).direction(Direction::MaxToMin);
+                                        RowLayout::new(PADDING).direction(Direction::MaxToMin);
                                     row.show(ctx, layout, |ctx, layout| {
                                         let button = |asset| {
                                             Sprite::new(asset)

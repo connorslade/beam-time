@@ -14,7 +14,10 @@ use indoc::indoc;
 use crate::{
     App,
     assets::UNDEAD_FONT,
-    consts::{color, layer},
+    consts::{
+        color, layer,
+        spacing::{MARGIN, PADDING},
+    },
     screens::title::{ActiveModal, TitleScreen},
     ui::{
         components::{
@@ -22,7 +25,7 @@ use crate::{
             horizontal_rule::Rule,
             modal::{Modal, modal_buttons},
         },
-        misc::{body, modal_size, spacing},
+        misc::{body, modal_size},
     },
 };
 
@@ -71,10 +74,9 @@ enum Page {
     Controls,
 }
 
-fn about_general(ctx: &mut GraphicsContext, width: f32) -> Box<dyn LayoutElement> {
-    let (margin, _) = spacing(ctx);
+fn about_general(width: f32) -> Box<dyn LayoutElement> {
     let text = Text::new(UNDEAD_FONT, GENERAL_DESCRIPTION.trim_end())
-        .max_width(width - margin * 2.0)
+        .max_width(width - MARGIN * 2.0)
         .scale(Vector2::repeat(2.0));
     Box::new(text)
 }
@@ -82,7 +84,7 @@ fn about_general(ctx: &mut GraphicsContext, width: f32) -> Box<dyn LayoutElement
 fn about_controls(ctx: &mut GraphicsContext, width: f32) -> Box<dyn LayoutElement> {
     let body = body(width);
 
-    let mut layout = ColumnLayout::new(12.0 * ctx.scale_factor);
+    let mut layout = ColumnLayout::new(12.0);
     for (i, desc) in CONTROLS_DESCRIPTION.iter().enumerate() {
         body(desc.trim_end()).layout(ctx, &mut layout);
         if i + 1 != CONTROLS_DESCRIPTION.len() {
@@ -95,27 +97,26 @@ fn about_controls(ctx: &mut GraphicsContext, width: f32) -> Box<dyn LayoutElemen
 
 impl TitleScreen {
     pub fn about_modal(&mut self, _state: &mut App, ctx: &mut GraphicsContext) {
-        let (margin, padding) = spacing(ctx);
         let width = modal_size(ctx).x;
-        let inner_width = width - 2.0 * margin;
+        let inner_width = width - 2.0 * MARGIN;
 
         let current = *ctx.memory.get_or_insert(PAGE_KEY, Page::General);
         let element = match current {
-            Page::General => about_general(ctx, inner_width),
+            Page::General => about_general(inner_width),
             Page::Controls => about_controls(ctx, inner_width),
         };
 
         let height = element.bounds(ctx).height();
-        let modal = Modal::new(Vector2::new(width, height + 120.0 * ctx.scale_factor))
+        let modal = Modal::new(Vector2::new(width, height + 120.0))
             .position(ctx.center(), Anchor::Center)
-            .margin(margin)
+            .margin(MARGIN)
             .layer(layer::OVERLAY);
 
         let size = modal.inner_size();
         modal.draw(ctx, |ctx, root| {
             let body = body(size.x);
 
-            root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+            root.nest(ctx, ColumnLayout::new(PADDING), |ctx, layout| {
                 layout.nest(
                     ctx,
                     RowLayout::new(0.0).justify(Justify::Center),
@@ -127,7 +128,7 @@ impl TitleScreen {
                             ctx,
                             RowLayout::new(0.0).direction(Direction::MaxToMin),
                             |ctx, layout| {
-                                layout.nest(ctx, RowLayout::new(padding), |ctx, layout| {
+                                layout.nest(ctx, RowLayout::new(PADDING), |ctx, layout| {
                                     for (idx, page) in Page::ALL.into_iter().enumerate() {
                                         let button = body(page.name());
 
@@ -151,7 +152,7 @@ impl TitleScreen {
                         );
                     },
                 );
-                Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
+                Spacer::new_y(4.0).layout(ctx, layout);
 
                 layout.layout(ctx, element);
 

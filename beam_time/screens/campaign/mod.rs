@@ -27,7 +27,7 @@ use uuid::Uuid;
 use crate::{
     app::App,
     assets::{ALAGARD_FONT, CHECK, UNDEAD_FONT},
-    consts::{color, paths},
+    consts::{color, paths, spacing::PADDING},
     game::{
         board::{
             Board, BoardMeta, LevelMeta,
@@ -35,17 +35,15 @@ use crate::{
         },
         pancam::Pancam,
     },
-    ui::{
-        components::manual_button::ManualButton,
-        misc::{spacing, title_layout},
-        pixel_line::PixelLine,
-    },
+    ui::{components::manual_button::ManualButton, misc::title_layout, pixel_line::PixelLine},
 };
 
 use super::{Screen, game::GameScreen};
 
 mod layout;
 use layout::TreeLayout;
+
+const SPACING: f32 = 64.0;
 
 pub struct CampaignScreen {
     tree: LevelTree,
@@ -67,7 +65,7 @@ impl Screen for CampaignScreen {
         let t = state.start.elapsed().as_secs_f32();
 
         let (scale, pos) = title_layout(ctx, 8.0);
-        let title_padding = 6.0 * (scale / 3.0).round() * ctx.scale_factor;
+        let title_padding = 6.0 * (scale / 3.0).round();
 
         let mut root = RootLayout::new(pos, Anchor::TopCenter);
         let tracker = LayoutTracker::new(memory_key!());
@@ -92,9 +90,8 @@ impl Screen for CampaignScreen {
         root.draw(ctx);
 
         if let Some(bounds) = tracker.bounds(ctx) {
-            let (_, padding) = spacing(ctx);
-            Rectangle::new(bounds.size() + Vector2::repeat(padding * 2.0))
-                .position(bounds.min - Vector2::repeat(padding), Anchor::BottomLeft)
+            Rectangle::new(bounds.size() + Vector2::repeat(PADDING * 2.0))
+                .position(bounds.min - Vector2::repeat(PADDING), Anchor::BottomLeft)
                 .color(color::BACKGROUND)
                 .z_index(3)
                 .draw(ctx);
@@ -107,15 +104,14 @@ impl Screen for CampaignScreen {
             .then(|| state.pop_screen());
 
         let center = ctx.center();
-        let spacing = 64.0 * ctx.scale_factor;
         let height = self.layout.rows[0][0].height;
         let origin = Vector2::new(
             center.x,
-            (center.y - (height as f32 * spacing) / 2.0).max(spacing),
+            (center.y - (height as f32 * SPACING) / 2.0).max(SPACING),
         );
 
         for (i, row) in self.layout.rows.iter().enumerate() {
-            let offset = origin + Vector2::y() * i as f32 * spacing;
+            let offset = origin + Vector2::y() * i as f32 * SPACING;
 
             for (j, item) in row.iter().enumerate() {
                 let available = self.is_available(state, item.id) || state.config.debug;
@@ -139,7 +135,7 @@ impl Screen for CampaignScreen {
 
                 if solved {
                     let size = text.size(ctx);
-                    let offset = Vector2::new(size.x / 2.0 + 9.0 * ctx.scale_factor, size.y / 2.0);
+                    let offset = Vector2::new(size.x / 2.0 + 9.0, size.y / 2.0);
                     Sprite::new(CHECK)
                         .position(self.pancam.pan + center + offset, Anchor::Center)
                         .scale(Vector2::repeat(3.0))
@@ -153,14 +149,10 @@ impl Screen for CampaignScreen {
 
                     if available {
                         let size = text.size(ctx);
-                        let px = 2.0 * ctx.scale_factor;
-                        RectangleOutline::new(
-                            Vector2::new(size.x + px * 4.0, size.y + px * 4.0),
-                            2.0,
-                        )
-                        .position(self.pancam.pan + center, Anchor::Center)
-                        .z_index(2)
-                        .draw(ctx);
+                        RectangleOutline::new(Vector2::new(size.x + 8.0, size.y + 8.0), 2.0)
+                            .position(self.pancam.pan + center, Anchor::Center)
+                            .z_index(2)
+                            .draw(ctx);
 
                         if ctx.input.mouse_pressed(MouseButton::Left) {
                             // We can remove it bc we're going to be going to a new
@@ -176,7 +168,7 @@ impl Screen for CampaignScreen {
                 for child in item.children.iter() {
                     let offset = self.layout.rows[i + 1][*child].offset();
                     let (_, shapes) = ctx.draw_callback(|ctx| {
-                        let end = origin + Vector2::new(offset, (i + 1) as f32 * spacing);
+                        let end = origin + Vector2::new(offset, (i + 1) as f32 * SPACING);
                         let mid = (center + end) / 2.0;
 
                         // todo: like optimize this or smth

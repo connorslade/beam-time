@@ -93,20 +93,20 @@ fn success(
                     }
                 })
                 .layout(ctx, layout);
-            Spacer::new_y(5.0 * ctx.scale_factor).layout(ctx, layout);
+            Spacer::new_y(5.0).layout(ctx, layout);
 
             Text::new(UNDEAD_FONT, text)
                 .scale(Vector2::repeat(2.0))
                 .max_width(layout.available().x)
                 .layout(ctx, layout);
 
-            Spacer::new_y(8.0 * ctx.scale_factor).layout(ctx, layout);
+            Spacer::new_y(8.0).layout(ctx, layout);
             let Some(hist_data) = state.leaderboard.get_results(level.id) else {
                 Text::new(UNDEAD_FONT, "Failed to load global leaderboard.")
                     .scale(Vector2::repeat(2.0))
                     .color(color::ERROR)
                     .layout(ctx, layout);
-                Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
+                Spacer::new_y(4.0).layout(ctx, layout);
                 return;
             };
 

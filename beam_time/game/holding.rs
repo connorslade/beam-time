@@ -85,7 +85,7 @@ impl Holding {
                     }
                 });
 
-                let tile_size = 16.0 * pancam.scale * ctx.scale_factor;
+                let tile_size = 16.0 * pancam.scale;
                 for (pos, tile) in tiles.iter() {
                     let render_pos = ctx.input.mouse() + tile_size * pos.map(|x| x as f32);
                     render_tile(ctx, pancam, &level, *tile, render_pos);
@@ -119,7 +119,7 @@ fn render_tile(
             .position(position, Anchor::Center)
             .z_index(layer::TILE_HOLDING_BACKGROUND)
             .draw(ctx);
-        tile_label(ctx, shared.scale, position, label)
+        tile_label(shared.scale, position, label)
             .z_index(layer::TILE_HOLDING)
             .draw(ctx);
     }

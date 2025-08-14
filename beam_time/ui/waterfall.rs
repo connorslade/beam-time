@@ -51,14 +51,14 @@ impl Drawable for Waterfall {
     fn draw(self, ctx: &mut GraphicsContext) {
         let mut rng = rand::rng();
         let size = ctx.size();
-        let tile_offset = 8.0 * 4.0 * ctx.scale_factor;
+        let tile_offset = 8.0 * 4.0;
 
         // todo: maybe do smth about this
         let memory: &mut Memory = unsafe { &mut *(ctx.memory as *mut _) };
         let state = memory.get_or_insert_with(self.key, WaterfallState::default);
 
-        let logical_area = size.x * size.y / ctx.scale_factor.powi(2);
-        let count = (logical_area.sqrt() / 30.0) as usize;
+        let area = size.x * size.y;
+        let count = (area.sqrt() / 30.0) as usize;
 
         let tiles = &mut state.tiles;
         let is_empty = tiles.is_empty();
@@ -96,7 +96,7 @@ impl Drawable for Waterfall {
                 .draw(ctx);
 
             if !ctx.window.just_focused() {
-                tile.pos.y -= tile.vel * ctx.delta_time * ctx.scale_factor;
+                tile.pos.y -= tile.vel * ctx.delta_time;
             }
 
             if tile.pos.y < -tile_offset || i > count {

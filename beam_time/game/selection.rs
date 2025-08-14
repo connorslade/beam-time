@@ -40,7 +40,7 @@ impl Board {
 
         this.working_selection = this.selection_start.map(|start| {
             let end = pancam
-                .screen_to_world_space(ctx, ctx.input.mouse())
+                .screen_to_world_space(ctx.input.mouse())
                 .map(|x| x.ceil() as i32);
 
             (
@@ -58,7 +58,7 @@ impl Board {
         let in_level = self.transient.level.is_some();
         if let (Some((min, max)), false) = (this.working_selection, ctrl || alt || in_level) {
             let middle = ((min + max).map(|x| x as f32) - Vector2::repeat(1.0)) / 2.0;
-            let screen = pancam.world_to_screen_space(ctx, middle);
+            let screen = pancam.world_to_screen_space(middle);
             // todo clip to screen?
 
             let size = max - min + Vector2::repeat(1);
@@ -135,7 +135,7 @@ impl Board {
             cut.then(|| self.transient.history.track_many(old));
 
             let origin = pancam
-                .screen_to_world_space(ctx, ctx.input.mouse())
+                .screen_to_world_space(ctx.input.mouse())
                 .map(|x| x.ceil() as i32);
             list.iter_mut().for_each(|(pos, _)| *pos -= origin);
 
@@ -191,11 +191,11 @@ impl Board {
         };
 
         // Draw overlay_selection if the tile is in the selection and the direction is not
-        let px = ctx.scale_factor * pancam.scale;
         if in_selection(pos) {
             for dir in Direction::ALL {
                 let offset_point = dir.offset(pos);
                 if !in_selection(offset_point) {
+                    let px = pancam.scale;
                     let size = match dir {
                         Direction::Up | Direction::Down => Vector2::new(16.0, 1.0),
                         _ => Vector2::new(1.0, 16.0),

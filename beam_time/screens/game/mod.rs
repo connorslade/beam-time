@@ -78,7 +78,7 @@ impl Screen for GameScreen {
 
         if mem::take(&mut self.needs_init) {
             let pan = if let Some(size) = self.board.meta.size {
-                let tile_size = 16.0 * self.pancam.scale * ctx.scale_factor;
+                let tile_size = 16.0 * self.pancam.scale;
                 let half_board = size.map(|x| x as f32) * tile_size / 2.0;
                 ctx.center() + Vector2::repeat(tile_size) - half_board
             } else {

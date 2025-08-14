@@ -56,7 +56,7 @@ impl Rule {
 
 impl Drawable for Rule {
     fn draw(self, ctx: &mut GraphicsContext) {
-        let px = 4.0 * ctx.scale_factor;
+        let px = 4.0;
         let dots = (self.width / px / 2.0) as u32;
 
         for i in 0..dots {
@@ -78,8 +78,8 @@ impl LayoutElement for Rule {
         self.position += distance;
     }
 
-    fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
-        let parallel = 4.0 * ctx.scale_factor + self.margin * 2.0;
+    fn bounds(&self, _ctx: &mut GraphicsContext) -> Bounds2D {
+        let parallel = 4.0 + self.margin * 2.0;
         let size = match self.direction {
             RuleDirection::Horizontal => Vector2::new(self.width, parallel),
             RuleDirection::Vertical => Vector2::new(parallel, self.width),

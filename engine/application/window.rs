@@ -11,12 +11,13 @@ use crate::misc::Mutable;
 pub struct WindowManager {
     window: Arc<Window>,
 
-    pub(crate) size: Vector2<u32>,
+    /// The size of the window in logical pixels.
+    pub(crate) size: Vector2<f32>,
     scale_factor: f32,
     close_next: bool,
     close: bool,
 
-    size_changed: Option<Vector2<u32>>,
+    size_changed: Option<Vector2<f32>>,
     dpi_changed: Option<f32>,
     focus_change: Option<bool>,
 
@@ -28,11 +29,12 @@ pub struct WindowManager {
 impl WindowManager {
     pub(crate) fn new(window: Arc<Window>) -> Self {
         let size = window.inner_size();
+        let scale_factor = window.scale_factor() as f32;
 
         Self {
             window,
 
-            size: Vector2::new(size.width, size.height),
+            size: Vector2::new(size.width, size.height).map(|x| x as f32) / scale_factor,
             scale_factor: 1.0,
             close_next: false,
             close: false,
@@ -57,7 +59,8 @@ impl WindowManager {
             }
             WindowEvent::Resized(size) => {
                 self.size_changed = Some(self.size);
-                self.size = Vector2::new(size.width, size.height);
+                self.size =
+                    Vector2::new(size.width, size.height).map(|x| x as f32) / self.scale_factor;
             }
             _ => {}
         }
@@ -107,13 +110,13 @@ impl WindowManager {
 impl WindowManager {
     #[inline(always)]
     pub fn size_changed(&self) -> Option<Vector2<f32>> {
-        self.size_changed.map(|x| x.map(|x| x as f32))
+        self.size_changed
     }
 
     #[inline(always)]
     pub fn delta_size(&self) -> Vector2<f32> {
         if let Some(resized) = self.size_changed {
-            self.size.map(|x| x as f32) - resized.map(|x| x as f32)
+            self.size - resized
         } else {
             Vector2::zeros()
         }
@@ -126,7 +129,7 @@ impl WindowManager {
 
     #[inline(always)]
     pub fn resized(&self) -> Option<Vector2<f32>> {
-        self.size_changed.map(|x| x.map(|x| x as f32))
+        self.size_changed
     }
 
     #[inline(always)]
@@ -137,5 +140,10 @@ impl WindowManager {
     #[inline(always)]
     pub fn just_focused(&self) -> bool {
         self.focus_change == Some(true)
+    }
+
+    #[inline(always)]
+    pub fn scale_factor(&self) -> f32 {
+        self.scale_factor
     }
 }

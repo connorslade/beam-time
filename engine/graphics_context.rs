@@ -4,7 +4,7 @@ use nalgebra::Vector2;
 use wgpu::Color;
 
 use crate::{
-    application::{State, input::InputManager, window::WindowManager},
+    application::{input::InputManager, window::WindowManager},
     assets::{SpriteRef, manager::AssetManager},
     audio::AudioManager,
     color::Rgb,
@@ -36,8 +36,6 @@ pub struct GraphicsContext<'a> {
     /// Functions to run after main render function completes
     pub(crate) defer: Vec<DeferCallback>,
 
-    /// Current window scale_factor
-    pub scale_factor: f32,
     /// The time elapsed since the last frame
     pub delta_time: f32,
     /// Which frame is currently being rendered (starting from zero)
@@ -45,36 +43,12 @@ pub struct GraphicsContext<'a> {
 }
 
 impl<'a> GraphicsContext<'a> {
-    pub fn new(
-        input: &'a mut InputManager,
-        window: &'a mut WindowManager,
-        memory: &'a mut Memory,
-        state: &'a State,
-        delta_time: f32,
-        scale_factor: f32,
-    ) -> Self {
-        GraphicsContext {
-            assets: state.assets.clone(),
-            audio: &state.audio,
-            memory,
-            input,
-            window,
-            sprites: Vec::new(),
-            shapes: Default::default(),
-            background: Default::default(),
-            defer: Vec::new(),
-            scale_factor,
-            delta_time,
-            frame: state.frame,
-        }
-    }
-
     pub fn sprite_count(&self) -> usize {
         self.sprites.len()
     }
 
     pub fn size(&self) -> Vector2<f32> {
-        self.window.size.map(|x| x as f32)
+        self.window.size
     }
 
     pub fn center(&self) -> Vector2<f32> {

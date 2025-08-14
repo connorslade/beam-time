@@ -4,12 +4,11 @@ use beam_logic::level::tree::LevelTree;
 use engine::{drawable::text::Text, exports::nalgebra::Vector2, graphics_context::GraphicsContext};
 use uuid::{Uuid, uuid};
 
-use crate::assets::UNDEAD_FONT;
+use crate::{assets::UNDEAD_FONT, screens::campaign::SPACING};
 
 #[derive(Default)]
 pub struct TreeLayout {
     pub rows: Vec<Vec<TreeItem>>,
-    spacing: f32,
 }
 
 pub struct TreeItem {
@@ -62,8 +61,7 @@ impl TreeLayout {
             }
         }
 
-        let spacing = 64.0 * ctx.scale_factor;
-        let mut this = Self { rows, spacing };
+        let mut this = Self { rows };
         this.compact_layout();
         this.propagate_offsets();
 
@@ -85,7 +83,7 @@ impl TreeLayout {
                     }
 
                     for j in i..item.children.len() {
-                        next_row[item.children[j]].offset += shift + self.spacing;
+                        next_row[item.children[j]].offset += shift + SPACING;
                     }
                 }
 

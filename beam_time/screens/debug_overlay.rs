@@ -3,7 +3,7 @@ use std::time::{Duration, Instant};
 use engine::{
     drawable::text::Text,
     drawable::{Anchor, Drawable},
-    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
+    exports::nalgebra::Vector2,
     graphics_context::GraphicsContext,
 };
 
@@ -16,12 +16,6 @@ pub struct DebugOverlay {
 }
 
 impl Screen for DebugOverlay {
-    fn tick(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
-        if state.config.debug && ctx.input.key_down(KeyCode::Slash) {
-            ctx.scale_factor = 1.0 + (ctx.scale_factor == 1.0) as u8 as f32;
-        }
-    }
-
     fn post_render(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         self.frames += 1;
         if self.last_update.elapsed() >= Duration::from_secs(1) {
@@ -30,7 +24,11 @@ impl Screen for DebugOverlay {
             self.last_update = Instant::now();
         }
 
-        let (fps, sprites, scale) = (self.last_frames, ctx.sprite_count(), ctx.scale_factor);
+        let (fps, sprites, scale) = (
+            self.last_frames,
+            ctx.sprite_count(),
+            ctx.window.scale_factor(),
+        );
         let text = if state.config.debug {
             format!(
                 "FPS: {fps}\nSprites: {sprites}\nScale: {scale:.1}\n{}",
@@ -43,9 +41,8 @@ impl Screen for DebugOverlay {
         };
         state.debug.clear();
 
-        let pos = ctx.size() - Vector2::new(10.0, 10.0) * scale;
         Text::new(UNDEAD_FONT, &text)
-            .position(pos, Anchor::TopRight)
+            .position(ctx.size() - Vector2::new(10.0, 10.0), Anchor::TopRight)
             .scale(Vector2::repeat(2.0))
             .z_index(OVERLAY)
             .draw(ctx);

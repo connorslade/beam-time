@@ -152,12 +152,11 @@ impl ApplicationHandler for Application<'_> {
         }
 
         state.window.on_window_event(&event);
-        state.input.on_window_event(&event, state.window.size.y);
+        state.input.on_window_event(&event, &state.window);
         match event {
             WindowEvent::RedrawRequested => {
                 let gcx = &state.graphics;
 
-                let scale_factor = gcx.window.scale_factor() as f32;
                 let delta_time = state.last_frame.elapsed().as_secs_f32();
                 state.last_frame = Instant::now();
                 state.memory.garbage_collect();
@@ -173,7 +172,6 @@ impl ApplicationHandler for Application<'_> {
                     defer: Vec::new(),
                     window: &mut state.window,
                     input: &mut state.input,
-                    scale_factor,
                     delta_time,
                     frame: state.frame,
                 };

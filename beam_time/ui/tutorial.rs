@@ -9,8 +9,8 @@ use engine::{
 
 use crate::{
     assets::{RIGHT_ARROW, UNDEAD_FONT},
-    consts::layer,
-    ui::{components::modal::Modal, misc::spacing},
+    consts::{layer, spacing::MARGIN},
+    ui::components::modal::Modal,
 };
 
 pub struct Tutorial {
@@ -45,23 +45,22 @@ impl Drawable for Tutorial {
         *t += ctx.delta_time;
 
         let dx = ((*t * 3.0).sin() + 1.0) / 2.0;
-        let offset = -Vector2::x() * ((dx * 2.0).floor() + 1.0) * 4.0 * ctx.scale_factor;
+        let offset = -Vector2::x() * ((dx * 2.0).floor() + 1.0) * 4.0;
         Sprite::new(RIGHT_ARROW)
             .scale(Vector2::repeat(4.0))
             .position(self.point + offset, Anchor::CenterRight)
             .z_index(layer::UI_OVERLAY)
             .draw(ctx);
 
-        let (margin, _) = spacing(ctx);
         let text = Text::new(UNDEAD_FONT, self.text)
-            .max_width(self.width * ctx.scale_factor - margin * 2.0)
+            .max_width(self.width - MARGIN * 2.0)
             .scale(Vector2::repeat(2.0));
-        let size = text.size(ctx) + Vector2::repeat(margin * 2.0);
+        let size = text.size(ctx) + Vector2::repeat(MARGIN * 2.0);
 
-        let offset = -Vector2::x() * 7.0 * 4.0 * ctx.scale_factor;
+        let offset = -Vector2::x() * 7.0 * 4.0;
         Modal::new(size)
             .layer(layer::UI_OVERLAY)
-            .margin(margin)
+            .margin(MARGIN)
             .popup(false)
             .position(self.point + offset, Anchor::CenterRight)
             .draw(ctx, |ctx, layout| {

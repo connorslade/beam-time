@@ -181,14 +181,13 @@ impl Text {
         }
 
         let font = ctx.assets.get_font(self.font);
-        let dynamic_scale = self.dynamic_scale * ctx.scale_factor;
-        let scaled = TextLayout::generate(&font.desc, self.max_width, dynamic_scale, &self.text);
+        let scaled =
+            TextLayout::generate(&font.desc, self.max_width, self.dynamic_scale, &self.text);
 
         let base = if self.scale == self.dynamic_scale {
             scaled.size
         } else {
-            let scale = self.scale * ctx.scale_factor;
-            TextLayout::generate(&font.desc, self.max_width, scale, &self.text).size
+            TextLayout::generate(&font.desc, self.max_width, self.scale, &self.text).size
         };
 
         *self.layout.borrow_mut() = Some(CachedLayout { base, scaled });
@@ -214,7 +213,6 @@ impl Text {
 impl Drawable for Text {
     fn draw(self, ctx: &mut GraphicsContext) {
         let font = ctx.assets.get_font(self.font);
-        let scale = self.dynamic_scale * ctx.scale_factor;
 
         let atlas_size = font.texture.size.map(|x| x as f32);
         let process_uv = |uv: Vector2<u32>| uv.map(|x| x as f32).component_div(&atlas_size);
@@ -231,8 +229,12 @@ impl Drawable for Text {
             let uv_a = process_uv(character.uv);
             let uv_b = process_uv(character.uv + character.size);
 
-            let size = character.size.map(|x| x as f32).component_mul(&scale);
-            let baseline_shift = Vector2::y() * character.baseline_shift as f32 * scale.y;
+            let size = character
+                .size
+                .map(|x| x as f32)
+                .component_mul(&self.dynamic_scale);
+            let baseline_shift =
+                Vector2::y() * character.baseline_shift as f32 * self.dynamic_scale.y;
             let pos = (pos + self.pos + baseline_shift + self.position_anchor.offset(dynamic_size))
                 .map(|x| x.round())
                 + dynamic_scale_offset;
@@ -248,7 +250,7 @@ impl Drawable for Text {
 
             if let Some((offset, color)) = self.shadow {
                 ctx.sprites.push(GpuSprite {
-                    points: gpu_sprite.points.map(|x| x + offset * ctx.scale_factor),
+                    points: gpu_sprite.points.map(|x| x + offset),
                     color: gpu_sprite.color * color,
                     ..gpu_sprite
                 });

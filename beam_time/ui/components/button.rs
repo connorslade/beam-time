@@ -109,9 +109,8 @@ impl<T: ButtonContent + 'static> Drawable for Button<T> {
 
         let bounds = self.asset.bounds(ctx);
         if self.effects.contains(ButtonEffects::Arrows) && hover {
-            let px = scale * ctx.scale_factor;
-            let padding = Vector2::x() * t * 2.0 * px.x;
-            let base = Vector2::y() * ((bounds.min.y + bounds.max.y) / 2.0 - px.y);
+            let padding = Vector2::x() * t * 2.0 * scale.x;
+            let base = Vector2::y() * ((bounds.min.y + bounds.max.y) / 2.0 - scale.y);
             let (x_min, x_max) = (Vector2::x() * bounds.min.x, Vector2::x() * bounds.max.x);
             Sprite::new(RIGHT_ARROW)
                 .scale(scale)

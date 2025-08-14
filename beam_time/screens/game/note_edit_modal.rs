@@ -20,12 +20,15 @@ use ordered_float::OrderedFloat;
 use crate::{
     app::App,
     assets::TRASH,
-    consts::layer,
+    consts::{
+        layer,
+        spacing::{MARGIN, PADDING},
+    },
     game::board::Note,
     screens::game::ActiveModal,
     ui::{
         components::{button::ButtonExt, modal::Modal, text_input::TextInput},
-        misc::{body, modal_size, spacing},
+        misc::{body, modal_size},
     },
 };
 
@@ -46,7 +49,7 @@ enum Operation {
 impl GameScreen {
     pub(super) fn note_edit_modal(&mut self, _state: &mut App, ctx: &mut GraphicsContext) {
         if matches!(self.modal, ActiveModal::None) && ctx.input.consume_key_pressed(KeyCode::KeyN) {
-            let position = self.pancam.screen_to_world_space(ctx, ctx.input.mouse());
+            let position = self.pancam.screen_to_world_space(ctx.input.mouse());
             let closest = closest_note(&self.board.notes, position);
             let closest_distance = closest.map(|x| x.1).unwrap_or(f32::MAX);
 
@@ -66,10 +69,9 @@ impl GameScreen {
         }
 
         if let ActiveModal::NoteEdit { index, old } = &mut self.modal {
-            let (margin, padding) = spacing(ctx);
             let modal = Modal::new(modal_size(ctx))
                 .position(ctx.center(), Anchor::Center)
-                .margin(margin)
+                .margin(MARGIN)
                 .layer(layer::UI_OVERLAY);
 
             let (mut close, mut operation) = (false, Operation::None);
@@ -78,10 +80,10 @@ impl GameScreen {
             modal.draw(ctx, |ctx, root| {
                 let body = body(size.x);
 
-                root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+                root.nest(ctx, ColumnLayout::new(PADDING), |ctx, layout| {
                     layout.nest(
                         ctx,
-                        RowLayout::new(padding).justify(Justify::Center),
+                        RowLayout::new(PADDING).justify(Justify::Center),
                         |ctx, layout| {
                             body("Editing Note")
                                 .scale(Vector2::repeat(4.0))
@@ -89,7 +91,7 @@ impl GameScreen {
 
                             layout.nest(
                                 ctx,
-                                RowLayout::new(padding).direction(Direction::MaxToMin),
+                                RowLayout::new(PADDING).direction(Direction::MaxToMin),
                                 |ctx, layout| {
                                     let tracker = LayoutTracker::new(memory_key!());
                                     Sprite::new(TRASH)
@@ -114,7 +116,7 @@ impl GameScreen {
                     let title = TextInput::new(memory_key!())
                         .default_active(true)
                         .placeholder("Title")
-                        .width(size.x.min(400.0 * ctx.scale_factor))
+                        .width(size.x.min(400.0))
                         .max_chars(32);
 
                     let body = TextInput::new(memory_key!())

@@ -96,9 +96,8 @@ impl Slider {
 
 impl Drawable for Slider {
     fn draw(self, ctx: &mut GraphicsContext) {
-        let px = 4.0 * ctx.scale_factor;
-        let full_width = self.width * ctx.scale_factor;
-        let width = full_width - px * 4.0;
+        let px = 4.0;
+        let width = self.width - px * 4.0;
 
         let state = self.state(ctx.memory);
         let offset = Vector2::x() * (state.t * width);
@@ -122,7 +121,7 @@ impl Drawable for Slider {
         hovered.then(|| ctx.window.cursor(CursorIcon::Pointer));
 
         let state = self.state(ctx.memory);
-        let size = Vector2::new(full_width, px * 6.0);
+        let size = Vector2::new(self.width, px * 6.0);
         let in_bounds = in_bounds(mouse, (self.position, self.position + size));
         if click && hovered {
             state.dragging = true;
@@ -141,7 +140,7 @@ impl Drawable for Slider {
             state.t = (default - min) / (max - min);
         }
 
-        Rectangle::new(Vector2::new(full_width, px))
+        Rectangle::new(Vector2::new(self.width, px))
             .position(self.position + Vector2::y() * px * 2.5, Anchor::BottomLeft)
             .color(color::MODAL_BORDER)
             .draw(ctx);
@@ -154,8 +153,8 @@ impl LayoutElement for Slider {
         self.position += distance;
     }
 
-    fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
-        let size = Vector2::new(self.width, 6.0 * 4.0) * ctx.scale_factor;
+    fn bounds(&self, _ctx: &mut GraphicsContext) -> Bounds2D {
+        let size = Vector2::new(self.width, 6.0 * 4.0);
         Bounds2D::new(self.position, self.position + size)
     }
 
@@ -175,7 +174,7 @@ pub fn slider<L: Layout + LayoutElement + 'static>(
         .layout(ctx, layout);
     layout.nest(
         ctx,
-        RowLayout::new(10.0 * ctx.scale_factor).justify(Justify::Center),
+        RowLayout::new(10.0).justify(Justify::Center),
         |ctx, layout| {
             let slider = Slider::new(memory_key!(name))
                 .start(*value)
@@ -185,7 +184,7 @@ pub fn slider<L: Layout + LayoutElement + 'static>(
             slider.layout(ctx, layout);
 
             let max_digits = (max.round() as u32).ilog10() + 4;
-            let max_width = max_digits as f32 * 4.0 * ctx.scale_factor * 2.0;
+            let max_width = max_digits as f32 * 4.0 * 2.0;
 
             let text = Text::new(UNDEAD_FONT, format!("{value:.2}")).scale(Vector2::repeat(2.0));
             let space = max_width - text.size(ctx).x;

@@ -6,6 +6,8 @@ use winit::{
     keyboard::{KeyCode, PhysicalKey},
 };
 
+use crate::application::window::WindowManager;
+
 #[derive(Default)]
 pub struct InputManager {
     mouse: Vector2<f32>,
@@ -21,10 +23,12 @@ pub struct InputManager {
 }
 
 impl InputManager {
-    pub(crate) fn on_window_event(&mut self, window_event: &WindowEvent, window_height: u32) {
+    pub(crate) fn on_window_event(&mut self, window_event: &WindowEvent, window: &WindowManager) {
         match window_event {
             WindowEvent::CursorMoved { position: pos, .. } => {
-                let new_mouse = Vector2::new(pos.x as f32, window_height as f32 - pos.y as f32);
+                let scale = window.scale_factor();
+                let new_mouse =
+                    Vector2::new(pos.x as f32 / scale, window.size.y - pos.y as f32 / scale);
                 self.mouse_delta += new_mouse - self.mouse;
                 self.mouse = new_mouse;
             }

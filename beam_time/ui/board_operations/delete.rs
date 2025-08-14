@@ -9,11 +9,14 @@ use engine::{
 };
 
 use crate::{
-    consts::layer,
+    consts::{
+        layer,
+        spacing::{MARGIN, PADDING},
+    },
     ui::{
         board_operations::BoardType,
         components::modal::{Modal, modal_buttons},
-        misc::{body, modal_size, spacing},
+        misc::{body, modal_size},
     },
 };
 
@@ -24,10 +27,9 @@ pub enum Result {
 }
 
 pub fn delete_modal(ctx: &mut GraphicsContext, mode: BoardType, name: &str) -> Result {
-    let (margin, padding) = spacing(ctx);
     let modal = Modal::new(modal_size(ctx))
         .position(ctx.center(), Anchor::Center)
-        .margin(margin)
+        .margin(MARGIN)
         .layer(layer::UI_OVERLAY);
     let size = modal.inner_size();
 
@@ -35,11 +37,11 @@ pub fn delete_modal(ctx: &mut GraphicsContext, mode: BoardType, name: &str) -> R
     modal.draw(ctx, |ctx, root| {
         let body = body(size.x);
 
-        root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+        root.nest(ctx, ColumnLayout::new(PADDING), |ctx, layout| {
             body("Deletion Confirmation")
                 .scale(Vector2::repeat(4.0))
                 .layout(ctx, layout);
-            Spacer::new_y(4.0 * ctx.scale_factor).layout(ctx, layout);
+            Spacer::new_y(4.0).layout(ctx, layout);
 
             let text = format!(
                 "Are you sure you want to delete the {} world '{name}'?",

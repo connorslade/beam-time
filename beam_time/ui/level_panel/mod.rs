@@ -7,12 +7,12 @@ use thousands::Separable;
 use crate::{
     app::App,
     assets::{COLLAPSE, UNDEAD_FONT},
-    consts::layer,
-    game::board::Board,
-    ui::{
-        components::button::{ButtonEffects, ButtonExt},
-        misc::spacing,
+    consts::{
+        layer,
+        spacing::{MARGIN, PADDING},
     },
+    game::board::Board,
+    ui::components::button::{ButtonEffects, ButtonExt},
 };
 use beam_logic::{
     level::Level,
@@ -61,8 +61,7 @@ impl LevelPanel {
             return;
         };
 
-        let tile_size = 4.0 * 16.0 * ctx.scale_factor;
-        let (margin, padding) = spacing(ctx);
+        let tile_size = 4.0 * 16.0;
         let width = tile_size * WIDTH as f32;
 
         // idk maybe cache or smth — not that it really matters
@@ -78,16 +77,16 @@ impl LevelPanel {
             - ctx.window.delta_size().y;
         self.height = exp_decay(self.height, height, 10.0, ctx.delta_time);
 
-        let position = Vector2::new(4.0 * ctx.scale_factor, ctx.size().y);
+        let position = Vector2::new(4.0, ctx.size().y);
         let dummy = || DummyDrawable::new().no_padding();
-        Modal::new(Vector2::new(width, self.height + padding))
+        Modal::new(Vector2::new(width, self.height + PADDING))
             .position(position, Anchor::TopLeft)
             .layer(layer::UI_BACKGROUND)
             .sides(ModalSides::LEFT | ModalSides::BOTTOM | ModalSides::RIGHT)
-            .margin(margin)
+            .margin(MARGIN)
             .popup(false)
             .draw(ctx, |ctx, layout| {
-                layout.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+                layout.nest(ctx, ColumnLayout::new(PADDING), |ctx, layout| {
                     self.level_info(ctx, layout, level, price, tiles);
                     self.test_case(ctx, layout, level, sim);
                     dummy().tracked(base).layout(ctx, layout);
@@ -107,7 +106,6 @@ impl LevelPanel {
         price: u32,
         tiles: usize,
     ) {
-        let (_, padding) = spacing(ctx);
         layout.nest(
             ctx,
             RowLayout::new(0.0).justify(Justify::Center),
@@ -116,7 +114,7 @@ impl LevelPanel {
                     .scale(Vector2::repeat(3.0))
                     .layout(ctx, layout);
 
-                RowLayout::new(padding)
+                RowLayout::new(PADDING)
                     .justify(Justify::Center)
                     .direction(Direction::MaxToMin)
                     .show(ctx, layout, |ctx, layout| {
@@ -132,7 +130,6 @@ impl LevelPanel {
             },
         );
 
-        let padding = 10.0 * ctx.scale_factor;
         let status_tracker = LayoutTracker::new(memory_key!());
         let status_text = format!(
             "${} • {tiles} tile{}",
@@ -146,7 +143,7 @@ impl LevelPanel {
 
         let tracker = LayoutTracker::new(memory_key!());
         if let Some(bounds) = tracker.bounds(ctx) {
-            let desired = (-bounds.height() - padding * 2.0) * self.collapsed as u8 as f32;
+            let desired = (-bounds.height() - PADDING * 2.0) * self.collapsed as u8 as f32;
 
             let offset = ctx.memory.get_or_insert(memory_key!(), 0.0);
             let last_offset = *offset;
@@ -162,7 +159,7 @@ impl LevelPanel {
             .scale(Vector2::repeat(2.0));
 
         if let Some(status_bounds) = status_tracker.bounds(ctx) {
-            let top = status_bounds.min.y - padding + ctx.window.delta_size().y;
+            let top = status_bounds.min.y - PADDING + ctx.window.delta_size().y;
             desc = desc.clip(Vector2::zeros(), Vector2::new(f32::MAX, top));
         }
 
@@ -171,7 +168,7 @@ impl LevelPanel {
 }
 
 fn horizontal_rule(ctx: &mut GraphicsContext, layout: &mut ColumnLayout) {
-    let margin = 12.0 * ctx.scale_factor;
+    let margin = 12.0;
     Rule::horizontal(layout.available().x + margin * 2.0)
         .position(Vector2::x() * -margin)
         .margin(margin / 2.0)

@@ -54,7 +54,7 @@ impl Sprite {
     // Reference: https://stackoverflow.com/a/37865332/12471934
     pub fn is_hovered(&self, ctx: &GraphicsContext) -> bool {
         let asset = ctx.assets.get_sprite(self.texture);
-        let points = self.points(ctx, asset, false);
+        let points = self.points(asset, false);
 
         let ab = points[1] - points[0];
         let am = ctx.input.mouse() - points[0];
@@ -119,13 +119,8 @@ impl Sprite {
         self
     }
 
-    fn points(
-        &self,
-        ctx: &GraphicsContext,
-        sprite: &SpriteAsset,
-        dynamic_scale: bool,
-    ) -> [Vector2<f32>; 4] {
-        let size = sprite.size.map(|x| x as f32) * ctx.scale_factor;
+    fn points(&self, sprite: &SpriteAsset, dynamic_scale: bool) -> [Vector2<f32>; 4] {
+        let size = sprite.size.map(|x| x as f32);
         let scaled_size = size.component_mul(&self.scale);
         let dynamic_scale = if dynamic_scale {
             self.dynamic_scale
@@ -200,7 +195,7 @@ impl Drawable for Sprite {
         ctx.sprites.push(GpuSprite {
             texture: asset.texture,
             uv: asset.uv(self.uv_offset).into(),
-            points: self.points(ctx, asset, true),
+            points: self.points(asset, true),
             color: Rgb::new(self.color.r, self.color.g, self.color.b),
             z_index: self.z_index,
             clip: self.clip,
@@ -216,7 +211,7 @@ impl LayoutElement for Sprite {
     fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
         // TODO: Cache points maybe?
         let asset = ctx.assets.get_sprite(self.texture);
-        let points = self.points(ctx, asset, false);
+        let points = self.points(asset, false);
         Bounds2D::from_points(&points)
     }
 

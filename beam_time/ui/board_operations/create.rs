@@ -11,14 +11,17 @@ use engine::{
 };
 
 use crate::{
-    consts::{color, layer},
+    consts::{
+        color, layer,
+        spacing::{MARGIN, PADDING},
+    },
     ui::{
         board_operations::BoardType,
         components::{
             modal::{Modal, modal_buttons},
             text_input::TextInput,
         },
-        misc::{body, modal_size, spacing},
+        misc::{body, modal_size},
     },
 };
 
@@ -38,28 +41,27 @@ pub fn create_modal(ctx: &mut GraphicsContext, mode: BoardType, start: Option<&s
     let edit = start.is_some();
     let mut name_error = false;
 
-    let (margin, padding) = spacing(ctx);
     let modal = Modal::new(modal_size(ctx))
         .position(ctx.center(), Anchor::Center)
-        .margin(margin)
+        .margin(MARGIN)
         .layer(layer::UI_OVERLAY);
 
     let size = modal.inner_size();
     modal.draw(ctx, |ctx, root| {
         let body = body(size.x);
 
-        root.nest(ctx, ColumnLayout::new(padding), |ctx, layout| {
+        root.nest(ctx, ColumnLayout::new(PADDING), |ctx, layout| {
             body(mode.title(edit))
                 .scale(Vector2::repeat(4.0))
                 .layout(ctx, layout);
             body(mode.body(edit)).layout(ctx, layout);
-            Spacer::new_y(8.0 * ctx.scale_factor).layout(ctx, layout);
+            Spacer::new_y(8.0).layout(ctx, layout);
 
             body(&format!("{} Name", mode.type_name())).layout(ctx, layout);
 
             let name = TextInput::new(NAME_KEY)
                 .default_active(true)
-                .width(size.x.min(400.0 * ctx.scale_factor));
+                .width(size.x.min(400.0));
             if let Some(start) = start
                 && !name.is_edited(ctx)
             {

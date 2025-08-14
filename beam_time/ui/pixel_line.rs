@@ -47,7 +47,7 @@ impl Drawable for PixelLine {
     // Bresenham's line algorithm, from Wikipedia:
     // https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
     fn draw(self, ctx: &mut GraphicsContext) {
-        let px = 4.0 * ctx.scale_factor;
+        let px = 4.0;
 
         let quantize = |val: f32| (val / px).round() as i32;
         let (a, b) = (self.a.map(quantize), self.b.map(quantize));

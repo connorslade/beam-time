@@ -47,7 +47,7 @@ impl Board {
 
         for x in 0..tile_counts.x {
             for y in 0..tile_counts.y {
-                let pos = pancam.tile_pos(ctx, (x, y));
+                let pos = pancam.tile_pos(x as i32, y as i32);
 
                 if let Some(size) = self.meta.size
                     && (pos.x < 0 || pos.y < 0 || pos.x as u32 >= size.x || pos.y as u32 >= size.y)
@@ -55,7 +55,7 @@ impl Board {
                     continue;
                 }
 
-                let render_pos = pancam.render_pos(ctx, (x, y));
+                let render_pos = pancam.render_pos(x, y);
                 self.tile_selection(ctx, pancam, pos, render_pos);
 
                 let tile = self.tiles.get(pos);
@@ -82,7 +82,7 @@ impl Board {
                     .map(ElementLocation::Dynamic)
                     .unwrap_or(ElementLocation::Static(pos));
                 if let Some(label) = self.transient.level.and_then(|x| x.labels.get(&element)) {
-                    let label = tile_label(ctx, pancam.scale, render_pos, label);
+                    let label = tile_label(pancam.scale, render_pos, label);
                     label.z_index(layer::OVERLAY).draw(ctx);
                 }
 

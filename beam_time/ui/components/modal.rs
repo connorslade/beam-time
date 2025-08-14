@@ -154,7 +154,7 @@ pub fn modal_buttons(
     width: f32,
     (left, right): (&str, &str),
 ) -> (bool, bool) {
-    let button_space = ctx.scale_factor * 10.0;
+    let button_space = 10.0;
     let body = body(width);
 
     let button = |ctx: &mut GraphicsContext, layout: &mut RowLayout, text: &str, rotation| {
@@ -170,9 +170,7 @@ pub fn modal_buttons(
         let direction = [LayoutDirection::MaxToMin, LayoutDirection::MinToMax][rotation as usize];
         layout.nest(
             ctx,
-            RowLayout::new(button_space)
-                .direction(direction)
-                .tracked(tracker),
+            RowLayout::new(10.0).direction(direction).tracked(tracker),
             |ctx, layout| {
                 Sprite::new(HISTOGRAM_MARKER)
                     .scale(Vector2::repeat(2.0))
@@ -221,7 +219,7 @@ impl Modal {
             .z_index(self.layer)
             .draw(ctx);
 
-        let px = 4.0 * ctx.scale_factor;
+        let px = 4.0;
         let tb_size = Vector2::new(self.size.x - px * 2.0, px);
         let lr_size = Vector2::new(px, self.size.y - px * 2.0);
         let c_size = Vector2::repeat(px);

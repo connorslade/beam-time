@@ -19,7 +19,7 @@ impl Board {
         sim: &mut Option<BeamState>,
     ) {
         let pos = pancam
-            .screen_to_world_space(ctx, ctx.input.mouse())
+            .screen_to_world_space(ctx.input.mouse())
             .map(|x| x.ceil() as i32);
         let tile = self.tiles.get(pos);
         let (empty, permanent, dynamic) = self.tile_props(&tile, &pos);

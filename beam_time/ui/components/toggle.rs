@@ -52,8 +52,8 @@ impl LayoutElement for Toggle {
         self.position += distance;
     }
 
-    fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
-        let size = Vector2::new(8.0, 5.0) * self.scale * ctx.scale_factor;
+    fn bounds(&self, _ctx: &mut GraphicsContext) -> Bounds2D {
+        let size = Vector2::new(8.0, 5.0) * self.scale;
         Bounds2D::new(Vector2::zeros(), size).translated(self.position)
     }
 
@@ -75,7 +75,7 @@ pub fn toggle<L: Layout + LayoutElement + 'static>(
 
     layout.nest(
         ctx,
-        RowLayout::new(10.0 * ctx.scale_factor)
+        RowLayout::new(10.0)
             .justify(Justify::Center)
             .tracked(tracker),
         |ctx, layout| {

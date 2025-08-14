@@ -57,7 +57,7 @@ impl TilePicker {
         }
 
         let mouse = ctx.input.mouse();
-        let px = 4.0 * ctx.scale_factor;
+        let px = 4.0;
         let tile_size = 16.0 * px;
 
         Modal::new(Vector2::new(tile_size * 7.0 - px * 2.0, tile_size - px))
@@ -137,7 +137,7 @@ impl TilePicker {
     }
 
     fn update_offset(&mut self, ctx: &GraphicsContext, sim: bool) -> bool {
-        let max_offset = 16.0 * 4.0 * ctx.scale_factor;
+        let max_offset = 16.0 * 4.0;
         let end = max_offset * sim as u8 as f32;
 
         self.offset = exp_decay(self.offset, end, 10.0, ctx.delta_time);

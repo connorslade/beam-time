@@ -83,12 +83,12 @@ impl Pancam {
         self.pan_goal += delta;
     }
 
-    pub fn origin_tile(&self, ctx: &GraphicsContext) -> Vector2<i32> {
-        (self.pan / (16.0 * self.scale * ctx.scale_factor)).map(|x| x.floor() as i32)
+    pub fn origin_tile(&self) -> Vector2<i32> {
+        (self.pan / (16.0 * self.scale)).map(|x| x.floor() as i32)
     }
 
-    pub fn render_pos(&self, ctx: &GraphicsContext, (x, y): (usize, usize)) -> Vector2<f32> {
-        let tile_size = 16.0 * self.scale * ctx.scale_factor;
+    pub fn render_pos(&self, x: usize, y: usize) -> Vector2<f32> {
+        let tile_size = 16.0 * self.scale;
         let half_tile = Vector2::repeat(tile_size / 2.0);
 
         let pan_offset = (self.pan / tile_size).map(|x| x.fract()) * tile_size;
@@ -104,16 +104,16 @@ impl Pancam {
         (size / (16.0 * self.scale)).map(|x| x.floor() as usize + 2)
     }
 
-    pub fn tile_pos(&self, ctx: &GraphicsContext, (x, y): (usize, usize)) -> Vector2<i32> {
-        Vector2::new(x as i32, y as i32) - self.origin_tile(ctx)
+    pub fn tile_pos(&self, x: i32, y: i32) -> Vector2<i32> {
+        Vector2::new(x, y) - self.origin_tile()
     }
 
-    pub fn screen_to_world_space(&self, ctx: &GraphicsContext, pos: Vector2<f32>) -> Vector2<f32> {
-        screen_to_world_space(pos, self.pan, self.scale * ctx.scale_factor)
+    pub fn screen_to_world_space(&self, pos: Vector2<f32>) -> Vector2<f32> {
+        screen_to_world_space(pos, self.pan, self.scale)
     }
 
-    pub fn world_to_screen_space(&self, ctx: &GraphicsContext, pos: Vector2<f32>) -> Vector2<f32> {
-        world_to_screen_space(pos, self.pan, self.scale * ctx.scale_factor)
+    pub fn world_to_screen_space(&self, pos: Vector2<f32>) -> Vector2<f32> {
+        world_to_screen_space(pos, self.pan, self.scale)
     }
 }
 

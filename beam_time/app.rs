@@ -103,7 +103,7 @@ impl App {
     }
 
     pub fn on_tick(&mut self, ctx: &mut GraphicsContext) {
-        ctx.scale_factor *= self.scale_multiplier;
+        // ctx.scale_factor *= self.scale_multiplier;
 
         #[cfg(feature = "steam")]
         self.steam.on_tick();

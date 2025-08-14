@@ -61,7 +61,7 @@ impl RectangleOutline {
         }
     }
 
-    fn points(&self, ctx: &GraphicsContext) -> [[Vector2<f32>; 4]; 2] {
+    fn points(&self) -> [[Vector2<f32>; 4]; 2] {
         let (mut size, mut position) = (self.size, self.position);
         if self.relative_inner {
             let border = Vector2::repeat(self.thickness);
@@ -69,10 +69,10 @@ impl RectangleOutline {
             position -= border;
         }
 
-        let outer_size = size + Vector2::repeat(self.thickness * 2.0 * ctx.scale_factor);
+        let outer_size = size + Vector2::repeat(self.thickness * 2.0);
 
         let offset_outer = position + self.position_anchor.offset(outer_size);
-        let offset_inner = offset_outer + Vector2::repeat(self.thickness * ctx.scale_factor);
+        let offset_inner = offset_outer + Vector2::repeat(self.thickness);
 
         [
             RECTANGLE_POINTS.map(|x| offset_outer + x.component_mul(&outer_size)),
@@ -83,7 +83,7 @@ impl RectangleOutline {
 
 impl Drawable for RectangleOutline {
     fn draw(self, ctx: &mut GraphicsContext) {
-        let [outer, inner] = self.points(ctx).map(|y| {
+        let [outer, inner] = self.points().map(|y| {
             y.map(|x| ShapeVertex::new(x, self.color).z_index(self.z_index))
                 .map(|x| ctx.shapes.push_vertex(x))
         });
@@ -101,8 +101,8 @@ impl LayoutElement for RectangleOutline {
         self.position += distance;
     }
 
-    fn bounds(&self, ctx: &mut GraphicsContext) -> Bounds2D {
-        let outer_size = self.size + Vector2::repeat(self.thickness * 2.0 * ctx.scale_factor);
+    fn bounds(&self, _ctx: &mut GraphicsContext) -> Bounds2D {
+        let outer_size = self.size + Vector2::repeat(self.thickness * 2.0);
         let offset_outer = self.position + self.position_anchor.offset(outer_size);
         Bounds2D::new(offset_outer, offset_outer + outer_size)
     }
