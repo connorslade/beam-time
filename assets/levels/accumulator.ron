@@ -2,7 +2,7 @@ Level(
     id: "ab666a1a-4f8a-4bdb-97db-451d279dfe6a",
     name: "Accumulator",
     description: "An accumulator is an adder with an internal memory (initialized to zero). Every time the enable (ENBL) line is pulsed, the input should be added to the stored value, and the result should be stored.",
-    children: [ "898fede9-9bb5-455e-9671-4671d2bbdae3" ], // ← multiplier 
+    children: [ "898fede9-9bb5-455e-9671-4671d2bbdae3" ], // ← multiplier
 
     labels: {
         Dynamic(0): "128",
@@ -49,15 +49,24 @@ Level(
         lasers: [ 0, 1, 2, 3, 4, 5, 6, 7, 16 ],
         detectors: [ 8, 9, 10, 11, 12, 13, 14, 15 ],
 
+        hidden: [ 1, 3, 5, 7, 9, 11, 13, 15 ],
         cases: [
-            Cycle( lasers: [ false, false, false, false, true,  false, false, false ], detectors: [ [ false, false, false, false, true,  false, false, false ] ] ),
-            Cycle( lasers: [ false, false, false, true,  true,  true,  false, false ], detectors: [ [ false, false, true,  false, false, true,  false, false ] ] ),
-            Cycle( lasers: [ false, false, false, true,  true,  false, false, true  ], detectors: [ [ false, false, true,  true,  true,  true,  false, true  ] ] ),
-            Cycle( lasers: [ false, false, false, true,  true,  false, true,  true  ], detectors: [ [ false, true,  false, true,  true,  false, false, false ] ] ),
-            Cycle( lasers: [ false, false, false, false, true,  true,  false, true  ], detectors: [ [ false, true,  true,  false, false, true,  false, true  ] ] ),
-            Cycle( lasers: [ false, false, false, false, false, true,  true,  true  ], detectors: [ [ false, true,  true,  false, true,  true,  false, false ] ] ),
-            Cycle( lasers: [ false, false, false, true,  true,  true,  false, false ], detectors: [ [ true,  false, false, false, true,  false, false, false ] ] ),
-            Cycle( lasers: [ false, false, false, true,  true,  true,  false, false ], detectors: [ [ true,  false, true,  false, false, true,  false, false ] ] ),
+            Cycle( lasers: [ false, false, false, false, true,  false, false, false, true ], detectors: [ [ false, false, false, false, true,  false, false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, false, true,  false, false, false, false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, false, true,  true,  true,  false, false, true ], detectors: [ [ false, false, true,  false, false, true,  false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, true,  true,  true,  false, false, false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, false, true,  true,  false, false, true,  true ], detectors: [ [ false, false, true,  true,  true,  true,  false, true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, true,  true,  false, false, true,  false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, false, true,  true,  false, true,  true,  true ], detectors: [ [ false, true,  false, true,  true,  false, false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, true,  true,  false, true,  true,  false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, false, false, true,  true,  false, true,  true ], detectors: [ [ false, true,  true,  false, false, true,  false, true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, false, true,  true,  false, true,  false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, false, false, false, true,  true,  true,  true ], detectors: [ [ false, true,  true,  false, true,  true,  false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, false, false, true,  true,  true,  false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, false, true,  true,  true,  false, false, true ], detectors: [ [ true,  false, false, false, true,  false, false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, true,  true,  true,  false, false, false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, false, true,  true,  true,  false, false, true ], detectors: [ [ true,  false, true,  false, false, true,  false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, true,  true,  true,  false, false, false ], detectors: [ ] ),
         ]
     )
 )

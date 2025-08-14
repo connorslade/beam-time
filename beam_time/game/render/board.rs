@@ -129,15 +129,16 @@ impl Board {
                 // move this out of board render :sob: please
                 if hovered && !shift_down {
                     if ctx.input.mouse_pressed(MouseButton::Left) {
-                        *sim = None;
                         let old = tile;
                         match mem::take(&mut self.transient.holding) {
                             Holding::None if !empty && !permanent => {
+                                *sim = None;
                                 self.transient.history.track_one(pos, old);
                                 self.tiles.remove(pos);
                                 self.transient.holding = Holding::Tile(tile);
                             }
                             Holding::Tile(tile) if !permanent => {
+                                *sim = None;
                                 self.transient.history.track_one(pos, old);
                                 self.tiles.set(pos, tile);
 
@@ -146,6 +147,7 @@ impl Board {
                                 }
                             }
                             Holding::Paste(tiles) => {
+                                *sim = None;
                                 let mut old = Vec::new();
                                 let mut next = Vec::new();
 

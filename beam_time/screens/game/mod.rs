@@ -114,7 +114,7 @@ impl Screen for GameScreen {
 
         let mut stop_simulation = sim.beam.is_some()
             && ((escape && !shift && matches!(self.modal, ActiveModal::None))
-                || sim.is_playing() && test_pressed);
+                || (sim.is_playing() && test_pressed));
         sim.runtime.running &= !space_pressed;
         sim.runtime.running |= play_pressed || test_pressed;
 
