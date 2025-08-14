@@ -57,7 +57,7 @@ pub struct GameScreen {
     tps: f32,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 enum ActiveModal {
     None,
     Paused,
@@ -106,29 +106,31 @@ impl Screen for GameScreen {
         state.debug(|| format!("Tick: {:.2?}", sim.tick_length));
         sim.runtime.time_per_tick = Duration::from_secs_f32(self.tps.max(1.0).recip());
 
-        if ctx.input.key_pressed(KeyCode::Escape) {
-            self.modal = match self.modal {
-                ActiveModal::Paused => ActiveModal::None,
-                _ => ActiveModal::Paused,
-            }
-        }
-
         let space_pressed = ctx.input.key_pressed(KeyCode::Space);
         let play_pressed = ctx.input.key_pressed(KeyCode::KeyF);
         let test_pressed = ctx.input.key_pressed(KeyCode::KeyT) && self.board.meta.level.is_some();
-        // todo: clean this up
+        let escape = ctx.input.key_pressed(KeyCode::Escape);
+        let shift = ctx.input.key_down(KeyCode::ShiftLeft);
+
         let mut stop_simulation = sim.beam.is_some()
-            && ((sim.runtime.running && play_pressed) || test_pressed)
-            || ctx.input.key_pressed(KeyCode::Backquote);
+            && ((escape && !shift && matches!(self.modal, ActiveModal::None))
+                || sim.is_playing() && test_pressed);
         sim.runtime.running &= !space_pressed;
-        sim.runtime.running |= play_pressed || (test_pressed && sim.beam.is_none());
+        sim.runtime.running |= play_pressed || test_pressed;
+
+        if ctx.input.key_pressed(KeyCode::Escape) {
+            self.modal = match self.modal {
+                ActiveModal::Paused => ActiveModal::None,
+                _ if sim.beam.is_none() || shift => ActiveModal::Paused,
+                x => x,
+            }
+        }
 
         if let Some(beam_state) = &mut sim.beam
             && !stop_simulation
         {
             // Make async?
             space_pressed.then(|| beam_state.tick());
-
             beam_state.render(ctx, state, &self.pancam);
 
             let level_result = beam_state.level.as_ref().and_then(|x| x.result);

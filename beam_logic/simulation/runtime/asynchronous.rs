@@ -63,7 +63,6 @@ impl AsyncSimulationState {
                         beam.tick();
 
                         let runtime = state.runtime;
-
                         if !runtime.running {
                             continue;
                         }
