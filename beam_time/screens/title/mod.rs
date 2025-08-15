@@ -12,6 +12,7 @@ use engine::{
         Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout,
         row::RowLayout, tracker::LayoutTracker,
     },
+    memory::MemoryKey,
     memory_key,
 };
 
@@ -150,10 +151,16 @@ impl Screen for TitleScreen {
     }
 }
 
+const SCALE: MemoryKey = memory_key!();
+
 impl TitleScreen {
     fn modals(&mut self, state: &mut App, ctx: &mut GraphicsContext) {
         match self.modal {
-            ActiveModal::None => {}
+            ActiveModal::None => {
+                if let Some(&new_scale) = ctx.memory.get(SCALE) {
+                    state.config.interface_scale = new_scale;
+                }
+            }
             ActiveModal::Settings => self.settings_modal(state, ctx),
             ActiveModal::About => self.about_modal(state, ctx),
         }
@@ -185,19 +192,23 @@ impl TitleScreen {
                             ctx,
                             layout,
                             |ctx, layout| {
+                                let mut scale = (ctx.memory.get(SCALE).copied())
+                                    .unwrap_or(state.config.interface_scale);
                                 slider(
                                     (ctx, layout),
                                     "Interface Scale",
-                                    &mut state.config.interface_scale,
+                                    &mut scale,
                                     (1.0, 1.0, 2.0),
                                 );
+                                ctx.memory.insert(SCALE, scale);
                             },
                         );
 
-                        if state.config.interface_scale != state.scale_multiplier
+                        let scale = ctx.memory.get::<f32>(SCALE).unwrap();
+                        if *scale != state.config.interface_scale
                             && let Some(bounds) = tracker.bounds(ctx)
                         {
-                            body("Restart for new scale to take effect.")
+                            body("Close modal for new scale to take effect.")
                                 .max_width(bounds.width())
                                 .color(color::ERROR)
                                 .layout(ctx, layout);

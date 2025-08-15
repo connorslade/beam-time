@@ -48,7 +48,7 @@ impl<'a> GraphicsContext<'a> {
     }
 
     pub fn size(&self) -> Vector2<f32> {
-        self.window.size
+        self.window.size()
     }
 
     pub fn center(&self) -> Vector2<f32> {

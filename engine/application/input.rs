@@ -28,7 +28,7 @@ impl InputManager {
             WindowEvent::CursorMoved { position: pos, .. } => {
                 let scale = window.scale_factor();
                 let new_mouse =
-                    Vector2::new(pos.x as f32 / scale, window.size.y - pos.y as f32 / scale);
+                    Vector2::new(pos.x as f32 / scale, window.size().y - pos.y as f32 / scale);
                 self.mouse_delta += new_mouse - self.mouse;
                 self.mouse = new_mouse;
             }

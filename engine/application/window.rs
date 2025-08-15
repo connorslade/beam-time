@@ -10,9 +10,10 @@ use crate::misc::Mutable;
 
 pub struct WindowManager {
     window: Arc<Window>,
+    user_scale: f32,
 
     /// The size of the window in logical pixels.
-    pub(crate) size: Vector2<f32>,
+    size: Vector2<f32>,
     scale_factor: f32,
     close_next: bool,
     close: bool,
@@ -24,6 +25,7 @@ pub struct WindowManager {
     pub(crate) vsync: Mutable<bool>,
     pub(crate) fullscreen: Mutable<bool>,
     pub(crate) cursor: Mutable<Cursor>,
+    pub(crate) scale: Mutable<f32>,
 }
 
 impl WindowManager {
@@ -33,9 +35,10 @@ impl WindowManager {
 
         Self {
             window,
+            user_scale: 1.0,
 
             size: Vector2::new(size.width, size.height).map(|x| x as f32) / scale_factor,
-            scale_factor: 1.0,
+            scale_factor,
             close_next: false,
             close: false,
 
@@ -46,6 +49,7 @@ impl WindowManager {
             vsync: Mutable::default(),
             fullscreen: Mutable::default(),
             cursor: Mutable::default(),
+            scale: Mutable::default(),
         }
     }
 
@@ -55,12 +59,13 @@ impl WindowManager {
             WindowEvent::Focused(focused) => self.focus_change = Some(*focused),
             WindowEvent::ScaleFactorChanged { scale_factor, .. } => {
                 self.dpi_changed = Some(self.scale_factor);
-                self.scale_factor = *scale_factor as f32;
+                self.scale_factor = *scale_factor as f32 * self.user_scale;
             }
             WindowEvent::Resized(size) => {
                 self.size_changed = Some(self.size);
-                self.size =
-                    Vector2::new(size.width, size.height).map(|x| x as f32) / self.scale_factor;
+
+                let physical_size = Vector2::new(size.width, size.height);
+                self.size = physical_size.map(|x| x as f32) / self.scale_factor;
             }
             _ => {}
         }
@@ -82,6 +87,16 @@ impl WindowManager {
         self.size_changed = None;
         self.dpi_changed = None;
         self.focus_change = None;
+
+        if let Some(&scale) = self.scale.desired() {
+            self.dpi_changed = Some(self.scale_factor);
+            self.scale_factor = self.scale_factor / self.user_scale * scale;
+
+            self.size_changed = Some(self.size);
+            self.size = self.size * self.user_scale / scale;
+
+            self.user_scale = scale;
+        }
     }
 }
 
@@ -105,9 +120,18 @@ impl WindowManager {
     pub fn cursor(&mut self, cursor: impl Into<Cursor>) {
         self.cursor.set(cursor.into());
     }
+
+    pub fn user_scale(&mut self, scale: f32) {
+        self.scale.set(scale);
+    }
 }
 
 impl WindowManager {
+    #[inline(always)]
+    pub fn size(&self) -> Vector2<f32> {
+        self.size
+    }
+
     #[inline(always)]
     pub fn size_changed(&self) -> Option<Vector2<f32>> {
         self.size_changed

@@ -29,7 +29,6 @@ pub struct App {
     pub debug: Vec<String>,
 
     pub config: Config,
-    pub scale_multiplier: f32,
     pub data_dir: PathBuf,
 
     pub new_screens: Vec<Box<dyn Screen>>,
@@ -81,7 +80,6 @@ impl App {
             start: Instant::now(),
             debug: Vec::new(),
 
-            scale_multiplier: config.interface_scale,
             config,
             data_dir,
 
@@ -103,12 +101,11 @@ impl App {
     }
 
     pub fn on_tick(&mut self, ctx: &mut GraphicsContext) {
-        // ctx.scale_factor *= self.scale_multiplier;
-
         #[cfg(feature = "steam")]
         self.steam.on_tick();
         self.leaderboard.tick();
 
+        ctx.window.user_scale(self.config.interface_scale);
         ctx.window.vsync(self.config.vsync);
         ctx.window.fullscreen(self.config.fullscreen);
     }
