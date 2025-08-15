@@ -166,10 +166,14 @@ impl Screen for GameScreen {
             || (test_pressed && !sim.is_testing())
         {
             stop_simulation = false;
+
             sim.beam = Some(BeamState::new(
                 &self.board.tiles,
                 self.board.transient.level.map(Cow::Borrowed),
-                test_pressed.then_some(self.level_panel.case),
+                test_pressed.then(|| {
+                    let tests = &self.board.transient.level.unwrap().tests;
+                    tests.true_index(self.level_panel.case) * tests.variable_start as usize
+                }),
             ));
             self.level_result = None;
         }

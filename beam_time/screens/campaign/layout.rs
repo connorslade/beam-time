@@ -2,6 +2,7 @@ use std::collections::VecDeque;
 
 use beam_logic::level::tree::LevelTree;
 use engine::{drawable::text::Text, exports::nalgebra::Vector2, graphics_context::GraphicsContext};
+use log::warn;
 use uuid::{Uuid, uuid};
 
 use crate::{assets::UNDEAD_FONT, screens::campaign::SPACING};
@@ -34,7 +35,11 @@ impl TreeLayout {
         queue.push_back((uuid!("58fc60ca-3831-4f27-a29a-b4878a5dd68a"), None, 0));
 
         while let Some((id, parent, depth)) = queue.pop_front() {
-            let level = tree.get(id).unwrap();
+            let Some(level) = tree.get(id) else {
+                warn!("Child level `{id}` not found.");
+                continue;
+            };
+
             (rows.len() <= depth).then(|| rows.push(Vec::new()));
 
             let index = rows[depth].len();

@@ -49,14 +49,16 @@ impl Board {
 
         if ctx.input.mouse_pressed(MouseButton::Left) {
             let old = tile;
+            let in_bounds = self.in_bounds(&pos);
+
             match mem::take(&mut self.transient.holding) {
-                Holding::None if !empty && !permanent => {
+                Holding::None if !empty && !permanent && in_bounds => {
                     *sim = None;
                     self.transient.history.track_one(pos, old);
                     self.tiles.remove(pos);
                     self.transient.holding = Holding::Tile(tile);
                 }
-                Holding::Tile(tile) if !permanent => {
+                Holding::Tile(tile) if !permanent && in_bounds => {
                     *sim = None;
                     self.transient.history.track_one(pos, old);
                     self.tiles.set(pos, tile);

@@ -2,10 +2,9 @@ Level(
     id: "c98218bd-937b-4a60-a94c-a51d677c61b1",
     name: "Parity Bit",
     description: "
-        In the real world data transmission is not completely reliable. There are many failure modes that can occur, including bit-flips (which are the simplest to protect against). The parity of a bit-string is the evenness or oddness of the number of set bits.
+        In the real world, data can be corrupted during transmission. A parity bit is a simple error-detection mechanism. The parity of a bit-string is whether it has an even or odd number of set bits.
 
-        For this level all the parity bits (P) haven been chosen to make the parity of all 8 bits (data and P) even. Send an output if the parity of the input is even (a bit-flip is not detected).
-        ",
+        The parity bits (P) of the inputs have been chosen to make the parity of the entire 8-bit input (7 data bits + P) even. Your circuit should verify this: send an output signal if the input has even parity (indicating no bit-flip was detected).",
     children: [ "a2f4358f-b86e-45da-b4cb-23c5819a79e7" ], // ← hamming_generation
 
     labels: {
@@ -34,9 +33,8 @@ Level(
 
     tests: Tests(
         lasers: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
-        display: DisplayConfig( laser_spaces: [ 6 ] ),
-
         detectors: [ 8 ],
+        display: DisplayConfig( laser_spaces: [ 6 ] ),
 
         cases: [
             Cycle( lasers: [ false, true,  false, false, false, false, false, false ], detectors: [ [ false ] ] ),

@@ -36,19 +36,18 @@ pub struct Level {
     pub disabled: Option<HashSet<TileType>>,
 
     pub tiles: Map<Tile>,
-
     pub tests: Tests,
 }
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(default)]
 pub struct Tests {
+    pub display: Option<DisplayConfig>,
+    pub variable_start: bool,
+    pub hidden: HashSet<u32>,
+
     pub lasers: Vec<u32>,
     pub detectors: Vec<u32>,
-    #[serde(default)]
-    pub display: Option<DisplayConfig>,
-
-    #[serde(default)]
-    pub hidden: HashSet<u32>,
     pub cases: Vec<TestCase>,
 }
 
@@ -121,7 +120,7 @@ impl Tests {
     }
 
     pub fn get_visible(&self, idx: usize) -> &TestCase {
-        let mut active = 0;
+        let (mut active, mut last) = (0, 0);
 
         for (i, case) in self.cases.iter().enumerate() {
             if !self.hidden.contains(&(i as u32)) {
@@ -129,11 +128,26 @@ impl Tests {
                     return case;
                 }
 
+                last = i;
                 active += 1;
             }
         }
 
-        panic!()
+        &self.cases[last]
+    }
+
+    pub fn visible_index(&self, idx: usize) -> usize {
+        let vis = (self.cases.iter().enumerate())
+            .filter(|(i, _)| !self.hidden.contains(&(*i as u32)) && *i < idx)
+            .count();
+        vis.min(self.visible_count() - 1)
+    }
+
+    pub fn true_index(&self, visible: usize) -> usize {
+        (0..visible)
+            .filter(|i| self.hidden.contains(&(*i as u32)))
+            .count()
+            + visible
     }
 }
 
@@ -169,4 +183,17 @@ where
 {
     let string = String::deserialize(deserializer)?;
     Ok(unindent::unindent(&string))
+}
+
+impl Default for Tests {
+    fn default() -> Self {
+        Self {
+            variable_start: true,
+            display: Default::default(),
+            hidden: Default::default(),
+            lasers: Default::default(),
+            detectors: Default::default(),
+            cases: Default::default(),
+        }
+    }
 }

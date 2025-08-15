@@ -27,6 +27,7 @@ Level(
     tests: Tests(
         lasers: [ 0, 1 ],
         detectors: [ 2, 3, 4 ],
+        variable_start: false,
         display: DisplayConfig(
             descriptions: {
                 0: "Increment 0 ⇒ 1",

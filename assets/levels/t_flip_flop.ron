@@ -14,6 +14,7 @@ Level(
     tests: Tests(
         lasers: [ 0 ],
         detectors: [ 1 ],
+        variable_start: false,
 
         cases: [
             Cycle( lasers: [ false ], detectors: [ [ false ] ], ),

@@ -52,9 +52,11 @@ impl Pancam {
 
         // TODO: Don't allow scale goal to be non integer values when close to 1.0
         let old_scale = self.scale;
-        self.scale_goal = (self.scale_goal
-            + ctx.input.scroll_delta() * state.config.zoom_sensitivity * self.zoom_sensitivity)
-            .clamp(1.0, 10.0);
+        let sensitivity = state.config.zoom_sensitivity
+            * self.zoom_sensitivity
+            * (1.0 - ctx.input.key_down(KeyCode::ShiftLeft) as u8 as f32 * 0.75);
+        self.scale_goal =
+            (self.scale_goal + ctx.input.scroll_delta() * sensitivity).clamp(1.0, 10.0);
 
         self.scale = exp_decay(self.scale, self.scale_goal, DECAY, ctx.delta_time);
         self.pan.x = exp_decay(self.pan.x, self.pan_goal.x, DECAY, ctx.delta_time);

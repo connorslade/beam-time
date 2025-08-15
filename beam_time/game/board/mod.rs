@@ -150,7 +150,8 @@ impl Board {
             && self.transient.last_save.elapsed() >= AUTOSAVE_INTERVAL
         {
             #[cfg(feature = "steam")]
-            award_sandbox_playtime_achievements(app, self.total_playtime());
+            (self.transient.level.is_some())
+                .then(|| award_sandbox_playtime_achievements(app, self.total_playtime()));
 
             trace!("Autosaving...");
             self.transient.last_save = Instant::now();
@@ -173,6 +174,12 @@ impl Board {
 
     pub fn tile_props(&self, tile: &Tile, pos: &Vector2<i32>) -> (bool, bool, bool) {
         (tile.is_empty(), self.is_permanent(pos), tile.id().is_some())
+    }
+
+    pub fn in_bounds(&self, pos: &Vector2<i32>) -> bool {
+        !(self.meta.size)
+            .map(|size| pos.x < 0 || pos.y < 0 || pos.x as u32 >= size.x || pos.y as u32 >= size.y)
+            .unwrap_or_default()
     }
 }
 

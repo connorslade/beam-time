@@ -36,9 +36,7 @@ use super::GameScreen;
 
 const DESCRIPTION: &str = "Notes allow you to place blocks of text in the world. \
 All notes have a title and optionally have body text that shows when zoomed in.";
-const DEFAULT_NAME: &str = "New Note";
-const DEFAULT_BODY: &str =
-    "This note doesn't have any content yet, click it to open the edit modal.";
+const DEFAULT_NAME: &str = "Untitled Note";
 
 enum Operation {
     None,
@@ -61,7 +59,7 @@ impl GameScreen {
                 self.board.notes.push(Note {
                     position,
                     title: DEFAULT_NAME.into(),
-                    body: DEFAULT_BODY.into(),
+                    body: String::new(),
                 });
 
                 self.modal = ActiveModal::NoteEdit { index, old: false };

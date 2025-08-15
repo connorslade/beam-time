@@ -4,7 +4,7 @@ Level(
     description: "
         The Program Counter (PC) is a register in the CPU used to keep track of which instruction should be executed next. This means it must be able to increment by one after executing every instruction, and it must be writable for jumps.
 
-        Implement an 4-bit program counter that increments when 'Inc' is pulsed and copies the input to the memory cells when 'Set' is pulsed. 'Inc' and 'Set' will never both be on.",
+        Implement an 4-bit program counter that increments when 'INC' is pulsed and copies the input to the memory cells when 'SET' is pulsed. 'INC' and 'SET' will never both be on.",
     children: [ ],
 
     labels: {
@@ -13,8 +13,8 @@ Level(
         Dynamic(2): "2",
         Dynamic(3): "1",
 
-        Dynamic(5): "Inc",
-        Dynamic(6): "Set",
+        Dynamic(5): "INC",
+        Dynamic(6): "SET",
 
         Dynamic(7): "8",
         Dynamic(8): "4",
@@ -39,16 +39,37 @@ Level(
     tests: Tests(
         lasers: [ 0, 1, 2, 3, 5, 6 ],
         detectors: [ 7, 8, 9, 10 ],
+        variable_start: false,
+        display: DisplayConfig(
+            emitter_spaces: [ 3 ],
+            descriptions: {
+                0: "Initialize to 0",
+                1: "Increment by one (0 ⇒ 1)",
+                2: "Increment by one (1 ⇒ 2)",
+                3: "Do nothing...",
+                4: "Store 5 (2 ⇒ 5)",
+                5: "Increment by one (5 ⇒ 6)",
+                6: "Increment by one (6 ⇒ 7)",
+                7: "Store 3 (7 ⇒ 3)"
+            }
+        ),
 
+        hidden: [ 2, 4, 7, 9, 11, 13 ],
         cases: [
             Cycle( lasers: [ false, false, false, false, false, false ], detectors: [ [ false, false, false, false ] ] ),
             Cycle( lasers: [ false, false, false, false, true,  false ], detectors: [ [ false, false, false, true  ] ] ),
-            Cycle( lasers: [ false, false, false, false, false, false ], detectors: [ [ false, false, false, true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, false, false, false ], detectors: [ ] ),
             Cycle( lasers: [ false, false, false, false, true,  false ], detectors: [ [ false, false, true,  false ] ] ),
-            Cycle( lasers: [ false, false, false, false, false, false ], detectors: [ [ false, false, true,  false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, false, false, false ], detectors: [ ] ),
             Cycle( lasers: [ false, true,  false, true,  false, false ], detectors: [ [ false, false, true,  false ] ] ),
-            Cycle( lasers: [ false, true,  false, true,  false, true  ], detectors: [ [ false, true,  true,  true  ] ] ),
-            Cycle( lasers: [ false, false, false, false, false, false ], detectors: [ [ false, true,  false, true  ] ] ),
+            Cycle( lasers: [ false, true,  false, true,  false, true  ], detectors: [ [ false, true,  false, true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, false, false, false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, false, false, true,  false ], detectors: [ [ false, true,  true,  false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, false, false, false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, false, false, true,  false ], detectors: [ [ false, true,  true,  true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, false, false, false ], detectors: [ ] ),
+            Cycle( lasers: [ false, false, true, true,  false, true ], detectors: [ [ false, false, true,  true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false, false, false, false, false, false ], detectors: [ ] ),
         ]
     )
 )

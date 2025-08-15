@@ -85,11 +85,15 @@ impl LevelState {
         }
     }
 
+    fn case_idx(&self) -> usize {
+        (self.test_case + self.test_offset) % self.level.tests.cases.len()
+    }
+
     fn passed_case(&mut self, latency: usize, board: &mut Map<BeamTile>) {
         self.latency += latency as u32;
         self.history_states.clear();
         self.history.clear();
-        trace!("Passed case #{} {{ latency: {latency} }}", self.test_case);
+        trace!("Passed case #{} {{ latency: {latency} }}", self.case_idx());
         self.test_case += 1;
 
         if self.test_case >= self.level.tests.cases.len() {
@@ -111,8 +115,8 @@ impl LevelState {
     }
 
     pub fn setup_case(&mut self, board: &mut Map<BeamTile>) {
+        let idx = self.case_idx();
         let tests = &self.level.tests;
-        let idx = (self.test_case + self.test_offset) % tests.cases.len();
         let case = &tests.cases[idx];
 
         for (pos, state) in tests.lasers.iter().zip(case.lasers()) {

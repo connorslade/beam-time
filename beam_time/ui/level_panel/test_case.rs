@@ -37,7 +37,8 @@ impl LevelPanel {
         let sim_level = sim.beam.as_ref().and_then(|x| x.level.as_ref());
         let is_test = sim_level.is_some();
         let case_idx = if let Some(sim_level) = sim_level {
-            (sim_level.test_case + sim_level.test_offset) % level.tests.visible_count()
+            let real = (sim_level.test_case + sim_level.test_offset) % level.tests.cases.len();
+            level.tests.visible_index(real)
         } else {
             self.case
         };
@@ -73,9 +74,9 @@ impl LevelPanel {
                                     let tracker = LayoutTracker::new(key);
                                     let button = ManualButton::new(key).tracker(ctx, tracker);
 
+                                    let test_count = level.tests.visible_count();
                                     let disabled = (!direction && self.case == 0)
-                                        || (direction
-                                            && self.case + 1 == level.tests.visible_count())
+                                        || (direction && self.case + 1 == test_count)
                                         || is_test;
 
                                     let inc = (!disabled && button.pressed(ctx)) as usize;
@@ -145,9 +146,11 @@ fn case_big(
 ) {
     render_tiles(ctx, layout, 4.0, level, Io::Emitter, preview.laser());
 
+    Spacer::new_x(-3.0 * 4.0).layout(ctx, layout);
     Sprite::new(BIG_RIGHT_ARROW)
         .scale(Vector2::repeat(4.0))
         .layout(ctx, layout);
+    Spacer::new_x(4.0).layout(ctx, layout);
 
     render_tiles(ctx, layout, 4.0, level, Io::Detector, preview.detector());
 }
@@ -194,6 +197,7 @@ fn render_tiles<'a, T: Layout>(
     let row_spacing = -2.0 * scale;
     let sprite = [TILE_DETECTOR, TILE_EMITTER_DOWN][matches!(io_type, Io::Emitter) as usize];
     let (mut column, mut row) = (ColumnLayout::new(0.0), RowLayout::new(row_spacing));
+    DummyDrawable::new().layout(ctx, &mut row);
 
     for (idx, (&input, tile)) in items.enumerate() {
         let visible = (level.tests.display.as_ref())
@@ -216,6 +220,7 @@ fn render_tiles<'a, T: Layout>(
             if config.do_break(io_type, idx) {
                 row.layout(ctx, &mut column);
                 row = RowLayout::new(row_spacing);
+                DummyDrawable::new().layout(ctx, &mut row);
             }
         }
     }

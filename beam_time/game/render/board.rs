@@ -48,10 +48,7 @@ impl Board {
         for x in 0..tile_counts.x {
             for y in 0..tile_counts.y {
                 let pos = pancam.tile_pos(x as i32, y as i32);
-
-                if let Some(size) = self.meta.size
-                    && (pos.x < 0 || pos.y < 0 || pos.x as u32 >= size.x || pos.y as u32 >= size.y)
-                {
+                if !self.in_bounds(&pos) {
                     continue;
                 }
 
@@ -77,8 +74,7 @@ impl Board {
                     .position(render_pos, Anchor::Center)
                     .z_index(layer::TILE_BACKGROUND);
 
-                let element = tile
-                    .id()
+                let element = (tile.id())
                     .map(ElementLocation::Dynamic)
                     .unwrap_or(ElementLocation::Static(pos));
                 if let Some(label) = self.transient.level.and_then(|x| x.labels.get(&element)) {

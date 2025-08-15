@@ -1,7 +1,7 @@
 Level(
     id: "fc3b280e-6a80-41d2-84d1-c8fa55a3946f",
     name: "Counter",
-    description: "Each time a pulse is received from the input, the output should count up by one in binary (big-endian).",
+    description: "Each time a pulse is received from the input, the output value should count up by one.",
     children: [ "9dcb218d-c18c-4a7a-8979-9572322f5460", "168cec38-0709-498a-9bc0-6a6251f672c1" ], // ← bidirectional_counter, program_counter
 
     labels: {
@@ -12,6 +12,7 @@ Level(
     },
     tiles: {
         (0, 5): Emitter( rotation: Down, active: true, id: 0 ),
+
         (0, 0): Detector( id: 1 ),
         (1, 0): Detector( id: 2 ),
         (2, 0): Detector( id: 3 ),
@@ -21,39 +22,41 @@ Level(
     tests: Tests(
         lasers: [ 0 ],
         detectors: [ 1, 2, 3, 4 ],
+        variable_start: false,
 
+        hidden: [ 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30 ],
         cases: [
             Cycle( lasers: [ false ], detectors: [ [ false, false, false, false ] ] ),
             Cycle( lasers: [ true  ], detectors: [ [ false, false, false, true  ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ false, false, false, true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
             Cycle( lasers: [ true  ], detectors: [ [ false, false, true,  false ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ false, false, true,  false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
             Cycle( lasers: [ true  ], detectors: [ [ false, false, true,  true  ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ false, false, true,  true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
             Cycle( lasers: [ true  ], detectors: [ [ false, true,  false, false ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ false, true,  false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
             Cycle( lasers: [ true  ], detectors: [ [ false, true,  false, true  ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ false, true,  false, true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
             Cycle( lasers: [ true  ], detectors: [ [ false, true,  true,  false ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ false, true,  true,  false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
             Cycle( lasers: [ true  ], detectors: [ [ false, true,  true,  true  ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ false, true,  true,  true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
             Cycle( lasers: [ true  ], detectors: [ [ true,  false, false, false ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ true,  false, false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
             Cycle( lasers: [ true  ], detectors: [ [ true,  false, false, true  ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ true,  false, false, true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
             Cycle( lasers: [ true  ], detectors: [ [ true,  false, true,  false ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ true,  false, true,  false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
             Cycle( lasers: [ true  ], detectors: [ [ true,  false, true,  true  ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ true,  false, true,  true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
             Cycle( lasers: [ true  ], detectors: [ [ true,  true,  false, false ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ true,  true,  false, false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
             Cycle( lasers: [ true  ], detectors: [ [ true,  true,  false, true  ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ true,  true,  false, true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
             Cycle( lasers: [ true  ], detectors: [ [ true,  true,  true,  false ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ true,  true,  true,  false ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
             Cycle( lasers: [ true  ], detectors: [ [ true,  true,  true,  true  ] ] ),
-            Cycle( lasers: [ false ], detectors: [ [ true,  true,  true,  true  ] ] ),
+            /* HIDDEN */ Cycle( lasers: [ false ], detectors: [ ] ),
         ]
     )
 )

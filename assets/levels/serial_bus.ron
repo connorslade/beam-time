@@ -1,6 +1,6 @@
 Level(
     id: "151094cc-afcf-4825-87e2-72a565c18162",
-    name: "Mux-Demux",
+    name: "Serial Busks",
     description: "
         Pass the 8-bit value from the input to the output. How hard could be?
         

@@ -16,11 +16,11 @@ pub fn award_campaign_achievements(app: &App, id: Uuid) {
 pub fn award_sandbox_playtime_achievements(app: &App, playtime: u64) {
     const HOUR: u64 = 60 * 60;
 
-    if playtime > HOUR {
+    if playtime >= HOUR {
         app.steam.award_achievement("sandbox_1hr");
     }
 
-    if playtime > 24 * HOUR {
+    if playtime >= 24 * HOUR {
         app.steam.award_achievement("sandbox_24hr");
     }
 }

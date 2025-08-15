@@ -52,13 +52,11 @@ pub struct TilePicker {
 
 impl TilePicker {
     pub fn render(&mut self, ctx: &mut GraphicsContext, state: &App, sim: bool, board: &mut Board) {
-        if !self.update_offset(ctx, sim) {
-            return;
-        }
+        self.update_offset(ctx, sim);
 
-        let mouse = ctx.input.mouse();
         let px = 4.0;
         let tile_size = 16.0 * px;
+        let mouse = ctx.input.mouse();
 
         Modal::new(Vector2::new(tile_size * 7.0 - px * 2.0, tile_size - px))
             .position(Vector2::new(px, -self.offset), Anchor::BottomLeft)
@@ -74,9 +72,7 @@ impl TilePicker {
                 x => x,
             };
 
-            let disabled = board
-                .transient
-                .level
+            let disabled = (board.transient.level)
                 .and_then(|x| x.disabled.as_ref())
                 .is_some_and(|disabled| disabled.contains(&tile.as_type()));
 
@@ -86,7 +82,7 @@ impl TilePicker {
                 Rgb::repeat(1.0)
             };
 
-            if !disabled && !sim && ctx.input.key_pressed(key) {
+            if !disabled && ctx.input.key_pressed(key) {
                 board.transient.holding = Holding::Tile(*tile);
             }
 
@@ -136,13 +132,11 @@ impl TilePicker {
         }
     }
 
-    fn update_offset(&mut self, ctx: &GraphicsContext, sim: bool) -> bool {
+    fn update_offset(&mut self, ctx: &GraphicsContext, sim: bool) {
         let max_offset = 16.0 * 4.0;
         let end = max_offset * sim as u8 as f32;
 
         self.offset = exp_decay(self.offset, end, 10.0, ctx.delta_time);
         self.offset = self.offset.clamp(0.0, max_offset);
-
-        self.offset <= max_offset
     }
 }
