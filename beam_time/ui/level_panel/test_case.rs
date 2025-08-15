@@ -196,11 +196,17 @@ fn render_tiles<'a, T: Layout>(
     let (mut column, mut row) = (ColumnLayout::new(0.0), RowLayout::new(row_spacing));
 
     for (idx, (&input, tile)) in items.enumerate() {
-        let label = tile_label(ElementLocation::Dynamic(tile));
-        let tile_sprite = Sprite::new(sprite)
-            .uv_offset(Vector2::new(16 * input as i32, 0))
-            .scale(Vector2::repeat(scale));
-        Container::of(ctx, [Box::new(tile_sprite), label]).layout(ctx, &mut row);
+        let visible = (level.tests.display.as_ref())
+            .map(|x| x.is_visible(io_type, idx))
+            .unwrap_or(true);
+
+        if visible {
+            let label = tile_label(ElementLocation::Dynamic(tile));
+            let tile_sprite = Sprite::new(sprite)
+                .uv_offset(Vector2::new(16 * input as i32, 0))
+                .scale(Vector2::repeat(scale));
+            Container::of(ctx, [Box::new(tile_sprite), label]).layout(ctx, &mut row);
+        }
 
         if let Some(config) = &level.tests.display {
             if config.do_space(io_type, idx) {

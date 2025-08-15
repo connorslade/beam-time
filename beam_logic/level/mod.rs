@@ -55,11 +55,13 @@ pub struct Tests {
 #[derive(Debug, Default, Clone, Deserialize)]
 #[serde(default)]
 pub struct DisplayConfig {
-    pub emitter_breaks: HashSet<u32>,
-    pub emitter_spaces: HashSet<u32>,
+    pub emitter_breaks: Vec<u32>,
+    pub emitter_spaces: Vec<u32>,
+    pub hidden_emitters: Vec<u32>,
 
-    pub detector_breaks: HashSet<u32>,
-    pub detector_spaces: HashSet<u32>,
+    pub detector_breaks: Vec<u32>,
+    pub detector_spaces: Vec<u32>,
+    pub hidden_detectors: Vec<u32>,
 
     pub descriptions: HashMap<u32, String>,
 }
@@ -149,6 +151,14 @@ impl DisplayConfig {
         match io {
             LevelIo::Emitter => self.emitter_spaces.contains(&idx),
             LevelIo::Detector => self.detector_spaces.contains(&idx),
+        }
+    }
+
+    pub fn is_visible(&self, io: LevelIo, idx: usize) -> bool {
+        let idx = idx as u32;
+        match io {
+            LevelIo::Emitter => !self.hidden_emitters.contains(&idx),
+            LevelIo::Detector => !self.hidden_detectors.contains(&idx),
         }
     }
 }
