@@ -82,7 +82,7 @@ impl Board {
                     .map(ElementLocation::Dynamic)
                     .unwrap_or(ElementLocation::Static(pos));
                 if let Some(label) = self.transient.level.and_then(|x| x.labels.get(&element)) {
-                    let label = tile_label(pancam.scale, render_pos, label);
+                    let label = tile_label(pancam.scale, pancam.scale / 2.0, render_pos, label);
                     label.z_index(layer::OVERLAY).draw(ctx);
                 }
 

@@ -5,10 +5,10 @@ use engine::{
 
 use crate::assets::UNDEAD_FONT;
 
-pub fn tile_label(scale: f32, pos: Vector2<f32>, label: impl ToString) -> Text {
+pub fn tile_label(scale: f32, text_scale: f32, pos: Vector2<f32>, label: impl ToString) -> Text {
     let offset = Vector2::new(6.5, -7.5) * scale;
     Text::new(UNDEAD_FONT, label)
-        .scale(Vector2::repeat((scale / 2.0).max(0.75)))
+        .scale(Vector2::repeat(text_scale.max(0.75)))
         .position(pos + offset, Anchor::BottomRight)
 }
 

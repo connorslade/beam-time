@@ -119,7 +119,7 @@ fn render_tile(
             .position(position, Anchor::Center)
             .z_index(layer::TILE_HOLDING_BACKGROUND)
             .draw(ctx);
-        tile_label(shared.scale, position, label)
+        tile_label(shared.scale, shared.scale / 2.0, position, label)
             .z_index(layer::TILE_HOLDING)
             .draw(ctx);
     }

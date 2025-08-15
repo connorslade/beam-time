@@ -100,7 +100,6 @@ impl Drawable for Slider {
         let width = self.width - px * 4.0;
 
         let state = self.state(ctx.memory);
-        let offset = Vector2::x() * (state.t * width);
 
         let mouse = ctx.input.mouse();
         if state.dragging {
@@ -109,6 +108,7 @@ impl Drawable for Slider {
             state.dragging = ctx.input.mouse_down(MouseButton::Left);
         }
 
+        let offset = Vector2::x() * (state.t * width);
         let handle = Sprite::new(SLIDER_HANDLE)
             .position(self.position + offset, Anchor::BottomLeft)
             .scale(Vector2::repeat(4.0))
@@ -124,11 +124,11 @@ impl Drawable for Slider {
         let size = Vector2::new(self.width, px * 6.0);
         let in_bounds = in_bounds(mouse, (self.position, self.position + size));
         if click && hovered {
-            state.dragging = true;
-        } else if click && in_bounds {
             state.offset = mouse.x - (self.position.x + offset.x);
             state.dragging = true;
+        } else if click && in_bounds {
             state.offset = px * 2.0;
+            state.dragging = true;
         }
 
         if right

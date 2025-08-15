@@ -162,14 +162,14 @@ fn case_small(
         ctx,
         ColumnLayout::new(0.0).justify(Justify::Center),
         |ctx, layout| {
-            render_tiles(ctx, layout, 2.0, level, Io::Emitter, preview.laser());
+            render_tiles(ctx, layout, 3.0, level, Io::Emitter, preview.laser());
 
             Spacer::new_y(8.0).layout(ctx, layout);
             Sprite::new(HISTOGRAM_MARKER)
-                .scale(Vector2::repeat(2.0))
+                .scale(Vector2::repeat(3.0))
                 .layout(ctx, layout);
 
-            render_tiles(ctx, layout, 2.0, level, Io::Detector, preview.detector());
+            render_tiles(ctx, layout, 3.0, level, Io::Detector, preview.detector());
         },
     );
 }
@@ -185,7 +185,7 @@ fn render_tiles<'a, T: Layout>(
     let tile_label_offset = Vector2::repeat(8.0 * scale);
     let tile_label = |pos| -> Box<dyn LayoutElement> {
         if let Some(label) = level.labels.get(&pos) {
-            Box::new(tile_label(scale, tile_label_offset, label).z_index(1))
+            Box::new(tile_label(scale, 2.0, tile_label_offset, label).z_index(1))
         } else {
             Box::new(DummyDrawable::new())
         }
