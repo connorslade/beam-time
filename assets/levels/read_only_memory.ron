@@ -3,20 +3,19 @@ Level(
     name: "Read Only Memory",
     description: "
         Often times in simple computers, we need a way to refer to constant values that could define a program or some other data. When this data is static and never needs to change, a read only memory or ROM can be used.
-        
+
         For this level, you will need to output a constant 8-bit number for each of the four possible inputs. The binary representations of each number have also been provided.
-        
-        • 0 (0b00) ⇒ 20 (0b00010100)
-        • 1 (0b01) ⇒ 238 (0b11101110)
-        • 2 (0b10) ⇒ 143 (0b10001111)
-        • 3 (0b11) ⇒ 79 (0b01001111)",
+
+        • 0 (00) ⇒ 20 (00010100)
+        • 1 (01) ⇒ 238 (11101110)
+        • 2 (10) ⇒ 143 (10001111)
+        • 3 (11) ⇒ 79 (01001111)",
     children: [ "bb524613-e8d0-4d29-b61a-ec30b9accd90" ], // ← random_access_memory
 
-    size: (24, 16),
     labels: {
         Dynamic(0): "2",
         Dynamic(1): "1",
-    
+
         Dynamic(2): "128",
         Dynamic(3): "64",
         Dynamic(4): "32",
@@ -26,22 +25,18 @@ Level(
         Dynamic(8): "2",
         Dynamic(9): "1",
     },
-    permanent: [
-        (0, 15), (1, 15),
-        (16, 0), (17, 0), (18, 0), (19, 0), (20, 0), (21, 0), (22, 0), (23, 0)
-    ],
     tiles: {
-        (0, 15): Emitter( rotation: Down, active: false, id: 0 ),
-        (1, 15): Emitter( rotation: Down, active: false, id: 1 ),
+        (0, 5): Emitter( rotation: Down, active: false, id: 0 ),
+        (1, 5): Emitter( rotation: Down, active: false, id: 1 ),
 
-        (16, 0): Detector( id: 2 ),
-        (17, 0): Detector( id: 3 ),
-        (18, 0): Detector( id: 4 ),
-        (19, 0): Detector( id: 5 ),
-        (20, 0): Detector( id: 6 ),
-        (21, 0): Detector( id: 7 ),
-        (22, 0): Detector( id: 8 ),
-        (23, 0): Detector( id: 9 )
+        (0, 0): Detector( id: 2 ),
+        (1, 0): Detector( id: 3 ),
+        (2, 0): Detector( id: 4 ),
+        (3, 0): Detector( id: 5 ),
+        (4, 0): Detector( id: 6 ),
+        (5, 0): Detector( id: 7 ),
+        (6, 0): Detector( id: 8 ),
+        (7, 0): Detector( id: 9 )
     },
 
     tests: Tests(

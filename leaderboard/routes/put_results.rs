@@ -46,6 +46,13 @@ pub fn attach(server: &mut Server<App>) {
             .iter()
             .find(|x| x.id == level_id)
             .context("Level not found")?;
+
+        for (pos, tile) in body.board.iter() {
+            match level.tiles.get(pos) {
+                _ => {}
+            }
+        }
+
         let results = TestingSimulationState::new(
             &body.board,
             Cow::Borrowed(level),

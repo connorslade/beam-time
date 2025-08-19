@@ -1,9 +1,9 @@
 Level(
     id: "151094cc-afcf-4825-87e2-72a565c18162",
-    name: "Serial Busks",
+    name: "Serial Bus",
     description: "
         Pass the 8-bit value from the input to the output. How hard could be?
-        
+
         The enable (ENBL) line will be pulsed once for each test case.",
     children: [ ],
 
@@ -16,7 +16,9 @@ Level(
         (33, 32), (34, 32), (35, 32), (36, 32), (37, 32), (38, 32), (39, 32), (40, 32),
         (41, 32), (42, 32), (43, 32), (44, 32), (45, 32), (46, 32), (47, 32), (48, 32),
         (49, 32), (50, 32), (51, 32), (52, 32), (53, 32), (54, 32), (55, 32), (56, 32),
-        (57, 32), (58, 32), (59, 32), (60, 32), (61, 32), (62, 32), (63, 32)
+        (57, 32), (58, 32), (59, 32), (60, 32), (61, 32), (62, 32), (63, 32), (00, 63),
+        (01, 63), (02, 63), (03, 63), (04, 63), (05, 63), (06, 63), (07, 63), (09, 63),
+        (56, 00), (57, 00), (58, 00), (59, 00), (60, 00), (61, 00), (62, 00), (63, 00)
     ],
     labels: {
         Dynamic(0): "128",
@@ -39,24 +41,24 @@ Level(
         Dynamic(15): "1",
     },
     tiles: {
-        (28, 35): Emitter( rotation: Down, active: true, id: 0 ),
-        (29, 35): Emitter( rotation: Down, active: true, id: 1 ),
-        (30, 35): Emitter( rotation: Down, active: true, id: 2 ),
-        (31, 35): Emitter( rotation: Down, active: true, id: 3 ),
-        (32, 35): Emitter( rotation: Down, active: true, id: 4 ),
-        (33, 35): Emitter( rotation: Down, active: true, id: 5 ),
-        (34, 35): Emitter( rotation: Down, active: true, id: 6 ),
-        (35, 35): Emitter( rotation: Down, active: true, id: 7 ),
-        (37, 35): Emitter( rotation: Down, active: true, id: 16 ),
+        (0, 63): Emitter( rotation: Down, active: true, id: 0 ),
+        (1, 63): Emitter( rotation: Down, active: true, id: 1 ),
+        (2, 63): Emitter( rotation: Down, active: true, id: 2 ),
+        (3, 63): Emitter( rotation: Down, active: true, id: 3 ),
+        (4, 63): Emitter( rotation: Down, active: true, id: 4 ),
+        (5, 63): Emitter( rotation: Down, active: true, id: 5 ),
+        (6, 63): Emitter( rotation: Down, active: true, id: 6 ),
+        (7, 63): Emitter( rotation: Down, active: true, id: 7 ),
+        (9, 63): Emitter( rotation: Down, active: true, id: 16 ),
 
-        (28, 29): Detector( id: 8 ),
-        (29, 29): Detector( id: 9 ),
-        (30, 29): Detector( id: 10 ),
-        (31, 29): Detector( id: 11 ),
-        (32, 29): Detector( id: 12 ),
-        (33, 29): Detector( id: 13 ),
-        (34, 29): Detector( id: 14 ),
-        (35, 29): Detector( id: 15 ),
+        (56, 0): Detector( id: 8 ),
+        (57, 0): Detector( id: 9 ),
+        (58, 0): Detector( id: 10 ),
+        (59, 0): Detector( id: 11 ),
+        (60, 0): Detector( id: 12 ),
+        (61, 0): Detector( id: 13 ),
+        (62, 0): Detector( id: 14 ),
+        (63, 0): Detector( id: 15 ),
 
         (00, 32): Wall, (01, 32): Wall, (02, 32): Wall, (03, 32): Wall, (04, 32): Wall,
         (05, 32): Wall, (06, 32): Wall, (07, 32): Wall, (08, 32): Wall, (09, 32): Wall,

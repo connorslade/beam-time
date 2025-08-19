@@ -38,12 +38,6 @@ impl Holding {
         pancam: &Pancam,
         level: Option<&'static Level>,
     ) {
-        if (!self.is_none() && ctx.input.consume_mouse_pressed(MouseButton::Right))
-            || ctx.input.key_pressed(KeyCode::KeyQ)
-        {
-            *self = Holding::None;
-        }
-
         match self {
             Holding::None => {}
             Holding::Tile(tile) => {
@@ -92,6 +86,12 @@ impl Holding {
                 }
             }
         }
+
+        if (!self.is_none() && ctx.input.consume_mouse_pressed(MouseButton::Right))
+            || ctx.input.key_pressed(KeyCode::KeyQ)
+        {
+            *self = Holding::None;
+        }
     }
 }
 
@@ -108,19 +108,18 @@ fn render_tile(
         .z_index(layer::TILE_HOLDING)
         .draw(ctx);
 
-    if let Some(label) = level.and_then(|level| {
-        tile.id().and_then(|id| {
-            let pos = ElementLocation::Dynamic(id);
-            level.labels.get(&pos)
-        })
-    }) {
+    if let Some(id) = tile.id() {
         Sprite::new(DYNAMIC_TILE_OUTLINE)
             .scale(Vector2::repeat(shared.scale))
             .position(position, Anchor::Center)
             .z_index(layer::TILE_HOLDING_BACKGROUND)
             .draw(ctx);
-        tile_label(shared.scale, shared.scale / 2.0, position, label)
-            .z_index(layer::TILE_HOLDING)
-            .draw(ctx);
+
+        if let Some(label) = level.and_then(|level| level.labels.get(&ElementLocation::Dynamic(id)))
+        {
+            tile_label(shared.scale, shared.scale / 2.0, position, label)
+                .z_index(layer::TILE_HOLDING)
+                .draw(ctx);
+        }
     }
 }

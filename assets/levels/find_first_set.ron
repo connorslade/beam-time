@@ -3,9 +3,9 @@ Level(
     name: "Find First Set",
     description: "
         Return the index or position (starting with zero) of the least significant bit set to one. This is equivalent to counting the number of trailing zeros.
-        
+
         You can assume every test case will have at least one bit set.",
-    children: [ "fff0fee3-8c27-4230-bc9c-eb49156dd50e" ], // ← comparator
+    children: [ "b59c1a75-8d7a-4c91-bdd4-6831e3b1f41a", "fff0fee3-8c27-4230-bc9c-eb49156dd50e" ], // ← count_ones, comparator
 
     labels: {
         Dynamic(0): "128",

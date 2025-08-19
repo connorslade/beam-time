@@ -48,7 +48,10 @@ impl LevelPanel {
                 LevelResult::Success { latency } => {
                     success(ctx, state, layout, level, (price, latency))
                 }
-                LevelResult::Failed { case } => failed(ctx, layout, case + 1),
+                LevelResult::Failed { case } => {
+                    let idx = level.tests.visible_index(case) + 1;
+                    failed(ctx, layout, idx)
+                }
                 LevelResult::OutOfTime => unreachable!(),
             }
         }

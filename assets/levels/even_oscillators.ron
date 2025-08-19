@@ -1,7 +1,10 @@
 Level(
     id: "d1d080f7-06c4-421d-9125-dceadc5b6f32",
     name: "Even Oscillators",
-    description: "Build three oscillators with (from left to right) periods of 16, 12, and 8.\n\nThe initial pulses from each oscillator must all hit their corresponding detectors in the same tick.",
+    description: "
+        Build three oscillators with periods of 16, 12, and 8. The period is the number of ticks before the oscillator cycles, so it should be on half the period, then off for half, then back on, continuing forever.
+
+        The initial pulses from each oscillator must all hit their corresponding detectors in the same tick.",
     children: [ "72e79fe9-ae4e-4366-a98a-5aaaf7bb584f" ], // ← pulse_width_modulation
 
     size: (6, 6),
