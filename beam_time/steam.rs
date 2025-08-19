@@ -8,6 +8,12 @@ pub struct Steam {
     client: Client,
 }
 
+pub enum RichPresence {
+    None,
+    Sandbox,
+    Campaign(String),
+}
+
 impl Steam {
     pub fn init() -> Result<Self> {
         let client = Client::init_app(STEAM_ID)?;
@@ -40,10 +46,25 @@ impl Steam {
         }
     }
 
-    pub fn rich_presence(&self, value: Option<&str>) {
+    pub fn rich_presence(&self, value: RichPresence) {
         let friends = self.client.friends();
-        if !friends.set_rich_presence("status", value) {
-            warn!("Failed to set rich presence");
+
+        friends.set_rich_presence("steam_display", value.steam_display());
+        match value {
+            RichPresence::Campaign(name) => {
+                friends.set_rich_presence("name", Some(&name));
+            }
+            _ => {}
+        }
+    }
+}
+
+impl RichPresence {
+    fn steam_display(&self) -> Option<&str> {
+        match self {
+            RichPresence::None => None,
+            RichPresence::Sandbox => Some("#Status_Sandbox"),
+            RichPresence::Campaign(_) => Some("#Status_Campaign"),
         }
     }
 }

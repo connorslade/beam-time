@@ -9,8 +9,6 @@ use std::{
 use log::{info, warn};
 use rand::{Rng, seq::SliceRandom};
 
-#[cfg(feature = "steam")]
-use crate::game::achievements::award_campaign_achievements;
 use crate::{
     App,
     consts::color,
@@ -22,6 +20,8 @@ use crate::{
     ui::{confetti::Confetti, level_panel::LevelPanel, tile_picker::TilePicker},
     util::key_events,
 };
+#[cfg(feature = "steam")]
+use crate::{game::achievements::award_campaign_achievements, steam::RichPresence};
 use beam_logic::{
     level::default::DEFAULT_LEVELS,
     misc::price,
@@ -204,10 +204,11 @@ impl Screen for GameScreen {
     fn on_init(&mut self, state: &mut App) {
         #[cfg(feature = "steam")]
         if let Some(level) = self.board.transient.level {
-            let text = format!("In a level: {}.", level.name);
-            state.steam.rich_presence(Some(&text));
+            state
+                .steam
+                .rich_presence(RichPresence::Campaign(level.name.clone()));
         } else {
-            state.steam.rich_presence(Some("In a sandbox world."));
+            state.steam.rich_presence(RichPresence::Sandbox);
         }
 
         if let Some(level) = self.board.transient.level {
@@ -217,7 +218,7 @@ impl Screen for GameScreen {
 
     fn on_destroy(&mut self, _state: &mut App) {
         #[cfg(feature = "steam")]
-        _state.steam.rich_presence(None);
+        _state.steam.rich_presence(RichPresence::None);
 
         let board = mem::take(&mut self.board);
         let trash = board.transient.trash;

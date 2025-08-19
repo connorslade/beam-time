@@ -1,0 +1,11 @@
+"lang"
+{
+	"english"
+	{
+		"tokens"
+		{
+			"#Status_Campaign"	"Campaign: %name%"
+			"#Status_Sandbox"	"Sandbox"
+		}
+	}
+}
