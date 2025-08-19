@@ -121,13 +121,9 @@ impl Board {
             let mut old = Vec::new();
 
             for pos in this.selection.iter() {
-                let mut tile = self.tiles.get(*pos);
-                if cut {
-                    old.push((*pos, tile));
-                    self.tiles.remove(*pos);
-                } else {
-                    tile = tile.generic();
-                }
+                let tile = self.tiles.get(*pos);
+                old.push((*pos, tile));
+                self.tiles.remove(*pos);
 
                 if !tile.is_empty() {
                     list.push((*pos, tile));
@@ -149,10 +145,11 @@ impl Board {
 
         if ctrl
             && paste
-            && let Some(item) = state.clipboard.clone()
+            && let Some(item) = &state.clipboard
         {
             *sim = None;
-            self.transient.holding = Holding::Paste(item);
+            self.transient.holding =
+                Holding::Paste(item.iter().map(|(p, x)| (*p, x.generic())).collect());
         }
     }
 

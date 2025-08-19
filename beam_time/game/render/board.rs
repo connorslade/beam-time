@@ -35,10 +35,10 @@ impl Board {
         let tile_counts = pancam.tile_counts(ctx.size());
         let frame = state.frame();
 
+        self.update_selection(ctx, state, pancam, sim);
         self.transient
             .holding
             .render(ctx, pancam, self.transient.level);
-        self.update_selection(ctx, state, pancam, sim);
         self.render_notes(ctx, state, pancam);
 
         if sim.is_none() && ctx.input.key_down(CTRL) && ctx.input.key_pressed(KeyCode::KeyZ) {
