@@ -8,7 +8,7 @@ use engine::{
     graphics_context::GraphicsContext,
     layout::{
         Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
-        row::RowLayout,
+        row::RowLayout, tracker::LayoutTracker,
     },
     memory_key,
 };
@@ -30,7 +30,7 @@ use crate::{
         board_operations::{
             BoardType,
             create::{self, create_modal},
-            delete::{self, delete_modal},
+            delete::{self, delete_modal, reset_modal},
         },
         components::{
             button::{ButtonEffects, ButtonExt},
@@ -47,7 +47,11 @@ impl GameScreen {
         self.solutions.sort_by_key(|x| Reverse(x.meta.last_played));
         let level = self.board.transient.level.unwrap();
 
-        let modal = Modal::new(modal_size(ctx))
+        let tracker = LayoutTracker::new(memory_key!());
+        let height = tracker.bounds(ctx).map(|x| x.height()).unwrap_or_default();
+        let size = modal_size(ctx);
+
+        let modal = Modal::new(Vector2::new(size.x, size.y.max(height)))
             .position(ctx.center(), Anchor::Center)
             .margin(MARGIN)
             .layer(layer::UI_OVERLAY);
@@ -57,6 +61,7 @@ impl GameScreen {
 
             ColumnLayout::new(PADDING)
                 .justify(Justify::Center)
+                .tracked(tracker)
                 .show(ctx, root, |ctx, layout| {
                     RowLayout::new(0.0).show(ctx, layout, |ctx, layout| {
                         body(&format!("{} Solutions", level.name))
@@ -117,11 +122,11 @@ impl GameScreen {
         });
     }
 
-    fn name(&mut self, idx: usize) -> &mut String {
+    fn name(&self, idx: usize) -> &String {
         if idx == 0 {
-            &mut self.board.meta.name
+            &self.board.meta.name
         } else {
-            &mut self.solutions[idx - 1].meta.name
+            &self.solutions[idx - 1].meta.name
         }
     }
 
@@ -131,7 +136,15 @@ impl GameScreen {
             create::Result::Nothing => {}
             create::Result::Cancled => self.modal = ActiveModal::Solutions,
             create::Result::Finished(new) => {
-                *name = new;
+                if index == 0 {
+                    self.board.meta.name = new;
+                } else {
+                    let path = &self.solutions[index - 1].path;
+                    if let Err(err) = rename_unloaded_solution(path, new) {
+                        error!("Failed to rename solution: {err}");
+                    }
+                }
+
                 self.modal = ActiveModal::Solutions;
             }
         }
@@ -164,11 +177,23 @@ impl GameScreen {
         }
     }
 
-    fn solution(
+    pub(super) fn solutions_reset_modal(&mut self, ctx: &mut GraphicsContext) {
+        match reset_modal(ctx, &self.board.meta.name) {
+            delete::Result::Nothing => {}
+            delete::Result::Cancled => self.modal = ActiveModal::Paused,
+            delete::Result::Deleted => {
+                self.modal = ActiveModal::Paused;
+                self.beam.get().beam = None;
+                self.board.reset();
+            }
+        }
+    }
+
+    fn solution<L: Layout + 'static>(
         &mut self,
         state: &mut App,
         ctx: &mut GraphicsContext,
-        layout: &mut ColumnLayout,
+        layout: &mut L,
         index: usize,
     ) {
         let (path, meta) = if index == 0 {
@@ -195,6 +220,7 @@ impl GameScreen {
                 .show(ctx, layout, |ctx, layout| {
                     let current = if index == 0 { " (Current)" } else { "" };
                     let title = Text::new(UNDEAD_FONT, format!("{}{current}", meta.name))
+                        .max_width(layout.available().x - MARGIN)
                         .scale(Vector2::repeat(3.0));
 
                     if index != 0 {
@@ -276,4 +302,11 @@ fn duplicate_solution(solution: PathBuf, level: &Level) -> Result<UnloadedBoard>
     board.save_exact(&path)?;
 
     Ok(UnloadedBoard { path, meta })
+}
+
+fn rename_unloaded_solution(path: &PathBuf, name: String) -> Result<()> {
+    let mut board = Board::load(path)?;
+    board.meta.name = name;
+    board.save_exact(path)?;
+    Ok(())
 }

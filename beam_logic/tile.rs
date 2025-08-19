@@ -100,6 +100,34 @@ impl Tile {
         }
     }
 
+    /// Checks equality but ignores the active state of emitters. This can be
+    /// used to check if a permanent tile in a solution is unchanged from it's
+    /// definition in the level description.
+    pub fn soft_eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Tile::Empty, Tile::Empty) | (Tile::Delay, Tile::Delay) | (Tile::Wall, Tile::Wall) => {
+                true
+            }
+            (Tile::Detector { id: a }, Tile::Detector { id: b }) => a == b,
+            (
+                Tile::Emitter {
+                    rotation: rotation_a,
+                    id: id_a,
+                    ..
+                },
+                Tile::Emitter {
+                    rotation: rotation_b,
+                    id: id_b,
+                    ..
+                },
+            ) => rotation_a == rotation_b && id_a == id_b,
+            (Tile::Mirror { rotation: a }, Tile::Mirror { rotation: b }) => a == b,
+            (Tile::Splitter { rotation: a }, Tile::Splitter { rotation: b }) => a == b,
+            (Tile::Galvo { rotation: a }, Tile::Galvo { rotation: b }) => a == b,
+            _ => false,
+        }
+    }
+
     /// Returns the tile's dynamic id if it has one. Used for mapping physical
     /// tiles to level labels and checkers.
     pub fn id(&self) -> Option<u32> {

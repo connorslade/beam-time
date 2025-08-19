@@ -148,9 +148,9 @@ impl Modal {
     }
 }
 
-pub fn modal_buttons(
+pub fn modal_buttons<L: Layout + 'static>(
     ctx: &mut GraphicsContext,
-    layout: &mut ColumnLayout,
+    layout: &mut L,
     width: f32,
     (left, right): (&str, &str),
 ) -> (bool, bool) {

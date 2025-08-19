@@ -61,6 +61,37 @@ pub fn delete_modal(ctx: &mut GraphicsContext, mode: BoardType, name: &str) -> R
     out
 }
 
+pub fn reset_modal(ctx: &mut GraphicsContext, name: &str) -> Result {
+    let modal = Modal::new(modal_size(ctx))
+        .position(ctx.center(), Anchor::Center)
+        .margin(MARGIN)
+        .layer(layer::UI_OVERLAY);
+    let size = modal.inner_size();
+
+    let mut out = Result::Nothing;
+    modal.draw(ctx, |ctx, root| {
+        let body = body(size.x);
+
+        root.nest(ctx, ColumnLayout::new(PADDING), |ctx, layout| {
+            body("Reset Confirmation")
+                .scale(Vector2::repeat(4.0))
+                .layout(ctx, layout);
+            Spacer::new_y(4.0).layout(ctx, layout);
+
+            let text = format!("Are you sure you want to reset the solution world '{name}'?");
+            body(&text).layout(ctx, layout);
+
+            let click = ctx.input.mouse_pressed(MouseButton::Left);
+            let (back, delete) = modal_buttons(ctx, layout, size.x, ("Back", "Reset"));
+            (ctx.input.consume_key_pressed(KeyCode::Escape) || back && click)
+                .then(|| out = Result::Cancled);
+            (delete && click).then(|| out = Result::Deleted);
+        });
+    });
+
+    out
+}
+
 impl BoardType {
     fn type_name_lower(&self) -> &str {
         match self {

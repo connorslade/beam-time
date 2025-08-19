@@ -1,5 +1,6 @@
 use std::{
     borrow::Cow,
+    collections::HashSet,
     mem,
     path::{Path, PathBuf},
     time::Duration,
@@ -61,6 +62,7 @@ pub struct GameScreen {
 enum ActiveModal {
     None,
     Paused,
+    Reset,
     NoteEdit { index: usize, old: bool },
 
     Solutions,
@@ -236,6 +238,23 @@ impl GameScreen {
         board.transient.level =
             level_meta.map(|x| DEFAULT_LEVELS.iter().find(|y| y.id == x.id).unwrap());
 
+        if let Some(level) = board.transient.level {
+            let mut seen_ids = HashSet::new();
+            for (_pos, tile) in board.tiles.iter() {
+                if let Some(id) = tile.id() {
+                    seen_ids.insert(id);
+                }
+            }
+
+            for (pos, tile) in level.tiles.iter() {
+                if let Some(id) = tile.id()
+                    && !seen_ids.contains(&id)
+                {
+                    board.tiles.set(pos, tile);
+                }
+            }
+        }
+
         Self {
             pancam: Pancam::default(),
             board,
@@ -273,6 +292,7 @@ impl GameScreen {
             ActiveModal::Solutions => self.solutions_modal(state, ctx),
             ActiveModal::SolutionEdit { index } => self.solutions_rename_modal(ctx, index),
             ActiveModal::SolutionDelete { index } => self.solutions_delete_modal(state, ctx, index),
+            ActiveModal::Reset => self.solutions_reset_modal(ctx),
             _ => {}
         }
     }

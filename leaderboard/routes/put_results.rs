@@ -1,5 +1,6 @@
 use std::{
     borrow::Cow,
+    collections::HashSet,
     net::{IpAddr, Ipv4Addr},
     time::{SystemTime, UNIX_EPOCH},
 };
@@ -47,9 +48,19 @@ pub fn attach(server: &mut Server<App>) {
             .find(|x| x.id == level_id)
             .context("Level not found")?;
 
+        // Verify that uploaded board is valid for the level. All permanent
+        // tiles should still be there unchanged and there should not be any
+        // emitters or detectors with IDs that were not defined in the level.
+        let mut ids = HashSet::new();
         for (pos, tile) in body.board.iter() {
-            match level.tiles.get(pos) {
-                _ => {}
+            if let Some(id) = tile.id()
+                && !ids.insert(id)
+            {
+                Err("Extra dynamic tiles were added, solution rejected")?;
+            }
+
+            if level.permanent.contains(&pos) && !level.tiles.get(pos).soft_eq(&tile) {
+                Err("Permanent tiles were modified, solution rejected")?;
             }
         }
 

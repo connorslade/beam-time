@@ -63,7 +63,9 @@ impl Board {
                     self.transient.history.track_one(pos, old);
                     self.tiles.set(pos, tile);
 
-                    if !old.is_empty() && !ctx.input.key_down(KeyCode::AltLeft) {
+                    if (!old.is_empty() && !ctx.input.key_down(KeyCode::AltLeft))
+                        || old.id().is_some()
+                    {
                         self.transient.holding = Holding::Tile(old);
                     }
                 }

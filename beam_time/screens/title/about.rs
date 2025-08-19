@@ -49,11 +49,14 @@ pub const CONTROLS_DESCRIPTION: &[&str] = &[
         In addition to the keybinds on the pause screen, here are some useful, but non-essential ones that can significantly speed up the construction of large circuits.
     "},
     indoc! {"
-        • CTRL+Z - Undo
-        • SHIFT+R - Rotates counterclockwise
-        • 1-7 - Picks up the corresponding tile from panel
-        • N - Creates or opens a sticky note at the mouse position
-        • +/-/0/SHIFT+0 - Increses/decreses/resets TPS/∞ TPS
+        • Undo: CTRL+Z
+        • Pick tile from panel: 1-7
+        • Sticky note: N (create or open at mouse position)
+        • Open pause menu: SHIFT+ESC (without resetting current simulation state)
+        • Simulation speed (ticks per second):
+            • + / -: Increase / Decrease
+            • 0: Reset to default
+            • SHIFT+0: Set to infinite (runs as fast as possible)
     "},
     indoc! {"
         Selections are a powerful way to modify multiple tiles at once. \

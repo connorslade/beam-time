@@ -19,7 +19,7 @@ use engine::{
     memory::{Memory, MemoryKey},
 };
 
-use crate::assets::UNDEAD_FONT;
+use crate::{assets::UNDEAD_FONT, consts::spacing::PADDING};
 
 pub struct TextInput {
     position: Vector2<f32>,
@@ -144,7 +144,7 @@ impl TextInput {
             .position(Vector2::repeat(4.0), self.position_anchor)
             .scale(Vector2::repeat(self.scale))
             .z_index(self.z_index)
-            .max_width(self.width);
+            .max_width(self.width - PADDING);
 
         self.text.replace(Some(text));
     }
@@ -228,7 +228,7 @@ impl Drawable for TextInput {
         if (t * 4.0).cos() > 0.0 {
             let font_desc = &ctx.assets.get_font(UNDEAD_FONT).desc;
             let font_height = font_desc.height * self.scale;
-            let pos = self.position + Vector2::x() * padding + cursor;
+            let pos = self.position + Vector2::x() * (padding + cursor.x);
             Rectangle::new(Vector2::new(2.0, font_height + padding * 2.0))
                 .position(pos, self.position_anchor)
                 .draw(ctx);

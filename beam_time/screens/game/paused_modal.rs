@@ -97,12 +97,7 @@ impl GameScreen {
                                 format!("Solutions ({})", self.solutions.len() + 1);
                             icon_button(EDIT, &solutions_text)
                                 .then(|| self.modal = ActiveModal::Solutions);
-
-                            icon_button(RESET, "Reset").then(|| {
-                                self.beam.get().beam = None;
-                                self.board.reset();
-                                self.modal = ActiveModal::None;
-                            });
+                            icon_button(RESET, "Reset").then(|| self.modal = ActiveModal::Reset);
                         } else {
                             icon_button(TRASH, "Delete World").then(|| trash = true);
                         }
