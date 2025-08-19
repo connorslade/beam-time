@@ -3,7 +3,7 @@ Level(
     name: "Pulse-width Modulation",
     description: "
         Make an oscillator with a variable frequency. The input gives the number of ticks to be on, then off before repeating.
-
+        
         The test cases will each take a little while to run, so I recommend testing at max speed.",
     children: [ ],
 

@@ -3,9 +3,9 @@ Level(
     name: "Stack",
     description: "
         A stack is a device that supports two operations a push and a pop. You can think of it like a stack of plates, pushing adds a new plate on top and popping takes the top plate off.
-
+        
         When the enable (ENBL) line is set high, execute the correct opertion depending on MODE (0 for pop, 1 for push).
-
+        
         When pushing, take in the numeric value from the input and store it internally and when popping, remove the top data. The top (most recently added) value should be sent to the output and no more than four values will every by on the stack at once.",
     children: [ ],
 

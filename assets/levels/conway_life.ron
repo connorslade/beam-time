@@ -3,13 +3,13 @@ Level(
     name: "Conway's Game of Life",
     description: "
         Conway's Game of Life is a simple cellular automaton made up of an infinite 2D grid of cells. Each cell is either live or dead and each on timestep every cell's state updated.
-
+        
         Your job is to implement the control logic of a cell given the cell's current state (LIVE) and the number if live neighbors it has (N).
-
-        • A live cell with <2 neighbours dies
-        • A live cell with 3-4 neighbours lives
-        • A live cell with >3 neighbours dies
-        • A dead cell with 3 neighbours becomes live",
+        
+        • A live cell with <2 neighbors dies
+        • A live cell with 3-4 neighbors lives
+        • A live cell with >3 neighbors dies
+        • A dead cell with 3 neighbors becomes live",
         children: [ ],
 
     labels: {

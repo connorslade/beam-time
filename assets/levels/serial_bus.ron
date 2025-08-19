@@ -3,7 +3,7 @@ Level(
     name: "Serial Bus",
     description: "
         Pass the 8-bit value from the input to the output. How hard could be?
-
+        
         The enable (ENBL) line will be pulsed once for each test case.",
     children: [ ],
 

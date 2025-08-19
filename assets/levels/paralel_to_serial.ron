@@ -2,8 +2,8 @@ Level(
     id: "2bf07b89-a458-45f9-a65c-7fe416870323",
     name: "Paralel to Serial",
     description: "
-        Instead of taking in one data bit at a time and shifting them into memory, create a shift register that takes in the innitial values of d1-d8 and sends each bit to the output (OUT) on each clock (CLK) pulse.
-
+        Instead of taking in one data bit at a time and shifting them into memory, create a shift register that takes in the initial values of d1-d8 and sends each bit to the output (OUT) on each clock (CLK) pulse.
+        
         The data values stay constant through the entire run",
     children: [ ],
 

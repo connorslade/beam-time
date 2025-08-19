@@ -3,9 +3,9 @@ Level(
     name: "Read Only Memory",
     description: "
         Often times in simple computers, we need a way to refer to constant values that could define a program or some other data. When this data is static and never needs to change, a read only memory or ROM can be used.
-
+        
         For this level, you will need to output a constant 8-bit number for each of the four possible inputs. The binary representations of each number have also been provided.
-
+        
         • 0 (00) ⇒ 20 (00010100)
         • 1 (01) ⇒ 238 (11101110)
         • 2 (10) ⇒ 143 (10001111)

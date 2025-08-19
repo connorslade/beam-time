@@ -3,7 +3,7 @@ Level(
     name: "Hamming Correction",
     description: "
         Given the four data and three parity bits, as encoded by your Hamming Generation level solution, output the error corrected data bits and send a signal to ERR if an error was corrected. At most one bit flip will be present.
-
+        
         Also here are the parity bit definitions again (⊕ for XOR).
         P1 = D1 ⊕ D2 ⊕ D4
         P2 = D1 ⊕ D3 ⊕ D4

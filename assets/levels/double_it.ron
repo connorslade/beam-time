@@ -3,7 +3,7 @@ Level(
     name: "Double It",
     description: "
         In the decimal system, each digit's place is 10x greater than the one to its right (1s, 10s, 100s). Digital systems use binary, where each place is 2x greater (1s, 2s, 4s, 8s, etc.) and every digit is just a 0 or a 1. For example, the binary number 10100 is equal to 20 in decimal (1*16 + 0*8 + 1*4 + 0*2 + 0*1).
-
+        
         For this level, output double the numeric value of the binary inputs. This is a simple operation, just like how multiplying by ten is in decimal.",
     children: [ "91d5f245-75e8-4d3e-8994-7dcbdcd70670", "c98218bd-937b-4a60-a94c-a51d677c61b1", "2f854277-df80-4ee8-b5ab-69f7d6587ff4", "86456173-e27c-4918-ae11-ef5a36147037" ], // ← half_adder, parity_bit, synchronization
 

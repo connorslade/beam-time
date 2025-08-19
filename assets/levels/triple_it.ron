@@ -3,7 +3,7 @@ Level(
     name: "Triple It",
     description: "
         Multiplication by powers of two can be easily evaluated with just bit shifts, but multiplying by other integers requires a bit shift followed by an addition.
-
+        
         Output three times the given input number.",
     children: [ ],
 

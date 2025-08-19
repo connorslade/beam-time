@@ -3,7 +3,7 @@ Level(
     name: "Parity Bit",
     description: "
         In the real world, data can be corrupted during transmission. A parity bit is a simple error-detection mechanism. The parity of a bit-string is whether it has an even or odd number of set bits.
-
+        
         The parity bits (P) of the inputs have been chosen to make the parity of the entire 8-bit input (7 data bits + P) even. Your circuit should verify this: send an output signal if the input has even parity (indicating no bit-flip was detected).",
     children: [ "a2f4358f-b86e-45da-b4cb-23c5819a79e7" ], // ← hamming_generation
 

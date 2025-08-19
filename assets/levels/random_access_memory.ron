@@ -1,7 +1,14 @@
 Level(
     id: "bb524613-e8d0-4d29-b61a-ec30b9accd90",
     name: "Random Access Memory",
-    description: "todo. (0 ⇒ read, 1 ⇒ write)",
+    description: "
+        Random Access Memory (RAM) is a component of computer systems that allows data to be stored and loaded from any location in any order. For this level, you will build an 8-word by 8-bit RAM module.
+        
+        Use the 3-bit address input (A) to select one of the 8 internal memory cells. The MODE input determines the operation (0 for read, 1 for write). When the enable (ENBL) line is pulsed:
+        
+        • If in read mode, the data from the selected cell should be sent to the output bus.
+        • If in write mode, the data from the input bus should be stored in the selected cell.
+    ",
     children: [ ],
 
     labels: {

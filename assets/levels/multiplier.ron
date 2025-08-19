@@ -3,7 +3,7 @@ Level(
     name: "Multiplier",
     description: "
         Multiply the two 8-bit inputs.
-
+        
         The resulting value will never overflow (be greater than 255) and the B value will always be the smaller of the two inputs. The enable (ENBL) line will be pulsed for each test case.",
     children: [ ],
 

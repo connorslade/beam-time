@@ -3,11 +3,11 @@ Level(
     name: "Hamming Generation",
     description: "
         Hamming codes are a type of error correcting code, they can detect if one or two bits were flipped, and if only one was flipped they can determine which bit was flipped.
-
+        
         For a four bit message, hamming codes require three parity bits, although with larger message sizes the percent parity approaches zero.
-
+        
         The parity bits are defined as follows, where the ⊕ symbol represents XOR:
-
+        
         P1 = D1 ⊕ D2 ⊕ D4
         P2 = D1 ⊕ D3 ⊕ D4
         P3 = D2 ⊕ D3 ⊕ D4",
