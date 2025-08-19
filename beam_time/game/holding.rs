@@ -34,6 +34,14 @@ impl Holding {
         *self == Holding::None
     }
 
+    pub fn contains_dynamic(&self) -> bool {
+        match self {
+            Holding::None => false,
+            Holding::Tile(tile) => tile.id().is_some(),
+            Holding::Paste(items) => items.iter().any(|(_p, t)| t.id().is_some()),
+        }
+    }
+
     pub fn render(
         &mut self,
         ctx: &mut GraphicsContext,
@@ -92,7 +100,11 @@ impl Holding {
         if (!self.is_none() && ctx.input.consume_mouse_pressed(MouseButton::Right))
             || ctx.input.key_pressed(KeyCode::KeyQ)
         {
-            *self = Holding::None;
+            match self {
+                Holding::Tile(tile) if tile.id().is_none() => *self = Holding::None,
+                Holding::Paste(items) => items.retain(|(_p, t)| t.id().is_some()),
+                _ => {}
+            }
         }
     }
 }

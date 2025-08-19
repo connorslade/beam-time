@@ -32,6 +32,7 @@ Level(
         lasers: [ 0, 1, 2, 3, 4 ],
         detectors: [ 5 ],
         display: DisplayConfig(
+            emitter_spaces: [ 3 ],
             descriptions: {
                 0: "Dead cell with 4 live neighbors stays dead.",
                 1: "Live cell with 2 live neighbors lives.",

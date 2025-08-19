@@ -116,7 +116,7 @@ impl Board {
             }
         });
 
-        if ctrl && (copy || cut) {
+        if ctrl && (copy || cut) && !self.transient.holding.contains_dynamic() {
             let mut list = Vec::new();
             let mut old = Vec::new();
 
