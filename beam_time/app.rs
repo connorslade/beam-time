@@ -15,7 +15,9 @@ use uuid::Uuid;
 
 #[cfg(feature = "steam")]
 use crate::steam::Steam;
-use crate::{consts::paths, leaderboard::LeaderboardManager, screens::Screen};
+use crate::{
+    consts::paths, game::holding::ClipboardItem, leaderboard::LeaderboardManager, screens::Screen,
+};
 
 pub struct App {
     pub id: UserId,
@@ -24,13 +26,13 @@ pub struct App {
     pub leaderboard: LeaderboardManager,
     /// Record of all levels that have ever been solved.
     pub solved: HashSet<Uuid>,
-
-    pub start: Instant,
-    pub debug: Vec<String>,
+    pub clipboard: Option<ClipboardItem>,
 
     pub config: Config,
     pub data_dir: PathBuf,
 
+    pub start: Instant,
+    pub debug: Vec<String>,
     pub new_screens: Vec<Box<dyn Screen>>,
     pub close_screens: usize,
 }
@@ -72,17 +74,17 @@ impl App {
             #[cfg(not(feature = "steam"))]
             id: UserId::Hardware(crate::util::hwid::get()),
             solved,
+            clipboard: None,
 
             #[cfg(feature = "steam")]
             steam,
             leaderboard: LeaderboardManager::default(),
 
-            start: Instant::now(),
-            debug: Vec::new(),
-
             config,
             data_dir,
 
+            start: Instant::now(),
+            debug: Vec::new(),
             new_screens: vec![],
             close_screens: 0,
         }

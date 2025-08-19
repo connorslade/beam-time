@@ -65,7 +65,8 @@ pub const CONTROLS_DESCRIPTION: &[&str] = &[
 
         You can either deselect (U), delete (BACKSPACE), cut (CTRL+X), or copy (CTRL+C) the selection. \
         If you cut/copy it, you will pick up the selection like you would a tile, and just like with a tile you can rotate it (R/SHIFT+R). \
-        You can also flip it, either horizontally (H) or vertically (V).
+        You can also flip it, either horizontally (H) or vertically (V). \
+        Note that you can copy/paste between sandbox world and campaign levels.
     "},
 ];
 

@@ -3,7 +3,7 @@ Level(
     name: "Two's Complement",
     description: "
         So far we have only worked with the binary representation of positive integers, but there is actually a clever way to represent negative integers that allows adding them with the same adder circuit you already designed.
-        
+
         All you have to do to convert a positive integer to a negative (in two's complement) is flip all of the bits, then add one.",
     children: [ "597b1d3d-0441-460f-870d-ed77749a07d7" ], // ← adder_subtractor
 
@@ -35,7 +35,6 @@ Level(
         (5, 4): Emitter( rotation: Down, active: true,  id: 5 ),
         (6, 4): Emitter( rotation: Down, active: true,  id: 6 ),
         (7, 4): Emitter( rotation: Down, active: true,  id: 7 ),
-        (9, 4): Emitter( rotation: Down, active: true,  id: 16 ),
 
         (0, 0): Detector( id: 8 ),
         (1, 0): Detector( id: 9 ),

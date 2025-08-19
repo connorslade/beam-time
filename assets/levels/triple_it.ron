@@ -4,8 +4,7 @@ Level(
     description: "
         Multiplication by powers of two can be easily evaluated with just bit shifts, but multiplying by other integers requires a bit shift followed by an addition.
 
-        Given the binary input number x, output the binary representation of three times x.
-    ",
+        Output three times the given input number.",
     children: [ ],
 
     labels: {
@@ -50,11 +49,55 @@ Level(
     tests: Tests(
         lasers: [ 0, 1, 2, 3, 4, 5, 6, 7 ],
         detectors: [ 8, 9, 10, 11, 12, 13, 14, 15 ],
+        display: DisplayConfig(
+            descriptions: {
+                0: "21 * 3 = 63",
+                1: "57 * 3 = 171",
+                2: "5 * 3 = 15",
+                3: "74 * 3 = 222",
+                4: "36 * 3 = 108",
+                5: "39 * 3 = 117",
+                6: "18 * 3 = 54",
+                7: "23 * 3 = 69",
+                8: "54 * 3 = 162",
+                9: "22 * 3 = 66",
+                10: "83 * 3 = 249",
+                11: "5 * 3 = 15",
+                12: "14 * 3 = 42",
+                13: "53 * 3 = 159",
+                14: "3 * 3 = 9",
+                15: "30 * 3 = 90"
+            }
+        ),
 
         cases: [
-            Cycle( lasers: [ false, false, false, false, false, false, false, false ], detectors: [ [ false, false, false, false, false, false, false, false ] ] ),
-            Cycle( lasers: [ false, false, false, false, false, false, false, true  ], detectors: [ [ false, false, false, false, false, false, true,  true  ] ] ),
-            Cycle( lasers: [ false, false, false, false, false, false, true,  false ], detectors: [ [ false, false, false, false, true,  false, false, false ] ] ),
+            Cycle( lasers: [ false, false, false, true,  false, true,  false, true  ], detectors: [ [ false, false, true,  true,  true,  true,  true,  true  ] ] ),
+            Cycle( lasers: [ false, false, true,  true,  true,  false, false, true  ], detectors: [ [ true,  false, true,  false, true,  false, true,  true  ] ] ),
+            Cycle( lasers: [ false, false, false, false, false, true,  false, true  ], detectors: [ [ false, false, false, false, true,  true,  true,  true  ] ] ),
+            Cycle( lasers: [ false, true,  false, false, true,  false, true,  false ], detectors: [ [ true,  true,  false, true,  true,  true,  true,  false ] ] ),
+            Cycle( lasers: [ false, false, true,  false, false, true,  false, false ], detectors: [ [ false, true,  true,  false, true,  true,  false, false ] ] ),
+            Cycle( lasers: [ false, false, true,  false, false, true,  true,  true  ], detectors: [ [ false, true,  true,  true,  false, true,  false, true  ] ] ),
+            Cycle( lasers: [ false, false, false, true,  false, false, true,  false ], detectors: [ [ false, false, true,  true,  false, true,  true,  false ] ] ),
+            Cycle( lasers: [ false, false, false, true,  false, true,  true,  true  ], detectors: [ [ false, true,  false, false, false, true,  false, true  ] ] ),
+            Cycle( lasers: [ false, false, true,  true,  false, true,  true,  false ], detectors: [ [ true,  false, true,  false, false, false, true,  false ] ] ),
+            Cycle( lasers: [ false, false, false, true,  false, true,  true,  false ], detectors: [ [ false, true,  false, false, false, false, true,  false ] ] ),
+            Cycle( lasers: [ false, true,  false, true,  false, false, true,  true  ], detectors: [ [ true,  true,  true,  true,  true,  false, false, true  ] ] ),
+            Cycle( lasers: [ false, false, false, false, false, true,  false, true  ], detectors: [ [ false, false, false, false, true,  true,  true,  true  ] ] ),
+            Cycle( lasers: [ false, false, false, false, true,  true,  true,  false ], detectors: [ [ false, false, true,  false, true,  false, true,  false ] ] ),
+            Cycle( lasers: [ false, false, true,  true,  false, true,  false, true  ], detectors: [ [ true,  false, false, true,  true,  true,  true,  true  ] ] ),
+            Cycle( lasers: [ false, false, false, false, false, false, true,  true  ], detectors: [ [ false, false, false, false, true,  false, false, true  ] ] ),
+            Cycle( lasers: [ false, false, false, true,  true,  true,  true,  false ], detectors: [ [ false, true,  false, true,  true,  false, true,  false ] ] )
         ]
     )
 )
+
+// Generated with the following code:
+//
+// let mut rng = rand::rng();
+// for _ in 0..16 {
+//     let r = rng.random::<u8>();
+//     let x = r / 3;
+
+//     println!("{x} * 3 = {}", x * 3);
+//     println!("{x:08b} → {:08b}", x * 3);
+// }

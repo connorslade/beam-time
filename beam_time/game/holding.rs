@@ -19,12 +19,14 @@ use crate::{
 
 use super::pancam::Pancam;
 
+pub type ClipboardItem = Vec<(Vector2<i32>, Tile)>;
+
 #[derive(Default, Clone, PartialEq, Eq)]
 pub enum Holding {
     #[default]
     None,
     Tile(Tile),
-    Paste(Vec<(Vector2<i32>, Tile)>),
+    Paste(ClipboardItem),
 }
 
 impl Holding {

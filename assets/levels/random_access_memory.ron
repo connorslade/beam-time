@@ -63,6 +63,7 @@ Level(
         detectors: [ 13, 14, 15, 16, 17, 18, 19, 20 ],
         display: DisplayConfig(
             emitter_breaks: [ 7 ],
+            emitter_spaces: [ 10 ],
             descriptions: {
                 0: "Store 108 into cell 0",
                 1: "Store 123 into cell 1",

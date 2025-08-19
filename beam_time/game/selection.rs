@@ -1,4 +1,5 @@
 use crate::{
+    app::App,
     assets::UNDEAD_FONT,
     consts::{CTRL, color, layer},
     util::key_events,
@@ -26,13 +27,13 @@ pub struct SelectionState {
     pub(super) selection_start: Option<Vector2<i32>>,
 
     working_selection: Option<(Vector2<i32>, Vector2<i32>)>,
-    last_holding: Holding,
 }
 
 impl Board {
     pub(super) fn update_selection(
         &mut self,
         ctx: &mut GraphicsContext,
+        state: &mut App,
         pancam: &Pancam,
         sim: &mut Option<BeamState>,
     ) {
@@ -72,6 +73,7 @@ impl Board {
                 .position(screen, Anchor::Center)
                 .scale(Vector2::repeat(2.0))
                 .color(Rgb::hex(0xe27285))
+                .z_index(layer::OVERLAY)
                 .draw(ctx);
         }
 
@@ -140,14 +142,17 @@ impl Board {
             list.iter_mut().for_each(|(pos, _)| *pos -= origin);
 
             *sim = None;
-            self.transient.holding = Holding::Paste(list);
-            this.last_holding = self.transient.holding.clone();
+            self.transient.holding = Holding::Paste(list.clone());
+            state.clipboard = Some(list);
             this.selection.clear();
         }
 
-        if ctrl && paste {
+        if ctrl
+            && paste
+            && let Some(item) = state.clipboard.clone()
+        {
             *sim = None;
-            self.transient.holding = this.last_holding.clone();
+            self.transient.holding = Holding::Paste(item);
         }
     }
 

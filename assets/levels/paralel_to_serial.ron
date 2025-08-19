@@ -3,7 +3,7 @@ Level(
     name: "Paralel to Serial",
     description: "
         Instead of taking in one data bit at a time and shifting them into memory, create a shift register that takes in the innitial values of d1-d8 and sends each bit to the output (OUT) on each clock (CLK) pulse.
-        
+
         The data values stay constant through the entire run",
     children: [ ],
 
@@ -40,6 +40,7 @@ Level(
         lasers: [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ],
         detectors: [ 9 ],
         variable_start: false,
+        display: DisplayConfig( emitter_breaks: [ 7 ] ),
 
         hidden: [ 2, 4, 6, 8, 10, 12, 14 ],
         cases: [

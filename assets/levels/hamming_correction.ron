@@ -88,3 +88,32 @@ Level(
 )
 
 // Generated with the following code:
+//
+// let mut rng = rand::rng();
+// for _ in 0..16 {
+//     let [mut d1, mut d2, mut d3, mut d4]: [bool; 4] = [rng.random(), rng.random(), rng.random(), rng.random()];
+//     let [od1, od2, od3, od4] = [d1, d2, d3, d4];
+//     let [mut p1, mut p2, mut p3] = [d1 ^ d2 ^ d4, d1 ^ d3 ^ d4, d2 ^ d3 ^ d4];
+//     let error = rng.random_range(0..=7);
+//
+//     const BIT_NAMES: &[&str] = &["D1", "D2", "D3", "D4", "P1", "P2", "P3"];
+//     if error != 7 {
+//         println!("Flipped bit {}.", BIT_NAMES[error]);
+//     } else {
+//         println!("No bits were flipped.")
+//     }
+//
+//     match error {
+//         0 => d1 ^= true,
+//         1 => d2 ^= true,
+//         2 => d3 ^= true,
+//         3 => d4 ^= true,
+//         4 => p1 ^= true,
+//         5 => p2 ^= true,
+//         6 => p3 ^= true,
+//         _ => {}
+//     }
+//
+//     let (p1, p2, d1, p3, d2, d3, d4, od1, od2, od3, od4) = (p1 as u8, p2 as u8, d1 as u8, p3 as u8, d2 as u8, d3 as u8, d4 as u8, od1 as u8, od2 as u8, od3 as u8, od4 as u8);
+//     println!("{p1}{p2}{d1}{p3}{d2}{d3}{d4} → {od1}{od2}{od3}{od4}{}", (error != 7) as u8);
+// }
