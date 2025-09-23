@@ -2,7 +2,7 @@ use engine::{
     drawable::{Anchor, spacer::Spacer},
     exports::{
         nalgebra::Vector2,
-        winit::{event::MouseButton, keyboard::KeyCode, window::CursorIcon},
+        winit::{event::MouseButton, window::CursorIcon},
     },
     graphics_context::GraphicsContext,
     layout::{LayoutElement, LayoutMethods, column::ColumnLayout},
@@ -12,7 +12,7 @@ use engine::{
 
 use crate::{
     consts::{
-        color, layer,
+        color, keybind, layer,
         spacing::{MARGIN, PADDING},
     },
     ui::{
@@ -35,8 +35,8 @@ pub enum Result {
 }
 
 pub fn create_modal(ctx: &mut GraphicsContext, mode: BoardType, start: Option<&str>) -> Result {
-    let mut exit = ctx.input.consume_key_pressed(KeyCode::Escape);
-    let mut enter = ctx.input.consume_key_pressed(KeyCode::Enter);
+    let mut exit = ctx.input.consume_key_pressed(keybind::BACK);
+    let mut enter = ctx.input.consume_key_pressed(keybind::CONTINUE);
 
     let edit = start.is_some();
     let mut name_error = false;

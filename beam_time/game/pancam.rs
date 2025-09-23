@@ -7,7 +7,7 @@ use engine::{
     graphics_context::GraphicsContext,
 };
 
-use crate::app::App;
+use crate::{app::App, consts::keybind};
 
 pub struct Pancam {
     pub pan: Vector2<f32>,
@@ -20,10 +20,10 @@ pub struct Pancam {
 
 const DECAY: f32 = 10.0;
 const PAN_KEYS: [(KeyCode, Vector2<f32>); 4] = [
-    (KeyCode::KeyW, Vector2::new(0.0, -1.0)),
-    (KeyCode::KeyA, Vector2::new(1.0, 0.0)),
-    (KeyCode::KeyS, Vector2::new(0.0, 1.0)),
-    (KeyCode::KeyD, Vector2::new(-1.0, 0.0)),
+    (keybind::UP, Vector2::new(0.0, -1.0)),
+    (keybind::LEFT, Vector2::new(1.0, 0.0)),
+    (keybind::DOWN, Vector2::new(0.0, 1.0)),
+    (keybind::RIGHT, Vector2::new(-1.0, 0.0)),
 ];
 
 impl Pancam {
@@ -54,7 +54,7 @@ impl Pancam {
         let old_scale = self.scale;
         let sensitivity = state.config.zoom_sensitivity
             * self.zoom_sensitivity
-            * (1.0 - ctx.input.key_down(KeyCode::ShiftLeft) as u8 as f32 * 0.75);
+            * (1.0 - ctx.input.key_down(keybind::SHIFT) as u8 as f32 * 0.75);
         self.scale_goal =
             (self.scale_goal + ctx.input.scroll_delta() * sensitivity).clamp(1.0, 10.0);
 

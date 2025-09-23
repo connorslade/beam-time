@@ -5,7 +5,7 @@ use crate::{
         BIG_RIGHT_ARROW, HISTOGRAM_MARKER, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR,
         TILE_EMITTER_DOWN, UNDEAD_FONT,
     },
-    consts::spacing::MARGIN,
+    consts::{keybind, spacing::MARGIN},
     ui::{components::manual_button::ManualButton, level_panel::horizontal_rule, misc::tile_label},
 };
 use beam_logic::{
@@ -15,7 +15,7 @@ use beam_logic::{
 use engine::{
     color::Rgb,
     drawable::{dummy::DummyDrawable, spacer::Spacer, sprite::Sprite, text::Text},
-    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
+    exports::nalgebra::Vector2,
     graphics_context::GraphicsContext,
     layout::{
         Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
@@ -35,8 +35,8 @@ impl LevelPanel {
         sim: &MutexGuard<InnerAsyncSimulationState>,
     ) {
         let test_count = level.tests.visible_count();
-        (ctx.input.key_pressed(KeyCode::ArrowLeft) && self.case > 0).then(|| self.case -= 1);
-        (ctx.input.key_pressed(KeyCode::ArrowRight) && self.case + 1 < test_count)
+        (ctx.input.key_pressed(keybind::LEFT) && self.case > 0).then(|| self.case -= 1);
+        (ctx.input.key_pressed(keybind::RIGHT) && self.case + 1 < test_count)
             .then(|| self.case += 1);
 
         let sim_level = sim.beam.as_ref().and_then(|x| x.level.as_ref());

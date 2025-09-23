@@ -1,12 +1,10 @@
 use std::mem;
 
 use beam_logic::simulation::{state::BeamState, tile::BeamTile};
-use engine::{
-    exports::winit::{event::MouseButton, keyboard::KeyCode},
-    graphics_context::GraphicsContext,
-};
+use engine::{exports::winit::event::MouseButton, graphics_context::GraphicsContext};
 
 use crate::{
+    consts::keybind,
     game::{board::Board, holding::Holding, pancam::Pancam},
     util::key_events,
 };
@@ -25,7 +23,7 @@ impl Board {
         let (empty, permanent, dynamic) = self.tile_props(&tile, &pos);
 
         // Start selections
-        let shift = ctx.input.key_down(KeyCode::ShiftLeft);
+        let shift = ctx.input.key_down(keybind::SHIFT);
         let selection = &mut self.transient.selection;
         if selection.selection_start.is_none()
             && shift
@@ -35,7 +33,7 @@ impl Board {
         }
 
         // Toggle emitters
-        if ctx.input.key_pressed(KeyCode::KeyE)
+        if ctx.input.key_pressed(keybind::TOGGLE)
             && let Some(sim) = sim
             && let (BeamTile::Emitter { active, .. }, true) =
                 (sim.board.get_mut(pos), sim.level.is_none())
@@ -63,8 +61,7 @@ impl Board {
                     self.transient.history.track_one(pos, old);
                     self.tiles.set(pos, tile);
 
-                    if (!old.is_empty() && !ctx.input.key_down(KeyCode::AltLeft))
-                        || old.id().is_some()
+                    if (!old.is_empty() && !ctx.input.key_down(keybind::ALT)) || old.id().is_some()
                     {
                         self.transient.holding = Holding::Tile(old);
                     }
@@ -112,7 +109,7 @@ impl Board {
         let holding = &mut self.transient.holding;
         if holding.is_none() {
             key_events!(ctx, {
-                KeyCode::KeyR => if !permanent {
+                keybind::ROTATE => if !permanent {
                     *sim = None;
                     if shift {
                         self.tiles.set(pos, tile.rotate_reverse());
@@ -121,14 +118,14 @@ impl Board {
                     }
                     self.transient.history.track_one(pos, tile);
                 },
-                KeyCode::KeyE => if sim.is_none() {
+                keybind::TOGGLE => if sim.is_none() {
                     self.tiles.set(pos, tile.activate());
                     self.transient.history.track_one(pos, tile);
                 }
             });
         }
 
-        if !empty && ctx.input.key_pressed(KeyCode::KeyQ) {
+        if !empty && ctx.input.key_pressed(keybind::PICK) {
             *holding = Holding::Tile(tile.generic());
         }
     }

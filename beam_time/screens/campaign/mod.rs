@@ -12,7 +12,7 @@ use engine::{
     },
     exports::{
         nalgebra::Vector2,
-        winit::{event::MouseButton, keyboard::KeyCode, window::CursorIcon},
+        winit::{event::MouseButton, window::CursorIcon},
     },
     graphics_context::GraphicsContext,
     layout::{
@@ -27,7 +27,7 @@ use uuid::Uuid;
 use crate::{
     app::App,
     assets::{ALAGARD_FONT, CHECK, UNDEAD_FONT},
-    consts::{color, paths, spacing::PADDING},
+    consts::{color, keybind, paths, spacing::PADDING},
     game::{
         board::{
             Board, BoardMeta, LevelMeta,
@@ -100,7 +100,7 @@ impl Screen for CampaignScreen {
         self.pancam.update(state, ctx);
 
         ctx.input
-            .key_pressed(KeyCode::Escape)
+            .key_pressed(keybind::BACK)
             .then(|| state.pop_screen());
 
         let center = ctx.center();

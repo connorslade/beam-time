@@ -5,16 +5,16 @@ use beam_logic::{
 use engine::{
     drawable::sprite::Sprite,
     drawable::{Anchor, Drawable},
-    exports::{
-        nalgebra::Vector2,
-        winit::{event::MouseButton, keyboard::KeyCode},
-    },
+    exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::GraphicsContext,
 };
 
 use crate::{
-    assets::DYNAMIC_TILE_OUTLINE, consts::layer, game::render::tile::TileAsset,
-    ui::misc::tile_label, util::key_events,
+    assets::DYNAMIC_TILE_OUTLINE,
+    consts::{keybind, layer},
+    game::render::tile::TileAsset,
+    ui::misc::tile_label,
+    util::key_events,
 };
 
 use super::pancam::Pancam;
@@ -52,22 +52,22 @@ impl Holding {
             Holding::None => {}
             Holding::Tile(tile) => {
                 key_events!(ctx, {
-                    KeyCode::KeyR => {
-                        *tile = if ctx.input.key_down(KeyCode::ShiftLeft) {
+                    keybind::ROTATE => {
+                        *tile = if ctx.input.key_down(keybind::SHIFT) {
                             tile.rotate_reverse()
                         } else {
                             tile.rotate()
                         };
                     },
-                    KeyCode::KeyE => *tile = tile.activate()
+                    keybind::TOGGLE => *tile = tile.activate()
                 });
 
                 render_tile(ctx, pancam, &level, *tile, ctx.input.mouse());
             }
             Holding::Paste(tiles) => {
                 key_events!(ctx, {
-                    KeyCode::KeyR => {
-                        if ctx.input.key_down(KeyCode::ShiftLeft) {
+                    keybind::ROTATE => {
+                        if ctx.input.key_down(keybind::SHIFT) {
                             for (pos, tile) in tiles.iter_mut() {
                                 *pos = Vector2::new(-pos.y, pos.x);
                                 *tile = tile.rotate_reverse();
@@ -79,11 +79,11 @@ impl Holding {
                             }
                         }
                     },
-                    KeyCode::KeyV => for (pos, tile) in tiles.iter_mut() {
+                    keybind::FLIP_V => for (pos, tile) in tiles.iter_mut() {
                         *pos = Vector2::new(pos.x, -pos.y);
                         *tile = tile.flip_vertical();
                     },
-                    KeyCode::KeyH => for (pos, tile) in tiles.iter_mut() {
+                    keybind::FLIP_H => for (pos, tile) in tiles.iter_mut() {
                         *pos = Vector2::new(-pos.x, pos.y);
                         *tile = tile.flip_horizontal();
                     }
@@ -98,7 +98,7 @@ impl Holding {
         }
 
         if (!self.is_none() && ctx.input.consume_mouse_pressed(MouseButton::Right))
-            || ctx.input.key_pressed(KeyCode::KeyQ)
+            || ctx.input.key_pressed(keybind::PICK)
         {
             match self {
                 Holding::Tile(tile) if tile.id().is_none() => *self = Holding::None,

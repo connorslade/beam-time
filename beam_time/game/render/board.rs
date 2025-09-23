@@ -2,7 +2,7 @@ use crate::{
     app::App,
     assets::{DYNAMIC_TILE_A, DYNAMIC_TILE_B},
     assets::{EMPTY_TILE_A, EMPTY_TILE_B, PERMANENT_TILE_A, PERMANENT_TILE_B},
-    consts::CTRL,
+    consts::keybind,
     consts::layer,
     game::board::Board,
     game::pancam::Pancam,
@@ -13,7 +13,7 @@ use beam_logic::simulation::state::BeamState;
 use engine::{
     drawable::sprite::Sprite,
     drawable::{Anchor, Drawable},
-    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
+    exports::nalgebra::Vector2,
     graphics_context::GraphicsContext,
 };
 
@@ -41,7 +41,10 @@ impl Board {
             .render(ctx, pancam, self.transient.level);
         self.render_notes(ctx, state, pancam);
 
-        if sim.is_none() && ctx.input.key_down(CTRL) && ctx.input.key_pressed(KeyCode::KeyZ) {
+        if sim.is_none()
+            && ctx.input.key_down(keybind::CTRL)
+            && ctx.input.key_pressed(keybind::UNDO)
+        {
             self.transient.history.pop(&mut self.tiles);
         }
 

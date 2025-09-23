@@ -20,7 +20,7 @@ use crate::{
     App,
     assets::{ALAGARD_FONT, UNDEAD_FONT},
     consts::{
-        AUTHOR_HOMEPAGE, GAME_HOMEPAGE, WATERFALL, color, layer,
+        AUTHOR_HOMEPAGE, GAME_HOMEPAGE, WATERFALL, color, keybind, layer,
         spacing::{MARGIN, PADDING},
     },
     ui::{
@@ -74,7 +74,7 @@ impl Screen for TitleScreen {
         Waterfall::new(WATERFALL).draw(ctx);
         self.modals(state, ctx);
 
-        if ctx.input.consume_key_pressed(KeyCode::Escape)
+        if ctx.input.consume_key_pressed(keybind::BACK)
             && let ActiveModal::None = mem::take(&mut self.modal)
         {
             ctx.window.close();

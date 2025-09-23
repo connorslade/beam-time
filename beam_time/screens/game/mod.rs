@@ -11,7 +11,7 @@ use rand::{Rng, seq::SliceRandom};
 
 use crate::{
     App,
-    consts::color,
+    consts::{color, keybind},
     game::{
         board::{Board, LevelStats, unloaded::UnloadedBoard},
         pancam::Pancam,
@@ -29,10 +29,7 @@ use beam_logic::{
         level_state::LevelResult, runtime::asynchronous::AsyncSimulationState, state::BeamState,
     },
 };
-use engine::{
-    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
-    graphics_context::GraphicsContext,
-};
+use engine::{exports::nalgebra::Vector2, graphics_context::GraphicsContext};
 
 use super::Screen;
 
@@ -95,11 +92,11 @@ impl Screen for GameScreen {
             self.pancam.on_resize(old_size, ctx.size());
         }
 
-        let shift = ctx.input.key_down(KeyCode::ShiftLeft);
+        let shift = ctx.input.key_down(keybind::SHIFT);
         key_events!(ctx, {
-            KeyCode::Digit0 => self.tps = [20.0, f32::MAX][shift as usize],
-            KeyCode::Equal => self.tps += 5.0,
-            KeyCode::Minus => self.tps -= 5.0
+            keybind::SPEED_RESET => self.tps = [20.0, f32::MAX][shift as usize],
+            keybind::SPEED_UP => self.tps += 5.0,
+            keybind::SPEED_DOWN => self.tps -= 5.0
         });
 
         self.tps = self.tps.max(0.0);
@@ -108,11 +105,11 @@ impl Screen for GameScreen {
         state.debug(|| format!("Tick: {:.2?}", sim.tick_length));
         sim.runtime.time_per_tick = Duration::from_secs_f32(self.tps.max(1.0).recip());
 
-        let space_pressed = ctx.input.key_pressed(KeyCode::Space);
-        let play_pressed = ctx.input.key_pressed(KeyCode::KeyF);
-        let test_pressed = ctx.input.key_pressed(KeyCode::KeyT) && self.board.meta.level.is_some();
-        let escape = ctx.input.key_pressed(KeyCode::Escape);
-        let shift = ctx.input.key_down(KeyCode::ShiftLeft);
+        let space_pressed = ctx.input.key_pressed(keybind::STEP);
+        let play_pressed = ctx.input.key_pressed(keybind::PLAY);
+        let test_pressed = ctx.input.key_pressed(keybind::TEST) && self.board.meta.level.is_some();
+        let escape = ctx.input.key_pressed(keybind::BACK);
+        let shift = ctx.input.key_down(keybind::SHIFT);
 
         let mut stop_simulation = sim.beam.is_some()
             && ((escape && !shift && matches!(self.modal, ActiveModal::None))
@@ -120,7 +117,7 @@ impl Screen for GameScreen {
         sim.runtime.running &= !space_pressed;
         sim.runtime.running |= play_pressed || test_pressed;
 
-        if ctx.input.key_pressed(KeyCode::Escape) {
+        if ctx.input.key_pressed(keybind::BACK) {
             self.modal = match self.modal {
                 ActiveModal::Paused => ActiveModal::None,
                 _ if sim.beam.is_none() || shift => ActiveModal::Paused,

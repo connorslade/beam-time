@@ -1,16 +1,13 @@
 use engine::{
     drawable::{Anchor, spacer::Spacer},
-    exports::{
-        nalgebra::Vector2,
-        winit::{event::MouseButton, keyboard::KeyCode},
-    },
+    exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::GraphicsContext,
     layout::{LayoutElement, LayoutMethods, column::ColumnLayout},
 };
 
 use crate::{
     consts::{
-        layer,
+        keybind, layer,
         spacing::{MARGIN, PADDING},
     },
     ui::{
@@ -52,7 +49,7 @@ pub fn delete_modal(ctx: &mut GraphicsContext, mode: BoardType, name: &str) -> R
 
             let click = ctx.input.mouse_pressed(MouseButton::Left);
             let (back, delete) = modal_buttons(ctx, layout, size.x, ("Back", "Delete"));
-            (ctx.input.consume_key_pressed(KeyCode::Escape) || back && click)
+            (ctx.input.consume_key_pressed(keybind::BACK) || back && click)
                 .then(|| out = Result::Cancled);
             (delete && click).then(|| out = Result::Deleted);
         });
@@ -83,7 +80,7 @@ pub fn reset_modal(ctx: &mut GraphicsContext, name: &str) -> Result {
 
             let click = ctx.input.mouse_pressed(MouseButton::Left);
             let (back, delete) = modal_buttons(ctx, layout, size.x, ("Back", "Reset"));
-            (ctx.input.consume_key_pressed(KeyCode::Escape) || back && click)
+            (ctx.input.consume_key_pressed(keybind::BACK) || back && click)
                 .then(|| out = Result::Cancled);
             (delete && click).then(|| out = Result::Deleted);
         });

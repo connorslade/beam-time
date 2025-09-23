@@ -16,7 +16,7 @@ use crate::{
     app::App,
     assets::{EDIT, RESET, TRASH},
     consts::{
-        KEYBINDS, color, layer,
+        color, layer,
         spacing::{MARGIN, PADDING},
     },
     screens::game::ActiveModal,
@@ -34,6 +34,14 @@ use crate::{
 };
 
 use super::GameScreen;
+
+const KEYBINDS: &[(&str, &str)] = &[
+    ("T", "Runs test cases"),
+    ("F", "Starts/stops simulation"),
+    ("R", "Rotates the held or hovered tile"),
+    ("Q", "Copy hovered tile"),
+    ("E", "Toggle the held or hovered emitter"),
+];
 
 impl GameScreen {
     pub(super) fn paused_modal(&mut self, state: &mut App, ctx: &mut GraphicsContext) {

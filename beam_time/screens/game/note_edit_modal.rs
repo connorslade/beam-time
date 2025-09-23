@@ -3,10 +3,7 @@ use std::mem;
 use engine::{
     drawable::Anchor,
     drawable::{spacer::Spacer, sprite::Sprite},
-    exports::{
-        nalgebra::Vector2,
-        winit::{event::MouseButton, keyboard::KeyCode},
-    },
+    exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::GraphicsContext,
     layout::{
         Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
@@ -21,7 +18,7 @@ use crate::{
     app::App,
     assets::TRASH,
     consts::{
-        layer,
+        keybind, layer,
         spacing::{MARGIN, PADDING},
     },
     game::board::Note,
@@ -46,7 +43,7 @@ enum Operation {
 
 impl GameScreen {
     pub(super) fn note_edit_modal(&mut self, _state: &mut App, ctx: &mut GraphicsContext) {
-        if matches!(self.modal, ActiveModal::None) && ctx.input.consume_key_pressed(KeyCode::KeyN) {
+        if matches!(self.modal, ActiveModal::None) && ctx.input.consume_key_pressed(keybind::NOTE) {
             let position = self.pancam.screen_to_world_space(ctx.input.mouse());
             let closest = closest_note(&self.board.notes, position);
             let closest_distance = closest.map(|x| x.1).unwrap_or(f32::MAX);
@@ -127,7 +124,7 @@ impl GameScreen {
                         body.with_content(ctx, note.body.to_owned());
                     }
 
-                    if ctx.input.consume_key_pressed(KeyCode::Escape) {
+                    if ctx.input.consume_key_pressed(keybind::BACK) {
                         let (title, body) = (title.content(ctx), body.content(ctx));
                         if title.is_empty() && body.is_empty() {
                             operation = Operation::Delete;

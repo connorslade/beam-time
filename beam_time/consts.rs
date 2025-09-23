@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use engine::{exports::winit::keyboard::KeyCode, memory::MemoryKey, memory_key};
+use engine::{memory::MemoryKey, memory_key};
 use once_cell::sync::Lazy;
 use url::Url;
 
@@ -8,6 +8,7 @@ use url::Url;
 pub const STEAM_ID: u32 = 3385920;
 pub const MAX_HISTORY: usize = 100;
 pub const AUTOSAVE_INTERVAL: Duration = Duration::from_secs(60 * 5);
+pub const WATERFALL: MemoryKey = memory_key!();
 
 pub const AUTHOR_HOMEPAGE: &str = "https://connorcode.com";
 pub const GAME_HOMEPAGE: &str =
@@ -57,13 +58,49 @@ pub mod paths {
     pub const SOLVED: &str = "solved.bin";
 }
 
-pub const WATERFALL: MemoryKey = memory_key!();
-pub const CTRL: KeyCode =
-    [KeyCode::ControlLeft, KeyCode::SuperLeft][cfg!(target_os = "macos") as usize];
-pub const KEYBINDS: &[(&str, &str)] = &[
-    ("T", "Runs test cases"),
-    ("F", "Starts/stops simulation"),
-    ("R", "Rotates the held or hovered tile"),
-    ("Q", "Copy hovered tile"),
-    ("E", "Toggle the held or hovered emitter"),
-];
+pub mod keybind {
+    use engine::exports::winit::keyboard::KeyCode;
+
+    // modifiers
+    pub const CTRL: KeyCode =
+        [KeyCode::ControlLeft, KeyCode::SuperLeft][cfg!(target_os = "macos") as usize];
+    pub const SHIFT: KeyCode = KeyCode::ShiftLeft;
+    pub const ALT: KeyCode = KeyCode::AltLeft;
+
+    // navigation
+    pub const BACK: KeyCode = KeyCode::Escape;
+    pub const CONTINUE: KeyCode = KeyCode::Enter;
+    pub const OVERWRITE: KeyCode = KeyCode::AltLeft;
+
+    // selections
+    pub const UNDO: KeyCode = KeyCode::KeyZ;
+    pub const COPY: KeyCode = KeyCode::KeyC;
+    pub const CUT: KeyCode = KeyCode::KeyX;
+    pub const PASTE: KeyCode = KeyCode::KeyP;
+
+    pub const DESELECT: KeyCode = KeyCode::KeyU;
+    pub const DELETE: KeyCode = KeyCode::Delete;
+
+    // tile operations
+    pub const ROTATE: KeyCode = KeyCode::KeyR;
+    pub const TOGGLE: KeyCode = KeyCode::KeyE;
+    pub const FLIP_V: KeyCode = KeyCode::KeyV;
+    pub const FLIP_H: KeyCode = KeyCode::KeyH;
+    pub const PICK: KeyCode = KeyCode::KeyQ;
+
+    // game stuff
+    pub const PLAY: KeyCode = KeyCode::KeyF;
+    pub const TEST: KeyCode = KeyCode::KeyT;
+    pub const STEP: KeyCode = KeyCode::Space;
+
+    pub const NOTE: KeyCode = KeyCode::KeyN;
+    pub const SPEED_UP: KeyCode = KeyCode::Equal;
+    pub const SPEED_DOWN: KeyCode = KeyCode::Minus;
+    pub const SPEED_RESET: KeyCode = KeyCode::Digit0;
+
+    // pancam movement
+    pub const UP: KeyCode = KeyCode::KeyW;
+    pub const DOWN: KeyCode = KeyCode::KeyS;
+    pub const LEFT: KeyCode = KeyCode::KeyA;
+    pub const RIGHT: KeyCode = KeyCode::KeyD;
+}

@@ -10,7 +10,7 @@ use engine::{
         sprite::Sprite,
         text::Text,
     },
-    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
+    exports::nalgebra::Vector2,
     graphics_context::GraphicsContext,
     layout::{
         Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
@@ -24,7 +24,7 @@ use slug::slugify;
 use crate::{
     App,
     assets::{ALAGARD_FONT, DUPLICATE, EDIT, TRASH, UNDEAD_FONT},
-    consts::{WATERFALL, color, paths, spacing::PADDING},
+    consts::{WATERFALL, color, keybind, paths, spacing::PADDING},
     game::board::{
         Board,
         unloaded::{UnloadedBoard, load_level_dir},
@@ -69,7 +69,7 @@ impl Screen for SandboxScreen {
         self.modals(state, ctx);
 
         ctx.input
-            .key_pressed(KeyCode::Escape)
+            .key_pressed(keybind::BACK)
             .then(|| state.pop_screen());
 
         let (scale, pos) = title_layout(ctx, 8.0);

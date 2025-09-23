@@ -1,7 +1,7 @@
 use crate::{
     app::App,
     assets::UNDEAD_FONT,
-    consts::{CTRL, color, layer},
+    consts::{color, keybind, layer},
     util::key_events,
 };
 use ahash::HashSet;
@@ -11,10 +11,7 @@ use engine::{
     color::Rgb,
     drawable::{Anchor, Drawable},
     drawable::{shape::rectangle::Rectangle, text::Text},
-    exports::{
-        nalgebra::Vector2,
-        winit::{event::MouseButton, keyboard::KeyCode},
-    },
+    exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::GraphicsContext,
 };
 use thousands::Separable;
@@ -50,11 +47,11 @@ impl Board {
             )
         });
 
-        let ctrl = ctx.input.key_down(CTRL);
-        let alt = ctx.input.key_down(KeyCode::AltLeft);
-        let copy = ctx.input.key_pressed(KeyCode::KeyC);
-        let cut = ctx.input.key_pressed(KeyCode::KeyX);
-        let paste = ctx.input.key_pressed(KeyCode::KeyV);
+        let ctrl = ctx.input.key_down(keybind::CTRL);
+        let alt = ctx.input.key_down(keybind::OVERWRITE);
+        let copy = ctx.input.key_pressed(keybind::COPY);
+        let cut = ctx.input.key_pressed(keybind::CUT);
+        let paste = ctx.input.key_pressed(keybind::PASTE);
 
         let in_level = self.transient.level.is_some();
         if let (Some((min, max)), false) = (this.working_selection, ctrl || alt || in_level) {
@@ -91,7 +88,7 @@ impl Board {
             // if alt down, remove from selection
             if ctrl {
                 this.selection.extend(new_selection);
-            } else if ctx.input.key_down(KeyCode::AltLeft) {
+            } else if ctx.input.key_down(keybind::ALT) {
                 // remove new_selection from selection
                 this.selection = this.selection.difference(&new_selection).copied().collect();
             } else {
@@ -100,11 +97,11 @@ impl Board {
         }
 
         key_events!(ctx, {
-            KeyCode::KeyU => {
+            keybind::DESELECT => {
                 this.selection_start = None;
                 this.selection.clear();
             },
-            KeyCode::Delete => {
+            keybind::DELETE => {
                 let mut old = Vec::new();
                 for pos in this.selection.iter() {
                     old.push((*pos, self.tiles.get(*pos)));
@@ -167,9 +164,9 @@ impl Board {
             return;
         }
 
-        let ctrl = ctx.input.key_down(CTRL);
-        let alt = ctx.input.key_down(KeyCode::AltLeft);
-        let shift = ctx.input.key_down(KeyCode::ShiftLeft);
+        let ctrl = ctx.input.key_down(keybind::CTRL);
+        let alt = ctx.input.key_down(keybind::ALT);
+        let shift = ctx.input.key_down(keybind::SHIFT);
 
         let in_selection = |pos| {
             if !valid_tile(pos, self.transient.level, self.meta.size) {
