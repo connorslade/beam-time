@@ -15,7 +15,7 @@ use beam_logic::{
 use engine::{
     color::Rgb,
     drawable::{dummy::DummyDrawable, spacer::Spacer, sprite::Sprite, text::Text},
-    exports::nalgebra::Vector2,
+    exports::{nalgebra::Vector2, winit::keyboard::KeyCode},
     graphics_context::GraphicsContext,
     layout::{
         Direction, Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout,
@@ -34,6 +34,11 @@ impl LevelPanel {
         level: &Level,
         sim: &MutexGuard<InnerAsyncSimulationState>,
     ) {
+        let test_count = level.tests.visible_count();
+        (ctx.input.key_pressed(KeyCode::ArrowLeft) && self.case > 0).then(|| self.case -= 1);
+        (ctx.input.key_pressed(KeyCode::ArrowRight) && self.case + 1 < test_count)
+            .then(|| self.case += 1);
+
         let sim_level = sim.beam.as_ref().and_then(|x| x.level.as_ref());
         let is_test = sim_level.is_some();
         let case_idx = if let Some(sim_level) = sim_level {
@@ -74,7 +79,6 @@ impl LevelPanel {
                                     let tracker = LayoutTracker::new(key);
                                     let button = ManualButton::new(key).tracker(ctx, tracker);
 
-                                    let test_count = level.tests.visible_count();
                                     let disabled = (!direction && self.case == 0)
                                         || (direction && self.case + 1 == test_count)
                                         || is_test;
