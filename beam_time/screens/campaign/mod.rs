@@ -75,7 +75,7 @@ impl Screen for CampaignScreen {
                 Text::new(ALAGARD_FONT, "Campaign")
                     .scale(Vector2::repeat(scale.round()))
                     .z_index(4)
-                    .default_shadow()
+                    .dark_shadow()
                     .layout(ctx, layout);
 
                 let percent = self.solved_count(state) as f32 / self.tree.count() as f32 * 100.0;
@@ -83,7 +83,7 @@ impl Screen for CampaignScreen {
                     .scale(Vector2::repeat((scale / 3.0).round()))
                     .position(Vector2::x() * title_padding, Anchor::BottomLeft)
                     .z_index(4)
-                    .default_shadow()
+                    .dark_shadow()
                     .layout(ctx, layout);
             });
 
@@ -127,7 +127,7 @@ impl Screen for CampaignScreen {
                     .position(self.pancam.pan + center, Anchor::Center)
                     .z_index(1)
                     .color([Rgb::repeat(0.8), Rgb::repeat(1.0)][available as usize])
-                    .default_shadow();
+                    .dark_shadow();
                 let hover = text.is_hovered(ctx);
                 ManualButton::new(memory_key!(i, j))
                     .hovered(hover && available)

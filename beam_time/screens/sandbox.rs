@@ -76,7 +76,7 @@ impl Screen for SandboxScreen {
         Text::new(ALAGARD_FONT, "Sandbox")
             .position(pos, Anchor::TopCenter)
             .scale(Vector2::repeat(scale))
-            .default_shadow()
+            .dark_shadow()
             .draw(ctx);
 
         let mut load_worlds = false;
@@ -173,7 +173,7 @@ impl Screen for SandboxScreen {
 
                 Text::new(UNDEAD_FONT, "+ New Sandbox +")
                     .scale(Vector2::repeat(2.0))
-                    .default_shadow()
+                    .dark_shadow()
                     .button(memory_key!())
                     .on_click(ctx, || self.modal = ActiveModal::Create)
                     .layout(ctx, layout);

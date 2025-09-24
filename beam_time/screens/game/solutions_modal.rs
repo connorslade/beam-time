@@ -51,6 +51,7 @@ impl GameScreen {
         let height = tracker.bounds(ctx).map(|x| x.height()).unwrap_or_default();
         let size = modal_size(ctx);
 
+        let mut load = None;
         let modal = Modal::new(Vector2::new(size.x, size.y.max(height)))
             .position(ctx.center(), Anchor::Center)
             .margin(MARGIN)
@@ -72,10 +73,10 @@ impl GameScreen {
                     DummyDrawable::new().layout(ctx, layout);
 
                     Rule::horizontal(layout.available().x).layout(ctx, layout);
-                    self.solution(state, ctx, layout, 0);
+                    load = self.solution(ctx, layout, 0).or(load);
                     Rule::horizontal(layout.available().x).layout(ctx, layout);
                     for i in 0..self.solutions.len() {
-                        self.solution(state, ctx, layout, i + 1);
+                        load = self.solution(ctx, layout, i + 1).or(load);
                         Rule::horizontal(layout.available().x).layout(ctx, layout);
                     }
 
@@ -120,6 +121,20 @@ impl GameScreen {
                     }
                 });
         });
+
+        if let Some(index) = load {
+            let solution = self.solutions.remove(index - 1);
+            state.pop_screen();
+
+            state.push_screen(
+                GameScreen::load(solution.path)
+                    .with_solutions(mem::take(&mut self.solutions).into_iter())
+                    .with_solutions(iter::once(UnloadedBoard {
+                        path: self.save_file.clone(),
+                        meta: self.board.meta.clone(),
+                    })),
+            );
+        }
     }
 
     fn name(&self, idx: usize) -> &String {
@@ -189,13 +204,15 @@ impl GameScreen {
         }
     }
 
+    // returns the solution that was requested to be loaded. this must be done
+    // after all the UI stuff since clearing the solution list while is still
+    // needed causes some problems.
     fn solution<L: Layout + 'static>(
         &mut self,
-        state: &mut App,
         ctx: &mut GraphicsContext,
         layout: &mut L,
         index: usize,
-    ) {
+    ) -> Option<usize> {
         let (path, meta) = if index == 0 {
             (&self.save_file, &self.board.meta)
         } else {
@@ -273,19 +290,7 @@ impl GameScreen {
             self.solutions.push(board);
         }
 
-        if let Some(index) = load {
-            let solution = self.solutions.remove(index - 1);
-            state.pop_screen();
-
-            state.push_screen(
-                GameScreen::load(solution.path)
-                    .with_solutions(mem::take(&mut self.solutions).into_iter())
-                    .with_solutions(iter::once(UnloadedBoard {
-                        path: self.save_file.clone(),
-                        meta: self.board.meta.clone(),
-                    })),
-            );
-        }
+        load
     }
 }
 

@@ -85,7 +85,7 @@ impl Screen for TitleScreen {
         let title = Text::new(ALAGARD_FONT, "Beam Time")
             .position(pos, Anchor::TopCenter)
             .scale(Vector2::repeat(scale.round()))
-            .default_shadow();
+            .dark_shadow();
         let size = title.size(ctx);
         title
             .button(memory_key!())
@@ -99,7 +99,7 @@ impl Screen for TitleScreen {
         Text::new(UNDEAD_FONT, "By Connor Slade")
             .position(pos + offset, Anchor::TopRight)
             .scale(Vector2::repeat((scale / 2.0).round()))
-            .default_shadow()
+            .dark_shadow()
             .button(memory_key!())
             .effects(ButtonEffects::Arrows | ButtonEffects::Color)
             .on_click(ctx, || {
@@ -117,7 +117,7 @@ impl Screen for TitleScreen {
         )
         .scale(Vector2::repeat(3.0))
         .color(Rgb::repeat(0.5))
-        .default_shadow()
+        .dark_shadow()
         .draw(ctx);
 
         // Buttons
@@ -135,7 +135,7 @@ impl Screen for TitleScreen {
                     let key = memory_key!(name);
                     let button = Text::new(UNDEAD_FONT, name)
                         .scale(Vector2::repeat(4.0))
-                        .default_shadow()
+                        .dark_shadow()
                         .button(key)
                         .effects(ButtonEffects::Color | ButtonEffects::Arrows);
 

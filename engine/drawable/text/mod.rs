@@ -120,12 +120,17 @@ impl Text {
         self
     }
 
+    pub fn no_shadow(mut self) -> Self {
+        self.shadow = None;
+        self
+    }
+
     pub fn shadow(mut self, offset: Vector2<f32>, color_mult: impl Into<Rgb<f32>>) -> Self {
         self.shadow = Some((offset, color_mult.into()));
         self
     }
 
-    pub fn default_shadow(mut self) -> Self {
+    pub fn dark_shadow(mut self) -> Self {
         self.shadow = Some((-Vector2::y(), Rgb::repeat(0.35)));
         self
     }
