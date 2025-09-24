@@ -90,16 +90,16 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, LEFT_ARROW, (0, 10), (3, 6));
     assets.register_sprite(interface, RIGHT_ARROW, (4, 10), (3, 6));
     assets.register_sprite(interface, HISTOGRAM_MARKER, (9, 12), (5, 4));
-    assets.register_sprite(interface, TRASH, (24, 8), (7, 8));
-    assets.register_sprite(interface, DUPLICATE, (16, 8), (7, 8));
-    assets.register_sprite(interface, EDIT, (32, 8), (8, 8));
-    assets.register_sprite(interface, RESET, (24, 17), (8, 7));
-    assets.register_sprite(interface, SLIDER_HANDLE, (19, 17), (4, 6));
+    assets.register_sprite(interface, TRASH, (24, 8), (7, 9));
+    assets.register_sprite(interface, DUPLICATE, (16, 8), (7, 9));
+    assets.register_sprite(interface, EDIT, (32, 8), (8, 9));
+    assets.register_sprite(interface, RESET, (24, 18), (7, 8));
+    assets.register_sprite(interface, SLIDER_HANDLE, (19, 18), (3, 6));
     assets.register_sprite(interface, CHECK, (22, 0), (5, 5));
     assets.register_sprite(interface, COLLAPSE, (16, 0), (5, 6));
-    assets.register_sprite(interface, KEYBOARD_BUTTON, (0, 17), (9, 11));
-    assets.register_sprite(interface, TOGGLE_ACTIVE, (10, 23), (8, 5));
-    assets.register_sprite(interface, TOGGLE_INACTIVE, (10, 17), (8, 5));
+    assets.register_sprite(interface, KEYBOARD_BUTTON, (0, 16), (9, 13));
+    assets.register_sprite(interface, TOGGLE_ACTIVE, (10, 26), (8, 5));
+    assets.register_sprite(interface, TOGGLE_INACTIVE, (10, 19), (8, 5));
 
     let tiles = assets.register_atlas(include_atlas!("textures/tilemap.png"));
     assets.register_sprite(tiles, EMPTY_TILE_A, (0, 288), (16, 16));
