@@ -8,7 +8,7 @@ use engine::{
 use itertools::Itertools;
 use leaderboard::api::results;
 
-use crate::assets::{HISTOGRAM_MARKER, UNDEAD_FONT};
+use crate::assets::{DOWN_ARROW, UNDEAD_FONT};
 
 pub struct Histogram {
     position: Vector2<f32>,
@@ -72,7 +72,7 @@ impl Drawable for Histogram {
         if let Some(real) = self.real {
             let t = real as f32 / self.data.max as f32;
             let offset = Vector2::new(t * width, height + px * 2.0);
-            Sprite::new(HISTOGRAM_MARKER)
+            Sprite::new(DOWN_ARROW)
                 .position(position + offset, Anchor::BottomCenter)
                 .scale(Vector2::repeat(2.0))
                 .draw(ctx);

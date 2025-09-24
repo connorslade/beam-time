@@ -1,14 +1,10 @@
-use std::{
-    f32::consts::{FRAC_PI_2, PI},
-    mem,
-};
+use std::mem;
 
 use bitflags::bitflags;
 use common::direction::Direction;
 use engine::{
     color::Rgb,
-    drawable::{Anchor, Drawable},
-    drawable::{shape::rectangle::Rectangle, spacer::Spacer, sprite::Sprite},
+    drawable::{Anchor, Drawable, shape::rectangle::Rectangle, spacer::Spacer, sprite::Sprite},
     exports::nalgebra::Vector2,
     graphics_context::GraphicsContext,
     layout::{
@@ -19,7 +15,7 @@ use engine::{
 };
 
 use crate::{
-    assets::HISTOGRAM_MARKER,
+    assets::{LEFT_ARROW, RIGHT_ARROW},
     consts::color,
     ui::{components::manual_button::ManualButton, misc::body},
 };
@@ -172,10 +168,10 @@ pub fn modal_buttons<L: Layout + 'static>(
             ctx,
             RowLayout::new(10.0).direction(direction).tracked(tracker),
             |ctx, layout| {
-                Sprite::new(HISTOGRAM_MARKER)
+                Sprite::new([RIGHT_ARROW, LEFT_ARROW][rotation as usize])
+                    .position(Vector2::y() * -1.0, Anchor::BottomLeft) // hm
                     .scale(Vector2::repeat(2.0))
                     .color(color)
-                    .rotate(PI * rotation as u8 as f32 + FRAC_PI_2, Anchor::Center)
                     .layout(ctx, layout);
                 body(text).color(color).layout(ctx, layout);
             },

@@ -1,12 +1,10 @@
-use std::f32::consts::PI;
-
 use common::misc::exp_decay;
 use parking_lot::MutexGuard;
 use thousands::Separable;
 
 use crate::{
     app::App,
-    assets::{COLLAPSE, UNDEAD_FONT},
+    assets::{COLLAPSE_DOWN, COLLAPSE_UP, UNDEAD_FONT},
     consts::{
         layer,
         spacing::{MARGIN, PADDING},
@@ -118,9 +116,8 @@ impl LevelPanel {
                     .justify(Justify::Center)
                     .direction(Direction::MaxToMin)
                     .show(ctx, layout, |ctx, layout| {
-                        Sprite::new(COLLAPSE)
+                        Sprite::new([COLLAPSE_UP, COLLAPSE_DOWN][self.collapsed as usize])
                             .scale(Vector2::repeat(3.0))
-                            .rotate(self.collapsed as u8 as f32 * PI, Anchor::Center)
                             .button(memory_key!())
                             .effects(ButtonEffects::empty())
                             .on_click(ctx, || self.collapsed ^= true)

@@ -8,7 +8,7 @@ use engine::{
 
 use crate::{
     app::App,
-    assets::{HISTOGRAM_MARKER, UNDEAD_FONT},
+    assets::{DOWN_ARROW, UNDEAD_FONT},
     consts::{layer, spacing::PADDING},
     game::{board::Board, pancam::Pancam},
 };
@@ -37,7 +37,7 @@ impl Board {
                             .layout(ctx, layout);
                     }
 
-                    Sprite::new(HISTOGRAM_MARKER)
+                    Sprite::new(DOWN_ARROW)
                         .scale(Vector2::repeat(2.0))
                         .z_index(layer::OVERLAY)
                         .layout(ctx, layout);

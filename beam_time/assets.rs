@@ -22,14 +22,15 @@ define_refs! {
         BIG_RIGHT_ARROW,
         LEFT_ARROW,
         RIGHT_ARROW,
-        HISTOGRAM_MARKER,
+        DOWN_ARROW,
         TRASH,
         DUPLICATE,
         EDIT,
         RESET,
         SLIDER_HANDLE,
         CHECK,
-        COLLAPSE,
+        COLLAPSE_UP,
+        COLLAPSE_DOWN,
         KEYBOARD_BUTTON,
         TOGGLE_ACTIVE,
         TOGGLE_INACTIVE,
@@ -89,14 +90,15 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, BIG_RIGHT_ARROW, (0, 0), (11, 9));
     assets.register_sprite(interface, LEFT_ARROW, (0, 10), (3, 6));
     assets.register_sprite(interface, RIGHT_ARROW, (4, 10), (3, 6));
-    assets.register_sprite(interface, HISTOGRAM_MARKER, (9, 12), (5, 4));
+    assets.register_sprite(interface, DOWN_ARROW, (9, 12), (5, 4));
     assets.register_sprite(interface, TRASH, (24, 8), (7, 9));
     assets.register_sprite(interface, DUPLICATE, (16, 8), (7, 9));
     assets.register_sprite(interface, EDIT, (32, 8), (8, 9));
     assets.register_sprite(interface, RESET, (24, 18), (7, 8));
     assets.register_sprite(interface, SLIDER_HANDLE, (19, 18), (3, 6));
-    assets.register_sprite(interface, CHECK, (22, 0), (5, 5));
-    assets.register_sprite(interface, COLLAPSE, (16, 0), (5, 6));
+    assets.register_sprite(interface, CHECK, (19, 26), (5, 5));
+    assets.register_sprite(interface, COLLAPSE_UP, (16, 0), (5, 7));
+    assets.register_sprite(interface, COLLAPSE_DOWN, (22, 0), (5, 7));
     assets.register_sprite(interface, KEYBOARD_BUTTON, (0, 16), (9, 13));
     assets.register_sprite(interface, TOGGLE_ACTIVE, (10, 26), (8, 5));
     assets.register_sprite(interface, TOGGLE_INACTIVE, (10, 19), (8, 5));

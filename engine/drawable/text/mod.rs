@@ -51,7 +51,7 @@ impl Text {
             font,
             text: text.to_string(),
             max_width: f32::MAX,
-            shadow: None,
+            shadow: Some((Vector2::new(0.0, -1.0), Rgb::repeat(0.6))),
 
             pos: Vector2::repeat(0.0),
             clip: [Vector2::zeros(), Vector2::repeat(f32::MAX)],
@@ -126,7 +126,7 @@ impl Text {
     }
 
     pub fn default_shadow(mut self) -> Self {
-        self.shadow = Some((Vector2::new(0.0, -self.scale.y), Rgb::repeat(0.35)));
+        self.shadow = Some((-Vector2::y(), Rgb::repeat(0.35)));
         self
     }
 
@@ -250,7 +250,9 @@ impl Drawable for Text {
 
             if let Some((offset, color)) = self.shadow {
                 ctx.sprites.push(GpuSprite {
-                    points: gpu_sprite.points.map(|x| x + offset),
+                    points: gpu_sprite
+                        .points
+                        .map(|x| x + offset.component_mul(&self.scale)),
                     color: gpu_sprite.color * color,
                     ..gpu_sprite
                 });

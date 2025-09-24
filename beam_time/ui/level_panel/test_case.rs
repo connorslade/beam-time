@@ -2,7 +2,7 @@ use parking_lot::MutexGuard;
 
 use crate::{
     assets::{
-        BIG_RIGHT_ARROW, HISTOGRAM_MARKER, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR,
+        BIG_RIGHT_ARROW, DOWN_ARROW, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR,
         TILE_EMITTER_DOWN, UNDEAD_FONT,
     },
     consts::{keybind, spacing::MARGIN},
@@ -172,7 +172,7 @@ fn case_small(
             render_tiles(ctx, layout, 3.0, level, Io::Emitter, preview.laser());
 
             Spacer::new_y(8.0).layout(ctx, layout);
-            Sprite::new(HISTOGRAM_MARKER)
+            Sprite::new(DOWN_ARROW)
                 .scale(Vector2::repeat(3.0))
                 .layout(ctx, layout);
 
