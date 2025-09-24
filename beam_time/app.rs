@@ -13,16 +13,14 @@ use log::error;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[cfg(feature = "steam")]
-use crate::steam::Steam;
 use crate::{
-    consts::paths, game::holding::ClipboardItem, leaderboard::LeaderboardManager, screens::Screen,
+    consts::paths, game::holding::ClipboardItem, integrations::Integrations,
+    leaderboard::LeaderboardManager, screens::Screen,
 };
 
 pub struct App {
     pub id: UserId,
-    #[cfg(feature = "steam")]
-    pub steam: Steam,
+    pub integrations: Integrations,
     pub leaderboard: LeaderboardManager,
     /// Record of all levels that have ever been solved.
     pub solved: HashSet<Uuid>,
@@ -65,19 +63,14 @@ impl App {
             .and_then(|b| BINCODE_OPTIONS.deserialize_from(b).ok())
             .unwrap_or_default();
 
-        #[cfg(feature = "steam")]
-        let steam = Steam::init().unwrap();
+        let integrations = Integrations::new();
 
         Self {
-            #[cfg(feature = "steam")]
-            id: UserId::Steam(steam.user_id()),
-            #[cfg(not(feature = "steam"))]
-            id: UserId::Hardware(crate::util::hwid::get()),
+            id: integrations.user_id(),
             solved,
             clipboard: None,
 
-            #[cfg(feature = "steam")]
-            steam,
+            integrations,
             leaderboard: LeaderboardManager::default(),
 
             config,
@@ -103,8 +96,7 @@ impl App {
     }
 
     pub fn on_tick(&mut self, ctx: &mut GraphicsContext) {
-        #[cfg(feature = "steam")]
-        self.steam.on_tick();
+        self.integrations.tick();
         self.leaderboard.tick();
 
         ctx.window.user_scale(self.config.interface_scale);

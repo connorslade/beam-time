@@ -216,9 +216,8 @@ impl Screen for CampaignScreen {
             self.worlds.entry(level.id).or_default().push(board);
         }
 
-        #[cfg(feature = "steam")]
         if self.all_solved() {
-            state.steam.award_achievement("campaign_complete");
+            state.integrations.award_achievement("campaign_complete");
         }
     }
 }
@@ -286,7 +285,6 @@ impl CampaignScreen {
             .count()
     }
 
-    #[cfg(feature = "steam")]
     fn all_solved(&self) -> bool {
         for level in DEFAULT_LEVELS.iter() {
             let Some(level) = self.worlds.get(&level.id) else {

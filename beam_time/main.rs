@@ -16,10 +16,9 @@ mod app;
 mod assets;
 mod consts;
 mod game;
+mod integrations;
 mod leaderboard;
 mod screens;
-#[cfg(feature = "steam")]
-mod steam;
 mod ui;
 mod util;
 

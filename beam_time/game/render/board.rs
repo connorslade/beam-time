@@ -27,10 +27,7 @@ impl Board {
         pancam: &Pancam,
         sim: &mut Option<BeamState>,
     ) {
-        self.tick_autosave(
-            #[cfg(feature = "steam")]
-            state,
-        );
+        self.tick_autosave(state);
 
         let tile_counts = pancam.tile_counts(ctx.size());
         let frame = state.frame();

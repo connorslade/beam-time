@@ -2,16 +2,10 @@ use anyhow::Result;
 use log::{trace, warn};
 use steamworks::Client;
 
-use crate::consts::STEAM_ID;
+use crate::{consts::STEAM_ID, integrations::RichPresence};
 
 pub struct Steam {
     client: Client,
-}
-
-pub enum RichPresence {
-    None,
-    Sandbox,
-    Campaign(String),
 }
 
 impl Steam {
@@ -46,7 +40,7 @@ impl Steam {
         }
     }
 
-    pub fn rich_presence(&self, value: RichPresence) {
+    pub fn rich_presence(&self, _app: &App, value: &RichPresence) {
         let friends = self.client.friends();
 
         friends.set_rich_presence("steam_display", value.steam_display());
