@@ -33,6 +33,7 @@ define_refs! {
         KEYBOARD_BUTTON,
         TOGGLE_ACTIVE,
         TOGGLE_INACTIVE,
+        X,
 
         EMPTY_TILE_A,
         EMPTY_TILE_B,
@@ -93,13 +94,14 @@ pub fn init(assets: &mut AssetConstructor) {
     assets.register_sprite(interface, TRASH, (24, 8), (7, 9));
     assets.register_sprite(interface, DUPLICATE, (16, 8), (7, 9));
     assets.register_sprite(interface, EDIT, (32, 8), (8, 9));
-    assets.register_sprite(interface, RESET, (24, 18), (7, 8));
+    assets.register_sprite(interface, RESET, (24, 18), (8, 9));
     assets.register_sprite(interface, SLIDER_HANDLE, (19, 18), (3, 6));
     assets.register_sprite(interface, CHECK, (22, 0), (5, 5));
     assets.register_sprite(interface, COLLAPSE, (16, 0), (5, 6));
     assets.register_sprite(interface, KEYBOARD_BUTTON, (0, 16), (9, 13));
     assets.register_sprite(interface, TOGGLE_ACTIVE, (10, 26), (8, 5));
     assets.register_sprite(interface, TOGGLE_INACTIVE, (10, 19), (8, 5));
+    assets.register_sprite(interface, X, (33, 20), (5, 6));
 
     let tiles = assets.register_atlas(include_atlas!("textures/tilemap.png"));
     assets.register_sprite(tiles, EMPTY_TILE_A, (0, 288), (16, 16));
