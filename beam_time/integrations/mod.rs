@@ -12,7 +12,7 @@ mod steam;
 mod discord;
 
 #[allow(dead_code)]
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub enum RichPresence {
     None,
     Sandbox,

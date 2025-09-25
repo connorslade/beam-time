@@ -6,9 +6,12 @@ use discord_presence::{
     Client,
     models::{ActivityType, DisplayType},
 };
-use log::{error, info};
+use log::info;
 
-use crate::{consts, integrations::RichPresence};
+use crate::{
+    consts::{self, GAME_HOMEPAGE},
+    integrations::RichPresence,
+};
 
 pub struct Discord {
     _discord: Client,
@@ -18,6 +21,7 @@ pub struct Discord {
 impl Discord {
     pub fn init() -> Self {
         let (tx, rx) = crossbeam_channel::unbounded();
+        tx.send(RichPresence::None).unwrap();
 
         let start = SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -31,30 +35,29 @@ impl Discord {
 
                 let mut discord = discord.clone();
                 for value in rx.iter() {
-                    let activity = match value {
-                        RichPresence::None => "In Menu",
-                        RichPresence::Sandbox => "Sandbox",
-                        RichPresence::Campaign(_) => "Campaign",
-                    };
-                    let details = match &value {
-                        RichPresence::Campaign(c) => c,
-                        _ => "",
+                    let (activity, details) = match &value {
+                        RichPresence::None => ("In Menu", None),
+                        RichPresence::Sandbox => ("Sandbox", None),
+                        RichPresence::Campaign(c) => ("Campaign", Some(c.as_str())),
                     };
 
                     discord
                         .set_activity(|a| {
-                            a.activity_type(ActivityType::Playing)
+                            let mut a = a
+                                .activity_type(ActivityType::Playing)
                                 .status_display(DisplayType::Name)
+                                .append_buttons(|b| b.label("Get it on Steam").url(GAME_HOMEPAGE))
                                 .timestamps(|t| t.start(start))
-                                .details(activity)
-                                .state(details)
+                                .details(activity);
+                            if let Some(details) = details {
+                                a = a.state(details);
+                            }
+
+                            a
                         })
                         .unwrap();
                 }
             }))
-            .persist();
-        discord
-            .on_error(|ctx| error!("Discord Error: {:?}", ctx.event))
             .persist();
         discord.start();
 

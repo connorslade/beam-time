@@ -79,7 +79,7 @@ pub mod keybind {
     pub const UNDO: KeyCode = KeyCode::KeyZ;
     pub const COPY: KeyCode = KeyCode::KeyC;
     pub const CUT: KeyCode = KeyCode::KeyX;
-    pub const PASTE: KeyCode = KeyCode::KeyP;
+    pub const PASTE: KeyCode = KeyCode::KeyV;
 
     pub const DESELECT: KeyCode = KeyCode::KeyU;
     pub const DELETE: KeyCode = KeyCode::Delete;
