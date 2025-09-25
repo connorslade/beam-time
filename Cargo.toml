@@ -15,6 +15,7 @@ bytemuck = { version = "1.23.1", features = ["derive"] }
 chrono = { version = "0.4.41", features = ["serde"] }
 clone-macro = "0.1.0"
 const-fnv1a-hash = "1.1.0"
+crossbeam-channel = "0.5.15"
 ctrlc = "3.4.7"
 dirs = "5.0.1"
 encase = { version = "0.10.0", features = ["nalgebra"] }

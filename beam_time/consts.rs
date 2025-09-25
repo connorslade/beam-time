@@ -4,8 +4,6 @@ use engine::{memory::MemoryKey, memory_key};
 use once_cell::sync::Lazy;
 use url::Url;
 
-#[cfg(feature = "steam")]
-pub const STEAM_ID: u32 = 3385920;
 pub const MAX_HISTORY: usize = 100;
 pub const AUTOSAVE_INTERVAL: Duration = Duration::from_secs(60 * 5);
 pub const WATERFALL: MemoryKey = memory_key!();
@@ -15,6 +13,11 @@ pub const GAME_HOMEPAGE: &str =
     "https://store.steampowered.com/app/3385920/Beam_Time?utm_source=in_game";
 pub static LEADERBOARD_SERVER: Lazy<Url> =
     Lazy::new(|| Url::parse("https://beamtime.connorcode.com/api/").unwrap());
+
+#[cfg(feature = "steam")]
+pub const STEAM_ID: u32 = 3385920;
+#[cfg(feature = "discord")]
+pub const DISCORD_ID: u64 = 1420274195216207933;
 
 pub mod color {
     use engine::color::Rgb;

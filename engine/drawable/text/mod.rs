@@ -51,7 +51,7 @@ impl Text {
             font,
             text: text.to_string(),
             max_width: f32::MAX,
-            shadow: Some((Vector2::new(0.0, -1.0), Rgb::repeat(0.6))),
+            shadow: Some((Vector2::new(0.0, -1.0), Rgb::hex(0x8d8d8d))),
 
             pos: Vector2::repeat(0.0),
             clip: [Vector2::zeros(), Vector2::repeat(f32::MAX)],

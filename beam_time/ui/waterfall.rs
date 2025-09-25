@@ -38,7 +38,7 @@ struct FallingTile {
     asset: SpriteRef,
     active: bool,
     pos: Vector2<f32>,
-    vel: f32,
+    vel: Vector2<f32>,
 }
 
 impl Waterfall {
@@ -72,7 +72,7 @@ impl Drawable for Waterfall {
                 size.y + tile_offset
             };
             let pos = Vector2::new(rng.random::<f32>(), pos_y);
-            let vel = rng.random::<f32>() * 50.0 + 100.0;
+            let vel = Vector2::y() * -(rng.random::<f32>() * 50.0 + 100.0);
             let active = rng.random::<bool>();
             tiles.push(FallingTile {
                 asset,
@@ -96,7 +96,7 @@ impl Drawable for Waterfall {
                 .draw(ctx);
 
             if !ctx.window.just_focused() {
-                tile.pos.y -= tile.vel * ctx.delta_time;
+                tile.pos += tile.vel * ctx.delta_time;
             }
 
             if tile.pos.y < -tile_offset || i > count {

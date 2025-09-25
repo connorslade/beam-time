@@ -1,56 +1,70 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
+use clone_macro::clone;
+use crossbeam_channel::Sender;
 use discord_presence::{
     Client,
     models::{ActivityType, DisplayType},
 };
-use log::info;
+use log::{error, info};
 
 use crate::{consts, integrations::RichPresence};
 
 pub struct Discord {
-    discord: Client,
-    start: u64,
+    _discord: Client,
+    sender: Sender<RichPresence>,
 }
 
 impl Discord {
     pub fn init() -> Self {
-        let mut discord = Client::new(1420274195216207933);
-        discord
-            .on_ready(|_| info!("Discord RPC connected"))
-            .persist();
-        discord
-            .on_error(|ctx| {
-                eprintln!("An error occured, {:?}", ctx.event);
-            })
-            .persist();
-        discord.start();
+        let (tx, rx) = crossbeam_channel::unbounded();
 
         let start = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_secs();
 
-        Self { discord, start }
-    }
+        let mut discord = Client::new(consts::DISCORD_ID);
+        discord
+            .on_ready(clone!([discord], move |_| {
+                info!("Discord RPC connected");
 
-    pub fn rich_presence(&mut self, value: &RichPresence) {
-        self.discord
-            .set_activity(|a| {
-                a.activity_type(ActivityType::Playing)
-                    .details(match value {
+                let mut discord = discord.clone();
+                for value in rx.iter() {
+                    let activity = match value {
                         RichPresence::None => "In Menu",
                         RichPresence::Sandbox => "Sandbox",
                         RichPresence::Campaign(_) => "Campaign",
-                    })
-                    .state(match value {
+                    };
+                    let details = match &value {
                         RichPresence::Campaign(c) => c,
                         _ => "",
-                    })
-                    .append_buttons(|b| b.label("Get it on Steam!").url(consts::GAME_HOMEPAGE))
-                    .status_display(DisplayType::Name)
-                    .timestamps(|t| t.start(self.start))
-            })
-            .unwrap();
+                    };
+
+                    discord
+                        .set_activity(|a| {
+                            a.activity_type(ActivityType::Playing)
+                                .status_display(DisplayType::Name)
+                                .timestamps(|t| t.start(start))
+                                .details(activity)
+                                .state(details)
+                        })
+                        .unwrap();
+                }
+            }))
+            .persist();
+        discord
+            .on_error(|ctx| error!("Discord Error: {:?}", ctx.event))
+            .persist();
+        discord.start();
+
+        Self {
+            _discord: discord,
+            sender: tx,
+        }
+    }
+
+    pub fn rich_presence(&mut self, value: &RichPresence) {
+        self.sender.send(value.clone()).unwrap();
     }
 }

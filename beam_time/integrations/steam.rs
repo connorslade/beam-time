@@ -40,16 +40,17 @@ impl Steam {
         }
     }
 
-    pub fn rich_presence(&self, _app: &App, value: &RichPresence) {
+    pub fn rich_presence(&self, value: &RichPresence) {
         let friends = self.client.friends();
 
         friends.set_rich_presence("steam_display", value.steam_display());
-        match value {
-            RichPresence::Campaign(name) => {
-                friends.set_rich_presence("name", Some(&name));
-            }
-            _ => {}
-        }
+        friends.set_rich_presence(
+            "name",
+            match value {
+                RichPresence::Campaign(name) => Some(name),
+                _ => None,
+            },
+        );
     }
 }
 

@@ -311,6 +311,7 @@ dependencies = [
  "chrono",
  "clone-macro",
  "common",
+ "crossbeam-channel",
  "dirs",
  "discord-presence",
  "engine",

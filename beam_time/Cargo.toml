@@ -40,6 +40,7 @@ ordered-float.workspace = true
 parking_lot.workspace = true
 poll-promise.workspace = true
 rand.workspace = true
+crossbeam-channel.workspace = true
 ron.workspace = true
 serde.workspace = true
 serde_json.workspace = true
