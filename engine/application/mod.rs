@@ -231,6 +231,7 @@ impl ApplicationHandler for Application<'_> {
                 drop(render_pass);
 
                 gcx.queue.submit(iter::once(encoder.finish()));
+                gcx.window.pre_present_notify();
                 output.present();
 
                 let resize_surface = state.window.vsync.is_set();

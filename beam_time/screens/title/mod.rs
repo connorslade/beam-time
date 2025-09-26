@@ -248,7 +248,7 @@ impl TitleScreen {
                     });
                 });
 
-                let clicking = ctx.input.mouse_down(MouseButton::Left);
+                let clicking = ctx.input.mouse_pressed(MouseButton::Left);
                 let (back, _) = modal_buttons(ctx, layout, size.x, ("Back", ""));
                 (back && clicking).then(|| self.modal = ActiveModal::None);
             });
