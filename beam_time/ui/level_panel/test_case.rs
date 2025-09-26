@@ -2,8 +2,8 @@ use parking_lot::MutexGuard;
 
 use crate::{
     assets::{
-        BIG_RIGHT_ARROW, DOWN_ARROW, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR,
-        TILE_EMITTER_DOWN, UNDEAD_FONT,
+        BIG_RIGHT_ARROW, DOWN_ARROW, LEFT_ARROW, RIGHT_ARROW, TILE_DETECTOR, TILE_EMITTER_DOWN,
+        UNDEAD_FONT,
     },
     consts::{keybind, spacing::MARGIN},
     ui::{components::manual_button::ManualButton, level_panel::horizontal_rule, misc::tile_label},
@@ -35,8 +35,8 @@ impl LevelPanel {
         sim: &MutexGuard<InnerAsyncSimulationState>,
     ) {
         let test_count = level.tests.visible_count();
-        (ctx.input.key_pressed(keybind::LEFT) && self.case > 0).then(|| self.case -= 1);
-        (ctx.input.key_pressed(keybind::RIGHT) && self.case + 1 < test_count)
+        (ctx.input.key_pressed(keybind::PREV_CASE) && self.case > 0).then(|| self.case -= 1);
+        (ctx.input.key_pressed(keybind::NEXT_CASE) && self.case + 1 < test_count)
             .then(|| self.case += 1);
 
         let sim_level = sim.beam.as_ref().and_then(|x| x.level.as_ref());

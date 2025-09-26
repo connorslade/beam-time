@@ -118,13 +118,15 @@ impl Board {
             let mut old = Vec::new();
 
             for pos in this.selection.iter() {
-                let tile = self.tiles.get(*pos);
-                old.push((*pos, tile));
-                self.tiles.remove(*pos);
-
-                if !tile.is_empty() {
-                    list.push((*pos, tile));
+                let mut tile = self.tiles.get(*pos);
+                if cut {
+                    old.push((*pos, tile));
+                    self.tiles.remove(*pos);
+                } else {
+                    tile = tile.generic();
                 }
+
+                (!tile.is_empty()).then(|| list.push((*pos, tile)));
             }
 
             cut.then(|| self.transient.history.track_many(old));

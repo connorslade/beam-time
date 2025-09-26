@@ -21,7 +21,7 @@ pub macro key_events(
 pub fn enable_console() {
     #[cfg(target_os = "windows")]
     unsafe {
-        use windows::Win32::System::Console::{AttachConsole, FreeConsole, ATTACH_PARENT_PROCESS};
+        use windows::Win32::System::Console::{ATTACH_PARENT_PROCESS, AttachConsole, FreeConsole};
         let _ = FreeConsole();
         let _ = AttachConsole(ATTACH_PARENT_PROCESS);
     }

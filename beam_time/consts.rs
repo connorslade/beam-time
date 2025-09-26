@@ -101,6 +101,9 @@ pub mod keybind {
     pub const SPEED_DOWN: KeyCode = KeyCode::Minus;
     pub const SPEED_RESET: KeyCode = KeyCode::Digit0;
 
+    pub const PREV_CASE: KeyCode = KeyCode::ArrowLeft;
+    pub const NEXT_CASE: KeyCode = KeyCode::ArrowRight;
+
     // pancam movement
     pub const UP: KeyCode = KeyCode::KeyW;
     pub const DOWN: KeyCode = KeyCode::KeyS;

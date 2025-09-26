@@ -21,7 +21,7 @@ use super::pancam::Pancam;
 
 pub type ClipboardItem = Vec<(Vector2<i32>, Tile)>;
 
-#[derive(Default, Clone, PartialEq, Eq)]
+#[derive(Default, Debug, Clone, PartialEq, Eq)]
 pub enum Holding {
     #[default]
     None,
@@ -79,9 +79,11 @@ impl Holding {
                             }
                         }
                     },
-                    keybind::FLIP_V => for (pos, tile) in tiles.iter_mut() {
-                        *pos = Vector2::new(pos.x, -pos.y);
-                        *tile = tile.flip_vertical();
+                    keybind::FLIP_V => if !ctx.input.key_down(keybind::CTRL) {
+                        for (pos, tile) in tiles.iter_mut() {
+                            *pos = Vector2::new(pos.x, -pos.y);
+                            *tile = tile.flip_vertical();
+                        }
                     },
                     keybind::FLIP_H => for (pos, tile) in tiles.iter_mut() {
                         *pos = Vector2::new(-pos.x, pos.y);
