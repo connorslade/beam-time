@@ -1,12 +1,18 @@
 use crate::{
     app::App,
     assets::UNDEAD_FONT,
-    consts::{color, keybind, layer},
+    consts::{
+        color,
+        keybind::{self, SHIFT},
+        layer,
+    },
     util::key_events,
 };
 use ahash::HashSet;
-use beam_logic::{level::Level, simulation::state::BeamState};
-use common::{direction::Direction, misc::in_bounds};
+use base64::{Engine, prelude::BASE64_STANDARD};
+use beam_logic::{level::Level, simulation::state::BeamState, tile::Tile};
+use bincode::Options;
+use common::{consts::BINCODE_OPTIONS, direction::Direction, map::Map, misc::in_bounds};
 use engine::{
     color::Rgb,
     drawable::{Anchor, Drawable},
@@ -136,19 +142,35 @@ impl Board {
                 .map(|x| x.ceil() as i32);
             list.iter_mut().for_each(|(pos, _)| *pos -= origin);
 
-            *sim = None;
-            self.transient.holding = Holding::Paste(list.clone());
-            state.clipboard = Some(list);
             this.selection.clear();
+            if ctx.input.key_down(SHIFT) {
+                let mut map = Map::default();
+                list.into_iter().for_each(|(pos, tile)| map.set(pos, tile));
+
+                let bytes = BINCODE_OPTIONS.serialize(&map).unwrap();
+                let b64 = BASE64_STANDARD.encode(&bytes);
+                state.system_clipboard.set_text(b64).unwrap()
+            } else {
+                *sim = None;
+                self.transient.holding = Holding::Paste(list.clone());
+                state.clipboard = Some(list);
+            }
         }
 
-        if ctrl
-            && paste
-            && let Some(item) = &state.clipboard
-        {
-            *sim = None;
-            self.transient.holding =
-                Holding::Paste(item.iter().map(|(p, x)| (*p, x.generic())).collect());
+        if ctrl && paste {
+            if ctx.input.key_down(SHIFT) {
+                if let Ok(b64) = state.system_clipboard.get_text()
+                    && let Ok(bytes) = BASE64_STANDARD.decode(b64)
+                    && let Ok(tiles) = BINCODE_OPTIONS.deserialize::<Map<Tile>>(&bytes)
+                {
+                    *sim = None;
+                    self.transient.holding = Holding::Paste(tiles.iter().collect())
+                }
+            } else if let Some(item) = &state.clipboard {
+                *sim = None;
+                self.transient.holding =
+                    Holding::Paste(item.iter().map(|(p, x)| (*p, x.generic())).collect());
+            }
         }
     }
 

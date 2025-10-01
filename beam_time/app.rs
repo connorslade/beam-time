@@ -6,6 +6,7 @@ use std::{
 };
 
 use anyhow::{Context, Result};
+use arboard::Clipboard;
 use bincode::Options;
 use common::{consts::BINCODE_OPTIONS, user::UserId};
 use engine::graphics_context::GraphicsContext;
@@ -25,6 +26,7 @@ pub struct App {
     /// Record of all levels that have ever been solved.
     pub solved: HashSet<Uuid>,
     pub clipboard: Option<ClipboardItem>,
+    pub system_clipboard: Clipboard,
 
     pub config: Config,
     pub data_dir: PathBuf,
@@ -69,6 +71,7 @@ impl App {
             id: integrations.user_id(),
             solved,
             clipboard: None,
+            system_clipboard: Clipboard::new().unwrap(),
 
             integrations,
             leaderboard: LeaderboardManager::default(),
