@@ -20,7 +20,7 @@ use crate::{
     App,
     assets::{ALAGARD_FONT, UNDEAD_FONT},
     consts::{
-        AUTHOR_HOMEPAGE, GAME_HOMEPAGE, WATERFALL, color, keybind, layer,
+        AUTHOR_HOMEPAGE, WATERFALL, color, keybind, layer,
         spacing::{MARGIN, PADDING},
     },
     ui::{
@@ -87,11 +87,12 @@ impl Screen for TitleScreen {
             .scale(Vector2::repeat(scale.round()))
             .dark_shadow();
         let size = title.size(ctx);
+        #[cfg(not(feature = "steam"))]
         title
             .button(memory_key!())
             .effects(ButtonEffects::Arrows | ButtonEffects::Color)
             .on_click(ctx, || {
-                let _ = webbrowser::open(GAME_HOMEPAGE);
+                let _ = webbrowser::open(crate::consts::GAME_HOMEPAGE);
             })
             .draw(ctx);
 

@@ -84,12 +84,13 @@ fn success(
                 .callback(move |sprites, _polygons| {
                     let count = sprites.len();
                     for (idx, sprite) in sprites.iter_mut().enumerate() {
-                        let t = idx as f32 / count as f32;
+                        let t = (idx / 2) as f32 / (count / 2) as f32;
                         let color = OkLab::new(0.8, 0.1893, 0.0)
                             .hue_shift(t * 2.0 * PI - now * 2.0)
                             .to_lrgb();
                         sprite.color =
                             Rgb::new(color.r, color.g, color.b).map(|x| x as f32 / 255.0);
+                        (idx % 2 == 0).then(|| sprite.color *= Rgb::hex(0x8d8d8d));
 
                         let offset = (t * 2.0 * PI - now * 6.0).sin() * 4.0;
                         sprite.points.iter_mut().for_each(|point| point.y += offset);
