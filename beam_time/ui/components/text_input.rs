@@ -144,7 +144,8 @@ impl TextInput {
             .position(Vector2::repeat(4.0), self.position_anchor)
             .scale(Vector2::repeat(self.scale))
             .z_index(self.z_index)
-            .max_width(self.width - PADDING);
+            .max_width(self.width - PADDING)
+            .no_shadow();
 
         self.text.replace(Some(text));
     }

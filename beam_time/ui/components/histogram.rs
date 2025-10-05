@@ -1,6 +1,6 @@
 use engine::{
-    drawable::{Anchor, Drawable},
-    drawable::{shape::rectangle::Rectangle, sprite::Sprite, text::Text},
+    color::Rgb,
+    drawable::{Anchor, Drawable, shape::rectangle::Rectangle, sprite::Sprite, text::Text},
     exports::nalgebra::Vector2,
     graphics_context::GraphicsContext,
     layout::{LayoutElement, bounds::Bounds2D},
@@ -39,11 +39,12 @@ impl Histogram {
 }
 
 impl Drawable for Histogram {
+    // should prob rewrite this with the layout system at some point...
     fn draw(self, ctx: &mut GraphicsContext) {
         let px = 4.0;
-        let bar = Vector2::new(4.0, 1.0) * px;
+        let bar = Vector2::new(16.0, 3.0);
         let (width, height) = (bar.x * 12.0, 15.0 * px);
-        let position = self.position + Vector2::y() * (px + 12.0);
+        let position = self.position + Vector2::y() * 18.0;
 
         let max_value = *self.data.bins.iter().max().unwrap() as f32;
 
@@ -55,17 +56,21 @@ impl Drawable for Histogram {
             })
             .collect::<Vec<_>>();
 
-        for offset in bars.iter() {
+        for (idx, offset) in bars.iter().enumerate() {
             Rectangle::new(bar)
+                .position(position + offset + Vector2::y() * 3.0, Anchor::BottomLeft)
+                .draw(ctx);
+            Rectangle::new(bar + Vector2::x() * 3.0 * (idx + 1 != bars.len()) as u8 as f32)
                 .position(position + offset, Anchor::BottomLeft)
+                .color(Rgb::hex(0x8d8d8d))
                 .draw(ctx);
         }
 
         for (a, b) in bars.iter().tuple_windows() {
             let height = b.y - a.y;
-            let offset = a + Vector2::new(bar.x, px * (height < 0.0) as u8 as f32);
-            Rectangle::new(Vector2::new(px, height))
-                .position(position + offset, Anchor::BottomLeft)
+            let offset = a + Vector2::new(bar.x, 3.0 * (height < 0.0) as u8 as f32);
+            Rectangle::new(Vector2::new(3.0, height))
+                .position(position + offset + Vector2::y() * 3.0, Anchor::BottomLeft)
                 .draw(ctx);
         }
 
@@ -77,7 +82,7 @@ impl Drawable for Histogram {
                 .scale(Vector2::repeat(2.0))
                 .draw(ctx);
 
-            let text_offset = offset + Vector2::y() * (6.0 + px);
+            let text_offset = offset + Vector2::y() * 12.0;
             Text::new(UNDEAD_FONT, real.to_string())
                 .position(position + text_offset, Anchor::BottomCenter)
                 .scale(Vector2::repeat(2.0))
@@ -87,7 +92,7 @@ impl Drawable for Histogram {
         if let Some(title) = self.title {
             let offset = Vector2::new(
                 width / 2.0,
-                height + px * 3.0 + 26.0 * self.real.is_some() as u8 as f32,
+                height + px * 3.0 + 28.0 * self.real.is_some() as u8 as f32,
             );
 
             Text::new(UNDEAD_FONT, title)
@@ -113,9 +118,7 @@ impl LayoutElement for Histogram {
     }
 
     fn bounds(&self, _ctx: &mut GraphicsContext) -> Bounds2D {
-        let size = Vector2::new(12.0, 5.0) * 16.0
-            + Vector2::y() * 26.0 * self.real.is_some() as u8 as f32
-            + Vector2::y() * 20.0 * self.title.is_some() as u8 as f32;
+        let size = Vector2::new(192.0, 130.0);
         Bounds2D::new(self.position, self.position + size)
     }
 

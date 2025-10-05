@@ -24,7 +24,11 @@ use crate::{
     game::board::Note,
     screens::game::ActiveModal,
     ui::{
-        components::{button::ButtonExt, modal::Modal, text_input::TextInput},
+        components::{
+            button::{ButtonEffects, ButtonExt},
+            modal::Modal,
+            text_input::TextInput,
+        },
         misc::{body, modal_size},
     },
 };
@@ -92,6 +96,7 @@ impl GameScreen {
                                     Sprite::new(TRASH)
                                         .scale(Vector2::repeat(2.0))
                                         .button(memory_key!())
+                                        .effects(ButtonEffects::Color)
                                         .tracked(tracker)
                                         .layout(ctx, layout);
                                     Spacer::new(Vector2::x() * layout.available().x)
