@@ -322,7 +322,7 @@ dependencies = [
 
 [[package]]
 name = "beam_time"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "ahash",
  "anyhow",
