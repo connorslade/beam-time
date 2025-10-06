@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.1 &mdash; October 5th, 2025
+
+- Show game title on title screen when compiled for Steam (oops)
+
 ## v1.1.0 &mdash; October 5th, 2025
 
 - Copy/paste selection to system clipboard (as base64) with CTRL+SHIFT+C and CTRL+SHIFT+V

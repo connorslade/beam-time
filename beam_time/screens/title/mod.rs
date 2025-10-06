@@ -88,13 +88,13 @@ impl Screen for TitleScreen {
             .dark_shadow();
         let size = title.size(ctx);
         #[cfg(not(feature = "steam"))]
-        title
+        let title = title
             .button(memory_key!())
             .effects(ButtonEffects::Arrows | ButtonEffects::Color)
             .on_click(ctx, || {
                 let _ = webbrowser::open(crate::consts::GAME_HOMEPAGE);
-            })
-            .draw(ctx);
+            });
+        title.draw(ctx);
 
         let offset = Vector2::new(size.x / 2.0, -size.y * 1.25);
         Text::new(UNDEAD_FONT, "By Connor Slade")
