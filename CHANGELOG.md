@@ -7,6 +7,7 @@
 - Remove outlier scores from the histograms
 - Don't allow pasting tiles outside of sized levels
 - Reject solutions with tiles outside of expected size on leader board server
+- 'Fix' 1px wiggle of level titles when description is moving (collapsing / expanding)
 
 ## v1.1.1 &mdash; October 5th, 2025
 

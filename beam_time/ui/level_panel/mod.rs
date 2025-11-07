@@ -104,6 +104,12 @@ impl LevelPanel {
         price: u32,
         tiles: usize,
     ) {
+        // ew... shifts everything up by half a physical pixel so small float
+        // inaccuracies don't cause things to shift by a pixel.
+        Spacer::new_y(-ctx.window.scale_factor().recip() / 2.0)
+            .no_padding()
+            .layout(ctx, layout);
+
         layout.nest(
             ctx,
             RowLayout::new(0.0).justify(Justify::Center),
