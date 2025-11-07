@@ -322,7 +322,7 @@ dependencies = [
 
 [[package]]
 name = "beam_time"
-version = "1.1.1"
+version = "1.1.2"
 dependencies = [
  "ahash",
  "anyhow",
@@ -1914,7 +1914,7 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 
 [[package]]
 name = "leaderboard"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "afire",
  "anyhow",

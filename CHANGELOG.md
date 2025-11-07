@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.2 &mdash; Coming Soon
+
+- Update the first level description with accurate keybinds
+- Clamp the real value displayed on histograms
+- Remove outlier scores from the histograms
+
 ## v1.1.1 &mdash; October 5th, 2025
 
 - Show game title on title screen when compiled for Steam (oops)

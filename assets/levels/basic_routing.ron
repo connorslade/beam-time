@@ -6,9 +6,9 @@ Level(
         
         Click the mirror icon in the bottom left of the screen to pick one up, press R to rotate it, and place it down in the bottom left corner of the board.
         
-        Press F to run the simulation, you will often use this mode test circuits yourself before running the test cases. Press F again to go back to edit mode, then press T to run the test cases and actually solve the level.
+        Press F to run the simulation, you will often use this mode test circuits yourself before running the test cases. Press ESC to go back to edit mode, then press T to run the test cases and actually solve the level.
         
-        Once you finish the level, press ESC to open the pause menu then click exit.",
+        Once you finish the level, press ESC again to open the pause menu then click exit.",
     children: [ "3d01432a-228c-4cfd-9be3-407a796b49c8" ], // ← slightly_less_basic_routing
         
     size: (6, 6),

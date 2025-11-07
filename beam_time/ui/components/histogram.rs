@@ -75,7 +75,7 @@ impl Drawable for Histogram {
         }
 
         if let Some(real) = self.real {
-            let t = real as f32 / self.data.max as f32;
+            let t = (real as f32 / self.data.max as f32).clamp(0.0, 1.0);
             let offset = Vector2::new(t * width, height + px * 2.0);
             Sprite::new(DOWN_ARROW)
                 .position(position + offset, Anchor::BottomCenter)

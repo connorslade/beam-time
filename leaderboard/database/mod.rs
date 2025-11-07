@@ -82,9 +82,11 @@ impl Database {
         Ok(())
     }
 }
+
 trait SimplifyDbResult<T> {
     fn simplify(self) -> Result<DbResult<T>, rusqlite::Error>;
 }
+
 impl<T> SimplifyDbResult<T> for Result<T, rusqlite::Error> {
     fn simplify(self) -> Result<DbResult<T>, rusqlite::Error> {
         match self {
