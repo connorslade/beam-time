@@ -5,6 +5,8 @@
 - Update the first level description with accurate keybinds
 - Clamp the real value displayed on histograms
 - Remove outlier scores from the histograms
+- Don't allow pasting tiles outside of sized levels
+- Reject solutions with tiles outside of expected size on leader board server
 
 ## v1.1.1 &mdash; October 5th, 2025
 

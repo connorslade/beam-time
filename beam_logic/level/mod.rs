@@ -97,6 +97,12 @@ impl Level {
     pub fn is_dynamic(&self, id: u32) -> bool {
         self.tests.detectors.contains(&id) || self.tests.lasers.contains(&id)
     }
+
+    pub fn out_of_bounds(&self, pos: Vector2<i32>) -> bool {
+        self.size
+            .map(|size| pos.x < 0 || pos.x as u32 >= size.x || pos.y < 0 || pos.y as u32 >= size.y)
+            .unwrap_or_default()
+    }
 }
 
 impl DynamicElementMap {

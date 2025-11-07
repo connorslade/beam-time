@@ -62,6 +62,10 @@ pub fn attach(server: &mut Server<App>) {
             if level.permanent.contains(&pos) && !level.tiles.get(pos).soft_eq(&tile) {
                 Err("Permanent tiles were modified, solution rejected")?;
             }
+
+            if level.out_of_bounds(pos) {
+                Err("Tiles placed outside the level area, solution rejected")?;
+            }
         }
 
         let results = TestingSimulationState::new(

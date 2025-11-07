@@ -78,6 +78,7 @@ impl Board {
                         if level
                             .map(|x| x.permanent.contains(&pos))
                             .unwrap_or_default()
+                            || level.map(|x| x.out_of_bounds(pos)).unwrap_or_default()
                             || current_tile.id().is_some()
                         {
                             next.push(set);
