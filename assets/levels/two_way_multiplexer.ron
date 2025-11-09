@@ -10,8 +10,8 @@ Level(
     size: (6, 6),
     permanent: [ (1, 5), (2, 5), (5, 5), (5, 0) ],
     labels: {
-        Dynamic(0): "D1",
-        Dynamic(1): "D0",
+        Dynamic(0): "D0",
+        Dynamic(1): "D1",
         Dynamic(2): "S"
     },
     tiles: {

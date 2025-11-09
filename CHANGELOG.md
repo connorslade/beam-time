@@ -8,6 +8,7 @@
 - Don't allow pasting tiles outside of sized levels
 - Reject solutions with tiles outside of expected size on leader board server
 - 'Fix' 1px wiggle of level titles when description is moving (collapsing / expanding)
+- Fix the emitter labels on the 'Two Way Multiplexer' level
 
 ## v1.1.1 &mdash; October 5th, 2025
 
