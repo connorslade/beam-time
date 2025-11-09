@@ -7,6 +7,7 @@ use engine::{
 };
 use itertools::Itertools;
 use leaderboard::api::results;
+use thousands::Separable;
 
 use crate::assets::{DOWN_ARROW, UNDEAD_FONT};
 
@@ -83,7 +84,7 @@ impl Drawable for Histogram {
                 .draw(ctx);
 
             let text_offset = offset + Vector2::y() * 12.0;
-            Text::new(UNDEAD_FONT, real.to_string())
+            Text::new(UNDEAD_FONT, real.separate_with_commas())
                 .position(position + text_offset, Anchor::BottomCenter)
                 .scale(Vector2::repeat(2.0))
                 .draw(ctx);
@@ -105,7 +106,7 @@ impl Drawable for Histogram {
             .position(position - Vector2::y() * px, Anchor::TopLeft)
             .scale(Vector2::repeat(2.0))
             .draw(ctx);
-        Text::new(UNDEAD_FONT, self.data.max.to_string())
+        Text::new(UNDEAD_FONT, self.data.max.separate_with_commas())
             .position(position + Vector2::new(width, -px), Anchor::TopRight)
             .scale(Vector2::repeat(2.0))
             .draw(ctx);

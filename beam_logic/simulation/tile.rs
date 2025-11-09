@@ -1,5 +1,7 @@
 use common::direction::{Direction, Directions};
 
+use crate::tile::Tile;
+
 use super::MIRROR_REFLECTIONS;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
@@ -128,6 +130,43 @@ impl BeamTile {
                 powered
             }
             _ => panic!(),
+        }
+    }
+}
+
+impl From<Tile> for BeamTile {
+    fn from(tile: Tile) -> Self {
+        match tile {
+            Tile::Empty => BeamTile::Empty,
+            Tile::Emitter {
+                rotation, active, ..
+            } => BeamTile::Emitter {
+                direction: rotation,
+                active,
+            },
+            Tile::Detector { .. } => BeamTile::Detector {
+                powered: Directions::empty(),
+            },
+            Tile::Delay => BeamTile::Delay {
+                powered: Directions::empty(),
+                last_powered: Directions::empty(),
+            },
+            Tile::Mirror { rotation } => BeamTile::Mirror {
+                galvoed: Directions::empty(),
+                direction: rotation,
+                powered: [None; 2],
+            },
+            Tile::Splitter { rotation } => BeamTile::Splitter {
+                direction: rotation,
+                powered: Directions::empty(),
+            },
+            Tile::Galvo { rotation } => BeamTile::Galvo {
+                direction: rotation,
+                powered: Directions::empty(),
+            },
+            Tile::Wall => BeamTile::Wall {
+                powered: Directions::empty(),
+            },
         }
     }
 }
