@@ -110,8 +110,11 @@ impl Board {
             keybind::DELETE => {
                 let mut old = Vec::new();
                 for pos in this.selection.iter() {
-                    old.push((*pos, self.tiles.get(*pos)));
-                    self.tiles.remove(*pos);
+                    let tile = self.tiles.get(*pos);
+                    if tile.id().is_none() {
+                        old.push((*pos, tile));
+                        self.tiles.remove(*pos);
+                    }
                 }
                 *sim = None;
                 self.transient.history.track_many(old);
@@ -119,7 +122,7 @@ impl Board {
             }
         });
 
-        if ctrl && (copy || cut) && !self.transient.holding.contains_dynamic() {
+        if ctrl && (copy || cut) && !self.transient.holding.any_dynamic() {
             let mut list = Vec::new();
             let mut old = Vec::new();
 

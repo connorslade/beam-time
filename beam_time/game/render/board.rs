@@ -42,7 +42,9 @@ impl Board {
             && ctx.input.key_down(keybind::CTRL)
             && ctx.input.key_pressed(keybind::UNDO)
         {
-            self.transient.history.pop(&mut self.tiles);
+            self.transient
+                .history
+                .pop(&mut self.tiles, &self.transient.holding);
         }
 
         for x in 0..tile_counts.x {

@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use beam_logic::{
     level::{ElementLocation, Level},
     tile::Tile,
@@ -34,12 +36,28 @@ impl Holding {
         *self == Holding::None
     }
 
-    pub fn contains_dynamic(&self) -> bool {
+    pub fn any_dynamic(&self) -> bool {
         match self {
             Holding::None => false,
             Holding::Tile(tile) => tile.id().is_some(),
             Holding::Paste(items) => items.iter().any(|(_p, t)| t.id().is_some()),
         }
+    }
+
+    pub fn dynamic(&self) -> BTreeSet<u32> {
+        let mut out = BTreeSet::new();
+        let mut insert = |id: Option<u32>| {
+            if let Some(id) = id {
+                out.insert(id);
+            }
+        };
+
+        match self {
+            Holding::None => {}
+            Holding::Tile(tile) => insert(tile.id()),
+            Holding::Paste(items) => items.iter().for_each(|(_p, t)| insert(t.id())),
+        }
+        out
     }
 
     pub fn render(
@@ -134,7 +152,7 @@ fn render_tile(
         if let Some(label) = level.and_then(|level| level.labels.get(&ElementLocation::Dynamic(id)))
         {
             tile_label(shared.scale, shared.scale / 2.0, position, label)
-                .z_index(layer::TILE_HOLDING)
+                .z_index(layer::TILE_HOLDING_OVERLAY)
                 .draw(ctx);
         }
     }

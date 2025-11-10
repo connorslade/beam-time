@@ -31,6 +31,7 @@ pub mod color {
 }
 
 pub mod layer {
+    pub const TILE_HOLDING_OVERLAY: i16 = 9;
     pub const TILE_HOLDING: i16 = 8;
     pub const TILE_HOLDING_BACKGROUND: i16 = 7;
 

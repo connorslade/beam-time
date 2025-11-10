@@ -4,7 +4,7 @@ use beam_logic::tile::Tile;
 use common::map::Map;
 use engine::exports::nalgebra::Vector2;
 
-use crate::consts::MAX_HISTORY;
+use crate::{consts::MAX_HISTORY, game::holding::Holding};
 
 type Action = Vec<(Vector2<i32>, Tile)>;
 
@@ -42,10 +42,20 @@ impl History {
         }
     }
 
-    pub fn pop(&mut self, map: &mut Map<Tile>) {
+    pub fn pop(&mut self, map: &mut Map<Tile>, holding: &Holding) {
         if let Some(action) = self.actions.pop_back() {
             self.dirty = true;
-            action.iter().for_each(|(pos, tile)| map.set(*pos, *tile));
+
+            let dynamic = holding.dynamic();
+            action.iter().for_each(|(pos, tile)| {
+                if let Some(id) = tile.id()
+                    && dynamic.contains(&id)
+                {
+                    map.set(*pos, tile.generic());
+                } else {
+                    map.set(*pos, *tile);
+                }
+            });
         }
     }
 }

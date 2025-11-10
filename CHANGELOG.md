@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.1.2 &mdash; Coming Soon
+## v1.1.2 &mdash; November 10th, 2025
 
 - Update the first level description with accurate keybinds
 - Clamp the real value displayed on histograms
@@ -10,6 +10,9 @@
 - 'Fix' 1px wiggle of level titles when description is moving (collapsing / expanding)
 - Fix the emitter labels on the 'Two Way Multiplexer' level
 - Add comma separators to values on the histogram (max and actual)
+- Fix layering of labels on held tiles
+- Don't allow deleting selected dynamic tiles with DEL
+- Prevent dynamic tiles from being duplicated with undo
 
 ## v1.1.1 &mdash; October 5th, 2025
 
