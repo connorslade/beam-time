@@ -74,6 +74,9 @@ impl Screen for TitleScreen {
         Waterfall::new(WATERFALL).draw(ctx);
         self.modals(state, ctx);
 
+        #[cfg(feature = "steam")]
+        review_prompt(ctx);
+
         if ctx.input.consume_key_pressed(keybind::BACK)
             && let ActiveModal::None = mem::take(&mut self.modal)
         {
@@ -150,6 +153,22 @@ impl Screen for TitleScreen {
 
         root.draw(ctx);
     }
+}
+
+#[cfg(feature = "steam")]
+fn review_prompt(ctx: &mut GraphicsContext) {
+    let text = Text::new(
+        UNDEAD_FONT,
+        "Enjoying Beam Time?\nA quick Steam review helps a ton.",
+    )
+    .scale(Vector2::repeat(2.0));
+    Modal::new(text.size(ctx) + Vector2::repeat(MARGIN * 2.0))
+        .position(Vector2::repeat(MARGIN), Anchor::BottomLeft)
+        .margin(MARGIN)
+        .popup(false)
+        .draw(ctx, |ctx, layout| {
+            text.layout(ctx, layout);
+        });
 }
 
 const SCALE: MemoryKey = memory_key!();

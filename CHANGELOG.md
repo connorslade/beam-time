@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.3 &mdash; November 11th, 2025
+
+- Ask for Steam reviews on title screen
+
 ## v1.1.2 &mdash; November 10th, 2025
 
 - Update the first level description with accurate keybinds

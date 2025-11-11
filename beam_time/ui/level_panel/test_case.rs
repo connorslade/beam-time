@@ -67,12 +67,10 @@ impl LevelPanel {
                         case_small(ctx, layout, level, &preview);
                     }
 
-                    layout.nest(
-                        ctx,
-                        RowLayout::new(8.0)
-                            .justify(Justify::Center)
-                            .direction(Direction::MaxToMin),
-                        |ctx, layout| {
+                    RowLayout::new(8.0)
+                        .justify(Justify::Center)
+                        .direction(Direction::MaxToMin)
+                        .show(ctx, layout, |ctx, layout| {
                             let mut button =
                                 |ctx: &mut _, layout: &mut RowLayout, sprite, direction: bool| {
                                     let key = memory_key!(direction);
@@ -103,12 +101,10 @@ impl LevelPanel {
                             let digits = level.tests.visible_count().ilog10() as usize + 1;
                             let width = (digits * 4 + digits - 1) as f32 * 4.0;
                             button(ctx, layout, RIGHT_ARROW, true);
-                            layout.nest(
-                                ctx,
-                                RowLayout::new(0.0)
-                                    .sized(Vector2::x() * width)
-                                    .direction(Direction::MaxToMin),
-                                |ctx, layout| {
+                            RowLayout::new(0.0)
+                                .sized(Vector2::x() * width)
+                                .direction(Direction::MaxToMin)
+                                .show(ctx, layout, |ctx, layout| {
                                     layout.nest(ctx, RowLayout::new(0.0), |ctx, layout| {
                                         let text =
                                             format!("{:0>width$}", case_idx + 1, width = digits);
@@ -119,12 +115,10 @@ impl LevelPanel {
                                         Spacer::new_x(half_width).layout(ctx, layout);
                                     });
                                     Spacer::new_x(layout.available().x).layout(ctx, layout);
-                                },
-                            );
+                                });
                             button(ctx, layout, LEFT_ARROW, false);
                             Spacer::new_x(layout.available().x).layout(ctx, layout);
-                        },
-                    );
+                        });
                 });
 
             if let Some(display) = &level.tests.display
@@ -165,10 +159,9 @@ fn case_small(
     level: &Level,
     preview: &CasePreview<'_, '_>,
 ) {
-    layout.nest(
-        ctx,
-        ColumnLayout::new(0.0).justify(Justify::Center),
-        |ctx, layout| {
+    ColumnLayout::new(0.0)
+        .justify(Justify::Center)
+        .show(ctx, layout, |ctx, layout| {
             render_tiles(ctx, layout, 3.0, level, Io::Emitter, preview.laser());
 
             Spacer::new_y(8.0).layout(ctx, layout);
@@ -177,8 +170,7 @@ fn case_small(
                 .layout(ctx, layout);
 
             render_tiles(ctx, layout, 3.0, level, Io::Detector, preview.detector());
-        },
-    );
+        });
 }
 
 fn render_tiles<'a, T: Layout>(
