@@ -76,16 +76,11 @@ impl TilePicker {
                 .and_then(|x| x.disabled.as_ref())
                 .is_some_and(|disabled| disabled.contains(&tile.as_type()));
 
-            let color = if disabled {
-                Rgb::repeat(0.7)
-            } else {
-                Rgb::repeat(1.0)
-            };
-
             if !disabled && ctx.input.key_pressed(key) {
                 board.transient.holding = Holding::Tile(*tile);
             }
 
+            let color = Rgb::repeat(1.0 - 0.5 * disabled as u8 as f32);
             let is_hovered = in_bounds(mouse, (pos, pos + Vector2::repeat(tile_size)));
             if !matches!(tile, Tile::Wall) && !disabled {
                 let frame = state.frame();

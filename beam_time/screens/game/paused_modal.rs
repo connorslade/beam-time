@@ -2,12 +2,12 @@ use std::time::Duration;
 
 use engine::{
     color::Rgb,
-    drawable::{Anchor, spacer::Spacer, sprite::Sprite},
+    drawable::{spacer::Spacer, sprite::Sprite, Anchor},
     exports::{nalgebra::Vector2, winit::event::MouseButton},
     graphics_context::GraphicsContext,
     layout::{
-        Justify, Layout, LayoutElement, LayoutMethods, column::ColumnLayout, row::RowLayout,
-        tracker::LayoutTracker,
+        column::ColumnLayout, row::RowLayout, tracker::LayoutTracker, Justify, Layout,
+        LayoutElement, LayoutMethods,
     },
     memory_key,
 };
@@ -25,7 +25,7 @@ use crate::{
             horizontal_rule::Rule,
             key::Key,
             manual_button::ManualButton,
-            modal::{Modal, modal_buttons},
+            modal::{modal_buttons, Modal},
             slider::Slider,
         },
         misc::{body, modal_size},
@@ -37,7 +37,7 @@ use super::GameScreen;
 
 const KEYBINDS: &[(&str, &str)] = &[
     ("T", "Runs test cases"),
-    ("F", "Starts/stops simulation"),
+    ("F", "Starts simulation"),
     ("R", "Rotates the held or hovered tile"),
     ("Q", "Copy hovered tile"),
     ("E", "Toggle the held or hovered emitter"),

@@ -3,6 +3,11 @@
 ## v1.1.3 &mdash; November 11th, 2025
 
 - Ask for Steam reviews on title screen
+- Correct description for 'F' keybind on pause modal
+- Improve spacing of arrow in small test case display
+- Make locked tiles in picker darker
+- Remove weird extra shadow pixel from the test case big right arrow
+- Fix sandbox playtime achievements only being awarded in campaign levels
 
 ## v1.1.2 &mdash; November 10th, 2025
 

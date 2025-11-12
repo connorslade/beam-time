@@ -9,6 +9,7 @@ pub const AUTOSAVE_INTERVAL: Duration = Duration::from_secs(60 * 5);
 pub const WATERFALL: MemoryKey = memory_key!();
 
 pub const AUTHOR_HOMEPAGE: &str = "https://connorcode.com";
+#[cfg(any(not(feature = "steam"), feature = "discord"))]
 pub const GAME_HOMEPAGE: &str =
     "https://store.steampowered.com/app/3385920/Beam_Time?utm_source=in_game";
 pub static LEADERBOARD_SERVER: Lazy<Url> =

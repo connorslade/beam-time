@@ -88,7 +88,7 @@ pub fn init(assets: &mut AssetConstructor) {
 
     let interface = assets.register_atlas(include_atlas!("textures/interface.png"));
     assets.register_sprite(interface, CONFETTI_PARTICLES, (32, 0), (3, 3));
-    assets.register_sprite(interface, BIG_RIGHT_ARROW, (0, 0), (11, 9));
+    assets.register_sprite(interface, BIG_RIGHT_ARROW, (0, 0), (10, 9));
     assets.register_sprite(interface, LEFT_ARROW, (0, 10), (3, 6));
     assets.register_sprite(interface, RIGHT_ARROW, (4, 10), (3, 6));
     assets.register_sprite(interface, DOWN_ARROW, (9, 12), (5, 4));

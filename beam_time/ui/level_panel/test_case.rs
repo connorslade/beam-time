@@ -148,7 +148,7 @@ fn case_big(
     Sprite::new(BIG_RIGHT_ARROW)
         .scale(Vector2::repeat(4.0))
         .layout(ctx, layout);
-    Spacer::new_x(4.0).layout(ctx, layout);
+    Spacer::new_x(4.0 * 2.0).layout(ctx, layout);
 
     render_tiles(ctx, layout, 4.0, level, Io::Detector, preview.detector());
 }
@@ -168,6 +168,7 @@ fn case_small(
             Sprite::new(DOWN_ARROW)
                 .scale(Vector2::repeat(3.0))
                 .layout(ctx, layout);
+            Spacer::new_y(-8.0).layout(ctx, layout);
 
             render_tiles(ctx, layout, 3.0, level, Io::Detector, preview.detector());
         });

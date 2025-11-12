@@ -149,7 +149,7 @@ impl Board {
         if let Some(path) = &self.transient.save_path
             && self.transient.last_save.elapsed() >= AUTOSAVE_INTERVAL
         {
-            (self.transient.level.is_some())
+            (self.transient.level.is_none())
                 .then(|| award_sandbox_playtime_achievements(app, self.total_playtime()));
 
             trace!("Autosaving...");
