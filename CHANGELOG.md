@@ -1,5 +1,12 @@
 # Changelog
 
+## Coming Soon™
+
+- Fixed typo in 'stack' level description
+- Add new Steam achievements
+  - Cheapest XOR
+  - Low Latency Oscillator
+
 ## v1.1.3 &mdash; November 11th, 2025
 
 - Ask for Steam reviews on title screen

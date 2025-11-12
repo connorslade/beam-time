@@ -6,7 +6,7 @@ Level(
         
         When the enable (ENBL) line is set high, execute the correct opertion depending on MODE (0 for pop, 1 for push).
         
-        When pushing, take in the numeric value from the input and store it internally and when popping, remove the top data. The top (most recently added) value should be sent to the output and no more than four values will every by on the stack at once.",
+        When pushing, take in the numeric value from the input and store it internally and when popping, remove the top data. The top (most recently added) value should be sent to the output and no more than four values will ever by on the stack at once.",
     children: [ ],
 
     labels: {
