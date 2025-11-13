@@ -6,6 +6,9 @@
 - Add new Steam achievements
   - Cheapest XOR
   - Low Latency Oscillator
+  - Compact Memory Cell
+  - Low-Speed Serial
+- Update interface immediately with new name when renaming a solution
 
 ## v1.1.3 &mdash; November 11th, 2025
 

@@ -154,8 +154,9 @@ impl GameScreen {
                 if index == 0 {
                     self.board.meta.name = new;
                 } else {
-                    let path = &self.solutions[index - 1].path;
-                    if let Err(err) = rename_unloaded_solution(path, new) {
+                    let solution = &mut self.solutions[index - 1];
+                    solution.meta.name = new.clone();
+                    if let Err(err) = rename_unloaded_solution(&solution.path, new) {
                         error!("Failed to rename solution: {err}");
                     }
                 }

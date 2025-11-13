@@ -9,12 +9,16 @@ pub fn award_campaign_achievements(app: &App, id: Uuid, (cost, latency): (u32, u
     const NOT_GATE: Uuid = uuid!("cafeb123-66dc-4b04-b560-5cf80868cae4");
     const XOR_GATE: Uuid = uuid!("3eb940dd-1f76-46c5-8aea-800ae0951364");
     const BASIC_OSCILLATOR: Uuid = uuid!("aa28086a-564e-46d3-9233-894c157d92fe");
+    const RS_LATCH: Uuid = uuid!("f4444a1c-d2a8-4a7a-b311-ec39322c1776");
+    const SERIAL_BUS: Uuid = uuid!("151094cc-afcf-4825-87e2-72a565c18162");
 
     match id {
         BASIC_ROUTING => award("its_beam_time"),
         NOT_GATE => award("turing_complete"),
         XOR_GATE if cost <= 2000 => award("cheapest_xor"),
         BASIC_OSCILLATOR if latency <= 2 => award("low_latency_oscillator"),
+        RS_LATCH if cost <= 1500 => award("compact_memory_cell"),
+        SERIAL_BUS if cost <= 64000 => award("cheep_serial_bus"),
         _ => {}
     }
 }
