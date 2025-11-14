@@ -143,10 +143,10 @@ impl Screen for GameScreen {
                     let level = self.board.transient.level.as_ref().unwrap();
                     let (cost, _count) = price(&self.board.tiles, level);
 
-                    // Award potential steam achievements
+                    // Mark solved and award potential steam achievements
+                    state.mark_level_complete(level.id);
                     award_campaign_achievements(state, level_meta.id, (cost, latency));
 
-                    state.mark_level_complete(level.id);
                     // Upload solution to leaderboard server
                     state
                         .leaderboard

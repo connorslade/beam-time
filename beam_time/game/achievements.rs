@@ -11,6 +11,17 @@ pub fn award_campaign_achievements(app: &App, id: Uuid, (cost, latency): (u32, u
     const BASIC_OSCILLATOR: Uuid = uuid!("aa28086a-564e-46d3-9233-894c157d92fe");
     const RS_LATCH: Uuid = uuid!("f4444a1c-d2a8-4a7a-b311-ec39322c1776");
     const SERIAL_BUS: Uuid = uuid!("151094cc-afcf-4825-87e2-72a565c18162");
+    const MULTIPLIER: Uuid = uuid!("898fede9-9bb5-455e-9671-4671d2bbdae3");
+    const ADDER_SUBTRACTOR: Uuid = uuid!("597b1d3d-0441-460f-870d-ed77749a07d7");
+    const TRIPLE_IT: Uuid = uuid!("c04be8ac-0a2e-44c8-b82b-4f1ef2566244");
+
+    if matches!(id, MULTIPLIER | ADDER_SUBTRACTOR | TRIPLE_IT)
+        && app.level_solved(&MULTIPLIER)
+        && app.level_solved(&ADDER_SUBTRACTOR)
+        && app.level_solved(&TRIPLE_IT)
+    {
+        award("binary_arithmetic");
+    }
 
     match id {
         BASIC_ROUTING => award("its_beam_time"),

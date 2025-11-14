@@ -1,14 +1,15 @@
 # Changelog
 
-## Coming Soon™
+## v1.2.0 &mdash; November 14th, 2025
 
 - Fixed typo in 'stack' level description
-- Add new Steam achievements
+- Update interface immediately with new name when renaming a solution
+- Add new Steam achievements!
   - Cheapest XOR
   - Low Latency Oscillator
   - Compact Memory Cell
   - Low-Speed Serial
-- Update interface immediately with new name when renaming a solution
+  - Binary Arithmetic
 
 ## v1.1.3 &mdash; November 11th, 2025
 

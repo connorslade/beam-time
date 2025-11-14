@@ -61,7 +61,7 @@ impl App {
         let config = (fs::read_to_string(data_dir.join(paths::CONFIG)).ok())
             .and_then(|s| toml::from_str::<Config>(&s).ok())
             .unwrap_or_default();
-        let solved = (File::open(data_dir.join("solved.bin")).ok())
+        let solved = (File::open(data_dir.join(paths::SOLVED)).ok())
             .and_then(|b| BINCODE_OPTIONS.deserialize_from(b).ok())
             .unwrap_or_default();
 
