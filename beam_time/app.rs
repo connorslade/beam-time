@@ -114,8 +114,8 @@ impl App {
     pub fn mark_level_complete(&mut self, id: Uuid) {
         self.solved.insert(id);
 
-        let file =
-            File::create(self.data_dir.join(paths::SOLVED)).context("Failed to open solved.bin");
+        let path = self.data_dir.join(paths::SOLVED);
+        let file = File::create(path).context("Failed to open solved.bin");
         if let Err(err) = file.and_then(|file| {
             BINCODE_OPTIONS
                 .serialize_into(file, &self.solved)
