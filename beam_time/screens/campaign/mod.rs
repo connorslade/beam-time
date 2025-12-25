@@ -16,7 +16,7 @@ use engine::{
     },
     graphics_context::GraphicsContext,
     layout::{
-        LayoutElement, LayoutMethods, column::ColumnLayout, root::RootLayout,
+        LayoutElement, LayoutMethods, column::ColumnLayout, container::Container, root::RootLayout,
         tracker::LayoutTracker,
     },
     memory_key,
@@ -35,7 +35,11 @@ use crate::{
         },
         pancam::Pancam,
     },
-    ui::{components::manual_button::ManualButton, misc::title_layout, pixel_line::PixelLine},
+    ui::{
+        components::manual_button::ManualButton,
+        misc::{rainbow_text, title_layout},
+        pixel_line::PixelLine,
+    },
 };
 
 use super::{Screen, game::GameScreen};
@@ -52,6 +56,13 @@ pub struct CampaignScreen {
     pancam: Pancam,
 
     worlds: HashMap<Uuid, Vec<UnloadedBoard>>,
+    progress: Progress,
+}
+
+#[derive(Default)]
+struct Progress {
+    solved: u32,
+    total: u32,
 }
 
 impl Screen for CampaignScreen {
@@ -79,14 +90,21 @@ impl Screen for CampaignScreen {
                     .dark_shadow()
                     .layout(ctx, layout);
 
-                let (solved, total) = self.solved_count(state);
-                let percent = solved as f32 / total as f32 * 100.0;
-                Text::new(UNDEAD_FONT, format!("{percent:.0}% Complete"))
+                let percent = self.progress.percent();
+                let text = Text::new(UNDEAD_FONT, format!("{percent:.0}% Complete"))
                     .scale(Vector2::repeat((scale / 3.0).round()))
                     .position(Vector2::x() * title_padding, Anchor::BottomLeft)
                     .z_index(4)
-                    .dark_shadow()
-                    .layout(ctx, layout);
+                    .dark_shadow();
+
+                if self.progress.complete() {
+                    let now = state.start.elapsed().as_secs_f32();
+                    Container::one(ctx, text)
+                        .callback(move |sprites, _polygons| rainbow_text(now, sprites))
+                        .layout(ctx, layout);
+                } else {
+                    text.layout(ctx, layout);
+                }
             });
 
         root.draw(ctx);
@@ -218,8 +236,10 @@ impl Screen for CampaignScreen {
             self.worlds.entry(level.id).or_default().push(board);
         }
 
-        let (solved, total) = self.solved_count(state);
-        (solved == total).then(|| state.integrations.award_achievement("campaign_complete"));
+        self.progress = self.progress(state);
+        self.progress
+            .complete()
+            .then(|| state.integrations.award_achievement("campaign_complete"));
     }
 }
 
@@ -280,7 +300,7 @@ impl CampaignScreen {
         parents.is_empty()
     }
 
-    fn solved_count(&self, state: &App) -> (usize, usize) {
+    fn progress(&self, state: &App) -> Progress {
         let (mut solved, mut total) = (0, 0);
         let mut queue = vec![&ROOT_LEVEL];
 
@@ -289,11 +309,21 @@ impl CampaignScreen {
             solved += (state.level_solved(level)
                 || (self.worlds.get(level).iter())
                     .flat_map(|x| x.iter())
-                    .any(|x| x.meta.is_solved())) as usize;
+                    .any(|x| x.meta.is_solved())) as u32;
             queue.extend(self.tree.get(*level).iter().flat_map(|x| &x.children));
         }
 
-        (solved, total)
+        Progress { solved, total }
+    }
+}
+
+impl Progress {
+    fn complete(&self) -> bool {
+        self.solved == self.total
+    }
+
+    fn percent(&self) -> f32 {
+        self.solved as f32 / self.total as f32 * 100.0
     }
 }
 
@@ -306,6 +336,7 @@ impl Default for CampaignScreen {
             pancam: Pancam::default().with_zoom_sensitivity(0.0),
 
             worlds: HashMap::new(),
+            progress: Progress::default(),
         }
     }
 }

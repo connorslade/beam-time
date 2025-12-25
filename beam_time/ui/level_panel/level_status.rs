@@ -1,12 +1,15 @@
-use std::f32::consts::PI;
-
 use rand::{Rng, rng};
 use thousands::Separable;
 
-use crate::{app::App, assets::UNDEAD_FONT, consts::color, ui::components::histogram::Histogram};
+use crate::{
+    app::App,
+    assets::UNDEAD_FONT,
+    consts::color,
+    ui::{components::histogram::Histogram, misc::rainbow_text},
+};
 use beam_logic::{level::Level, simulation::level_state::LevelResult};
 use engine::{
-    color::{OkLab, Rgb},
+    color::Rgb,
     drawable::{spacer::Spacer, text::Text},
     exports::nalgebra::Vector2,
     graphics_context::GraphicsContext,
@@ -80,21 +83,8 @@ fn success(
         layout.clone().justify(Justify::Center),
         |ctx, layout| {
             let title = Text::new(UNDEAD_FONT, "Level Complete").scale(Vector2::repeat(3.0));
-            Container::of(ctx, [Box::new(title) as Box<dyn LayoutElement>])
-                .callback(move |sprites, _polygons| {
-                    let count = sprites.len();
-                    for (idx, sprite) in sprites.iter_mut().enumerate() {
-                        let t = (idx / 2) as f32 / (count / 2) as f32;
-                        let color = OkLab::new(0.8, 0.1893, 0.0)
-                            .hue_shift(t * 2.0 * PI - now * 2.0)
-                            .to_lrgb();
-                        sprite.color *=
-                            Rgb::new(color.r, color.g, color.b).map(|x| x as f32 / 255.0);
-
-                        let offset = (t * 2.0 * PI - now * 6.0).sin() * 4.0;
-                        sprite.points.iter_mut().for_each(|point| point.y += offset);
-                    }
-                })
+            Container::one(ctx, title)
+                .callback(move |sprites, _polygons| rainbow_text(now, sprites))
                 .layout(ctx, layout);
             Spacer::new_y(5.0).layout(ctx, layout);
 

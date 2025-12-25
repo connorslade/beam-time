@@ -21,6 +21,12 @@ pub struct CallbackContainer {
 }
 
 impl Container {
+    pub fn one(ctx: &mut GraphicsContext, element: impl LayoutElement + 'static) -> Self {
+        let mut container = Self::default();
+        container.insert(SizedLayoutElement::new(ctx, Box::new(element)));
+        container
+    }
+
     pub fn of(
         ctx: &mut GraphicsContext,
         elements: impl IntoIterator<Item = Box<dyn LayoutElement>>,

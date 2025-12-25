@@ -1,6 +1,12 @@
+use std::f32::consts::TAU;
+
 use engine::{
-    drawable::Anchor, drawable::text::Text, exports::nalgebra::Vector2,
+    color::{OkLab, Rgb},
+    drawable::Anchor,
+    drawable::text::Text,
+    exports::nalgebra::Vector2,
     graphics_context::GraphicsContext,
+    render::sprite::GpuSprite,
 };
 
 use crate::assets::UNDEAD_FONT;
@@ -35,4 +41,18 @@ pub fn title_layout(ctx: &GraphicsContext, max_scale: f32) -> (f32, Vector2<f32>
     let pos = Vector2::new(size.x / 2.0, size.y - y_offset);
 
     (scale, pos)
+}
+
+pub fn rainbow_text(now: f32, sprites: &mut [GpuSprite]) {
+    let count = sprites.len();
+    for (idx, sprite) in sprites.iter_mut().enumerate() {
+        let t = (idx / 2) as f32 / (count / 2) as f32;
+        let color = OkLab::new(0.8, 0.1893, 0.0)
+            .hue_shift(t * TAU - now * 2.0)
+            .to_lrgb();
+        sprite.color *= Rgb::new(color.r, color.g, color.b).map(|x| x as f32 / 255.0);
+
+        let offset = (t * TAU - now * 6.0).sin() * 4.0;
+        sprite.points.iter_mut().for_each(|point| point.y += offset);
+    }
 }
