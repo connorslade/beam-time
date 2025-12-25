@@ -22,7 +22,7 @@ use engine::{
     memory_key,
 };
 use slug::slugify;
-use uuid::Uuid;
+use uuid::{Uuid, uuid};
 
 use crate::{
     app::App,
@@ -43,6 +43,7 @@ use super::{Screen, game::GameScreen};
 mod layout;
 use layout::TreeLayout;
 
+const ROOT_LEVEL: Uuid = uuid!("58fc60ca-3831-4f27-a29a-b4878a5dd68a");
 const SPACING: f32 = 64.0;
 
 pub struct CampaignScreen {
@@ -78,7 +79,8 @@ impl Screen for CampaignScreen {
                     .dark_shadow()
                     .layout(ctx, layout);
 
-                let percent = self.solved_count(state) as f32 / self.tree.count() as f32 * 100.0;
+                let (solved, total) = self.solved_count(state);
+                let percent = solved as f32 / total as f32 * 100.0;
                 Text::new(UNDEAD_FONT, format!("{percent:.0}% Complete"))
                     .scale(Vector2::repeat((scale / 3.0).round()))
                     .position(Vector2::x() * title_padding, Anchor::BottomLeft)
@@ -216,9 +218,8 @@ impl Screen for CampaignScreen {
             self.worlds.entry(level.id).or_default().push(board);
         }
 
-        if self.all_solved() {
-            state.integrations.award_achievement("campaign_complete");
-        }
+        let (solved, total) = self.solved_count(state);
+        (solved == total).then(|| state.integrations.award_achievement("campaign_complete"));
     }
 }
 
@@ -267,9 +268,10 @@ impl CampaignScreen {
 
         for id in parents {
             let worlds = self.worlds.get(id);
-            if worlds
-                .map(|x| x.iter().any(|x| x.ever_solved(state)))
-                .unwrap_or_default()
+            if state.level_solved(id)
+                || (worlds.iter())
+                    .flat_map(|x| x.iter())
+                    .any(|x| x.meta.is_solved())
             {
                 return true;
             }
@@ -278,25 +280,20 @@ impl CampaignScreen {
         parents.is_empty()
     }
 
-    fn solved_count(&self, state: &App) -> usize {
-        self.worlds
-            .values()
-            .filter(|x| x.iter().any(|x| x.ever_solved(state)))
-            .count()
-    }
+    fn solved_count(&self, state: &App) -> (usize, usize) {
+        let (mut solved, mut total) = (0, 0);
+        let mut queue = vec![&ROOT_LEVEL];
 
-    fn all_solved(&self) -> bool {
-        for level in DEFAULT_LEVELS.iter() {
-            let Some(level) = self.worlds.get(&level.id) else {
-                return false;
-            };
-
-            if !level.iter().any(|x| x.meta.is_solved()) {
-                return false;
-            }
+        while let Some(level) = queue.pop() {
+            total += 1;
+            solved += (state.level_solved(level)
+                || (self.worlds.get(level).iter())
+                    .flat_map(|x| x.iter())
+                    .any(|x| x.meta.is_solved())) as usize;
+            queue.extend(self.tree.get(*level).iter().flat_map(|x| &x.children));
         }
 
-        true
+        (solved, total)
     }
 }
 

@@ -3,9 +3,12 @@ use std::collections::VecDeque;
 use beam_logic::level::tree::LevelTree;
 use engine::{drawable::text::Text, exports::nalgebra::Vector2, graphics_context::GraphicsContext};
 use log::warn;
-use uuid::{Uuid, uuid};
+use uuid::Uuid;
 
-use crate::{assets::UNDEAD_FONT, screens::campaign::SPACING};
+use crate::{
+    assets::UNDEAD_FONT,
+    screens::campaign::{ROOT_LEVEL, SPACING},
+};
 
 #[derive(Default)]
 pub struct TreeLayout {
@@ -32,7 +35,7 @@ impl TreeLayout {
     pub fn generate(tree: &LevelTree, ctx: &mut GraphicsContext) -> Self {
         let mut rows = Vec::<Vec<TreeItem>>::new();
         let mut queue = VecDeque::new();
-        queue.push_back((uuid!("58fc60ca-3831-4f27-a29a-b4878a5dd68a"), None, 0));
+        queue.push_back((ROOT_LEVEL, None, 0));
 
         while let Some((id, parent, depth)) = queue.pop_front() {
             let Some(level) = tree.get(id) else {

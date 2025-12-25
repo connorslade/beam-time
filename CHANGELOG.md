@@ -4,6 +4,7 @@
 
 - Fixed typo in 'Conway's Game of Life' level
 - Fix 'Random Access Memory' level definition (it was like super messed up sob)
+- Fix completion percent calculation (levels that weren't in the tree were being counted against the total)
 
 ## v1.2.0 &mdash; November 14th, 2025
 
