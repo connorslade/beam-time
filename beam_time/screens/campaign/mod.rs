@@ -100,7 +100,9 @@ impl Screen for CampaignScreen {
                 if self.progress.complete() {
                     let now = state.start.elapsed().as_secs_f32();
                     Container::one(ctx, text)
-                        .callback(move |sprites, _polygons| rainbow_text(now, sprites))
+                        .callback(move |sprites, _polygons| {
+                            rainbow_text(sprites, now, 0.9, scale / 2.5)
+                        })
                         .layout(ctx, layout);
                 } else {
                     text.layout(ctx, layout);
@@ -237,8 +239,7 @@ impl Screen for CampaignScreen {
         }
 
         self.progress = self.progress(state);
-        self.progress
-            .complete()
+        (self.progress.complete())
             .then(|| state.integrations.award_achievement("campaign_complete"));
     }
 }

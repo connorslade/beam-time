@@ -1,5 +1,5 @@
 use std::{
-    f32::consts::PI,
+    f32::consts::TAU,
     ops::{Mul, MulAssign},
 };
 
@@ -41,16 +41,23 @@ impl OkLab<f32> {
         }
     }
 
-    pub fn hue_shift(&self, shift: f32) -> Self {
+    pub fn hue_shift(self, shift: f32) -> Self {
         let hue = self.b.atan2(self.a);
         let chroma = (self.a * self.a + self.b * self.b).sqrt();
 
-        let hue = (hue + shift) % (2.0 * PI);
+        let hue = (hue + shift) % TAU;
 
         let a = chroma * hue.cos();
         let b = chroma * hue.sin();
 
         Self { l: self.l, a, b }
+    }
+
+    pub fn brighten(self, brightness: f32) -> Self {
+        Self {
+            l: self.l * brightness,
+            ..self
+        }
     }
 }
 

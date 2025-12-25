@@ -84,7 +84,7 @@ fn success(
         |ctx, layout| {
             let title = Text::new(UNDEAD_FONT, "Level Complete").scale(Vector2::repeat(3.0));
             Container::one(ctx, title)
-                .callback(move |sprites, _polygons| rainbow_text(now, sprites))
+                .callback(move |sprites, _polygons| rainbow_text(sprites, now, 1.0, 4.0))
                 .layout(ctx, layout);
             Spacer::new_y(5.0).layout(ctx, layout);
 

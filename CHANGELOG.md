@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.2.1 &mdash; Coming Soon
+## v1.2.1 &mdash; December 25th, 2025
 
 - Fixed typo in 'Conway's Game of Life' level
 - Fix 'Random Access Memory' level definition (it was like super messed up sob)
